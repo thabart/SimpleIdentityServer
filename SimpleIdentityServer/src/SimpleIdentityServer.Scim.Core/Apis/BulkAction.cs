@@ -24,12 +24,13 @@ using SimpleIdentityServer.Scim.Core.Results;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IBulkAction
     {
-        ApiActionResult Execute(JObject jObj, string baseUrl);
+        Task<ApiActionResult> Execute(JObject jObj, string baseUrl);
     }
 
     internal class BulkAction : IBulkAction
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _patchRepresentationAction = patchRepresentationAction;
         }
 
-        public ApiActionResult Execute(JObject jObj, string baseUrl)
+        public async Task<ApiActionResult> Execute(JObject jObj, string baseUrl)
         {
             // 1. Check parameter.
             if (jObj == null)
@@ -68,48 +69,47 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            ErrorResponse error;
             // 2. Parse the request.
-            var bulk = _bulkRequestParser.Parse(jObj, baseUrl, out error);
-            if (bulk == null)
+            var bulk = await _bulkRequestParser.Parse(jObj, baseUrl);
+            if (!bulk.IsParsed)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
-                    error);
+                    bulk.ErrorResponse);
             }
 
 
             // 3. Execute bulk operation.
             var numberOfErrors = 0;
             var operationsResult = new JArray();
-            foreach(var operation in bulk.Operations)
+            foreach(var operation in bulk.BulkResult.Operations)
             {
                 ApiActionResult operationResult = null;
                 if (operation.Method == HttpMethod.Post)
                 {
-                    operationResult = _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType);
+                    operationResult = await _addRepresentationAction.Execute(operation.Data, operation.LocationPattern, operation.SchemaId, operation.ResourceType);
                 }
                 else if (operation.Method == HttpMethod.Put)
                 {
-                    operationResult = _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType);
+                    operationResult = await _updateRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern, operation.ResourceType);
                 }
                 else if (operation.Method == HttpMethod.Delete)
                 {
-                    operationResult = _deleteRepresentationAction.Execute(operation.ResourceId);
+                    operationResult = await _deleteRepresentationAction.Execute(operation.ResourceId);
                 }
                 else if (operation.Method.Method == "PATCH")
                 {
-                    operationResult = _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern);
+                    operationResult = await _patchRepresentationAction.Execute(operation.ResourceId, operation.Data, operation.SchemaId, operation.LocationPattern);
                 }
                 
                 // 3.2. If maximum number of errors has been reached then return an error.
                 if (!operationResult.IsSucceed())
                 {
                     numberOfErrors++;
-                    if (bulk.FailOnErrors.HasValue && numberOfErrors > bulk.FailOnErrors)
+                    if (bulk.BulkResult.FailOnErrors.HasValue && numberOfErrors > bulk.BulkResult.FailOnErrors)
                     {
                         return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                             _errorResponseFactory.CreateError(
-                                string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.FailOnErrors),
+                                string.Format(ErrorMessages.TheMaximumNumberOfErrorHasBeenReached, bulk.BulkResult.FailOnErrors),
                                 HttpStatusCode.InternalServerError,
                                 Common.Constants.ScimTypeValues.TooMany));
                     }

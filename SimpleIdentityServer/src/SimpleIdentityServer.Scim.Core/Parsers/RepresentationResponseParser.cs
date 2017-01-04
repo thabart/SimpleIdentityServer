@@ -23,6 +23,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
-        Response Parse(
+        Task<Response> Parse(
             Representation representation, 
             string location,
             string schemaId, 
@@ -99,7 +100,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
-        public Response Parse(
+        public async Task<Response> Parse(
             Representation representation, 
             string location,
             string schemaId,
@@ -115,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = _schemasStore.GetSchema(schemaId);
+            var schema = await _schemasStore.GetSchema(schemaId);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));

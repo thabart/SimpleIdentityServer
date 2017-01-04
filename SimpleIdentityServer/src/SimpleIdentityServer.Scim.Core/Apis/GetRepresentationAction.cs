@@ -23,6 +23,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        ApiActionResult Execute(string identifier, string locationPattern, string schemaId);
+        Task<ApiActionResult> Execute(string identifier, string locationPattern, string schemaId);
     }
 
     internal class GetRepresentationAction : IGetRepresentationAction
@@ -66,7 +67,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <param name="locationPattern">Location pattern of the representation.</param>
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <returns>Representation or null if it doesn't exist.</returns>
-        public ApiActionResult Execute(string identifier, string locationPattern, string schemaId)
+        public async Task<ApiActionResult> Execute(string identifier, string locationPattern, string schemaId)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(identifier))
@@ -81,7 +82,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Check representation exists.
-            var representation = _representationStore.GetRepresentation(identifier);
+            var representation = await _representationStore.GetRepresentation(identifier);
             if (representation == null)
             {
                 return _apiResponseFactory.CreateError(
@@ -90,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Parse the result and returns the representation.
-            var result = _responseParser.Parse(representation, locationPattern.Replace("{id}", representation.Id), schemaId, OperationTypes.Query);
+            var result = await _responseParser.Parse(representation, locationPattern.Replace("{id}", representation.Id), schemaId, OperationTypes.Query);
             
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, result.Object, result.Location, representation.Version, representation.Id);
         }

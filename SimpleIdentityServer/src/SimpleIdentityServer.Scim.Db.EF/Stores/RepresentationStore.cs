@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Db.EF.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Model = SimpleIdentityServer.Scim.Db.EF.Models;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Stores
@@ -36,9 +37,9 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             _transformers = transformers;
         }
 
-        public bool AddRepresentation(Representation representation)
+        public async Task<bool> AddRepresentation(Representation representation)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var result = true;
                 try
@@ -53,7 +54,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                         Attributes = GetRepresentationAttributes(representation)
                     };
                     _context.Representations.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch
@@ -66,14 +67,15 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public Representation GetRepresentation(string id)
+        public async Task<Representation> GetRepresentation(string id)
         {
             try
             {
-                var representation = _context.Representations
+                var representation = await _context.Representations
                     .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
                     .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
-                    .FirstOrDefault(r => r.Id == id);
+                    .FirstOrDefaultAsync(r => r.Id == id)
+                    .ConfigureAwait(false);
                 if (representation == null)
                 {
                     return null;
@@ -89,14 +91,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public IEnumerable<Representation> GetRepresentations(string resourceType)
+        public async Task<IEnumerable<Representation>> GetRepresentations(string resourceType)
         {
             try
             {
-                var representations = _context.Representations
+                var representations = await _context.Representations
                     .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
                     .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
-                    .Where(r => r.ResourceType == resourceType).ToList();
+                    .Where(r => r.ResourceType == resourceType).ToListAsync().ConfigureAwait(false);
                 var lst = new List<Representation>();
                 foreach(var representation in representations)
                 {
@@ -113,21 +115,21 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public bool RemoveRepresentation(Representation representation)
+        public async Task<bool> RemoveRepresentation(Representation representation)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var result = true;
                 try
                 {
-                    var record = _context.Representations.FirstOrDefault(r => r.Id == representation.Id);
+                    var record = await _context.Representations.FirstOrDefaultAsync(r => r.Id == representation.Id).ConfigureAwait(false);
                     if (record == null)
                     {
                         return false;
                     }
 
                     _context.Representations.Remove(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch
@@ -140,21 +142,21 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public bool UpdateRepresentation(Representation representation)
+        public async Task<bool> UpdateRepresentation(Representation representation)
         {
             if (representation == null)
             {
                 return false;
             }
 
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var result = true;
                 try
                 {
-                    var record = _context.Representations
+                    var record = await _context.Representations
                         .Include(r => r.Attributes).ThenInclude(r => r.Children).ThenInclude(r => r.Children).ThenInclude(r => r.Children)
-                        .FirstOrDefault(r => r.Id == representation.Id);
+                        .FirstOrDefaultAsync(r => r.Id == representation.Id).ConfigureAwait(false);
                     if (record == null)
                     {
                         return false;
@@ -168,7 +170,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                     }
 
                     record.Attributes.AddRange(GetRepresentationAttributes(representation));
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch

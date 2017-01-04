@@ -16,19 +16,16 @@
 
 using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Stores
 {
     public interface IRepresentationStore
     {
-        bool AddRepresentation(Representation representation);
-
-        Representation GetRepresentation(string id);
-
-        IEnumerable<Representation> GetRepresentations(string resourceType);
-
-        bool RemoveRepresentation(Representation representation);
-
-        bool UpdateRepresentation(Representation representation);
+        Task<bool> AddRepresentation(Representation representation);
+        Task<Representation> GetRepresentation(string id);
+        Task<IEnumerable<Representation>> GetRepresentations(string resourceType);
+        Task<bool> RemoveRepresentation(Representation representation);
+        Task<bool> UpdateRepresentation(Representation representation);
     }
 }

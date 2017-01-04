@@ -19,18 +19,19 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IUsersAction
     {
-        ApiActionResult AddUser(JObject jObj, string locationPattern);
-        ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern);
-        ApiActionResult PatchUser(string id, JObject jObj, string locationPattern);
-        ApiActionResult RemoveUser(string id);
-        ApiActionResult GetUser(string id, string locationPattern);
-        ApiActionResult SearchUsers(JObject jObj, string locationPattern);
-        ApiActionResult SearchUsers(IQueryCollection query, string locationPattern);
+        Task<ApiActionResult> AddUser(JObject jObj, string locationPattern);
+        Task<ApiActionResult> UpdateUser(string id, JObject jObj, string locationPattern);
+        Task<ApiActionResult> PatchUser(string id, JObject jObj, string locationPattern);
+        Task<ApiActionResult> RemoveUser(string id);
+        Task<ApiActionResult> GetUser(string id, string locationPattern);
+        Task<ApiActionResult> SearchUsers(JObject jObj, string locationPattern);
+        Task<ApiActionResult> SearchUsers(IQueryCollection query, string locationPattern);
     }
 
     internal class UsersAction : IUsersAction
@@ -61,38 +62,38 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _searchParameterParser = searchParameterParser;
         }
 
-        public ApiActionResult AddUser(JObject jObj, string locationPattern)
+        public Task<ApiActionResult> AddUser(JObject jObj, string locationPattern)
         {
             return _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.User, Common.Constants.ResourceTypes.User);
         }
 
-        public ApiActionResult UpdateUser(string id, JObject jObj, string locationPattern)
+        public Task<ApiActionResult> UpdateUser(string id, JObject jObj, string locationPattern)
         {
             return _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern, Common.Constants.ResourceTypes.User);
         }
 
-        public ApiActionResult PatchUser(string id, JObject jObj, string locationPattern)
+        public Task<ApiActionResult> PatchUser(string id, JObject jObj, string locationPattern)
         {
             return _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern);
         }
 
-        public ApiActionResult RemoveUser(string id)
+        public Task<ApiActionResult> RemoveUser(string id)
         {
             return _deleteRepresentationAction.Execute(id);
         }
 
-        public ApiActionResult GetUser(string id, string locationPattern)
+        public Task<ApiActionResult> GetUser(string id, string locationPattern)
         {
             return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.User);
         }
 
-        public ApiActionResult SearchUsers(JObject jObj, string locationPattern)
+        public Task<ApiActionResult> SearchUsers(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
             return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);
         }
 
-        public ApiActionResult SearchUsers(IQueryCollection query, string locationPattern)
+        public Task<ApiActionResult> SearchUsers(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
             return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.User, searchParam, locationPattern);

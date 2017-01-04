@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {
@@ -33,9 +34,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">JSON</param>
         /// <param name="schemaId">Schema identifier</param>
         /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <param name="errorMessage">Error message</param>
         /// <returns>Representation or null.</returns>
-        Representation Parse(JToken jObj, string schemaId, CheckStrategies checkStrategy, out string errorMessage);
+        Task<ParseRepresentationResult> Parse(JToken jObj, string schemaId, CheckStrategies checkStrategy);
     }
 
     public interface IJsonParser
@@ -47,15 +47,28 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">JSON</param>
         /// <param name="attribute">Schema attribute</param>
         /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <param name="errorMessage">Error message</param>
         /// <returns>Representation or null.</returns>
-        RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute, CheckStrategies checkStrategy, out string errorMessage);
+        ParseRepresentationAttrResult GetRepresentation(JToken jObj, SchemaAttributeResponse attribute, CheckStrategies checkStrategy);
     }
 
     public enum CheckStrategies
     {
         Strong,
         Standard
+    }
+
+    public class ParseRepresentationResult
+    {
+        public Representation Representation { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool IsParsed { get; set; }
+    }
+
+    public class ParseRepresentationAttrResult
+    {
+        public RepresentationAttribute RepresentationAttribute { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool IsParsed { get; set; }
     }
 
     internal class RepresentationRequestParser : IRepresentationRequestParser, IJsonParser
@@ -75,11 +88,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">JSON</param>
         /// <param name="schemaId">Schema identifier</param>
         /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <param name="errorMessage">Error message</param>
         /// <returns>Representation or null.</returns>
-        public Representation Parse(JToken jObj, string schemaId, CheckStrategies checkStrategy, out string errorMessage)
+        public async Task<ParseRepresentationResult> Parse(JToken jObj, string schemaId, CheckStrategies checkStrategy)
         {
-            errorMessage = null;
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
@@ -90,11 +101,14 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = _schemasStore.GetSchema(schemaId);
+            var schema = await _schemasStore.GetSchema(schemaId);
             if (schema == null)
             {
-                errorMessage = string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId);
-                return null;
+                return new ParseRepresentationResult
+                {
+                    ErrorMessage = string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId),
+                    IsParsed = false
+                };
             }
 
             var representation = new Representation();
@@ -108,19 +122,27 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 // 2. Add the attribute
-                var repr = GetRepresentation(jObj, attribute, checkStrategy, out errorMessage);
-                if (repr != null)
+                var repr = GetRepresentation(jObj, attribute, checkStrategy);
+                if (repr.IsParsed)
                 {
-                    attributes.Add(repr);
+                    attributes.Add(repr.RepresentationAttribute);
                 }
-                else if (!string.IsNullOrWhiteSpace(errorMessage))
+                else
                 {
-                    return null;
+                    return new ParseRepresentationResult
+                    {
+                        IsParsed = false,
+                        ErrorMessage = repr.ErrorMessage
+                    };
                 }
             }
 
             representation.Attributes = attributes;
-            return representation;
+            return new ParseRepresentationResult
+            {
+                IsParsed = true,
+                Representation = representation
+            };
         }
 
         /// <summary>
@@ -130,11 +152,9 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="jObj">JSON</param>
         /// <param name="attribute">Schema attribute</param>
         /// <param name="checkStrategy">Strategy used to check the parameters.</param>
-        /// <param name="errorMessage">Error message</param>
         /// <returns>Representation or null.</returns>
-        public RepresentationAttribute GetRepresentation(JToken jObj, SchemaAttributeResponse attribute, CheckStrategies checkStrategy, out string errorMessage)
+        public ParseRepresentationAttrResult GetRepresentation(JToken jObj, SchemaAttributeResponse attribute, CheckStrategies checkStrategy)
         {
-            errorMessage = string.Empty;
             if (jObj == null)
             {
                 throw new ArgumentNullException(nameof(jObj));
@@ -149,12 +169,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 foreach (var subAttribute in attr.SubAttributes)
                 {
-                    string error;
-                    var rep = GetRepresentation(tok, subAttribute, checkStrategy, out error);
-                    if (rep != null)
+                    var rep = GetRepresentation(tok, subAttribute, checkStrategy);
+                    if (rep.IsParsed)
                     {
-                        rep.Parent = reprAttr;
-                        lst.Add(rep);
+                        rep.RepresentationAttribute.Parent = reprAttr;
+                        lst.Add(rep.RepresentationAttribute);
                     }
                 }
             };
@@ -164,12 +183,15 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 if (attribute.Required && checkStrategy == CheckStrategies.Strong)
                 {
-                    errorMessage = string.Format(ErrorMessages.TheAttributeIsRequired, attribute.Name);
-                    return null;
+                    return new ParseRepresentationAttrResult
+                    {
+                        IsParsed = false,
+                        ErrorMessage = string.Format(ErrorMessages.TheAttributeIsRequired, attribute.Name)
+                    };
                 }
 
                 // Add empty attribute.
-                return GetEmptyToken(attribute, out errorMessage);
+                return GetEmptyToken(attribute);
             }
 
             // 2. Check is an array
@@ -179,8 +201,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 jArr = token as JArray;
                 if (jArr == null)
                 {
-                    errorMessage = string.Format(ErrorMessages.TheAttributeIsNotAnArray, attribute.Name);
-                    return null;
+                    return new ParseRepresentationAttrResult
+                    {
+                        IsParsed = false,
+                        ErrorMessage = string.Format(ErrorMessages.TheAttributeIsNotAnArray, attribute.Name)
+                    };
                 }
             }
 
@@ -220,7 +245,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 }
 
                 representation.Values = values;
-                return representation;
+                return new ParseRepresentationAttrResult
+                {
+                    IsParsed = true,
+                    RepresentationAttribute = representation
+                };
             }
 
             RepresentationAttribute result = null;
@@ -244,17 +273,27 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     result = GetSingularToken<int>(jArr, attribute, token);
                     break;
                 default:
-                    errorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type);
-                    return null;
+                    return new ParseRepresentationAttrResult
+                    {
+                        IsParsed = false,
+                        ErrorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attribute.Type)
+                    };
             }
 
             if (result == null)
             {
-                errorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, attribute.Type);
-                return null;
+                return new ParseRepresentationAttrResult
+                {
+                    IsParsed = false,
+                    ErrorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotCorrect, attribute.Name, attribute.Type)
+                };
             }
 
-            return result;
+            return new ParseRepresentationAttrResult
+            {
+                RepresentationAttribute = result,
+                IsParsed = true
+            };
         }
 
         private static RepresentationAttribute GetSingularToken<T>(JArray jArr, SchemaAttributeResponse attribute, JToken token)
@@ -274,9 +313,8 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             }
         }
 
-        private static RepresentationAttribute GetEmptyToken(SchemaAttributeResponse attr, out string errorMessage)
+        private static ParseRepresentationAttrResult GetEmptyToken(SchemaAttributeResponse attr)
         {
-            errorMessage = string.Empty;
             RepresentationAttribute result = null;
             switch (attr.Type)
             {
@@ -300,11 +338,18 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     result = new ComplexRepresentationAttribute(attr);
                     break;
                 default:
-                    errorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attr.Type);
-                    break;
+                    return new ParseRepresentationAttrResult
+                    {
+                        IsParsed = false,
+                        ErrorMessage = string.Format(ErrorMessages.TheAttributeTypeIsNotSupported, attr.Type)
+                    };
             }
 
-            return result;
+            return new ParseRepresentationAttrResult
+            {
+                IsParsed = true,
+                RepresentationAttribute = result
+            };
         }
 
         private static RepresentationAttribute GetEmptyToken<T>(SchemaAttributeResponse attr, T defaultValue)

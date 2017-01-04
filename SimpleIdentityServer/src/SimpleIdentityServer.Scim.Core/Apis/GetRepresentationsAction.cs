@@ -23,12 +23,13 @@ using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IGetRepresentationsAction
     {
-        ApiActionResult Execute(string resourceType, SearchParameter searchParameter, string locationPattern);
+        Task<ApiActionResult> Execute(string resourceType, SearchParameter searchParameter, string locationPattern);
     }
 
     internal class GetRepresentationsAction : IGetRepresentationsAction
@@ -50,7 +51,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator = parametersValidator;
         }
 
-        public ApiActionResult Execute(string resourceType, SearchParameter searchParameter, string locationPattern)
+        public async Task<ApiActionResult> Execute(string resourceType, SearchParameter searchParameter, string locationPattern)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(resourceType))
@@ -66,14 +67,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Get representations & add the common attributes.
-            var representations = _representationStore.GetRepresentations(resourceType);
+            var representations = await _representationStore.GetRepresentations(resourceType);
             foreach(var representation in representations)
             {
                 var location = locationPattern.Replace("{id}", representation.Id);
                 representation.Attributes = representation.Attributes.Concat(new[] 
                 {
-                    _commonAttributesFactory.CreateMetaDataAttribute(representation, location),
-                    _commonAttributesFactory.CreateId(representation)
+                    await _commonAttributesFactory.CreateMetaDataAttribute(representation, location),
+                    await _commonAttributesFactory.CreateId(representation)
                 });
             }
 

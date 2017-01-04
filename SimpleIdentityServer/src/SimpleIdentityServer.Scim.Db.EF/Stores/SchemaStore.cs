@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Db.EF.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Stores
 {
@@ -36,11 +37,11 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             _transformers = transformers;
         }
 
-        public IEnumerable<SchemaAttributeResponse> GetCommonAttributes()
+        public async Task<IEnumerable<SchemaAttributeResponse>> GetCommonAttributes()
         {
             try
             {
-                var attrs = _context.SchemaAttributes.Include(s => s.Children).Where(s => s.IsCommon == true).ToList();
+                var attrs = await _context.SchemaAttributes.Include(s => s.Children).Where(s => s.IsCommon == true).ToListAsync().ConfigureAwait(false);
                 var result = new List<SchemaAttributeResponse>();
                 foreach(var attr in attrs)
                 {
@@ -55,13 +56,13 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public SchemaResponse GetSchema(string id)
+        public async Task<SchemaResponse> GetSchema(string id)
         {
             try
             {
-                var schema = _context.Schemas.Include(s => s.Meta)
+                var schema = await _context.Schemas.Include(s => s.Meta)
                     .Include(s => s.Attributes).ThenInclude(a => a.Children)
-                    .FirstOrDefault(s => s.Id == id);
+                    .FirstOrDefaultAsync(s => s.Id == id).ConfigureAwait(false);
                 return GetSchemaResponse(schema);
             }
             catch
@@ -70,14 +71,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             }
         }
 
-        public IEnumerable<SchemaResponse> GetSchemas()
+        public async Task<IEnumerable<SchemaResponse>> GetSchemas()
         {
             try
             {
-                var schemas = _context.Schemas
+                var schemas = await _context.Schemas
                     .Include(s => s.Meta)
                     .Include(s => s.Attributes).ThenInclude(a => a.Children)
-                    .ToList();
+                    .ToListAsync().ConfigureAwait(false);
                 var result = new List<SchemaResponse>();
                 foreach(var schema in schemas)
                 {

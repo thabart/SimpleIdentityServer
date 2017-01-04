@@ -20,6 +20,7 @@ using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -31,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <exception cref="System.ArgumentNullException">Thrown when the id is null or empty</exception>
         /// <param name="id">Representation's id</param>
         /// <returns>StatusCode with the content.</returns>
-        ApiActionResult Execute(
+        Task<ApiActionResult> Execute(
             string id);
     }
 
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         /// <exception cref="System.ArgumentNullException">Thrown when the id is null or empty</exception>
         /// <param name="id">Representation's id</param>
         /// <returns>StatusCode with the content.</returns>
-        public ApiActionResult Execute(
+        public async Task<ApiActionResult> Execute(
             string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -63,7 +64,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 1. Get the representation
-            var representation = _representationStore.GetRepresentation(id);
+            var representation = await _representationStore.GetRepresentation(id);
 
             // 2. If the representation doesn't exist then 404 is returned
             if (representation == null)
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Remove the representation
-            if (!_representationStore.RemoveRepresentation(representation))
+            if (!await _representationStore.RemoveRepresentation(representation))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                     ErrorMessages.TheRepresentationCannotBeRemoved);

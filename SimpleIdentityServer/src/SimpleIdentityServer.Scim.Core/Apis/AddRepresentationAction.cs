@@ -23,13 +23,14 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IAddRepresentationAction
     {
-        ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id);
-        ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType);
+        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id);
+        Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType);
     }
 
     internal class AddRepresentationAction : IAddRepresentationAction
@@ -54,7 +55,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator = parametersValidator;
         }
         
-        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id)
+        public async Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType, string id)
         {
             if (jObj == null)
             {
@@ -86,30 +87,29 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request
-            string error;
-            var result = _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong, out error);
-            if (result == null)
+            var result = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong);
+            if (!result.IsParsed)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
-                    error);
+                    result.ErrorMessage);
             }
 
             // 3. Set parameters
-            result.Id = id;
-            result.Created = DateTime.UtcNow;
-            result.LastModified = DateTime.UtcNow;
-            result.ResourceType = resourceType;
-            result.Version = Guid.NewGuid().ToString();
+            result.Representation.Id = id;
+            result.Representation.Created = DateTime.UtcNow;
+            result.Representation.LastModified = DateTime.UtcNow;
+            result.Representation.ResourceType = resourceType;
+            result.Representation.Version = Guid.NewGuid().ToString();
 
             // 4. Save the request
-            _representationStore.AddRepresentation(result);
+            await _representationStore.AddRepresentation(result.Representation);
 
             // 5. Transform and returns the representation.
-            var response = _responseParser.Parse(result, locationPattern.Replace("{id}", result.Id), schemaId, OperationTypes.Modification);
-            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Version, result.Id);
+            var response = await _responseParser.Parse(result.Representation, locationPattern.Replace("{id}", result.Representation.Id), schemaId, OperationTypes.Modification);
+            return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Representation.Version, result.Representation.Id);
         }
 
-        public ApiActionResult Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
+        public Task<ApiActionResult> Execute(JObject jObj, string locationPattern, string schemaId, string resourceType)
         {
             return Execute(jObj, locationPattern, schemaId, resourceType, Guid.NewGuid().ToString());
         }

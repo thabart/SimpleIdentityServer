@@ -21,6 +21,7 @@ using SimpleIdentityServer.Scim.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Factories
 {
@@ -28,9 +29,9 @@ namespace SimpleIdentityServer.Scim.Core.Factories
     {
         JProperty CreateIdJson(Representation representation);
         JProperty CreateIdJson(string id);
-        RepresentationAttribute CreateId(Representation representation);
+        Task<RepresentationAttribute> CreateId(Representation representation);
         IEnumerable<JProperty> CreateMetaDataAttributeJson(Representation representation, string location);
-        RepresentationAttribute CreateMetaDataAttribute(Representation representation, string location);
+        Task<RepresentationAttribute> CreateMetaDataAttribute(Representation representation, string location);
         string GetFullPath(string key);
     }
 
@@ -93,19 +94,19 @@ namespace SimpleIdentityServer.Scim.Core.Factories
             return new JProperty(Common.Constants.IdentifiedScimResourceNames.Id, id);
         }
 
-        public RepresentationAttribute CreateId(Representation representation)
+        public async Task<RepresentationAttribute> CreateId(Representation representation)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            var commonAttrs = _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes();
             var idAttr = commonAttrs.First(n => n.Name == Common.Constants.IdentifiedScimResourceNames.Id);
             return new SingularRepresentationAttribute<string>(idAttr, representation.Id);
         }
 
-        public RepresentationAttribute CreateMetaDataAttribute(Representation representation, string location)
+        public async Task<RepresentationAttribute> CreateMetaDataAttribute(Representation representation, string location)
         {
             if (representation == null)
             {
@@ -117,7 +118,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(location));
             }
 
-            var commonAttrs = _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes();
             var metaAttr = commonAttrs.First(m => m.Name == Common.Constants.ScimResourceNames.Meta) as ComplexSchemaAttributeResponse;
             return new ComplexRepresentationAttribute(metaAttr)
             {

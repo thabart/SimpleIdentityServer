@@ -27,12 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IPatchRepresentationAction
     {
-        ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern);
+        Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern);
     }
 
     internal class PatchRepresentationAction : IPatchRepresentationAction
@@ -69,7 +70,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _representationRequestParser = representationRequestParser;
         }
 
-        public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern)
+        public async Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(id))
@@ -90,7 +91,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Check representation exists
-            var representation = _representationStore.GetRepresentation(id);
+            var representation = await _representationStore.GetRepresentation(id);
             if (representation == null)
             {
                 return _apiResponseFactory.CreateError(
@@ -99,7 +100,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Get patch operations.
-            var allRepresentations = _representationStore.GetRepresentations(representation.ResourceType);
+            var allRepresentations = await _representationStore.GetRepresentations(representation.ResourceType);
             ErrorResponse errorResponse;
             var operations = _patchRequestParser.Parse(jObj, out errorResponse);
             if (operations == null)
@@ -167,15 +168,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                             token[name] = operation.Value;
                         }
 
-                        string error;
-                        var value = _jsonParser.GetRepresentation(token, filtered.First().SchemaAttribute, CheckStrategies.Standard, out error);
-                        if (value == null)
+                        var value = _jsonParser.GetRepresentation(token, filtered.First().SchemaAttribute, CheckStrategies.Standard);
+                        if (!value.IsParsed)
                         {
                             return _apiResponseFactory.CreateError(
                             HttpStatusCode.BadRequest,
-                            _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
+                            _errorResponseFactory.CreateError(value.ErrorMessage, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                         }
-                        filteredAttrs = new[] { value };
+                        filteredAttrs = new[] { value.RepresentationAttribute };
                     }
                 }
 
@@ -184,16 +184,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 {
                     if (operation.Value != null)
                     {
-                        string error;
-                        var repr = _representationRequestParser.Parse(operation.Value, schemaId, CheckStrategies.Standard, out error);
-                        if (repr == null)
+                        var repr = await _representationRequestParser.Parse(operation.Value, schemaId, CheckStrategies.Standard);
+                        if (!repr.IsParsed)
                         {
                             return _apiResponseFactory.CreateError(
                                 HttpStatusCode.BadRequest,
-                                _errorResponseFactory.CreateError(error, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
+                                _errorResponseFactory.CreateError(repr.ErrorMessage, HttpStatusCode.BadRequest, Common.Constants.ScimTypeValues.InvalidSyntax));
                         }
 
-                        filteredAttrs = repr.Attributes;
+                        filteredAttrs = repr.Representation.Attributes;
                         attrs = representation.Attributes;
                     }
                 }
@@ -348,10 +347,10 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
             // 5. Save the representation.
             representation.Version = Guid.NewGuid().ToString();
-            _representationStore.UpdateRepresentation(representation);
+            await _representationStore.UpdateRepresentation(representation);
 
             // 6. Returns the JSON representation.
-            var response = _responseParser.Parse(representation, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
+            var response = await _responseParser.Parse(representation, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location,

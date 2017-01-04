@@ -27,12 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IUpdateRepresentationAction
     {
-        ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
+        Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType);
     }
 
     internal class UpdateRepresentationAction : IUpdateRepresentationAction
@@ -63,7 +64,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _filterParser = filterParser;
         }
 
-        public ApiActionResult Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
+        public async Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
         {
             // 1. Check parameters.
             if (string.IsNullOrWhiteSpace(id))
@@ -88,16 +89,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request.
-            string errorStr;
-            var representation = _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong, out errorStr);
-            if (representation == null)
+            var representation = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong);
+            if (!representation.IsParsed)
             {
                 return _apiResponseFactory.CreateError(
                     HttpStatusCode.BadRequest,
-                    errorStr);
+                    representation.ErrorMessage);
             }
 
-            var record = _representationStore.GetRepresentation(id);
+            var record = await _representationStore.GetRepresentation(id);
 
             // 3. If the representation doesn't exist then 404 is returned.
             if (record == null)
@@ -108,9 +108,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Update attributes.
-            var allRepresentations = _representationStore.GetRepresentations(record.ResourceType).Where(r => r.Id != record.Id);
+            var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType)).Where(r => r.Id != record.Id);
             ErrorResponse error;
-            if (!UpdateRepresentation(record, representation, allRepresentations, out error))
+            if (!UpdateRepresentation(record, representation.Representation, allRepresentations, out error))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, error);
             }
@@ -118,14 +118,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 5. Store the new representation.
             record.LastModified = DateTime.UtcNow;
             record.Version = Guid.NewGuid().ToString();
-            if (!_representationStore.UpdateRepresentation(record))
+            if (!await _representationStore.UpdateRepresentation(record))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                    ErrorMessages.TheRepresentationCannotBeUpdated);
             }
 
             // 6. Parse the new representation.
-            var response = _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
+            var response = await _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location,

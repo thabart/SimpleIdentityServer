@@ -17,13 +17,14 @@
 using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Stores
 {
     public interface ISchemaStore : IDisposable
     {
-        IEnumerable<SchemaResponse> GetSchemas();
-        SchemaResponse GetSchema(string id);
-        IEnumerable<SchemaAttributeResponse> GetCommonAttributes();
+        Task<IEnumerable<SchemaResponse>> GetSchemas();
+        Task<SchemaResponse> GetSchema(string id);
+        Task<IEnumerable<SchemaAttributeResponse>> GetCommonAttributes();
     }
 }

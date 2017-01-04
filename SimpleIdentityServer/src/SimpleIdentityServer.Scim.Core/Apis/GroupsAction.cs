@@ -18,18 +18,19 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
     public interface IGroupsAction
     {
-        ApiActionResult AddGroup(JObject jObj, string locationPattern);
-        ApiActionResult GetGroup(string id, string locationPattern, IQueryCollection query);
-        ApiActionResult RemoveGroup(string id);
-        ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern);
-        ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern);
-        ApiActionResult SearchGroups(JObject jObj, string locationPattern);
-        ApiActionResult SearchGroups(IQueryCollection query, string locationPattern);
+        Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern);
+        Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query);
+        Task<ApiActionResult> RemoveGroup(string id);
+        Task<ApiActionResult> UpdateGroup(string id, JObject jObj, string locationPattern);
+        Task<ApiActionResult> PatchGroup(string id, JObject jObj, string locationPattern);
+        Task<ApiActionResult> SearchGroups(JObject jObj, string locationPattern);
+        Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern);
     }
 
     internal class GroupsAction : IGroupsAction
@@ -60,39 +61,39 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _getRepresentationsAction = getRepresentationsAction;
         }
 
-        public ApiActionResult AddGroup(JObject jObj, string locationPattern)
+        public Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern)
         {
             return _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.Group, Common.Constants.ResourceTypes.Group);
         }
 
-        public ApiActionResult GetGroup(string id, string locationPattern, IQueryCollection query)
+        public Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query)
         {
             var searchParameter = _searchParameterParser.ParseQuery(query);
             return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.Group);
         }
 
-        public ApiActionResult RemoveGroup(string id)
+        public Task<ApiActionResult> RemoveGroup(string id)
         {
             return _deleteRepresentationAction.Execute(id);
         }
 
-        public ApiActionResult UpdateGroup(string id, JObject jObj, string locationPattern)
+        public Task<ApiActionResult> UpdateGroup(string id, JObject jObj, string locationPattern)
         {
             return _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern, Common.Constants.ResourceTypes.Group);
         }
 
-        public ApiActionResult PatchGroup(string id, JObject jObj, string locationPattern)
+        public Task<ApiActionResult> PatchGroup(string id, JObject jObj, string locationPattern)
         {
             return _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern);
         }
 
-        public ApiActionResult SearchGroups(IQueryCollection query, string locationPattern)
+        public Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseQuery(query);
             return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.Group, searchParam, locationPattern);
         }
 
-        public ApiActionResult SearchGroups(JObject jObj, string locationPattern)
+        public Task<ApiActionResult> SearchGroups(JObject jObj, string locationPattern)
         {
             var searchParam = _searchParameterParser.ParseJson(jObj);
             return _getRepresentationsAction.Execute(Common.Constants.ResourceTypes.Group, searchParam, locationPattern);
