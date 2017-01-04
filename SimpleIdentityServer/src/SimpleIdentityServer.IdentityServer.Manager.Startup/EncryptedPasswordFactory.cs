@@ -15,11 +15,11 @@
 #endregion
 
 using IdentityServer4.Models;
-using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 {
-    public class EncryptedPasswordFactory : IEncryptedPasswordFactory
+    public class CustomPasswordService : IPasswordService
     {
         public string Encrypt(string password)
         {

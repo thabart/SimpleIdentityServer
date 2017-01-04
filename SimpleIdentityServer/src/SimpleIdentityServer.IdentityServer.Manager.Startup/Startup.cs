@@ -19,18 +19,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.IdentityServer.EF;
 using SimpleIdentityServer.Manager.Host.Extensions;
+using System;
 using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 {
 
     public class Startup
     {
+        private ManagerOptions _opts;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -39,6 +42,31 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
+            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
+            _opts = new ManagerOptions
+            {
+                PasswordService = new CustomPasswordService(),
+                Logging = new LoggingOptions
+                {
+                    ElasticsearchOptions = new ElasticsearchOptions
+                    {
+                        IsEnabled = isElasticSearchEnabled,
+                        Url = Configuration["Log:Elasticsearch:Url"]
+                    },
+                    FileLogOptions = new FileLogOptions
+                    {
+                        IsEnabled = isLogFileEnabled,
+                        PathFormat = Configuration["Log:File:PathFormat"]
+                    }
+                },
+                Introspection = new IntrospectOptions
+                {
+                    ClientId = Configuration["OpenId:ClientId"],
+                    ClientSecret = Configuration["OpenId:ClientSecret"],
+                    IntrospectionUrl = Configuration["OpenId:IntrospectUrl"]
+                }
+            };
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -47,73 +75,45 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
         {
             var databaseType = Configuration["DatabaseType"];
             var cachingDatabase = Configuration["Caching:Database"];
-            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var authorizationUrl = Configuration["AuthorizationServer"] + "/authorization";
-            var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
-            var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var tokenUrl = authorizationUrl + "/token";
-            services.AddSingleton<IEncryptedPasswordFactory, EncryptedPasswordFactory>();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            // Configure the database
-            if (databaseType == "POSTGRES")
+            // 1. Configure the database
+            if (string.Compare(databaseType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase) == 0)
             {
-                services.AddSimpleIdentityServerPostGre(connectionString, migrationsAssembly);
+                services.AddSimpleIdentityServerPostGre(Configuration["Db:ConnectionString"], migrationsAssembly);
+            }
+            else if (string.Compare(databaseType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase) == 0)
+            {
+                services.AddSimpleIdentityServerSqlServer(Configuration["Db:ConnectionString"], migrationsAssembly);
             }
             else
             {
-                services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
+                services.AddSimpleIdentityServerInMemory();
             }
 
-            // Configure the caching
-            if (cachingDatabase == "REDIS")
+            // 2. Configure the caching
+            if (string.Compare(cachingDatabase, "REDIS", StringComparison.CurrentCultureIgnoreCase) == 0)
             {
                 services.AddConcurrency(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else
             {
-                services.AddConcurrency(opt => opt.UseInMemoryStorage());
+                services.AddConcurrency(opt => opt.UseInMemory());
             }
 
-            // Add server manager
-            services.AddSimpleIdentityServerManager(new AuthorizationServerOptions
-            {
-                AuthorizationUrl = authorizationUrl,
-                TokenUrl = tokenUrl
-            },
-            new LoggingOptions
-            {
-                ElasticsearchOptions = new ElasticsearchOptions
-                {
-                    IsEnabled = isElasticSearchEnabled,
-                    Url = Configuration["Log:Elasticsearch:Url"]
-                },
-                FileLogOptions = new FileLogOptions
-                {
-                    IsEnabled = isLogFileEnabled,
-                    PathFormat = Configuration["Log:File:PathFormat"]
-                }
-            });
+            // 3. Add server manager
+            services.AddSimpleIdentityServerManager(_opts);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["IntrospectUrl"];
-            var clientId = Configuration["ClientId"];
-            var clientSecret = Configuration["ClientSecret"];
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-            app.UseSimpleIdentityServerManager(loggerFactory, new AuthorizationServerOptions
-            {
-                IntrospectionUrl = introspectionUrl,
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            });
+            app.UseSimpleIdentityServerManager(loggerFactory, _opts);
         }
     }
 }
