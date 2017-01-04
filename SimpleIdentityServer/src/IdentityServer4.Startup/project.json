@@ -32,7 +32,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "SimpleIdentityServer.IdentityServer.EF": { "target": "project" },
     "SimpleIdentityServer.Authentication.Middleware": { "target": "project" },
-    "WebApiContrib.Core.Storage.Redis": { "target": "project" }
+    "WebApiContrib.Core.Storage.Redis": { "target": "project" },
+    "WebApiContrib.Core.Storage.InMemory": { "target": "project" }
   },
   "tools": {
     "Microsoft.EntityFrameworkCore.Tools": {
@@ -65,7 +66,7 @@
       "appsettings*.json",
       "SimpleIdServer.pfx",
       "Views/**/*.cshtml",
-	  "wwwroot"
+	    "wwwroot"
     ]
   },
   "runtimes": {

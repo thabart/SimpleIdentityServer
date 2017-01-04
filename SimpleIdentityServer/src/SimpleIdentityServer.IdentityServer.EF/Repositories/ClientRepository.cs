@@ -14,23 +14,21 @@
 // limitations under the License.
 #endregion
 
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Repositories;
-using IdentityServer4.EntityFramework.DbContexts;
-using SimpleIdentityServer.Logging;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
     public class ClientRepository : IClientRepository
     {
         private readonly ConfigurationDbContext _context;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #region Constructor
 
         public ClientRepository(
             ConfigurationDbContext context,
@@ -40,22 +38,20 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        public bool DeleteClient(SimpleIdentityServer.Core.Models.Client client)
+        public async Task<bool> DeleteAsync(Core.Models.Client client)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    var result = _context.Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+                    var result = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == client.ClientId).ConfigureAwait(false);
                     if (result == null)
                     {
                         return false;
                     }
 
                     _context.Clients.Remove(result);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
                 }
@@ -68,9 +64,9 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             }
         }
 
-        public IList<Core.Models.Client> GetAll()
+        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
         {
-            var clients = _context.Clients
+            return await _context.Clients
                 .Include(c => c.AllowedGrantTypes)
                 .Include(c => c.ClientSecrets)
                 .Include(c => c.RedirectUris)
@@ -79,13 +75,13 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                 .Include(c => c.IdentityProviderRestrictions)
                 .Include(c => c.Claims)
                 .Include(c => c.AllowedCorsOrigins)
-                .ToList();
-            return clients.Select(c => c.ToDomain()).ToList();
+                .Select(c => c.ToDomain())
+                .ToListAsync().ConfigureAwait(false);
         }
 
-        public Core.Models.Client GetClientById(string clientId)
+        public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
         {
-            var client = _context.Clients
+            var client = await _context.Clients
                 .Include(c => c.AllowedGrantTypes)
                 .Include(c => c.ClientSecrets)
                 .Include(c => c.RedirectUris)
@@ -94,7 +90,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                 .Include(c => c.IdentityProviderRestrictions)
                 .Include(c => c.Claims)
                 .Include(c => c.AllowedCorsOrigins)
-                .FirstOrDefault(c => c.ClientId == clientId);
+                .FirstOrDefaultAsync(c => c.ClientId == clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;
@@ -103,15 +99,15 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return client.ToDomain();
         }
 
-        public bool InsertClient(Core.Models.Client client)
+        public async Task<bool> InsertAsync(Core.Models.Client client)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
                     var record = client.ToEntity();
                     _context.Clients.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false); ;
                     transaction.Commit();
                     return true;
                 }
@@ -124,14 +120,14 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             }
         }
 
-        public bool UpdateClient(Core.Models.Client client)
+        public async Task<bool> UpdateAsync(Core.Models.Client client)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
                     var record = client.ToEntity();
-                    var result = _context.Clients.FirstOrDefault(c => c.ClientId == record.ClientId);
+                    var result = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == record.ClientId).ConfigureAwait(false);
                     if (result == null)
                     {
                         return false;
@@ -157,7 +153,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     result.AllowedScopes = record.AllowedScopes;
                     result.RedirectUris = record.RedirectUris;
                     result.AllowedGrantTypes = record.AllowedGrantTypes;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false); ;
                     transaction.Commit();
                     return true;
                 }
@@ -170,14 +166,14 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             }
         }
 
-        public bool RemoveAll()
+        public async Task<bool> RemoveAllAsync()
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
                     _context.Clients.RemoveRange(_context.Clients);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false); ;
                     transaction.Commit();
                     return true;
                 }

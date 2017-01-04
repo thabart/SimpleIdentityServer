@@ -14,28 +14,22 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
-using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
     internal sealed class ScopeRepository : IScopeRepository
     {
-        #region Fields
-
         private readonly ConfigurationDbContext _context;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #endregion
-
-        #region Constructor
 
         public ScopeRepository(
             ConfigurationDbContext context,
@@ -50,30 +44,27 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool DeleteScope(Scope scope)
+        public async Task<bool> DeleteAsync(Scope scope)
         {
             if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    var connectedScope = _context.Scopes
-                        .FirstOrDefault(c => c.Name == scope.Name);
+                    var connectedScope = await _context.Scopes
+                        .FirstOrDefaultAsync(c => c.Name == scope.Name)
+                        .ConfigureAwait(false);
                     if (connectedScope == null)
                     {
                         return false;
                     }
 
                     _context.Scopes.Remove(connectedScope);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -87,17 +78,18 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return true;
         }
 
-        public IList<Scope> GetAllScopes()
+        public async Task<ICollection<Scope>> GetAllAsync()
         {
-            return _context.Scopes.Include(s => s.Claims)
-                .Select(s => s.ToDomain()).ToList();
+            return await _context.Scopes.Include(s => s.Claims)
+                .Select(s => s.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public Scope GetScopeByName(string name)
+        public async Task<Scope> GetAsync(string name)
         {
-            var result = _context.Scopes
+            var result = await _context.Scopes
                 .Include(s => s.Claims)
-                .FirstOrDefault(s => s.Name == name);
+                .FirstOrDefaultAsync(s => s.Name == name)
+                .ConfigureAwait(false);
             if (result == null)
             {
                 return null;
@@ -106,9 +98,9 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return result.ToDomain();
         }
 
-        public bool InsertScope(Scope scope)
+        public async Task<bool> InsertAsync(Scope scope)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
@@ -127,8 +119,9 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     };
 
                     _context.Scopes.Add(record);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
+                    return true;
                 }
                 catch(Exception ex)
                 {
@@ -137,18 +130,17 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     return false;
                 }
             }
-
-            return true;
         }
 
-        public bool UpdateScope(Scope scope)
+        public async Task<bool> UpdateAsync(Scope scope)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    var connectedScope = _context.Scopes
-                        .FirstOrDefault(c => c.Name == scope.Name);
+                    var connectedScope = await _context.Scopes
+                        .FirstOrDefaultAsync(c => c.Name == scope.Name)
+                        .ConfigureAwait(false);
                     if (connectedScope == null)
                     {
                         return false;
@@ -162,8 +154,9 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                             {
                                 Name = s
                             }).ToList();
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -172,10 +165,21 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     return false;
                 }
             }
-
-            return true;
         }
 
-        #endregion
+        public async Task<ICollection<Scope>> SearchByNamesAsync(IEnumerable<string> names)
+        {
+            if (names == null)
+            {
+                throw new ArgumentNullException(nameof(names));
+            }
+
+            return await _context.Scopes
+                .Include(s => s.Claims)
+                .Where(s => names.Contains(s.Name))
+                .Select(s => s.ToDomain())
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
     }
 }

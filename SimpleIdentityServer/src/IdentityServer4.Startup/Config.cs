@@ -1,9 +1,10 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4.Startup.Services;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace IdentityServer4.Startup
 {
@@ -205,7 +206,7 @@ namespace IdentityServer4.Startup
                 {
                     Subject = "1",
                     Username = "administrator",
-                    Password = new SecurityHelper().ComputeHash("password"),
+                    Password = ComputeHash("password"),
                     IsLocalAccount = true,
                     Enabled = true,
                     Claims = new List<DbClaim>
@@ -230,6 +231,16 @@ namespace IdentityServer4.Startup
                     }
                 }
             };
+        }
+
+        private static string ComputeHash(string entry)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var entryBytes = Encoding.UTF8.GetBytes(entry);
+                var hash = sha256.ComputeHash(entryBytes);
+                return BitConverter.ToString(hash).Replace("-", string.Empty);
+            }
         }
     }
 }

@@ -24,14 +24,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace IdentityServer4.Startup.Services
 {
     public class UserLoginService
     {
         private readonly UserDbContext _context;
-
-        private readonly ISecurityHelper _securityHelper;
 
         public UserLoginService(UserDbContext context)
         {
@@ -41,12 +41,11 @@ namespace IdentityServer4.Startup.Services
             }
 
             _context = context;
-            _securityHelper = new SecurityHelper();
         }
 
         public bool ValidateCredentials(string userName, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == userName && u.Password == _securityHelper.ComputeHash(password));
+            var user = _context.Users.FirstOrDefault(u => u.Username == userName && u.Password == ComputeHash(password));
             return user != null;
         }
 
@@ -144,6 +143,16 @@ namespace IdentityServer4.Startup.Services
             _context.Users.Add(user.ToEntity());
             _context.SaveChanges();
             return user;
+        }
+
+        private static string ComputeHash(string entry)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var entryBytes = Encoding.UTF8.GetBytes(entry);
+                var hash = sha256.ComputeHash(entryBytes);
+                return BitConverter.ToString(hash).Replace("-", string.Empty);
+            }
         }
     }
 }

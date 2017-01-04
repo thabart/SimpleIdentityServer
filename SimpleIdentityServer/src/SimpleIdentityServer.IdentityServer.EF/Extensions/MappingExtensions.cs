@@ -237,30 +237,16 @@ namespace SimpleIdentityServer.IdentityServer.EF
             {
                 Id = user.Subject,
                 Password = user.Password,
-                Name = user.Username,
+                Claims = new List<System.Security.Claims.Claim>(),
                 IsLocalAccount = user.IsLocalAccount
             };
 
             if (user.Claims != null && user.Claims.Any())
             {
-                result.BirthDate = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate);
-                result.Email = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
-                result.FamilyName = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName);
-                result.Gender = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender);
-                result.GivenName = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName);
-                result.Locale = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale);
-                result.MiddleName = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName);
-                result.NickName = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName);
-                result.Picture = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture);
-                result.PhoneNumber = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
-                result.PreferredUserName = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName);
-                result.Profile = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile);
-                result.WebSite = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite);
-                result.ZoneInfo = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo);
-                result.BirthDate = user.Claims.GetClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate);
-                result.EmailVerified = user.Claims.GetClaimBool(Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified);
-                result.PhoneNumberVerified = user.Claims.GetClaimBool(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified);
-                result.Roles = user.Claims.GetClaims(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role);
+                foreach(var claim in user.Claims)
+                {
+                    result.Claims.Add(new System.Security.Claims.Claim(claim.Key, claim.Value));
+                }
             }
 
             return result;
@@ -317,32 +303,15 @@ namespace SimpleIdentityServer.IdentityServer.EF
             {
                 Subject = resourceOwner.Id,
                 Password = resourceOwner.Password,
-                Username = resourceOwner.Name,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
                 Claims = new List<Claim>()
             };
 
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate, resourceOwner.BirthDate));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email, resourceOwner.Email));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName, resourceOwner.FamilyName));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender, resourceOwner.Gender));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName, resourceOwner.GivenName));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale, resourceOwner.Locale));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName, resourceOwner.MiddleName));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName, resourceOwner.NickName));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture, resourceOwner.Picture));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, resourceOwner.PhoneNumber));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName, resourceOwner.PreferredUserName));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile, resourceOwner.Profile));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite, resourceOwner.WebSite));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo, resourceOwner.ZoneInfo));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified, resourceOwner.EmailVerified.ToString()));
-            result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified, resourceOwner.PhoneNumberVerified.ToString()));
-            if (resourceOwner.Roles != null && resourceOwner.Roles.Any())
+            if (resourceOwner.Claims != null)
             {
-                foreach(var role in resourceOwner.Roles)
+                foreach (var claim in resourceOwner.Claims)
                 {
-                    result.Claims.Add(CreateClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,  role));
+                    result.Claims.Add(CreateClaim(claim.Type, claim.Value));
                 }
             }
 

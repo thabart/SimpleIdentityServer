@@ -22,8 +22,6 @@ namespace SimpleIdentityServer.IdentityServer.EF.Extensions
 {
     internal static class ModelBuilderExtensions
     {
-        #region Public static methods
-
         public static void ConfigureUserContext(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(user =>
@@ -36,7 +34,5 @@ namespace SimpleIdentityServer.IdentityServer.EF.Extensions
                 claim.ToTable(Constants.TableNames.Claim).HasKey(c => c.Id);
             });
         }
-
-        #endregion
     }
 }

@@ -32,8 +32,6 @@ namespace SimpleIdentityServer.IdentityServer.EF
 {
     public static class IdentityServerEFExtensions
     {
-        #region Public static methods
-
         public static IServiceCollection AddSimpleIdentityServerSqlServer(
             this IServiceCollection serviceCollection,
             string connectionString,
@@ -80,9 +78,26 @@ namespace SimpleIdentityServer.IdentityServer.EF
             return serviceCollection;
         }
 
-        #endregion
+        public static IServiceCollection AddSimpleIdentityServerInMemory(
+            this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
 
-        #region Private method
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<ConfigurationDbContext>(opts =>
+                    opts.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<PersistedGrantDbContext>(opts =>
+                    opts.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<UserDbContext>(opts =>
+                    opts.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            return serviceCollection;
+        }
 
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
@@ -96,7 +111,5 @@ namespace SimpleIdentityServer.IdentityServer.EF
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
             serviceCollection.AddTransient<IClientRepository, ClientRepository>();
         }
-
-        #endregion
     }
 }

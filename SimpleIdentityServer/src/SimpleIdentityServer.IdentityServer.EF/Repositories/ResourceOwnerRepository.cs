@@ -22,20 +22,15 @@ using SimpleIdentityServer.IdentityServer.EF.DbContexts;
 using SimpleIdentityServer.Logging;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
     public class ResourceOwnerRepository : IResourceOwnerRepository
     {
-        #region Fields
-
         private readonly UserDbContext _context;
-
         private readonly IManagerEventSource _managerEventSource;
-
-        #endregion
-        
-        #region Constructor
 
         public ResourceOwnerRepository(
             UserDbContext context,
@@ -55,33 +50,41 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public bool Delete(string subject)
+        public async Task<bool> DeleteAsync(string subject)
         {
-            var user = _context.Users.Include(u => u.Claims)
-                .FirstOrDefault(u => u.Subject == subject);
-            if (user == null)
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return false;
+                try
+                {
+                    var user = await _context.Users.Include(u => u.Claims)
+                        .FirstOrDefaultAsync(u => u.Subject == subject).ConfigureAwait(false);
+                    if (user == null)
+                    {
+                        return false;
+                    }
+
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            _context.Users.Remove(user);
-            _context.SaveChanges();
-            return true;
         }
 
-        public List<ResourceOwner> GetAll()
+        public async Task<ICollection<ResourceOwner>>  GetAllAsync()
         {
-            var users = _context.Users.ToList();
-            return users.Select(u => u.ToDomain()).ToList();
+            return await _context.Users.Select(u => u.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public ResourceOwner GetBySubject(string subject)
+        public async Task<ResourceOwner> GetAsync(string subject)
         {
-            var user = _context.Users.Include(u => u.Claims).FirstOrDefault(r => r.Subject == subject);
+            var user = await _context.Users.Include(u => u.Claims).FirstOrDefaultAsync(r => r.Subject == subject).ConfigureAwait(false);
             if (user == null)
             {
                 return null;
@@ -90,9 +93,9 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return user.ToDomain();
         }
 
-        public ResourceOwner GetResourceOwnerByCredentials(string userName, string hashedPassword)
+        public async Task<ResourceOwner> GetAsync(string userName, string hashedPassword)
         {            
-            var user = _context.Users.Include(u => u.Claims).FirstOrDefault(r => r.Username == userName && r.Password == hashedPassword);
+            var user = await _context.Users.Include(u => u.Claims).FirstOrDefaultAsync(r => r.Username == userName && r.Password == hashedPassword).ConfigureAwait(false);
             if (user == null)
             {
                 return null;
@@ -101,42 +104,76 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
             return user.ToDomain();
         }
 
-        public bool Insert(ResourceOwner resourceOwner)
+        public async Task<ICollection<ResourceOwner>> GetAsync(IEnumerable<Claim> claims)
         {
-            try
+            if (claims == null)
             {
-                var user = resourceOwner.ToEntity();
-                _context.Users.Add(user);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                _managerEventSource.Failure(ex);
-                return false;
+                return new List<ResourceOwner>();
             }
 
-            return true;
+            return await _context.Users
+                .Include(r => r.Claims)
+                .Where(r => claims.All(c => r.Claims.Any(sc => sc.Value == c.Value && sc.Key == c.Type)))
+                .Select(u => u.ToDomain())
+                .ToListAsync().ConfigureAwait(false);
         }
 
-        public bool Update(ResourceOwner resourceOwner)
+        public async Task<bool> Insert(ResourceOwner resourceOwner)
         {
-            var user = resourceOwner.ToEntity();
-            var record = _context.Users
-               .Include(r => r.Claims)
-               .FirstOrDefault(r => r.Subject == user.Subject);
-            if (record == null)
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return false;
+                try
+                {
+                    _context.Users.Add(resourceOwner.ToEntity());
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
             }
-
-            record.Username = user.Username;
-            record.Password = user.Password;
-            record.IsLocalAccount = resourceOwner.IsLocalAccount;
-            record.Claims = user.Claims;
-            _context.SaveChanges();
-            return true;
         }
 
-        #endregion
+        public Task<bool> InsertAsync(ResourceOwner resourceOwner)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateAsync(ResourceOwner resourceOwner)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var user = resourceOwner.ToEntity();
+                    var record = await _context.Users
+                       .Include(r => r.Claims)
+                       .FirstOrDefaultAsync(r => r.Subject == user.Subject)
+                       .ConfigureAwait(false);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    record.Username = user.Username;
+                    record.Password = user.Password;
+                    record.IsLocalAccount = resourceOwner.IsLocalAccount;
+                    record.Claims = user.Claims;
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    _managerEventSource.Failure(ex);
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
     }
 }

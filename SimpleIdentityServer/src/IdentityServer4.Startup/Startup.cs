@@ -39,18 +39,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using WebApiContrib.Core.Storage;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace IdentityServer4.Startup
 {
     public class Startup
     {
-        #region Properties
-
         public IConfigurationRoot Configuration { get; set; }
-
-        #endregion
-
-        #region Constructor
 
         public Startup(IHostingEnvironment env)
         {
@@ -60,10 +55,6 @@ namespace IdentityServer4.Startup
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
-
-        #endregion
-
-        #region Public methods
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -94,13 +85,14 @@ namespace IdentityServer4.Startup
             {
                 AuthenticationScheme = Constants.CookieName
             });
+            /*
             app.UseAuthentication(new AuthenticationMiddlewareOptions
             {
                 ConfigurationEdp = new ConfigurationEdpOptions
                 {
-                    ClientId = Configuration["ClientId"],
-                    ClientSecret = Configuration["ClientSecret"],
-                    ConfigurationUrl = Configuration["ConfigurationUrl"],
+                    ClientId = Configuration["ConfigurationEdp:ClientId"],
+                    ClientSecret = Configuration["ConfigurationEdp:ClientSecret"],
+                    ConfigurationUrl = Configuration["ConfigurationEdp:Url"],
                     Scopes = new List<string>
                     {
                         "configuration",
@@ -116,17 +108,13 @@ namespace IdentityServer4.Startup
                         "/Account/External"
                     }
                 }
-            });
+            });*/
 
             app.UseCors("AllowAll");
             app.UseIdentityServer();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
-
-        #endregion
-
-        #region Private methods
 
         private void InitializeDatabase(IApplicationBuilder app)
         {
@@ -144,10 +132,7 @@ namespace IdentityServer4.Startup
 
         private void RegisterDependencies(IServiceCollection services)
         {
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
-            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
-            var isPostgre = bool.Parse(Configuration["isPostgre"]);
+            var dbType = Configuration["Db:type"];
             var cachingDatabase = Configuration["Caching:Database"];
             var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
@@ -162,36 +147,36 @@ namespace IdentityServer4.Startup
                     e.Level == LogEventLevel.Error ||
                     e.Level == LogEventLevel.Fatal;
             };
-            if (string.IsNullOrWhiteSpace(cachingDatabase))
-            {
-                cachingDatabase = "INMEMORY";
-            }
 
-            // Configure database
-            if (isPostgre)
+            // 1. Configure database
+            if (string.Compare(dbType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase) == 0)
             {
-                services.AddSimpleIdentityServerPostGre(connectionString, migrationsAssembly);
+                services.AddSimpleIdentityServerPostGre(Configuration["Db:ConnectionString"], migrationsAssembly);
+            }
+            else if (string.Compare(dbType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase) == 0)
+            {
+                services.AddSimpleIdentityServerSqlServer(Configuration["Db:ConnectionString"], migrationsAssembly);
             }
             else
             {
-                services.AddSimpleIdentityServerSqlServer(connectionString, migrationsAssembly);
+                services.AddSimpleIdentityServerInMemory();
             }
 
-            // Configure caching
-            if (cachingDatabase == "REDIS")
+            // 2. Configure caching
+            if (string.Compare(cachingDatabase, "REDIS", StringComparison.CurrentCultureIgnoreCase) == 0)
             {
                 services.AddStorage(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
-            else if (cachingDatabase == "INMEMORY")
+            else
             {
-                services.AddStorage(opt => opt.UseInMemoryStorage());
+                services.AddStorage(opt => opt.UseInMemory());
             }
 
-            // Configure the logging
+            // 3. Configure the logging
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.FromLogContext()
@@ -211,7 +196,5 @@ namespace IdentityServer4.Startup
             services.AddConfigurationClient();
             services.AddIdServerClient();
         }
-
-        #endregion
     }
 }
