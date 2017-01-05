@@ -85,7 +85,6 @@ namespace IdentityServer4.Startup
             {
                 AuthenticationScheme = Constants.CookieName
             });
-            /*
             app.UseAuthentication(new AuthenticationMiddlewareOptions
             {
                 ConfigurationEdp = new ConfigurationEdpOptions
@@ -108,7 +107,7 @@ namespace IdentityServer4.Startup
                         "/Account/External"
                     }
                 }
-            });*/
+            });
 
             app.UseCors("AllowAll");
             app.UseIdentityServer();

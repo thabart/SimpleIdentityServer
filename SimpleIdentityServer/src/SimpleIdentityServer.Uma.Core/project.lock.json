@@ -1532,7 +1532,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0"
+          "SimpleIdentityServer.Core.Jwt": "(, )"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -1570,7 +1570,7 @@
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "SimpleIdentityServer.Core.Common": "1.0.0"
+          "SimpleIdentityServer.Core.Common": "(, )"
         },
         "frameworkAssemblies": [
           "System.ComponentModel.Composition",
@@ -4399,7 +4399,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "(, )",
           "System.Net.Http": "4.1.0",
           "System.Runtime.Serialization.Primitives": "4.1.1"
         },
@@ -4434,7 +4434,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "NETStandard.Library": "1.6.0",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "SimpleIdentityServer.Core.Common": "(, )",
           "System.Dynamic.Runtime": "4.0.11",
           "System.Private.DataContractSerialization": "4.1.1",
           "System.Runtime.Serialization.Primitives": "4.1.1",

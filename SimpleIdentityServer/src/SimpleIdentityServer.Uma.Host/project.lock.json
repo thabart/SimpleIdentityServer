@@ -4364,7 +4364,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0",
+          "SimpleIdentityServer.Core.Jwt": "(, )",
           "System.Net.Http": "4.1.0",
           "System.Runtime.Serialization.Primitives": "4.1.1"
         },
@@ -4399,7 +4399,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "NETStandard.Library": "1.6.0",
-          "SimpleIdentityServer.Core.Common": "1.0.0",
+          "SimpleIdentityServer.Core.Common": "(, )",
           "System.Dynamic.Runtime": "4.0.11",
           "System.Private.DataContractSerialization": "4.1.1",
           "System.Runtime.Serialization.Primitives": "4.1.1",
@@ -4476,10 +4476,10 @@
           "Microsoft.AspNetCore.WebUtilities": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Client": "1.0.0",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0",
-          "SimpleIdentityServer.Logging": "1.0.0",
-          "SimpleIdentityServer.Uma.Common": "1.0.0",
+          "SimpleIdentityServer.Client": "(, )",
+          "SimpleIdentityServer.Core.Jwt": "(, )",
+          "SimpleIdentityServer.Logging": "(, )",
+          "SimpleIdentityServer.Uma.Common": "(, )",
           "System.IO.Compression": "4.1.0",
           "System.Net.Http": "4.1.0"
         },
@@ -4547,7 +4547,7 @@
           "System.Dynamic.Runtime": "4.0.11",
           "System.Net.Http": "4.1.0",
           "System.Private.DataContractSerialization": "4.1.1",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Concurrency.dll": {}
@@ -4583,7 +4583,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "1.0.0",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Storage.InMemory.dll": {}
@@ -4597,7 +4597,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "compile": {
           "netstandard1.6/WebApiContrib.Core.Storage.Redis.dll": {}
@@ -6979,7 +6979,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0"
+          "SimpleIdentityServer.Core.Jwt": "(, )"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -7017,7 +7017,7 @@
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "SimpleIdentityServer.Core.Common": "1.0.0"
+          "SimpleIdentityServer.Core.Common": "(, )"
         },
         "frameworkAssemblies": [
           "System.ComponentModel.Composition",
@@ -7095,10 +7095,10 @@
           "Microsoft.AspNetCore.WebUtilities": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "SimpleIdentityServer.Client": "1.0.0",
-          "SimpleIdentityServer.Core.Jwt": "1.0.0",
-          "SimpleIdentityServer.Logging": "1.0.0",
-          "SimpleIdentityServer.Uma.Common": "1.0.0"
+          "SimpleIdentityServer.Client": "(, )",
+          "SimpleIdentityServer.Core.Jwt": "(, )",
+          "SimpleIdentityServer.Logging": "(, )",
+          "SimpleIdentityServer.Uma.Common": "(, )"
         },
         "frameworkAssemblies": [
           "System.IO.Compression",
@@ -7144,7 +7144,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "Microsoft.Extensions.Options": "1.0.0",
           "Newtonsoft.Json": "9.0.1",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "frameworkAssemblies": [
           "System.Net.Http",
@@ -7187,7 +7187,7 @@
         "framework": ".NETFramework,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "1.0.0",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "compile": {
           "net451/WebApiContrib.Core.Storage.InMemory.dll": {}
@@ -7201,7 +7201,7 @@
         "framework": ".NETFramework,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Caching.Redis.Core": "1.0.2",
-          "WebApiContrib.Core.Storage": "1.0.0"
+          "WebApiContrib.Core.Storage": "(, )"
         },
         "compile": {
           "net451/WebApiContrib.Core.Storage.Redis.dll": {}

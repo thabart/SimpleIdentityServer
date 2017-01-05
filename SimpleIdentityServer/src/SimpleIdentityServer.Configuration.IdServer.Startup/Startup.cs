@@ -34,7 +34,6 @@ using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Configuration.Startup
 {
-
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -57,9 +56,9 @@ namespace SimpleIdentityServer.Configuration.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var introspectionUrl = Configuration["IntrospectionEdp:Url"];
-            var clientId = Configuration["IntrospectionEdp:ClientId"];
-            var clientSecret = Configuration["IntrospectionEdp:ClientSecret"];
+            var introspectionUrl = Configuration["OpenId:Url"];
+            var clientId = Configuration["OpenId:ClientId"];
+            var clientSecret = Configuration["OpenId:ClientSecret"];
             var isDataMigrated = Configuration["DATA_MIGRATED"] == null ? false : bool.Parse(Configuration["DATA_MIGRATED"]);
 
             // 1. Ensure data are inserted
@@ -91,18 +90,16 @@ namespace SimpleIdentityServer.Configuration.Startup
             var dbType = Configuration["Db:Type"];
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var connectionString = Configuration["Data:ConnectionString"];
-            var idServerConnectionString = Configuration["Data:IdServerConnectionString"];
 
             // 1. Configure database
             services.AddSimpleIdentityServerConfiguration();
             if (string.Equals(dbType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddIdServerConfigurationSqlServer(connectionString, idServerConnectionString);
+                services.AddIdServerConfigurationSqlServer(Configuration["Db:ConnectionString"], Configuration["Db:IdServerConnectionString"]);
             }
             else if (string.Equals(dbType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddIdServerConfigurationPostgre(connectionString, idServerConnectionString);
+                services.AddIdServerConfigurationPostgre(Configuration["Db:ConnectionString"], Configuration["Db:IdServerConnectionString"]);
             }
             else
             {

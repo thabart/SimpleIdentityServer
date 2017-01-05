@@ -20,12 +20,12 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Extensions.Logging": "1.0.0",
-    "Serilog.Sinks.ElasticSearch": "*",
-    "SimpleIdentityServer.Manager.Core": "*",
-    "SimpleIdentityServer.Oauth2Instrospection.Authentication": "*",
-    "WebApiContrib.Core.Concurrency": {
-      "target": "project"
-    }
+    "Serilog.Sinks.ElasticSearch": { "target": "project" },
+    "SimpleIdentityServer.Manager.Core": { "target": "project" },
+    "SimpleIdentityServer.Oauth2Instrospection.Authentication": { "target": "project" },
+    "WebApiContrib.Core.Concurrency": { "target": "project" },
+    "SimpleIdentityServer.Configuration.Client": { "target": "project" },
+    "SimpleIdentityServer.Client": { "target": "project" }
   },
   "frameworks": {
     "net46": {
