@@ -14,16 +14,15 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Rfid.Website.ViewModels;
 using System;
@@ -71,7 +70,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
             try
             {
                 // 1. Authenticate the resource owner.
-                var resourceOwner = _authenticateActions.LocalUserAuthentication(new LocalAuthenticationParameter
+                var resourceOwner = await _authenticateActions.LocalUserAuthentication(new LocalAuthenticationParameter
                 {
                     Password = loginViewModel.Password,
                     UserName = loginViewModel.CardNumber
@@ -103,7 +102,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
 
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var actionResult = _authenticateActions.AuthenticateResourceOwnerOpenId(
+            var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
                 authenticatedUser,
                 code);
@@ -141,7 +140,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
                 // 1. Decrypt the request
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(loginViewModel.Code);
                 // 2. Retrieve the default language
-                uiLocales = string.IsNullOrWhiteSpace(request.ui_locales) ? DefaultLanguage : request.ui_locales;
+                uiLocales = string.IsNullOrWhiteSpace(request.UiLocales) ? DefaultLanguage : request.UiLocales;
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
                 {
@@ -149,23 +148,21 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
                 }
 
                 // 4. Local authentication
-                var claims = new List<Claim>();
-                var actionResult = _authenticateActions.LocalOpenIdUserAuthentication(new LocalAuthenticationParameter
+                var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(new LocalAuthenticationParameter
                     {
                         Password = loginViewModel.Password,
                         UserName = loginViewModel.CardNumber
                     },
                     request.ToParameter(),
-                    loginViewModel.Code,
-                    out claims);
-                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+                    loginViewModel.Code);
+                var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie
                 var authenticationManager = this.GetAuthenticationManager();
-                await SetLocalCookie(authenticationManager, claims);
+                await SetLocalCookie(authenticationManager, actionResult.Claims);
 
                 // 6. Redirect the user agent
-                var result = this.CreateRedirectionFromActionResult(actionResult,
+                var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     request);
                 if (result != null)
                 {

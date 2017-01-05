@@ -17,9 +17,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.WebSite.Consent;
-using SimpleIdentityServer.Host.DTOs.Request;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Rfid.Website.ViewModels;
 using System.Collections.Generic;
@@ -45,17 +45,11 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         public async Task<ActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = new Core.Models.Client();
-            var scopes = new List<Scope>();
-            var claims = new List<string>();
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var actionResult = _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser,
-                out client,
-                out scopes,
-                out claims);
+            var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
+                authenticatedUser);
 
-            var result = this.CreateRedirectionFromActionResult(actionResult, request);
+            var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
             {
                 return result;
@@ -63,12 +57,12 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
 
             var viewModel = new ConsentViewModel
             {
-                ClientDisplayName = client.ClientName,
-                AllowedScopeDescriptions = !scopes.Any() ? new List<string>() : scopes.Select(s => s.Description).ToList(),
-                AllowedIndividualClaims = claims,
-                LogoUri = client.LogoUri,
-                PolicyUri = client.PolicyUri,
-                TosUri = client.TosUri,
+                ClientDisplayName = actionResult.Client.ClientName,
+                AllowedScopeDescriptions = !actionResult.Scopes.Any() ? new List<string>() : actionResult.Scopes.Select(s => s.Description).ToList(),
+                AllowedIndividualClaims = actionResult.AllowedClaims,
+                LogoUri = actionResult.Client.LogoUri,
+                PolicyUri = actionResult.Client.PolicyUri,
+                TosUri = actionResult.Client.TosUri,
                 Code = code
             };
             return View(viewModel);
@@ -79,7 +73,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var actionResult = _consentActions.ConfirmConsent(parameter,
+            var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
 
             return this.CreateRedirectionFromActionResult(actionResult,
@@ -95,7 +89,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         public ActionResult Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            return Redirect(request.redirect_uri);
+            return Redirect(request.RedirectUri);
         }
     }
 }

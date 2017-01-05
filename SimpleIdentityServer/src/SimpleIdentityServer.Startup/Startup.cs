@@ -72,6 +72,10 @@ namespace SimpleIdentityServer.Startup
                     }
                 }
             };
+            var twoFactorServiceStore = new TwoFactorServiceStore();
+            var factory = new SimpleIdServerConfigurationClientFactory();
+            twoFactorServiceStore.Add(new DefaultTwilioSmsService(factory, Configuration["ConfigurationEdp:Url"]));
+            twoFactorServiceStore.Add(new DefaultEmailService(factory, Configuration["ConfigurationEdp:Url"]));
             _options = new IdentityServerOptions
             {
                 IsDeveloperModeEnabled = false,
@@ -92,7 +96,8 @@ namespace SimpleIdentityServer.Startup
                 {
                     IsEnabled = true,
                     EndPoint = "http://localhost:5555/"
-                }
+                },
+                TwoFactorServiceStore = twoFactorServiceStore
             };
 
             var dbtype = Configuration["Db:Type"];
@@ -165,12 +170,6 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
-            // 3. Configure two factor authentication.
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            var factory = new SimpleIdServerConfigurationClientFactory();
-            twoFactorServiceStore.Add(new DefaultTwilioSmsService(factory, Configuration["ConfigurationEdp:Url"]));
-            twoFactorServiceStore.Add(new DefaultEmailService(factory, Configuration["ConfigurationEdp:Url"]));
-            services.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
             // 3. Configure the rate limitation
             /*
             services.Configure<RateLimitationOptions>(opt =>

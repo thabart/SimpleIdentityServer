@@ -25,8 +25,6 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
-        #region Public static methods
-
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
             InsertClaims(context);
@@ -37,10 +35,6 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
             InsertClients(context);
             context.SaveChanges();
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static void InsertClaims(SimpleIdentityServerContext context)
         {
@@ -633,7 +627,5 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                 });
             }
         }
-
-        #endregion
     }
 }

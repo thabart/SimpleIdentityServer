@@ -139,5 +139,9 @@ namespace SimpleIdentityServer.Host
         /// Service used to encrypt the password
         /// </summary>
         public Type PasswordService { get; set; }
+        /// <summary>
+        /// Store the two factor authentication methods.
+        /// </summary>
+        public ITwoFactorServiceStore TwoFactorServiceStore { get; set; }
     }
 }

@@ -18,7 +18,6 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using SimpleIdentityServer.Rfid.Card;
 using SimpleIdentityServer.Rfid.Hubs;
-using SimpleIdentityServer.Rfid.Menu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,20 +27,15 @@ namespace SimpleIdentityServer.Rfid
 {
     class Program
     {
+        const int blockSize = 16;
+        const int maxBlocks = 64;
+        const int sizeIndex = 4;
+        const int startDataIndex = 5;
+
         static void Main(string[] args)
         {
-            // 1. Write identity token
-            // WriteIdentityToken(GetIdToken());
-            // 2. Read identity token
-            var expected = GetIdToken();
-            var returned = GetIdentityToken().ToArray();
-            for (int i = 0; i < expected.Length; i++)
-            {
-                Console.WriteLine($"expected : {expected[i]} returned : {returned[i]}");
-            }
-
-            Console.ReadLine();
-            /*
+            // Write and read identity token.
+            // WriteAndRead();
             // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {
@@ -50,7 +44,15 @@ namespace SimpleIdentityServer.Rfid
                 LaunchListener();
                 Console.ReadLine();
             }
-            */
+        }
+
+        private static void WriteAndRead()
+        {
+            const string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
+            WriteToCard(Encoding.UTF8.GetBytes(idToken));
+            var result = ReadFromCard();
+            Console.WriteLine(Encoding.UTF8.GetString(result.ToArray()));
+            Console.ReadLine();
         }
 
         private static void LaunchListener()
@@ -81,73 +83,40 @@ namespace SimpleIdentityServer.Rfid
             }
         }
 
-        private static void LaunchMenu()
-        {
-            var home = new ChoiceMenuItem();
-            var reader = new ChoiceMenuItem("Execute system commands");
-            reader.Add(new ReaderSerialNumberMenuItem());
-            home.Add(reader);
-            home.Execute();
-        }
-
-        private static IEnumerable<byte> GetIdentityToken()
-        {
-            var lst = new List<byte>();
-            byte mode = 0x00;
-            int numberOfBlocks = 64, skippedBlocks = 4; // Ignore the first sector reserved to the manufacturer.
-            var index = 0;
-            for (var blockIndex = skippedBlocks + 1; blockIndex <= numberOfBlocks; blockIndex++)
-            {
-                try
-                {
-                    if (blockIndex % 4 == 0)
-                    {
-                        continue;
-                    }
-
-                    var buffer = new byte[16];
-                    var newIndex = Convert.ToByte(blockIndex - 1);
-                    int nRet = Reader.MF_Read(mode, newIndex, 1, new byte[]
-                    {
-                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
-                    }, buffer);
-                    lst.AddRange(buffer);
-                    index++;
-                }
-                catch (Exception)
-                {
-                    string s = "";
-                }
-            }
-
-            return lst;
-        }
-
-        private static void WriteIdentityToken(byte[] bytes)
+        private static void WriteToCard(byte[] bytes)
         {
             // ISO Standard 14443A Memory type EEPROM
             // Number of blocks : 64
             // Block size : 16 bytes.
             // More information see : http://blog.pepperl-fuchs.us/high-capacity-rfid-tags
             byte mode = 0x00;
-            int numberOfBlocks = 64, skippedBlocks = 4; // Ignore the first sector reserved to the manufacturer.
-            byte[] buffer = new byte[16 * (numberOfBlocks - skippedBlocks)];
+            byte[] buffer = new byte[blockSize * (maxBlocks - startDataIndex)];
+            byte[] bufferSize = new byte[blockSize];
+            // 1. Check size.
             if (bytes.Length > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException("Length is too high");
             }
 
-            Buffer.BlockCopy(bytes, 0, buffer, 0, bytes.Length);
-            var index = 0;
-            // TODO : Write the data size.
-            /*
-            int nRet = Reader.MF_Write(mode, Convert.ToByte(skippedBlocks), 1, new byte[]
+            var sizeBytes = Encoding.UTF8.GetBytes(bytes.Length.ToString());
+            if (sizeBytes.Length > blockSize)
             {
-                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
-            }, temp);
-            */
+                throw new ArgumentOutOfRangeException("the length size is too high");
+            }
 
-            for (var blockIndex = skippedBlocks + 1; blockIndex <= numberOfBlocks; blockIndex++)
+            Buffer.BlockCopy(bytes, 0, buffer, 0, bytes.Length);
+            Buffer.BlockCopy(sizeBytes, 0, bufferSize, 0, sizeBytes.Length);
+
+            // 2. Write the size into the block five.
+            Reader.MF_Write(mode, Convert.ToByte(sizeIndex), 1, new byte[]
+            {
+                0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
+            }, bufferSize);
+            Console.WriteLine($"Index {sizeIndex} & block 1 & {string.Join(",", bufferSize)}");
+
+            // 3. Write the data.
+            var index = 0;
+            for (var blockIndex = startDataIndex + 1; blockIndex <= maxBlocks; blockIndex++)
             {
                 try
                 {
@@ -159,23 +128,76 @@ namespace SimpleIdentityServer.Rfid
                     var temp = buffer.Skip(index * 16).Take(16).ToArray();
                     var newIndex = Convert.ToByte(blockIndex - 1);
                     Console.WriteLine($"Index {newIndex} & block 1 & {string.Join(",", temp)}");
-                    nRet = Reader.MF_Write(mode, newIndex, 1, new byte[]
+                    Reader.MF_Write(mode, newIndex, 1, new byte[]
                     {
                         0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
                     }, temp);
                     index++;
                 }
-                catch (Exception)
+                catch
                 {
-                    string s = "";
+                    return;
                 }
             }
         }
 
-        static byte[] GetIdToken()
+        private static IEnumerable<byte> ReadFromCard()
         {
-            const string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
-            return  Encoding.UTF8.GetBytes(idToken);
+            byte mode = 0x00;
+            var bufferSize = new byte[16];
+            // 1. Read the size.
+            Reader.MF_Read(mode, sizeIndex, 1, new byte[]
+            {
+                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
+            }, bufferSize);
+            var length = bufferSize.TakeWhile(b => b != 0).Count();
+            var text = Encoding.UTF8.GetString(bufferSize, 0, length);
+            int size;
+            if (!int.TryParse(text, out size))
+            {
+                throw new InvalidOperationException("the size cannot be read");
+            }
+
+            double numberOfBlocks = Math.Ceiling((double)size / blockSize);
+            if (numberOfBlocks > maxBlocks)
+            {
+                throw new InvalidOperationException("too many blocks");
+            }
+
+            // 2. Read the content.
+            var result = new List<byte>();
+            var index = 0;
+            for (var blockIndex = startDataIndex + 1; blockIndex <= numberOfBlocks; blockIndex++)
+            {
+                try
+                {
+                    if (blockIndex % 4 == 0)
+                    {
+                        continue;
+                    }
+
+                    var buffer = new byte[16];
+                    var newIndex = Convert.ToByte(blockIndex - 1);
+                    Reader.MF_Read(mode, newIndex, 1, new byte[]
+                    {
+                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
+                    }, buffer);
+                    var nextBlockIndex = blockIndex + 1;
+                    if (blockIndex == numberOfBlocks || (nextBlockIndex == numberOfBlocks && nextBlockIndex % 4 == 0))
+                    {
+                        buffer = buffer.TakeWhile(b => b != 0).ToArray();
+                    }
+
+                    result.AddRange(buffer);
+                    index++;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return result;
         }
     }
 }

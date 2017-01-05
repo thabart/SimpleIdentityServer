@@ -145,6 +145,15 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
             }
 
+            if (options.TwoFactorServiceStore == null)
+            {
+                serviceCollection.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton<ITwoFactorServiceStore>(options.TwoFactorServiceStore);
+            }
+
             serviceCollection
                 .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)

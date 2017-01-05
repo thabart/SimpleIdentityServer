@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         [HttpPost]
         public async Task<ActionResult> Consent(string id)
         {
-            if (!_removeConsentOperation.Execute(id))
+            if (!await _removeConsentOperation.Execute(id))
             {
                 ViewBag.ErrorMessage = "the consent cannot be deleted";
                 return View(await GetConsents());
@@ -70,13 +70,13 @@ namespace SimpleIdentityServer.Rfid.Website.Controllers
         private async Task<ResourceOwner> GetCurrentUser()
         {
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            return _getUserOperation.Execute(authenticatedUser);
+            return await _getUserOperation.Execute(authenticatedUser);
         }
 
         private async Task<List<ConsentViewModel>> GetConsents()
         {
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var consents = _getConsentsOperation.Execute(authenticatedUser);
+            var consents = await _getConsentsOperation.Execute(authenticatedUser);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
             {
