@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                 .ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<bool> Insert(ResourceOwner resourceOwner)
+        public async Task<bool> InsertAsync(ResourceOwner resourceOwner)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -136,11 +136,6 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     return false;
                 }
             }
-        }
-
-        public Task<bool> InsertAsync(ResourceOwner resourceOwner)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<bool> UpdateAsync(ResourceOwner resourceOwner)

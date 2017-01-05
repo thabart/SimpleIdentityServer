@@ -73,16 +73,16 @@ namespace SimpleIdentityServer.IdentityServer.Manager.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var databaseType = Configuration["DatabaseType"];
+            var databaseType = Configuration["Db:Type"];
             var cachingDatabase = Configuration["Caching:Database"];
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             // 1. Configure the database
-            if (string.Compare(databaseType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase) == 0)
+            if (string.Equals(databaseType, "POSTGRES", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddSimpleIdentityServerPostGre(Configuration["Db:ConnectionString"], migrationsAssembly);
             }
-            else if (string.Compare(databaseType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase) == 0)
+            else if (string.Equals(databaseType, "SQLSERVER", StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddSimpleIdentityServerSqlServer(Configuration["Db:ConnectionString"], migrationsAssembly);
             }
