@@ -206,7 +206,7 @@
         "framework": ".NETFramework,Version=v4.5",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "SimpleIdentityServer.Core.Common": "(, )"
+          "SimpleIdentityServer.Core.Common": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.ComponentModel.Composition",
@@ -467,7 +467,7 @@
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "SimpleIdentityServer.Core.Common": "(, )"
+          "SimpleIdentityServer.Core.Common": "1.0.0"
         },
         "frameworkAssemblies": [
           "System.ComponentModel.Composition",
@@ -1958,7 +1958,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
           "NETStandard.Library": "1.6.0",
-          "SimpleIdentityServer.Core.Common": "(, )",
+          "SimpleIdentityServer.Core.Common": "1.0.0",
           "System.Dynamic.Runtime": "4.0.11",
           "System.Private.DataContractSerialization": "4.1.1",
           "System.Runtime.Serialization.Primitives": "4.1.1",
@@ -5765,10 +5765,12 @@
     ],
     ".NETFramework,Version=v4.5": [
       "System.Net.Http",
+      "System.Net.Http.WebRequest",
       "System.Runtime.Serialization"
     ],
     ".NETFramework,Version=v4.6": [
       "System.Net.Http",
+      "System.Net.Http.WebRequest",
       "System.Runtime.Serialization"
     ],
     ".NETStandard,Version=v1.6": [

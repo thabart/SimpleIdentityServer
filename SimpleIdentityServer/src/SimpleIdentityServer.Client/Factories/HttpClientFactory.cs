@@ -18,6 +18,7 @@
 using System.Net;
 #endif
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Client.Factories
 {
@@ -39,6 +40,21 @@ namespace SimpleIdentityServer.Client.Factories
             httpHandler.ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true;
 #endif
             return new HttpClient(httpHandler);
+        }
+
+        public HttpClient GetHttpClient(X509Certificate certificate)
+        {
+#if NET
+            var handler = new WebRequestHandler();
+            handler.ClientCertificates.Add(certificate);
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            return new HttpClient(handler);
+#else
+            var handler = new HttpClientHandler();
+            handler.ClientCertificates.Add(certificate);
+            handler.ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true;
+            return new HttpClient(handler);
+#endif
         }
 
         #endregion

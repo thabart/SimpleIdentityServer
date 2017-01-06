@@ -73,6 +73,17 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         [Fact]
+        public async Task When_Using_Client_Certificate_Then_AccessToken_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+
+        }
+
+        [Fact]
         public async Task When_Using_RefreshToken_GrantType_Then_New_One_Is_Returned()
         {
             // ARRANGE

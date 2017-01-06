@@ -61,7 +61,8 @@ namespace SimpleIdentityServer.Client.Operations
             {
                 throw new ArgumentNullException(nameof(requestUri));
             }
-
+            
+            // ADD CERTIFICATE
             var httpClient = _httpClientFactory.GetHttpClient();
 			var body = new FormUrlEncodedContent(tokenRequest);
             var request = new HttpRequestMessage

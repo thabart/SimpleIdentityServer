@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Common;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Client.Builders
 {
@@ -25,9 +25,11 @@ namespace SimpleIdentityServer.Client.Builders
         public RequestBuilder()
         {
             Content = new Dictionary<string, string>();
+            Certificate = null;
         }
 
         public string AuthorizationHeaderValue { get; set; }
+        public X509Certificate Certificate { get; set; }
         public Dictionary<string, string> Content { get; private set; }
 
         public RequestBuilder SetClientCredentials(string clientId, string clientSecret)

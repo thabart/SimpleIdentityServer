@@ -45,6 +45,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         [HttpPost]
         public async Task<TokenResponse> PostToken()
         {
+            // TODO : Retrieve client certificate.
+            var certificate = await HttpContext.Connection.GetClientCertificateAsync();
             if (Request.Form == null)
             {
                 throw new ArgumentNullException(nameof(Request.Form));
