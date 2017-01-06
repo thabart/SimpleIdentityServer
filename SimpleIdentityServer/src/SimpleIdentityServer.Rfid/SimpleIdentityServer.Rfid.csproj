@@ -93,12 +93,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Card\CardListener.cs" />
-    <Compile Include="Card\CardReaderHelper.cs" />
     <Compile Include="Hubs\RfidHub.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RawConnection.cs" />
     <Compile Include="Reader.cs" />
+    <Compile Include="RfidManager.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

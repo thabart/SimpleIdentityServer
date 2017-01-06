@@ -15,6 +15,8 @@
 #endregion
 
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,12 +24,14 @@ namespace SimpleIdentityServer.Rfid.Card
 {
     internal class CardReceivedArgs : EventArgs
     {
-        public CardReceivedArgs(string cardNumber)
+        public CardReceivedArgs(string cardNumber, string identityToken)
         {
             CardNumber = cardNumber;
+            IdentityToken = identityToken;
         }
 
         public string CardNumber { get; private set; }
+        public string IdentityToken { get; private set; }
     }
 
     internal class CardListener : IDisposable
@@ -67,8 +71,7 @@ namespace SimpleIdentityServer.Rfid.Card
                         break;
                     }
 
-                    int ret;
-                    var cardNumber = CardReaderHelper.GetSerialNumberCard(out ret);
+                    var cardNumber = RfidManager.GetSerialNumberCard();
                     if (string.IsNullOrWhiteSpace(cardNumber))
                     {
                         _cardNumber = string.Empty;
@@ -80,7 +83,15 @@ namespace SimpleIdentityServer.Rfid.Card
                             _cardNumber = cardNumber;
                             if (CardReceived != null)
                             {
-                                CardReceived(this, new CardReceivedArgs(cardNumber));
+                                try
+                                {
+                                    var buffer = RfidManager.ReadFromCard();
+                                    CardReceived(this, new CardReceivedArgs(cardNumber, Encoding.UTF8.GetString(buffer.ToArray())));
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("The identity token cannot be read");
+                                }
                             }
 
                             _cardNumber = cardNumber;

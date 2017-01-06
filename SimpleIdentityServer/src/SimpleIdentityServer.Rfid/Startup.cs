@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Rfid
         public void Configuration(IAppBuilder app)
         {
             app.UseErrorPage();
-            app.Map("/raw-connection", map =>
-            {
-                map.UseCors(CorsOptions.AllowAll)
-                   .RunSignalR<RawConnection>();
-            });
             app.Map("/signalr", map =>
             {
                 var config = new HubConfiguration
@@ -43,8 +38,7 @@ namespace SimpleIdentityServer.Rfid
 
                 // Turns cors support on allowing everything
                 // In real applications, the origins should be locked down
-                map.UseCors(CorsOptions.AllowAll)
-                   .RunSignalR(config);
+                map.UseCors(CorsOptions.AllowAll).RunSignalR(config);
             });
 
             // Turn tracing on programmatically

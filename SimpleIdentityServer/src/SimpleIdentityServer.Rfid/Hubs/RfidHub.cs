@@ -16,22 +16,26 @@
 
 using Microsoft.AspNet.SignalR;
 using SimpleIdentityServer.Rfid.Card;
+using System.Linq;
+using System.Text;
 
 namespace SimpleIdentityServer.Rfid.Hubs
 {
     public class RfidCard
     {
         public string CardNumber { get; set; }
+        public string IdentityToken { get; set; }
     }
 
     public class RfidHub : Hub
     {
         public void SendCardInformation()
         {
-            int ret;
+            var identityToken = Encoding.UTF8.GetString(RfidManager.ReadFromCard().ToArray());
             Clients.Caller.cardInformation(new RfidCard
             {
-                CardNumber = CardReaderHelper.GetSerialNumberCard(out ret)
+                CardNumber = RfidManager.GetSerialNumberCard(),
+                IdentityToken = identityToken
             });
         }
     }
