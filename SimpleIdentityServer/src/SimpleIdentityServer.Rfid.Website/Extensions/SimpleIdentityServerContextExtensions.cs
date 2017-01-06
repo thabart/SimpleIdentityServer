@@ -570,7 +570,15 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                     {
                         ClientId = "CustomerPortal",
                         ClientName = "Simple Identity Server Client",
-                        ClientSecret = "CustomerPortal",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "CustomerPortal"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>

@@ -471,7 +471,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "client",
                         ClientName = "client",
-                        ClientSecret = "client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -505,7 +513,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "basic_client",
                         ClientName = "basic_client",
-                        ClientSecret = "basic_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "basic_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -527,7 +543,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "post_client",
                         ClientName = "post_client",
-                        ClientSecret = "post_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "post_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -549,7 +573,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "jwt_client",
                         ClientName = "jwt_client",
-                        ClientSecret = "jwt_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "jwt_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_jwt,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -576,7 +608,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "private_key_client",
                         ClientName = "private_key_client",
-                        ClientSecret = "private_key_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "private_key_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.private_key_jwt,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -599,7 +639,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "authcode_client",
                         ClientName = "authcode_client",
-                        ClientSecret = "authcode_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "authcode_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -625,7 +673,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "implicit_client",
                         ClientName = "implicit_client",
-                        ClientSecret = "implicit_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "implicit_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -651,7 +707,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     {
                         ClientId = "hybrid_client",
                         ClientName = "hybrid_client",
-                        ClientSecret = "hybrid_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "hybrid_client"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",

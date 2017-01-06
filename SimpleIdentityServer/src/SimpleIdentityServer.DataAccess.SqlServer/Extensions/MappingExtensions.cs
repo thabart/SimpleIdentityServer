@@ -135,10 +135,20 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
+        public static Domain.ClientSecret ToDomain(this Model.ClientSecret secret)
+        {
+            return new Domain.ClientSecret
+            {
+                Type = (Domain.ClientSecretTypes)secret.Type,
+                Value = secret.Value
+            };
+        }
+
         public static Domain.Client ToDomain(this Model.Client client)
         {
             var scopes = new List<Domain.Scope>();
             var jsonWebKeys = new List<Jwt.JsonWebKey>();
+            var clientSecrets = new List<Domain.ClientSecret>();
             var grantTypes = new List<Domain.GrantType>();
             var responseTypes = new List<Domain.ResponseType>();
 
@@ -150,6 +160,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (client.JsonWebKeys != null)
             {
                 client.JsonWebKeys.ToList().ForEach(jsonWebKey => jsonWebKeys.Add(jsonWebKey.ToDomain()));
+            }
+
+            if (client.ClientSecrets != null)
+            {
+                client.ClientSecrets.ToList().ForEach(secret => clientSecrets.Add(secret.ToDomain()));
             }
 
             GetList(client.GrantTypes).ForEach(grantType =>
@@ -175,7 +190,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 ClientId = client.ClientId,
                 ClientName = client.ClientName,
                 ClientUri = client.ClientUri,
-                ClientSecret = client.ClientSecret,
                 IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
                 IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
                 JwksUri = client.JwksUri,
@@ -205,7 +219,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 JsonWebKeys = jsonWebKeys,
                 GrantTypes = grantTypes,
                 ResponseTypes = responseTypes,
-                ScimProfile = client.ScimProfile
+                ScimProfile = client.ScimProfile,
+                Secrets = clientSecrets
             };
         }
 

@@ -56,6 +56,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             var client = await _context.Clients
                 .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
                 .Include(c => c.JsonWebKeys)
+                .Include(c => c.ClientSecrets)
                 .FirstOrDefaultAsync(c => c.ClientId == clientId)
                 .ConfigureAwait(false);
             if (client == null)
@@ -71,6 +72,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
             return await _context.Clients
                 .Include(c => c.JsonWebKeys)
                 .Include(c => c.ClientScopes).ThenInclude(s => s.Scope)
+                .Include(c => c.ClientSecrets)
                 .Select(c => c.ToDomain())
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -189,6 +191,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 {
                     var scopes = new List<ClientScope>();
                     var jsonWebKeys = new List<JsonWebKey>();
+                    var clientSecrets = new List<ClientSecret>();
                     var grantTypes = client.GrantTypes == null
                         ? string.Empty
                         : ConcatListOfIntegers(client.GrantTypes.Select(k => (int)k).ToList());
@@ -224,12 +227,23 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         });
                     }
 
+                    if (client.Secrets != null)
+                    {
+                        foreach(var secret in client.Secrets)
+                        {
+                            clientSecrets.Add(new ClientSecret
+                            {
+                                Type = (SecretTypes)secret.Type,
+                                Value = secret.Value
+                            });
+                        }
+                    }
+
                     var newClient = new Models.Client
                     {
                         ClientId = client.ClientId,
                         ClientName = client.ClientName,
                         ClientUri = client.ClientUri,
-                        ClientSecret = client.ClientSecret,
                         IdTokenEncryptedResponseAlg = client.IdTokenEncryptedResponseAlg,
                         IdTokenEncryptedResponseEnc = client.IdTokenEncryptedResponseEnc,
                         JwksUri = client.JwksUri,

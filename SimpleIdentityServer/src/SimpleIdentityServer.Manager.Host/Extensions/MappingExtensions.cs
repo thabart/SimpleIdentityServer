@@ -303,7 +303,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ResponseTypes = responseTypes,
                 ClientId = clientResponse.ClientId,
                 ClientName = clientResponse.ClientName,
-                ClientSecret = clientResponse.ClientSecret,
+                // ClientSecret = clientResponse.ClientSecret,
                 ClientUri = clientResponse.ClientUri,
                 Contacts = clientResponse.Contacts,
                 DefaultAcrValues = clientResponse.DefaultAcrValues,
@@ -393,13 +393,23 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         public static ClientResponse ToClientResponseDto(this SimpleIdentityServer.Core.Models.Client client)
         {
+            string secret = string.Empty;
+            if (client.Secrets != null)
+            {
+                var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
+                if (clientSecret != null)
+                {
+                    secret = clientSecret.Value;
+                }
+            }
+
             return new ClientResponse
             {
                 AllowedScopes = client.AllowedScopes == null ? new List<string>() : client.AllowedScopes.Select(c => c.Name).ToList(),
                 ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
                 ClientId = client.ClientId,
                 ClientName = client.ClientName,
-                ClientSecret = client.ClientSecret,
+                ClientSecret = secret,
                 ClientUri = client.ClientUri,
                 Contacts = client.Contacts,
                 DefaultAcrValues = client.DefaultAcrValues,

@@ -696,7 +696,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Models.Client
                     {
                         ClientId = "Configuration",
-                        ClientSecret = "Configuration",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "Configuration"
+                            }
+                        },
                         ClientName = "Configuration API",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
@@ -709,7 +717,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Models.Client
                     {
                         ClientId = "OpenIdManager",
-                        ClientSecret = "OpenIdManager",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "OpenIdManager"
+                            }
+                        },
                         ClientName = "OpenId Manager API",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
@@ -722,7 +738,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Models.Client
                     {
                         ClientId = "Uma",
-                        ClientSecret = "Uma",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "Uma"
+                            }
+                        },
                         ClientName = "UMA API",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
@@ -736,7 +760,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = Constants.AnonymousClientId,
                         ClientName = "Anonymous client",
-                        ClientSecret = "Anonymous",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "Anonymous"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -767,7 +799,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = "website",
                         ClientName = "Website",
-                        ClientSecret = "website",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "website"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -802,7 +842,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = "ManagerWebSiteApi",
                         ClientName = "Manager website API",
-                        ClientSecret = "ManagerWebSiteApi",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ManagerWebSiteApi"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -853,7 +901,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = "VisualStudioExtension",
                         ClientName = "VisualStudioExtension",
-                        ClientSecret = "VisualStudioExtension",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "VisualStudioExtension"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
@@ -874,7 +930,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     new Models.Client
                     {
                         ClientId = "SimpleIdentityServer",
-                        ClientSecret = "SimpleIdentityServer",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "SimpleIdentityServer"
+                            }
+                        },
                         ClientName = "Simple Identity Server",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
@@ -897,7 +961,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = "SampleClient",
                         ClientName = "Sample client",
-                        ClientSecret = "SampleClient",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "SampleClient"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>
@@ -926,7 +998,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                     {
                         ClientId = "SimpleIdServerClient",
                         ClientName = "Simple Identity Server Client",
-                        ClientSecret = "SimpleIdServerClient",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "SimpleIdServerClient"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>

@@ -20,13 +20,14 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
 {
     public enum TokenEndPointAuthenticationMethods
     {
-        // Defaut value
         client_secret_basic,
         client_secret_post,
         client_secret_jwt,
         private_key_jwt,
+        tls_client_auth,
         none
     }
+
     public enum ApplicationTypes
     {
         native,
@@ -39,11 +40,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the client identifier.
         /// </summary>
         public string ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the client secret.
-        /// </summary>
-        public string ClientSecret { get; set; }
 
         public string ClientName { get; set; }
 
@@ -191,25 +187,29 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// </summary>
         public string RequestUris { get; set; }
 
-
-        /// <summary>
-        /// Gets or sets a list of OAUTH2.0 grant_types.
-        /// </summary>
-        public List<ClientScope> ClientScopes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of json web keys
-        /// </summary>
-        public List<JsonWebKey> JsonWebKeys { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of consents
-        /// </summary>
-        public List<Consent> Consents { get; set; } 
-
         /// <summary>
         /// Gets or sets if the client will use SCIM protocol to access user information.
         /// </summary>
         public bool ScimProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of OAUTH2.0 grant_types.
+        /// </summary>
+        public virtual List<ClientScope> ClientScopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of json web keys
+        /// </summary>
+        public virtual List<JsonWebKey> JsonWebKeys { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of consents
+        /// </summary>
+        public virtual List<Consent> Consents { get; set; } 
+
+        /// <summary>
+        /// Gets or sets the clients secrets
+        /// </summary>
+        public virtual ICollection<ClientSecret> ClientSecrets { get; set; }
     }
 }

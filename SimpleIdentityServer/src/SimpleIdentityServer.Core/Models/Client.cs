@@ -42,6 +42,7 @@ namespace SimpleIdentityServer.Core.Models
         client_secret_post,
         client_secret_jwt,
         private_key_jwt,
+        tls_client_auth,
         none
     }
 
@@ -49,6 +50,18 @@ namespace SimpleIdentityServer.Core.Models
     {
         native,
         web
+    }
+
+    public enum ClientSecretTypes
+    {
+        SharedSecret,
+        X509Thumbprint
+    }
+
+    public class ClientSecret
+    {
+        public ClientSecretTypes Type { get; set; }
+        public string Value { get; set; }
     }
 
     public class Client
@@ -59,9 +72,9 @@ namespace SimpleIdentityServer.Core.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the client secret.
+        /// Gets or sets the client secrets.
         /// </summary>
-        public string ClientSecret { get; set; }
+        public ICollection<ClientSecret> Secrets { get; set; }
 
         public string ClientName { get; set; }
 

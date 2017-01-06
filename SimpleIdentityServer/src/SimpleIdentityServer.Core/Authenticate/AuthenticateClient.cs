@@ -17,9 +17,9 @@
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Authenticate
@@ -95,9 +95,17 @@ namespace SimpleIdentityServer.Core.Authenticate
                     }
                     break;
                 case TokenEndPointAuthenticationMethods.client_secret_jwt:
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.ClientSecret);
+                    if (client.Secrets == null || !client.Secrets.Any(s => s.Type == ClientSecretTypes.SharedSecret))
+                    {
+                        errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
+                        break;
+                    }
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
                    return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+                case TokenEndPointAuthenticationMethods.tls_client_auth:
+                    // TODO : support tls_client_authentication.
+                    return null;
             }
 
             if (client != null)

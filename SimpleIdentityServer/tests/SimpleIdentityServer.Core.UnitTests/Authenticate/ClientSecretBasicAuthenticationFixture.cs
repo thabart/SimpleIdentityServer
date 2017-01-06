@@ -3,6 +3,7 @@
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Models;
 using Xunit;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 {
@@ -23,6 +24,35 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         }
 
         [Fact]
+        public void When_Trying_To_Authenticate_The_Client_And_ThereIsNoSharedSecret_Then_Null_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var authenticateInstruction = new AuthenticateInstruction
+            {
+                ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
+            };
+            var firstClient = new Models.Client
+            {
+                Secrets = null
+            };
+            var secondClient = new Models.Client
+            {
+                Secrets = new List<ClientSecret>
+                {
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.X509Thumbprint
+                    }
+                }
+            };
+
+            // ACTS & ASSERTS
+            Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, firstClient));
+            Assert.Null(_clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, secondClient));
+        }
+
+        [Fact]
         public void When_Trying_To_Authenticate_The_Client_And_Credentials_Are_Not_Correct_Then_Null_Is_Returned()
         {
             // ARRANGE
@@ -33,14 +63,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             };
             var client = new Models.Client
             {
-                ClientSecret = "clientSecret"
+                Secrets = new List<ClientSecret>
+                {
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.SharedSecret,
+                        Value = "not_correct"
+                    }
+                }
             };
 
             // ACT
-            client = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
 
             // ASSERT
-            Assert.Null(client);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -55,15 +92,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             };
             var client = new Models.Client
             {
-                ClientSecret = clientSecret
+                Secrets = new List<ClientSecret>
+                {
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.SharedSecret,
+                        Value = clientSecret
+                    }
+                }
             };
 
             // ACT
-            client = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
+            var result = _clientSecretBasicAuthentication.AuthenticateClient(authenticateInstruction, client);
 
             // ASSERT
-            Assert.NotNull(client);
-            Assert.True(client.ClientSecret == authenticateInstruction.ClientSecretFromAuthorizationHeader);
+            Assert.NotNull(result);
         }
 
         [Fact]

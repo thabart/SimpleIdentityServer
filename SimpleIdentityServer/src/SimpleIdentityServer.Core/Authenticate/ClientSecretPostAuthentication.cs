@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
@@ -34,7 +35,18 @@ namespace SimpleIdentityServer.Core.Authenticate
                 throw new ArgumentNullException("the instruction or client parameter cannot be null");
             }
 
-            var sameSecret = string.Compare(client.ClientSecret,
+            if (client.Secrets == null)
+            {
+                return null;
+            }
+
+            var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == Models.ClientSecretTypes.SharedSecret);
+            if (clientSecret == null)
+            {
+                return null;
+            }
+            
+            var sameSecret = string.Compare(clientSecret.Value,
                         instruction.ClientSecretFromHttpRequestBody,
                         StringComparison.CurrentCultureIgnoreCase) == 0;
             return sameSecret ? client : null;

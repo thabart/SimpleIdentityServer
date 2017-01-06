@@ -17,8 +17,6 @@
 using SimpleIdentityServer.DataAccess.SqlServer.Mappings;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
 {
@@ -33,33 +31,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         #endregion
 
         public virtual DbSet<Translation> Translations { get; set; }
-
         public virtual DbSet<Scope> Scopes { get; set; }
-
         public virtual DbSet<Claim> Claims { get; set; }
-
         public virtual DbSet<ResourceOwner> ResourceOwners { get; set; }
-
         public virtual DbSet<JsonWebKey> JsonWebKeys { get; set; } 
-
         public virtual DbSet<GrantedToken> GrantedTokens { get; set; }
-
         public virtual DbSet<Models.Client> Clients { get; set; } 
-
         public virtual DbSet<Consent> Consents { get; set; }
-
         public virtual DbSet<AuthorizationCode> AuthorizationCodes { get; set; } 
-
-        public virtual DbSet<ClientScope> ClientScopes { get; set; }
-        
+        public virtual DbSet<ClientScope> ClientScopes { get; set; }        
         public virtual DbSet<ConsentClaim> ConsentClaims { get; set; }
-
         public virtual DbSet<ConsentScope> ConsentScopes { get; set; }
-
         public virtual DbSet<ScopeClaim> ScopeClaims { get; set; }
-
         public virtual DbSet<ResourceOwnerClaim> ResourceOwnerClaims { get; set; }
-
         public virtual DbSet<ConfirmationCode> ConfirmationCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -79,6 +63,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             modelBuilder.AddClientScopeMapping();
             modelBuilder.AddResourceOwnerClaimMapping();
             modelBuilder.AddConfirmationCodeMapping();
+            modelBuilder.AddClientSecretMapping();
             base.OnModelCreating(modelBuilder);
         }
     }

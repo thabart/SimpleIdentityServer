@@ -58,8 +58,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.Property<string>("ClientName");
 
-                    b.Property<string>("ClientSecret");
-
                     b.Property<string>("ClientUri");
 
                     b.Property<string>("Contacts");
@@ -134,6 +132,23 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.HasIndex("ScopeName");
 
                     b.ToTable("clientScopes");
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ClientSecret", b =>
+                {
+                    b.Property<string>("Id");
+
+                    b.Property<string>("ClientId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ClientSecrets");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ConfirmationCode", b =>
@@ -350,6 +365,13 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                         .WithMany("ClientScopes")
                         .HasForeignKey("ScopeName")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.ClientSecret", b =>
+                {
+                    b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
+                        .WithMany("ClientSecrets")
+                        .HasForeignKey("ClientId");
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>

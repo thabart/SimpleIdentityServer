@@ -121,7 +121,14 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             if (client.TokenEndPointAuthMethod != TokenEndPointAuthenticationMethods.private_key_jwt)
             {
                 result.ClientSecret = Guid.NewGuid().ToString();
-                client.ClientSecret = _encryptedPasswordFactory.Encrypt(result.ClientSecret);
+                client.Secrets = new List<ClientSecret>
+                {
+                    new ClientSecret
+                    {
+                        Type = ClientSecretTypes.SharedSecret,
+                        Value = _encryptedPasswordFactory.Encrypt(result.ClientSecret)
+                    }
+                };
             }
 
             client.ClientId = result.ClientId;

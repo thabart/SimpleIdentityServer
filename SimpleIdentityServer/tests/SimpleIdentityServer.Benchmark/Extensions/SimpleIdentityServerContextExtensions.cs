@@ -389,7 +389,14 @@ namespace SimpleIdentityServer.Benchmark.Extensions
                     {
                         ClientId = "client_credentials",
                         ClientName = "Simple Identity Server Client",
-                        ClientSecret = "client_credentials",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client_credentials"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>
@@ -413,7 +420,14 @@ namespace SimpleIdentityServer.Benchmark.Extensions
                     {
                         ClientId = "password_grantype",
                         ClientName = "Simple Identity Server Client",
-                        ClientSecret = "password_grantype",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Type = SecretTypes.SharedSecret,
+                                Value = "password_grantype"
+                            }
+                        },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         ClientScopes = new List<ClientScope>

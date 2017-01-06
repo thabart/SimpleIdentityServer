@@ -36,7 +36,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
                 {
                     ClientId = "MyBlog",
                     ClientName = "My blog",
-                    ClientSecret = "MyBlog",
+                    Secrets = new List<ClientSecret>
+                    {
+                        new ClientSecret
+                        {
+                            Type = ClientSecretTypes.SharedSecret,
+                            Value = "MyBlog"
+                        }
+                    },
                     TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                     AllowedScopes = new List<Scope>
                     {

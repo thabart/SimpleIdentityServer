@@ -121,5 +121,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheExternalResourceOwnerIsNotAuthenticated = "the 'external' resource owner is not authenticated";
         public const string TheResourceOwnerIsNotALocalAccount = "the resource owner is not a local account";
         public const string TheClientIdDoesntExist = "the client id {0} doesn't exist";
+        public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't contains a shared secret";
     }
 }

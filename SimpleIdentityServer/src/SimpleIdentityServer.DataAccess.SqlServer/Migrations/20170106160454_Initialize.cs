@@ -45,7 +45,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     ClientId = table.Column<string>(nullable: false),
                     ApplicationType = table.Column<int>(nullable: false),
                     ClientName = table.Column<string>(nullable: true),
-                    ClientSecret = table.Column<string>(nullable: true),
                     ClientUri = table.Column<string>(nullable: true),
                     Contacts = table.Column<string>(nullable: true),
                     DefaultAcrValues = table.Column<string>(nullable: true),
@@ -161,6 +160,26 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_translations", x => new { x.Code, x.LanguageTag });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientSecrets",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    ClientId = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientSecrets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientSecrets_clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "clients",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -347,6 +366,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 column: "ScopeName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientSecrets_ClientId",
+                table: "ClientSecrets",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_consents_ClientId",
                 table: "consents",
                 column: "ClientId");
@@ -414,6 +438,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "clientScopes");
+
+            migrationBuilder.DropTable(
+                name: "ClientSecrets");
 
             migrationBuilder.DropTable(
                 name: "confirmationCodes");
