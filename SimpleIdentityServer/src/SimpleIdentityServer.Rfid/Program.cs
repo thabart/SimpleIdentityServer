@@ -35,7 +35,10 @@ namespace SimpleIdentityServer.Rfid
         static void Main(string[] args)
         {
             // Write and read identity token.
-            // WriteAndRead();
+            WriteAndRead();
+            // var result = ReadFromCard();
+            // var token = Encoding.UTF8.GetString(result.ToArray());
+            /*
             // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {
@@ -43,7 +46,8 @@ namespace SimpleIdentityServer.Rfid
                 // 2. Launch the listener
                 LaunchListener();
                 Console.ReadLine();
-            }
+            }*/
+            Console.ReadLine();
         }
 
         private static void WriteAndRead()
@@ -146,7 +150,7 @@ namespace SimpleIdentityServer.Rfid
             byte mode = 0x00;
             var bufferSize = new byte[16];
             // 1. Read the size.
-            Reader.MF_Read(mode, sizeIndex, 1, new byte[]
+            Reader.MF_Read(mode, Convert.ToByte(sizeIndex), 1, new byte[]
             {
                         0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
             }, bufferSize);
@@ -158,6 +162,7 @@ namespace SimpleIdentityServer.Rfid
                 throw new InvalidOperationException("the size cannot be read");
             }
 
+            double t = (double)size / (double)blockSize;
             double numberOfBlocks = Math.Ceiling((double)size / blockSize);
             if (numberOfBlocks > maxBlocks)
             {
@@ -166,8 +171,8 @@ namespace SimpleIdentityServer.Rfid
 
             // 2. Read the content.
             var result = new List<byte>();
-            var index = 0;
-            for (var blockIndex = startDataIndex + 1; blockIndex <= numberOfBlocks; blockIndex++)
+            var index = 1;
+            for (var blockIndex = startDataIndex + 1; index <= numberOfBlocks; blockIndex++)
             {
                 try
                 {
@@ -178,12 +183,13 @@ namespace SimpleIdentityServer.Rfid
 
                     var buffer = new byte[16];
                     var newIndex = Convert.ToByte(blockIndex - 1);
+                    Console.WriteLine($"Index {newIndex}");
                     Reader.MF_Read(mode, newIndex, 1, new byte[]
                     {
                         0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
                     }, buffer);
                     var nextBlockIndex = blockIndex + 1;
-                    if (blockIndex == numberOfBlocks || (nextBlockIndex == numberOfBlocks && nextBlockIndex % 4 == 0))
+                    if (index == numberOfBlocks || (index + 1 == numberOfBlocks && nextBlockIndex % 4 == 0))
                     {
                         buffer = buffer.TakeWhile(b => b != 0).ToArray();
                     }
