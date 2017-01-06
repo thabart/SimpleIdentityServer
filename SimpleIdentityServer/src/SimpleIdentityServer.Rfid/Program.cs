@@ -35,10 +35,9 @@ namespace SimpleIdentityServer.Rfid
         static void Main(string[] args)
         {
             // Write and read identity token.
-            WriteAndRead();
+            // WriteAndRead();
             // var result = ReadFromCard();
             // var token = Encoding.UTF8.GetString(result.ToArray());
-            /*
             // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {
@@ -46,7 +45,8 @@ namespace SimpleIdentityServer.Rfid
                 // 2. Launch the listener
                 LaunchListener();
                 Console.ReadLine();
-            }*/
+            }
+
             Console.ReadLine();
         }
 

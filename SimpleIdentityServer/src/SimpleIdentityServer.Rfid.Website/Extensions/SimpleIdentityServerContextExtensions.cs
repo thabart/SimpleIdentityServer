@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace SimpleIdentityServer.Rfid.Website.Extensions
 {
@@ -495,7 +496,7 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
-                                Value = "6C919615"
+                                Value = "4BF95273"
                             },
                             new ResourceOwnerClaim
                             {
@@ -507,37 +508,10 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 ClaimCode = Constants.CardClaims.CardNumber,
-                                Value = "6C919615"
+                                Value = "4BF95273"
                             }
                         },
-                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        IsLocalAccount = true
-                    },
-                    new ResourceOwner
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Claims = new List<ResourceOwnerClaim>
-                        {
-                            new ResourceOwnerClaim
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
-                                Value = "6C8F9615"
-                            },
-                            new ResourceOwnerClaim
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name,
-                                Value = "Loki Habart"
-                            },
-                            new ResourceOwnerClaim
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                ClaimCode = Constants.CardClaims.CardNumber,
-                                Value = "6C8F9615"
-                            }
-                        },
-                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        Password = ComputeHash("password"),
                         IsLocalAccount = true
                     }
                 });
@@ -625,6 +599,16 @@ namespace SimpleIdentityServer.Rfid.Website.Extensions
                         RedirectionUrls = "http://localhost:5101/signin-oidc"
                     }
                 });
+            }
+        }
+
+        private static string ComputeHash(string entry)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var entryBytes = Encoding.UTF8.GetBytes(entry);
+                var hash = sha256.ComputeHash(entryBytes);
+                return BitConverter.ToString(hash).Replace("-", string.Empty);
             }
         }
     }
