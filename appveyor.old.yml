@@ -3,7 +3,7 @@ skip_non_tags: true
 before_build:
 - cmd: cd SimpleIdentityServer\src && dotnet restore && generate-nugetpkgs.cmd
 - cmd: cd SimpleIdentityServer.Vse && nuget restore
-build_script:
+build:
  project: SimpleIdentityServer.Vse\SimpleIdentityServer.Vse.sln
 artifacts:
 - path: SimpleIdentityServer\src\feed\*.nupkg

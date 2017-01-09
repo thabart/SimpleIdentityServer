@@ -1,6 +1,6 @@
 version: 1.0.{build}
 skip_non_tags: true
-build:
+build_script:
 - cmd: cd SimpleIdentityServer\src && dotnet restore && generate-nugetpkgs.cmd
 artifacts:
 - path: SimpleIdentityServer\src\feed\*.nupkg
