@@ -18,6 +18,7 @@
 using System.Net;
 #endif
 using System.Net.Http;
+using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Client.Factories
@@ -46,6 +47,7 @@ namespace SimpleIdentityServer.Client.Factories
 #if NET
             var handler = new WebRequestHandler();
             handler.ClientCertificates.Add(certificate);
+            handler.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(ValidateServerCertificate);
             handler.ClientCertificateOptions = ClientCertificateOption.Manual;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             return new HttpClient(handler);
@@ -55,6 +57,20 @@ namespace SimpleIdentityServer.Client.Factories
             handler.ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true;
             return new HttpClient(handler);
 #endif
+        }
+
+        private  static bool ValidateServerCertificate(
+             object sender,
+             X509Certificate certificate,
+             X509Chain chain,
+             SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+            
+            return false;
         }
     }
 }

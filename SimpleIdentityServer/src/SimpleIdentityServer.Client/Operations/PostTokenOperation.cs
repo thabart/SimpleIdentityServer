@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Client.Operations
                 throw new ArgumentNullException(nameof(certificate));
             }
 
-            var httpClient = _httpClientFactory.GetHttpClient();
+            var httpClient = _httpClientFactory.GetHttpClient(certificate);
             return GetToken(tokenRequest, requestUri, authorizationValue, httpClient);
         }
 
