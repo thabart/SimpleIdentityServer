@@ -50,10 +50,14 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
+            var json = JsonConvert.SerializeObject(client, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Content = new StringContent(JsonConvert.SerializeObject(client)),
+                Content = new StringContent(json),
                 RequestUri = requestUri
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

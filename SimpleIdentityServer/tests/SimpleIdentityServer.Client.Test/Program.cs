@@ -28,9 +28,9 @@ namespace SimpleIdentityServer.Client.Test
         public static void Main(string[] args)
         {
             // 1. Get token via client certificate authentication.
-            GetTokenViaClientCertificate().Wait();
+            // GetTokenViaClientCertificate().Wait();
             // 2. Execute tests for basic profile
-            // BasicProfile().Wait();
+            BasicProfile().Wait();
             // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
@@ -38,13 +38,15 @@ namespace SimpleIdentityServer.Client.Test
         private static async Task BasicProfile()
         {
             var identityServerClientFactory = new IdentityServerClientFactory();
+            var state = Guid.NewGuid().ToString();
+            var nonce = Guid.NewGuid().ToString();
             // 1. rp-response_type-code : Make an authentication request using the "Authorization code Flow"
             var client = await identityServerClientFactory.CreateRegistrationClient()
                 .ResolveAsync(new Core.Common.DTOs.Client
                 {
                     RedirectUris = new List<string>
                     {
-
+                        "https://localhost:5106/Authenticate/Callback"
                     },
                     ApplicationType = "web",
                     GrantTypes = new List<string>
@@ -54,7 +56,8 @@ namespace SimpleIdentityServer.Client.Test
                     ResponseTypes = new List<string>
                     {
                         "code"
-                    }
+                    },
+                    JwksUri = "https://localhost:5106/jwks"
                 }, _baseUrl + "/rp-response_type-code/.well-known/openid-configuration");
             // 2. Authorization request (with code)
             await identityServerClientFactory.CreateAuthorizationClient()
@@ -62,8 +65,11 @@ namespace SimpleIdentityServer.Client.Test
                     new Core.Common.DTOs.AuthorizationRequest
                     {
                         ClientId = client.ClientId,
-                        State = "state",
-                        RedirectUri = ""
+                        State = state,
+                        RedirectUri = "https://localhost:5443/auth_cb",
+                        ResponseType = "code",
+                        Scope = "openid",
+                        Nonce = nonce
                     });
         }
 

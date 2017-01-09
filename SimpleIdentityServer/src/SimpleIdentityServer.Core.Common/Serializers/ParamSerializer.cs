@@ -214,6 +214,11 @@ namespace SimpleIdentityServer.Core.Common.Serializers
                 var jobj = obj as JObject;
                 foreach (var key in jobj.Properties())
                 {
+                    if (jobj[key.Name] == null || string.IsNullOrWhiteSpace(jobj[key.Name].ToString()))
+                    {
+                        continue;
+                    }
+
                     returnVal += this.Parametrize(
                         jobj[key.Name], value == string.Empty ? key.Name : string.Format("{0}[{1}]", value, key.Name));
                 }

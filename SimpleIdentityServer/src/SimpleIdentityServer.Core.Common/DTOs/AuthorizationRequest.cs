@@ -90,11 +90,11 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         [DataMember(Name = RequestAuthorizationCodeNames.State)]
         public string State { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.ResponseMode)]
-        public ResponseModes ResponseMode { get; set; }
+        public ResponseModes? ResponseMode { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.Nonce)]
         public string Nonce { get; set; }
         [DataMember(Name = RequestAuthorizationCodeNames.Display)]
-        public DisplayModes Display { get; set; }
+        public DisplayModes? Display { get; set; }
         /// <summary>
         /// The possible values are : none, login, consent, select_account
         /// </summary>
