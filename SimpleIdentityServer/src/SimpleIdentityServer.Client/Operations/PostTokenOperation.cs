@@ -19,7 +19,11 @@ using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Factories;
 using System;
 using System.Collections.Generic;
+#if NET
+using System.Net;
+#endif
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
@@ -30,24 +34,24 @@ namespace SimpleIdentityServer.Client.Operations
             Dictionary<string, string> tokenRequest,
             Uri requestUri,
             string authorizationValue);
+
+        Task<GrantedToken> ExecuteAsync(
+            Dictionary<string, string> tokenRequest,
+            Uri requestUri,
+            string authorizationValue,
+            X509Certificate certificate);
     }
 
     internal class PostTokenOperation : IPostTokenOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        #region Constructor
-
         public PostTokenOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        #endregion
-
-        #region Public methods
-
-        public async Task<GrantedToken> ExecuteAsync(
+        public Task<GrantedToken> ExecuteAsync(
             Dictionary<string, string> tokenRequest,
             Uri requestUri,
             string authorizationValue)
@@ -61,10 +65,25 @@ namespace SimpleIdentityServer.Client.Operations
             {
                 throw new ArgumentNullException(nameof(requestUri));
             }
-            
-            // ADD CERTIFICATE
+
             var httpClient = _httpClientFactory.GetHttpClient();
-			var body = new FormUrlEncodedContent(tokenRequest);
+            return GetToken(tokenRequest, requestUri, authorizationValue, httpClient);
+        }
+
+        public Task<GrantedToken> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate certificate)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException(nameof(certificate));
+            }
+
+            var httpClient = _httpClientFactory.GetHttpClient();
+            return GetToken(tokenRequest, requestUri, authorizationValue, httpClient);
+        }
+
+        private async Task<GrantedToken> GetToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, HttpClient httpClient)
+        {
+            var body = new FormUrlEncodedContent(tokenRequest);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -77,7 +96,5 @@ namespace SimpleIdentityServer.Client.Operations
             var content = await result.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<GrantedToken>(content);
         }
-
-        #endregion
     }
 }

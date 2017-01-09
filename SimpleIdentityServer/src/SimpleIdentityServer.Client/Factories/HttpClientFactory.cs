@@ -25,12 +25,11 @@ namespace SimpleIdentityServer.Client.Factories
     public interface IHttpClientFactory
     {
         HttpClient GetHttpClient();
+        HttpClient GetHttpClient(X509Certificate certificate);
     }
 
     internal sealed class HttpClientFactory : IHttpClientFactory
     {
-        #region Public methods
-
         public HttpClient GetHttpClient()
         {
             var httpHandler = new HttpClientHandler();
@@ -47,6 +46,7 @@ namespace SimpleIdentityServer.Client.Factories
 #if NET
             var handler = new WebRequestHandler();
             handler.ClientCertificates.Add(certificate);
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             return new HttpClient(handler);
 #else
@@ -56,7 +56,5 @@ namespace SimpleIdentityServer.Client.Factories
             return new HttpClient(handler);
 #endif
         }
-
-        #endregion
     }
 }

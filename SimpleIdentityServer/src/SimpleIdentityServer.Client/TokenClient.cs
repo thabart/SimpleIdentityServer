@@ -69,6 +69,14 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(tokenUri));
             }
             
+            if (_requestBuilder.Certificate != null)
+            {
+                return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
+                    tokenUri,
+                    _requestBuilder.AuthorizationHeaderValue,
+                    _requestBuilder.Certificate);
+            }
+            
             return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                 tokenUri,
                 _requestBuilder.AuthorizationHeaderValue);

@@ -14,27 +14,66 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Test
 {
     class Program
     {
-        #region Public methods
-
+        private const string _baseUrl = "https://rp.certification.openid.net:8080/simpleIdServer";
+        
         public static void Main(string[] args)
         {
-            var identityServerClientFactory = new IdentityServerClientFactory();
-            var discoveryClient = identityServerClientFactory.CreateTokenClient()
-                .UseClientSecretBasicAuth("51061382-2032-49c5-a059-055a9bf2e6c1", "7b936e81-f528-49a8-9468-04622ad54df0")
-                .UseClientCredentials("uma_authorization", "uma_protection", "website_api", "uma")
-                .ResolveAsync("https://localhost:54443/.well-known/openid-configuration");
+            // 1. Get token via client certificate authentication.
+            GetTokenViaClientCertificate().Wait();
+            // 2. Execute tests for basic profile
+            // BasicProfile().Wait();
+            // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
-        
-        #endregion
+
+        private static async Task BasicProfile()
+        {
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            // 1. rp-response_type-code : Make an authentication request using the "Authorization code Flow"
+            var client = await identityServerClientFactory.CreateRegistrationClient()
+                .ResolveAsync(new Core.Common.DTOs.Client
+                {
+                    RedirectUris = new List<string>
+                    {
+
+                    },
+                    ApplicationType = "web",
+                    GrantTypes = new List<string>
+                    {
+                        "authorization_code"
+                    },
+                    ResponseTypes = new List<string>
+                    {
+                        "code"
+                    }
+                }, _baseUrl + "/rp-response_type-code/.well-known/openid-configuration");
+            // 2. Authorization request (with code)
+            await identityServerClientFactory.CreateAuthorizationClient()
+                .ResolveAsync(_baseUrl + "/rp-response_type-code/.well-known/openid-configuration",
+                    new Core.Common.DTOs.AuthorizationRequest
+                    {
+                        ClientId = client.ClientId,
+                        State = "state",
+                        RedirectUri = ""
+                    });
+        }
+
+        public static async Task GetTokenViaClientCertificate()
+        {
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            var result = await identityServerClientFactory.CreateAuthSelector()
+                .UseClientCertificate(new X509Certificate("LokitCa.cer"))
+                .UsePassword("administrator", "password", "openid", "role")
+                .ResolveAsync("https://localhost:5443/.well-known/openid-configuration");
+        }
     }
 }

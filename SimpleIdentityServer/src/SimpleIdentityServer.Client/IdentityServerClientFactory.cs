@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Client
         IJwksClient CreateJwksClient();
         IUserInfoClient CreateUserInfoClient();
         IRegistrationClient CreateRegistrationClient();
+        IAuthorizationClient CreateAuthorizationClient();
     }
 
     public class IdentityServerClientFactory : IIdentityServerClientFactory
@@ -93,6 +94,16 @@ namespace SimpleIdentityServer.Client
         public IRegistrationClient CreateRegistrationClient()
         {
             var result = (IRegistrationClient)_serviceProvider.GetService(typeof(IRegistrationClient));
+            return result;
+        }
+
+        /// <summary>
+        /// Create authorization client.
+        /// </summary>
+        /// <returns></returns>
+        public IAuthorizationClient CreateAuthorizationClient()
+        {
+            var result = (IAuthorizationClient)_serviceProvider.GetService(typeof(IAuthorizationClient));
             return result;
         }
 

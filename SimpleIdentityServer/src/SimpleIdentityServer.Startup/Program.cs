@@ -15,8 +15,11 @@
 #endregion
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -32,7 +35,15 @@ namespace SimpleIdentityServer.Startup
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
-                    options.UseHttps("SimpleIdServer.pfx");
+                    var httpsOptions = new HttpsConnectionFilterOptions
+                    {
+                        ServerCertificate = new X509Certificate2("SimpleIdServer.pfx"),
+                        ClientCertificateMode = ClientCertificateMode.AllowCertificate,
+                        CheckCertificateRevocation = false,
+                        ClientCertificateValidation = ( a , b , c ) => true,
+                        // SslProtocols = SslProtocols.Tls
+                    };
+                    options.UseHttps(httpsOptions);
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)

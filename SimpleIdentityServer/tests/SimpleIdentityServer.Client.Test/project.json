@@ -8,7 +8,10 @@
     "projectUrl": ""
   },
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "copyToOutput": [
+      "LokitCa.cer"
+    ]
   },
   "dependencies": {
     "SimpleIdentityServer.Client": "*"
