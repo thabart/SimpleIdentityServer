@@ -32,7 +32,8 @@
   },
   "buildOptions": {
     "copyToOutput": [
-      "appsettings.json"
+      "appsettings.json",
+      "testCert.pfx"
     ]
   }
 }

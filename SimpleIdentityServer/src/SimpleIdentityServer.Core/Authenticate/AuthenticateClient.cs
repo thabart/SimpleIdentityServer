@@ -34,6 +34,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         private readonly IClientSecretBasicAuthentication _clientSecretBasicAuthentication;
         private readonly IClientSecretPostAuthentication _clientSecretPostAuthentication;
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
+        private readonly IClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientRepository _clientRepository;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
 
@@ -41,12 +42,14 @@ namespace SimpleIdentityServer.Core.Authenticate
             IClientSecretBasicAuthentication clientSecretBasicAuthentication,
             IClientSecretPostAuthentication clientSecretPostAuthentication,
             IClientAssertionAuthentication clientAssertionAuthentication,
+            IClientTlsAuthentication clientTlsAuthentication,
             IClientRepository clientRepository,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
             _clientSecretPostAuthentication = clientSecretPostAuthentication;
             _clientAssertionAuthentication = clientAssertionAuthentication;
+            _clientTlsAuthentication = clientTlsAuthentication;
             _clientRepository = clientRepository;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
@@ -104,8 +107,12 @@ namespace SimpleIdentityServer.Core.Authenticate
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
                    return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
-                    // TODO : support tls_client_authentication.
-                    return null;
+                    client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
+                    if (client == null)
+                    {
+                        errorMessage = ErrorDescriptions.TheClientCannotBeAuthenticatedWithTls;
+                    }
+                    break;
             }
 
             if (client != null)

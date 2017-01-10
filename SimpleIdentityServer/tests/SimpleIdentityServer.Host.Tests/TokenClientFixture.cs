@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -78,9 +79,16 @@ namespace SimpleIdentityServer.Host.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var certificate = new X509Certificate2("testCert.pfx", "testPassword");
 
+            // ACT
+            var result = await _clientAuthSelector.UseClientCertificate("certificate_client", certificate)
+                .UsePassword("administrator", "password", "openid")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
-
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.AccessToken);
         }
 
         [Fact]

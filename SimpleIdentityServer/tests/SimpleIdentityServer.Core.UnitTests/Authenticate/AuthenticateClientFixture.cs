@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private Mock<IClientSecretBasicAuthentication> _clientSecretBasicAuthenticationFake;
         private Mock<IClientSecretPostAuthentication> _clientSecretPostAuthenticationFake;
         private Mock<IClientAssertionAuthentication> _clientAssertionAuthenticationFake;
+        private Mock<IClientTlsAuthentication> _clientTlsAuthenticationStub;
         private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
         private IAuthenticateClient _authenticateClient;
@@ -130,12 +131,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientSecretBasicAuthenticationFake = new Mock<IClientSecretBasicAuthentication>();
             _clientSecretPostAuthenticationFake = new Mock<IClientSecretPostAuthentication>();
             _clientAssertionAuthenticationFake = new Mock<IClientAssertionAuthentication>();
+            _clientTlsAuthenticationStub = new Mock<IClientTlsAuthentication>();
             _clientRepositoryStub = new Mock<IClientRepository>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateClient = new AuthenticateClient(
                 _clientSecretBasicAuthenticationFake.Object,
                 _clientSecretPostAuthenticationFake.Object,
                 _clientAssertionAuthenticationFake.Object,
+                _clientTlsAuthenticationStub.Object,
                 _clientRepositoryStub.Object,
                 _simpleIdentityServerEventSourceFake.Object);
         }

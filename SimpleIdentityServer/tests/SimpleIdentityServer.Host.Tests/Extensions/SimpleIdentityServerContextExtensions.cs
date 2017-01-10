@@ -736,6 +736,40 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:5000/callback"
+                    },
+                    // Certificate test client.
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "certificate_client",
+                        ClientName = "Certificate test client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.X509Thumbprint,
+                                Value = "470543E0FC19F3D4355457A8C22E78919EA9AA66"
+                            },
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.X509Name,
+                                Value = "CN=localhost"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.native
                     }
                 });
             }

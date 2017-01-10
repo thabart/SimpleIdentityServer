@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System.Security.Cryptography.X509Certificates;
+
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public class AuthenticateInstruction
@@ -24,5 +26,6 @@ namespace SimpleIdentityServer.Core.Authenticate
         public string ClientSecretFromAuthorizationHeader { get; set; }
         public string ClientAssertionType { get; set; }
         public string ClientAssertion { get; set; }
+        public X509Certificate2 Certificate { get; set; }
     }
 }

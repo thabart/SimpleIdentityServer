@@ -27,10 +27,8 @@ namespace SimpleIdentityServer.Client.Test
         
         public static void Main(string[] args)
         {
-            // 1. Get token via client certificate authentication.
-            GetTokenViaClientCertificate().Wait();
-            // 2. Execute tests for basic profile
-            // BasicProfile().Wait();
+            // 1. Execute tests for basic profile
+            BasicProfile().Wait();
             // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
@@ -72,15 +70,6 @@ namespace SimpleIdentityServer.Client.Test
                         Nonce = nonce,
                         ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                     });
-        }
-
-        public static async Task GetTokenViaClientCertificate()
-        {
-            var identityServerClientFactory = new IdentityServerClientFactory();
-            var result = await identityServerClientFactory.CreateAuthSelector()
-                .UseClientCertificate(new X509Certificate2("testCert.pfx", "testPassword"))
-                .UsePassword("administrator", "password", "openid", "role")
-                .ResolveAsync("https://localhost:5443/.well-known/openid-configuration");
         }
     }
 }

@@ -19,7 +19,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
     public enum SecretTypes
     {
         SharedSecret,
-        X509Thumbprint
+        X509Thumbprint,
+        X509Name
     }
 
     public class ClientSecret

@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             {
                 case GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate);
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return new OkResult();
         }
 
-        private X509Certificate GetCertificate()
+        private X509Certificate2 GetCertificate()
         {
             const string headerName = "X-ARR-ClientCert";
             var header = Request.Headers.FirstOrDefault(h => h.Key == headerName);
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             try
             {
                 var encoded = Convert.FromBase64String(header.Value);
-                return new X509Certificate(encoded);
+                return new X509Certificate2(encoded);
             }
             catch
             {

@@ -55,7 +55,8 @@ namespace SimpleIdentityServer.Core.Models
     public enum ClientSecretTypes
     {
         SharedSecret,
-        X509Thumbprint
+        X509Thumbprint,
+        X509Name
     }
 
     public class ClientSecret

@@ -46,5 +46,12 @@ namespace SimpleIdentityServer.Client.Builders
             Content.Add(ClientAuthNames.ClientAssertionType, clientAssertionType);
             return this;
         }
+
+        public RequestBuilder SetCertificate(string clientId, X509Certificate2 certificate)
+        {
+            Content.Add(ClientAuthNames.ClientId, clientId);
+            Certificate = certificate;
+            return this;
+        }
     }
 }

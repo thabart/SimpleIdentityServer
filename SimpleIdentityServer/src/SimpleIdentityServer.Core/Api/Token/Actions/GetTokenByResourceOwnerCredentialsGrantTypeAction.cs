@@ -26,16 +26,16 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
-        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
     }
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
         {
             if (resourceOwnerGrantTypeParameter == null)
             {
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 1. Try to authenticate the client
-            var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter, authenticationHeaderValue);
+            var instruction = CreateAuthenticateInstruction(resourceOwnerGrantTypeParameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (authResult.Client == null)
@@ -149,13 +149,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             ResourceOwnerGrantTypeParameter resourceOwnerGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = resourceOwnerGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = resourceOwnerGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = resourceOwnerGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 

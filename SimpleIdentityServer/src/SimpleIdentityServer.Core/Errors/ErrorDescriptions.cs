@@ -47,6 +47,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientCannotBeAuthenticated = "the client cannot be authenticated";
         public const string TheClientCannotBeAuthenticatedWithSecretBasic = "the client cannot be authenticated with secret basic";
         public const string TheClientCannotBeAuthenticatedWithSecretPost = "the client cannot be authenticated with secret post";
+        public const string TheClientCannotBeAuthenticatedWithTls = "the client cannot be authenticated with TLS";
         public const string TheAuthorizationCodeIsNotCorrect = "the authorization code is not correct";
         public const string TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId =
             "the authorization code has not been issued for the given client id {0}";

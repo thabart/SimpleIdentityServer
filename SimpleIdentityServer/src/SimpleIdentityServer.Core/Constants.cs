@@ -420,7 +420,8 @@ namespace SimpleIdentityServer.Core
                 TokenEndPointAuthenticationMethods.client_secret_basic,
                 TokenEndPointAuthenticationMethods.client_secret_post,
                 TokenEndPointAuthenticationMethods.client_secret_jwt,
-                TokenEndPointAuthenticationMethods.private_key_jwt
+                TokenEndPointAuthenticationMethods.private_key_jwt,
+                TokenEndPointAuthenticationMethods.tls_client_auth
             };
 
             public static List<string> SupportedClaims = new List<string>

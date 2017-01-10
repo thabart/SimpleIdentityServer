@@ -114,6 +114,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IClientSecretBasicAuthentication, ClientSecretBasicAuthentication>();
             serviceCollection.AddTransient<IClientSecretPostAuthentication, ClientSecretPostAuthentication>();
             serviceCollection.AddTransient<IClientAssertionAuthentication, ClientAssertionAuthentication>();
+            serviceCollection.AddTransient<IClientTlsAuthentication, ClientTlsAuthentication>();
             serviceCollection.AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
             serviceCollection.AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();

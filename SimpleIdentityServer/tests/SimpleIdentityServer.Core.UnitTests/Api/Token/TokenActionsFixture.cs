@@ -9,6 +9,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
             _getTokenByResourceOwnerCredentialsGrantTypeActionFake.Setup(
-                g => g.Execute(It.IsAny<ResourceOwnerGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
+                g => g.Execute(It.IsAny<ResourceOwnerGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT

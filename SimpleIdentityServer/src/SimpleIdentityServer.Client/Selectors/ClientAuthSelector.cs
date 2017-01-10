@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId);
         ITokenGrantTypeSelector UseClientPrivateKeyAuth(string jwt, string clientId);
-        ITokenGrantTypeSelector UseClientCertificate(X509Certificate2 certificate);
+        ITokenGrantTypeSelector UseClientCertificate(string clientId, X509Certificate2 certificate);
         ITokenGrantTypeSelector UseNoAuthentication();
     }
 
@@ -44,15 +44,20 @@ namespace SimpleIdentityServer.Client.Selectors
             _revokeTokenClientFactory = revokeTokenClientFactory;
         }
 
-        public ITokenGrantTypeSelector UseClientCertificate(X509Certificate2 certificate)
+        public ITokenGrantTypeSelector UseClientCertificate(string clientId, X509Certificate2 certificate)
         {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
             if (certificate == null)
             {
                 throw new ArgumentNullException(nameof(certificate));
             }
 
             var requestBuilder = new RequestBuilder();
-            requestBuilder.Certificate = certificate;
+            requestBuilder.SetCertificate(clientId, certificate);
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 
