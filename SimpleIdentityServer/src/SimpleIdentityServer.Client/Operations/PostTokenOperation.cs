@@ -15,10 +15,12 @@
 #endregion
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Factories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 #if NET
 using System.Net;
 #endif
@@ -90,7 +92,39 @@ namespace SimpleIdentityServer.Client.Operations
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<GrantedToken>(content);
+            var jObj = JObject.Parse(content);
+            JToken accessToken = jObj[Constants.GrantedTokenNames.AccessToken],
+                expiresIn = jObj[Constants.GrantedTokenNames.ExpiresIn],
+                scope = jObj[Constants.GrantedTokenNames.Scope],
+                refreshToken = jObj[Constants.GrantedTokenNames.RefreshToken],
+                tokenType = jObj[Constants.GrantedTokenNames.TokenType],
+                idToken = jObj[Constants.GrantedTokenNames.IdToken];
+            var scopes = new List<string>();
+            if(scope != null)
+            {
+                JArray arr;
+                if ((arr = scope as JArray) != null)
+                {
+                    foreach (var rec in arr)
+                    {
+                        scopes.Add(rec.Value<string>());
+                    }
+                }
+                else
+                {
+                    scopes = scope.Value<string>().Split(' ').ToList();
+                }
+            }
+
+            return new GrantedToken
+            {
+                AccessToken = accessToken != null ? accessToken.Value<string>() : null,
+                ExpiresIn = expiresIn != null ? expiresIn.Value<int>() : default(int),
+                IdToken = idToken != null ? idToken.Value<string>() : null,
+                RefreshToken = refreshToken != null ? refreshToken.Value<string>() : null,
+                TokenType = tokenType != null ? tokenType.Value<string>() : null,
+                Scope = scopes
+            };
         }
     }
 }

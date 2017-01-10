@@ -16,6 +16,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
@@ -36,13 +38,17 @@ namespace WebApplication.Controllers
             _identityServerClientFactory = new IdentityServerClientFactory();
         }
 
-        public async Task<IActionResult> CallbackRpScopeUserInfoClaims()
+        public IActionResult Callback()
         {
-            return null;
-        }
+            var query = HttpContext.Request.Query;
+            var obj = new JObject();
+            foreach(var record in query)
+            {
+                obj.Add(new JProperty(record.Key, record.Value.First().ToString()));
+            }
 
-        public async Task<IActionResult> Callback()
-        {
+            var json = obj.ToString();
+            /*
             var defaultValue = default(KeyValuePair<string, StringValues>);
             if (HttpContext.Request == null || HttpContext.Request.Form == null)
             {
@@ -57,7 +63,8 @@ namespace WebApplication.Controllers
                 throw new ArgumentException("One of the parameter is null");
             }
             
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");*/
+            return new OkObjectResult(json);
         }
     }
 }

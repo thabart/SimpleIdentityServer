@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Client.Operations
                 }
                 catch
                 {
-                    Trace.WriteLine("the content is not a JSON object");
+                    // Trace.WriteLine("the content is not a JSON object");
                 }
             }
 
