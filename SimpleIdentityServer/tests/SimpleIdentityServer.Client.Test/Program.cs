@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Client.Test
                     {
                         "code"
                     },
-                    JwksUri = "https://localhost:5106/jwks"
+                    JwksUri = "https://localhost:5106/jwks",
                 }, _baseUrl + "/rp-response_type-code/.well-known/openid-configuration");
             // 2. Authorization request (with code)
             await identityServerClientFactory.CreateAuthorizationClient()
@@ -69,7 +69,8 @@ namespace SimpleIdentityServer.Client.Test
                         RedirectUri = "https://localhost:5443/auth_cb",
                         ResponseType = "code",
                         Scope = "openid",
-                        Nonce = nonce
+                        Nonce = nonce,
+                        ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                     });
         }
 

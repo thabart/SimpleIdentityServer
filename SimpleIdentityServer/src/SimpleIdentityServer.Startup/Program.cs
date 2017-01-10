@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Startup
