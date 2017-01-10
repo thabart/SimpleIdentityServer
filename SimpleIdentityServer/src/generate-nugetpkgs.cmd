@@ -1,17 +1,18 @@
-REM Create nuget packages
-dotnet pack --output feed SimpleIdentityServer.Proxy
-dotnet pack --output feed SimpleIdentityServer.Uma.Client
-dotnet pack --output feed SimpleIdentityServer.UmaManager.Client
-dotnet pack --output feed SimpleIdentityServer.Client
-dotnet pack --output feed SimpleIdentityServer.Core.Common
-dotnet pack --output feed SimpleIdentityServer.Core.Jwt
-dotnet pack --output feed SimpleIdentityServer.UmaIntrospection.Authentication
-dotnet pack --output feed SimpleIdentityServer.Uma.Authorization
-dotnet pack --output feed SimpleIdentityServer.Uma.Common
-dotnet pack --output feed SimpleIdentityServer.Authentication.Common
-dotnet pack --output feed System.Security.Cryptography.Algorithms.Extensions
-dotnet pack --output feed SimpleIdentityServer.Oauth2Instrospection.Authentication
-dotnet pack --output feed SimpleIdentityServer.UserInformation.Authentication
-dotnet pack --output feed SimpleIdentityServer.Core
-dotnet pack --output feed SimpleIdentityServer.Logging
-dotnet pack --output feed SimpleIdentityServer.DataAccess.SqlServer
+set revisionSuffix=%1
+echo %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Proxy --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Uma.Client --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.UmaManager.Client --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Client --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Core.Common --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Core.Jwt --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.UmaIntrospection.Authentication --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Uma.Authorization --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Uma.Common --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Authentication.Common --version-suffix %revisionSuffix%
+dotnet pack --output feed System.Security.Cryptography.Algorithms.Extensions --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Oauth2Instrospection.Authentication --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.UserInformation.Authentication --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Core --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.Logging --version-suffix %revisionSuffix%
+dotnet pack --output feed SimpleIdentityServer.DataAccess.SqlServer --version-suffix %revisionSuffix%
