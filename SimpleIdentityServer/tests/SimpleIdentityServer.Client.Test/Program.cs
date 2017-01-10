@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Test
@@ -33,10 +34,11 @@ namespace SimpleIdentityServer.Client.Test
         {
             _jwsParser = new JwsParser(null);
             // 1. Execute tests for basic profile
-            RpResponseTypeCode().Wait();
-            RpScopeUserInfoClaims().Wait();
-            RpNonceInvalid().Wait();
-            RpTokenEndpointClientSecretBasic().Wait();
+            // RpResponseTypeCode().Wait();
+            // RpScopeUserInfoClaims().Wait();
+            // RpNonceInvalid().Wait();
+            // RpTokenEndpointClientSecretBasic().Wait();
+            RpIdTokenAud().Wait();
             // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
@@ -246,6 +248,64 @@ namespace SimpleIdentityServer.Client.Test
                     .UseAuthorizationCode(code, RedirectUriCode)
                     .ExecuteAsync(discovery.TokenEndPoint);
                 Log($"Identity token returns {token.IdToken}", writer);
+            }
+        }
+
+        private static async Task RpIdTokenAud()
+        {
+            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logs\rp-id_token-aud.log"))
+            {
+                var state = Guid.NewGuid().ToString();
+                var nonce = Guid.NewGuid().ToString();
+                var identityServerClientFactory = new IdentityServerClientFactory();
+                Log("Call OpenIdConfiguration", writer);
+                var discovery = await identityServerClientFactory.CreateDiscoveryClient()
+                    .GetDiscoveryInformationAsync(_baseUrl + "/rp-id_token-aud/.well-known/openid-configuration");
+                // rp-scope-userinfo-claims : Request claims using scope values.
+                var client = await identityServerClientFactory.CreateRegistrationClient()
+                    .ExecuteAsync(new Core.Common.DTOs.Client
+                    {
+                        RedirectUris = new List<string>
+                        {
+                        RedirectUriCode
+                        },
+                        ApplicationType = "web",
+                        GrantTypes = new List<string>
+                        {
+                        "authorization_code"
+                        },
+                        ResponseTypes = new List<string>
+                        {
+                        "code"
+                        }
+                    }, discovery.RegistrationEndPoint);
+                Log("Get an authorization code", writer);
+                var auth = await identityServerClientFactory.CreateAuthorizationClient()
+                    .ExecuteAsync(discovery.AuthorizationEndPoint,
+                        new Core.Common.DTOs.AuthorizationRequest
+                        {
+                            ClientId = client.ClientId,
+                            State = state,
+                            RedirectUri = RedirectUriCode,
+                            ResponseType = "code",
+                            Scope = "openid email profile",
+                            Nonce = nonce
+                        });
+                var code = auth.Content.Value<string>("code");
+                Log("Get an identity token", writer);
+                var token = await identityServerClientFactory.CreateAuthSelector()
+                    .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                    .UseAuthorizationCode(code, RedirectUriCode)
+                    .ExecuteAsync(discovery.TokenEndPoint);
+                var payload = _jwsParser.GetPayload(token.IdToken);
+                if (payload.Audiences == null || !payload.Audiences.Any())
+                {
+                    Log("The audience is missing", writer);
+                }
+                else if (!payload.Audiences.Contains(client.ClientId))
+                {
+                    Log("The audience doesn't match the client id", writer);
+                }
             }
         }
 
