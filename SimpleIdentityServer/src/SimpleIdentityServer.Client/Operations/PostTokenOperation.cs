@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Client.Operations
             Dictionary<string, string> tokenRequest,
             Uri requestUri,
             string authorizationValue,
-            X509Certificate certificate);
+            X509Certificate2 certificate);
     }
 
     internal class PostTokenOperation : IPostTokenOperation
@@ -56,6 +56,11 @@ namespace SimpleIdentityServer.Client.Operations
             Uri requestUri,
             string authorizationValue)
         {
+            return ExecuteAsync(tokenRequest, requestUri, authorizationValue, null);
+        }
+
+        public async Task<GrantedToken> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate)
+        {
             if (tokenRequest == null)
             {
                 throw new ArgumentNullException(nameof(tokenRequest));
@@ -67,22 +72,6 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            return GetToken(tokenRequest, requestUri, authorizationValue, httpClient);
-        }
-
-        public Task<GrantedToken> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate certificate)
-        {
-            if (certificate == null)
-            {
-                throw new ArgumentNullException(nameof(certificate));
-            }
-
-            var httpClient = _httpClientFactory.GetHttpClient(certificate);
-            return GetToken(tokenRequest, requestUri, authorizationValue, httpClient);
-        }
-
-        private async Task<GrantedToken> GetToken(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, HttpClient httpClient)
-        {
             var body = new FormUrlEncodedContent(tokenRequest);
             var request = new HttpRequestMessage
             {
@@ -90,6 +79,13 @@ namespace SimpleIdentityServer.Client.Operations
                 Content = body,
                 RequestUri = requestUri
             };
+            if (certificate != null)
+            {
+                var bytes = certificate.RawData;
+                var base64Encoded = Convert.ToBase64String(bytes);
+                request.Headers.Add("X-ARR-ClientCert", base64Encoded);
+            }
+
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();

@@ -24,8 +24,10 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
@@ -45,8 +47,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         [HttpPost]
         public async Task<TokenResponse> PostToken()
         {
-            // TODO : Retrieve client certificate.
-            var certificate = await HttpContext.Connection.GetClientCertificateAsync();
+            var certificate = GetCertificate();
             if (Request.Form == null)
             {
                 throw new ArgumentNullException(nameof(Request.Form));
@@ -122,6 +123,26 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             // 2. Revoke the token
             await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
             return new OkResult();
+        }
+
+        private X509Certificate GetCertificate()
+        {
+            const string headerName = "X-ARR-ClientCert";
+            var header = Request.Headers.FirstOrDefault(h => h.Key == headerName);
+            if (header.Equals(default(KeyValuePair<string, StringValues>)))
+            {
+                return null;
+            }
+
+            try
+            {
+                var encoded = Convert.FromBase64String(header.Value);
+                return new X509Certificate(encoded);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

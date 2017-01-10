@@ -28,9 +28,9 @@ namespace SimpleIdentityServer.Client.Test
         public static void Main(string[] args)
         {
             // 1. Get token via client certificate authentication.
-            // GetTokenViaClientCertificate().Wait();
+            GetTokenViaClientCertificate().Wait();
             // 2. Execute tests for basic profile
-            BasicProfile().Wait();
+            // BasicProfile().Wait();
             // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Client.Test
         {
             var identityServerClientFactory = new IdentityServerClientFactory();
             var result = await identityServerClientFactory.CreateAuthSelector()
-                .UseClientCertificate(new X509Certificate("LokitCa.cer"))
+                .UseClientCertificate(new X509Certificate2("testCert.pfx", "testPassword"))
                 .UsePassword("administrator", "password", "openid", "role")
                 .ResolveAsync("https://localhost:5443/.well-known/openid-configuration");
         }

@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Client.Builders
         }
 
         public string AuthorizationHeaderValue { get; set; }
-        public X509Certificate Certificate { get; set; }
+        public X509Certificate2 Certificate { get; set; }
         public Dictionary<string, string> Content { get; private set; }
 
         public RequestBuilder SetClientCredentials(string clientId, string clientSecret)

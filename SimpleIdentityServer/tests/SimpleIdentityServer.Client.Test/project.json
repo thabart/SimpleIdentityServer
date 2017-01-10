@@ -10,7 +10,8 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "copyToOutput": [
-      "LokitCa.cer"
+      "LokitCa.cer",
+      "testCert.pfx"
     ]
   },
   "dependencies": {
