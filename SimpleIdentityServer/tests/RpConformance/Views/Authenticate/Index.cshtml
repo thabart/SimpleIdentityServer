@@ -1,0 +1,8 @@
+﻿@model WebApplication.ViewModels.AuthenticateViewModel
+
+@{
+    ViewData["Title"] = "Authenticate";
+    string href = $"{Model.AuthorizationEndPoint}?scope=openid role profile uma_authorization uma_protection website_api uma&state=75BCNvRlEGHpQRCT&redirect_uri={WebApplication.Constants.Callback}&response_type=id_token token&client_id={WebApplication.Constants.ClientId}&nonce=nonce&response_mode=form_post";
+}
+
+<a href="@href">Connect</a>

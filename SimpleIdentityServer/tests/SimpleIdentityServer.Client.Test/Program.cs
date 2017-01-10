@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Test
@@ -24,27 +23,30 @@ namespace SimpleIdentityServer.Client.Test
     class Program
     {
         private const string _baseUrl = "https://rp.certification.openid.net:8080/simpleIdServer";
+        private const string RedirectUriCode = "https://localhost:5106/Authenticate/Callback";
         
         public static void Main(string[] args)
         {
             // 1. Execute tests for basic profile
-            BasicProfile().Wait();
+            RpResponseTypeCode().Wait();
+            RpScopeUserInfoClaims().Wait();
             // identityServerClientFactory.CreateAuthSelector()
             Console.ReadLine();
         }
 
-        private static async Task BasicProfile()
+        private static async Task RpResponseTypeCode()
         {
+            var redirectUrl = RedirectUriCode + "RpResponseTypeCode";
             var identityServerClientFactory = new IdentityServerClientFactory();
             var state = Guid.NewGuid().ToString();
             var nonce = Guid.NewGuid().ToString();
-            // 1. rp-response_type-code : Make an authentication request using the "Authorization code Flow"
+            // rp-response_type-code : Make an authentication request using the "Authorization code Flow"
             var client = await identityServerClientFactory.CreateRegistrationClient()
                 .ResolveAsync(new Core.Common.DTOs.Client
                 {
                     RedirectUris = new List<string>
                     {
-                        "https://localhost:5106/Authenticate/Callback"
+                        redirectUrl
                     },
                     ApplicationType = "web",
                     GrantTypes = new List<string>
@@ -57,19 +59,61 @@ namespace SimpleIdentityServer.Client.Test
                     },
                     JwksUri = "https://localhost:5106/jwks",
                 }, _baseUrl + "/rp-response_type-code/.well-known/openid-configuration");
-            // 2. Authorization request (with code)
-            await identityServerClientFactory.CreateAuthorizationClient()
+            var result = await identityServerClientFactory.CreateAuthorizationClient()
                 .ResolveAsync(_baseUrl + "/rp-response_type-code/.well-known/openid-configuration",
                     new Core.Common.DTOs.AuthorizationRequest
                     {
                         ClientId = client.ClientId,
                         State = state,
-                        RedirectUri = "https://localhost:5443/auth_cb",
+                        RedirectUri = redirectUrl,
                         ResponseType = "code",
                         Scope = "openid",
                         Nonce = nonce,
-                        ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
+                        ResponseMode = Core.Common.DTOs.ResponseModes.Fragment
                     });
+            Console.WriteLine(result.Location.AbsolutePath);
+            // System.Diagnostics.Process.Start(result.Location.AbsolutePath);
+        }
+
+        private static async Task RpScopeUserInfoClaims()
+        {
+            var redirectUrl = RedirectUriCode + "RpScopeUserInfoClaims";
+            var identityServerClientFactory = new IdentityServerClientFactory();
+            // rp-scope-userinfo-claims : Request claims using scope values.
+            var client = await identityServerClientFactory.CreateRegistrationClient()
+                .ResolveAsync(new Core.Common.DTOs.Client
+                {
+                    RedirectUris = new List<string>
+                    {
+                        redirectUrl
+                    },
+                    ApplicationType = "web",
+                    GrantTypes = new List<string>
+                    {
+                        "authorization_code"
+                    },
+                    ResponseTypes = new List<string>
+                    {
+                        "code"
+                    },
+                    JwksUri = "https://localhost:5106/jwks",
+                }, _baseUrl + "/rp-response_type-code/.well-known/openid-configuration");
+            var state = Guid.NewGuid().ToString();
+            var nonce = Guid.NewGuid().ToString();
+            var result = await identityServerClientFactory.CreateAuthorizationClient()
+                .ResolveAsync(_baseUrl + "/rp-response_type-code/.well-known/openid-configuration",
+                    new Core.Common.DTOs.AuthorizationRequest
+                    {
+                        ClientId = client.ClientId,
+                        State = state,
+                        RedirectUri = redirectUrl,
+                        ResponseType = "code",
+                        Scope = "openid",
+                        Nonce = nonce,
+                        ResponseMode = Core.Common.DTOs.ResponseModes.Fragment
+                    });
+            Console.WriteLine(result.Location.AbsolutePath);
+            // System.Diagnostics.Process.Start(result.Location.AbsolutePath);
         }
     }
 }

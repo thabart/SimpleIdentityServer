@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
@@ -60,7 +61,14 @@ namespace SimpleIdentityServer.Client.Operations
 
             if (!string.IsNullOrWhiteSpace(json))
             {
-                result.Content = JObject.Parse(json);
+                try
+                {
+                    result.Content = JObject.Parse(json);
+                }
+                catch
+                {
+                    Trace.WriteLine("the content is not a JSON object");
+                }
             }
 
             if (response.Headers.Location != null)
