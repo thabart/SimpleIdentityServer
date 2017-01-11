@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Test
 {
-    public static class ResponseTypeCode
+    public static class Basic
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
+        private static string LogPath = @"C:\Users\thabart\Desktop\Logger.Logs\Basic";
 
         public static async Task Start()
         {
@@ -37,7 +38,7 @@ namespace SimpleIdentityServer.Client.Test
         
         private static async Task RpResponseTypeCode()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-response_type-code.log"))
+            using (var writer = File.AppendText(LogPath + "rp-response_type-code.log"))
             {
                 var identityServerClientFactory = new IdentityServerClientFactory();
                 var state = Guid.NewGuid().ToString();
@@ -82,7 +83,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpScopeUserInfoClaims()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-scope-userinfo-claims.log"))
+            using (var writer = File.AppendText(LogPath + "rp-scope-userinfo-claims.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -136,7 +137,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpNonceInvalid()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-nonce-invalid.log"))
+            using (var writer = File.AppendText(LogPath + "rp-nonce-invalid.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -194,7 +195,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpTokenEndpointClientSecretBasic()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-token_endpoint-client_secret_basic.log"))
+            using (var writer = File.AppendText(LogPath + "rp-token_endpoint-client_secret_basic.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -245,7 +246,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenAud()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-aud.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-aud.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -302,7 +303,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenKidAbsentSingleJwks()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-kid-absent-single-jwks.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-kid-absent-single-jwks.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -380,7 +381,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenSigNone()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-sig-none.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-sig-none.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -432,7 +433,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenIssuerMismatch()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-issuer-mismatch.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-issuer-mismatch.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -490,7 +491,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenKidAbsentMultipleJwks()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-kid-absent-multiple-jwks.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-kid-absent-multiple-jwks.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -568,7 +569,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenBadSigRS256()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-bad-sig-rs256.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-bad-sig-rs256.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -647,7 +648,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenIat()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-iat.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-iat.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -705,7 +706,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenSigRs256()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-sig-rs256.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-sig-rs256.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -784,7 +785,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpIdTokenSub()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-id_token-sub.log"))
+            using (var writer = File.AppendText(LogPath + "rp-id_token-sub.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -842,7 +843,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpUserInfoBadSubClaim()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-userinfo-bad-sub-claim.log"))
+            using (var writer = File.AppendText(LogPath + "rp-userinfo-bad-sub-claim.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -904,7 +905,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpUserInfoBearerBody()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-userinfo-bearer-body.log"))
+            using (var writer = File.AppendText(LogPath + "rp-userinfo-bearer-body.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();
@@ -956,7 +957,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpUserInfoBearerHeader()
         {
-            using (var writer = File.AppendText(@"C:\Users\thabart\Desktop\Logger.Logs\rp-userinfo-bearer-header.log"))
+            using (var writer = File.AppendText(LogPath + "rp-userinfo-bearer-header.log"))
             {
                 var state = Guid.NewGuid().ToString();
                 var nonce = Guid.NewGuid().ToString();

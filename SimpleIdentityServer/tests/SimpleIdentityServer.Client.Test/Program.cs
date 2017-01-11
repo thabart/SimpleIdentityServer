@@ -20,14 +20,10 @@ namespace SimpleIdentityServer.Client.Test
 {
     class Program
     {
-        private const string _baseUrl = "https://rp.certification.openid.net:8080/simpleIdServer";
-        private const string RedirectUriCode = "https://localhost:5106/Authenticate/Callback";
-
         public static void Main(string[] args)
         {
-            ResponseTypeCode.Start().Wait();
-            // 1. Execute tests for basic profile
-            // identityServerClientFactory.CreateAuthSelector()
+            Basic.Start().Wait();
+            Implicit.Start().Wait();
             Console.ReadLine();
         }
     }
