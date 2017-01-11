@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Prism.Events;
+using SimpleIdentityServer.Rfid.Client.Common;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace SimpleIdentityServer.Rfid.Home.Views
+namespace SimpleIdentityServer.Rfid.Client.Home.Views
 {
-    /// <summary>
-    /// Interaction logic for HomeView.xaml
-    /// </summary>
     public partial class HomeView : UserControl
     {
-        public HomeView()
+        private readonly IEventAggregator _eventAggregator;
+
+        public HomeView(IEventAggregator eventAggregator)
         {
+            _eventAggregator = eventAggregator;
             InitializeComponent();
+        }
+
+        private void HomeViewLoaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var evt = _eventAggregator.GetEvent<CardReceivedEvent>();
+            evt.Subscribe(CardReceived);
+        }
+
+        private void CardReceived(CardInformation cardInformation)
+        {
+            // PUT THE LOGIC HERE TO VALIDATE THE CARD.
+            string s = "";
         }
     }
 }

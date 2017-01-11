@@ -16,7 +16,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace SimpleIdentityServer.Rfid
+namespace SimpleIdentityServer.Rfid.Common
 {
     internal enum RequestModes
     {

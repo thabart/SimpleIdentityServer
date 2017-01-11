@@ -1,8 +1,8 @@
 ﻿using Prism.Modularity;
 using Prism.Regions;
-using SimpleIdentityServer.Rfid.Home.Views;
+using SimpleIdentityServer.Rfid.Client.Home.Views;
 
-namespace SimpleIdentityServer.Rfid.Home
+namespace SimpleIdentityServer.Rfid.Client.Home
 {
     public class RfidHomeModule : IModule
     {

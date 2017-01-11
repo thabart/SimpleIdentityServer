@@ -16,22 +16,15 @@
 
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
-using SimpleIdentityServer.Rfid.Card;
-using SimpleIdentityServer.Rfid.Hubs;
+using SimpleIdentityServer.Rfid.Common;
 using System;
-using System.Linq;
-using System.Text;
 
-namespace SimpleIdentityServer.Rfid
+namespace SimpleIdentityServer.Rfid.Server
 {
     class Program
     {
         static void Main(string[] args)
         {
-            // Write and read identity token.
-            // WriteAndRead();
-            // var result = ReadFromCard();
-            // var token = Encoding.UTF8.GetString(result.ToArray());
             // 1. Launch signal-r
             using (WebApp.Start<Startup>("http://localhost:8080"))
             {
@@ -41,15 +34,6 @@ namespace SimpleIdentityServer.Rfid
                 Console.ReadLine();
             }
 
-            Console.ReadLine();
-        }
-
-        private static void WriteAndRead()
-        {
-            const string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
-            RfidManager.WriteToCard(Encoding.UTF8.GetBytes(idToken));
-            var result = RfidManager.ReadFromCard();
-            Console.WriteLine(Encoding.UTF8.GetString(result.ToArray()));
             Console.ReadLine();
         }
 

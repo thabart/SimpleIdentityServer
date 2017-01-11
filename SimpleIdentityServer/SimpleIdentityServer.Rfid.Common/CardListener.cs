@@ -14,15 +14,16 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Rfid.Common;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Rfid.Card
+namespace SimpleIdentityServer.Rfid.Common
 {
-    internal class CardReceivedArgs : EventArgs
+    public class CardReceivedArgs : EventArgs
     {
         public CardReceivedArgs(string cardNumber, string identityToken)
         {
@@ -34,7 +35,7 @@ namespace SimpleIdentityServer.Rfid.Card
         public string IdentityToken { get; private set; }
     }
 
-    internal class CardListener : IDisposable
+    public class CardListener : IDisposable
     {
         private string _cardNumber;
         private readonly CancellationTokenSource _token;

@@ -92,12 +92,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Card\CardListener.cs" />
-    <Compile Include="Hubs\RfidHub.cs" />
+    <Compile Include="RfidHub.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reader.cs" />
-    <Compile Include="RfidManager.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +102,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="function.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\..\SimpleIdentityServer.Rfid.Common\SimpleIdentityServer.Rfid.Common.csproj">
+      <Project>{846ce59d-c909-4fd6-81d4-7218adef6df3}</Project>
+      <Name>SimpleIdentityServer.Rfid.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid", "src\SimpleIdentityServer.Rfid\SimpleIdentityServer.Rfid.csproj", "{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Server", "src\SimpleIdentityServer.Rfid\SimpleIdentityServer.Rfid.Server.csproj", "{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Server", "01. Server", "{6B93599B-79D4-4EA2-9F64-52D53C95DF60}"
 EndProject
@@ -45,7 +45,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client", "03. Client", "{C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Home", "src\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Home.csproj", "{9182253C-9ABA-4E00-B338-018B93288195}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Home", "src\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Client.Home.csproj", "{9182253C-9ABA-4E00-B338-018B93288195}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Common", "SimpleIdentityServer.Rfid.Common\SimpleIdentityServer.Rfid.Common.csproj", "{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Common", "SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj", "{7B4740AA-CEAC-4A15-AD04-87D4F066F261}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +129,14 @@ Global
 		{9182253C-9ABA-4E00-B338-018B93288195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9182253C-9ABA-4E00-B338-018B93288195}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9182253C-9ABA-4E00-B338-018B93288195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4740AA-CEAC-4A15-AD04-87D4F066F261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4740AA-CEAC-4A15-AD04-87D4F066F261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4740AA-CEAC-4A15-AD04-87D4F066F261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4740AA-CEAC-4A15-AD04-87D4F066F261}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,5 +160,7 @@ Global
 		{425AEB49-216C-4FE1-AC85-286DEBFAD63A} = {94097D5F-F9EC-4FC4-AF6D-172E6BF1FE31}
 		{0823CE71-9419-4214-A841-2280926EACCC} = {C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}
 		{9182253C-9ABA-4E00-B338-018B93288195} = {C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}
+		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3} = {6B93599B-79D4-4EA2-9F64-52D53C95DF60}
+		{7B4740AA-CEAC-4A15-AD04-87D4F066F261} = {C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}
 	EndGlobalSection
 EndGlobal

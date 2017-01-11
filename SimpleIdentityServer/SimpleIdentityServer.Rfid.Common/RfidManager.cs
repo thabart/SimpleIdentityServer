@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SimpleIdentityServer.Rfid
+namespace SimpleIdentityServer.Rfid.Common
 {
-    internal static class RfidManager
+    public static class RfidManager
     {
         const int blockSize = 16;
         const int maxBlocks = 64;

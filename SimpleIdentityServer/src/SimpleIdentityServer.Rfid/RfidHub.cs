@@ -15,11 +15,11 @@
 #endregion
 
 using Microsoft.AspNet.SignalR;
-using SimpleIdentityServer.Rfid.Card;
+using SimpleIdentityServer.Rfid.Common;
 using System.Linq;
 using System.Text;
 
-namespace SimpleIdentityServer.Rfid.Hubs
+namespace SimpleIdentityServer.Rfid
 {
     public class RfidCard
     {

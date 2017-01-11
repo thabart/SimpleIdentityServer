@@ -130,9 +130,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Home.csproj">
+    <ProjectReference Include="..\..\SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj">
+      <Project>{7b4740aa-ceac-4a15-ad04-87d4f066f261}</Project>
+      <Name>SimpleIdentityServer.Rfid.Client.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SimpleIdentityServer.Rfid.Common\SimpleIdentityServer.Rfid.Common.csproj">
+      <Project>{846ce59d-c909-4fd6-81d4-7218adef6df3}</Project>
+      <Name>SimpleIdentityServer.Rfid.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Client.Home.csproj">
       <Project>{9182253c-9aba-4e00-b338-018b93288195}</Project>
-      <Name>SimpleIdentityServer.Rfid.Home</Name>
+      <Name>SimpleIdentityServer.Rfid.Client.Home</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
