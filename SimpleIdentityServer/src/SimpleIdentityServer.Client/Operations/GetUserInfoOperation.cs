@@ -17,6 +17,7 @@
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Factories;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IGetUserInfoOperation
     {
-        Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken);
+        Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false);
     }
 
     internal class GetUserInfoOperation : IGetUserInfoOperation
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken)
+        public async Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false)
         {
             if (userInfoUri == null)
             {
@@ -53,8 +54,24 @@ namespace SimpleIdentityServer.Client.Operations
             {
                 RequestUri = userInfoUri
             };
-            request.Headers.Add("Authorization", $"Bearer {accessToken}");
             request.Headers.Add("Accept", "application/json");
+
+            if (inBody)
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {
+                        Constants.GrantedTokenNames.AccessToken, accessToken
+                    }
+                });
+            }
+            else
+            {
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            }
+
             var serializedContent = await httpClient.SendAsync(request).ConfigureAwait(false);
             var json = await serializedContent.Content.ReadAsStringAsync();
             return JObject.Parse(json);
