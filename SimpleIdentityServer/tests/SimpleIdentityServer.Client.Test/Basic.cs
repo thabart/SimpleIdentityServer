@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,11 @@ namespace SimpleIdentityServer.Client.Test
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
-        private static string LogPath = @"C:\Users\thabart\Desktop\Logger.Logs\Basic";
+        private static string LogPath = @"C:\Users\thabart\Desktop\Logs\Basic\";
 
         public static async Task Start()
         {
-            _jwsParser = new JwsParser(null);
+            _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             await RpResponseTypeCode();
             await RpScopeUserInfoClaims();
@@ -406,7 +407,7 @@ namespace SimpleIdentityServer.Client.Test
                         {
                             "code"
                         },
-                        IdTokenSignedResponseAlg = "None"
+                        IdTokenSignedResponseAlg = "none"
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get an authorization code", writer);
                 var auth = await identityServerClientFactory.CreateAuthorizationClient()

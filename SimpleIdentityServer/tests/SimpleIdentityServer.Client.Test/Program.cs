@@ -23,7 +23,8 @@ namespace SimpleIdentityServer.Client.Test
         public static void Main(string[] args)
         {
             Basic.Start().Wait();
-            Implicit.Start().Wait();
+            Console.WriteLine("Basic is finished");
+            // Implicit.Start().Wait();
             Console.ReadLine();
         }
     }
