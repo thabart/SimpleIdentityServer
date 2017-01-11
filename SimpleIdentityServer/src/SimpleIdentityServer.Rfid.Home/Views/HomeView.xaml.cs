@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Rfid.Client.Home.Views
         private void CardReceived(CardInformation cardInformation)
         {
             // PUT THE LOGIC HERE TO VALIDATE THE CARD.
+
             string s = "";
         }
     }
