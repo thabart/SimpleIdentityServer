@@ -27,18 +27,13 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
     public interface ICngKeySerializer
     {
         string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized);
-
         CngKey DeserializeCngKeyWithPrivateKey(string serializedBlob);
-
         string SerializeCngKeyWithPublicKey(CngKey toBeSerialized);
-
         CngKey DeserializeCngKeyWithPublicKey(string serializedBlob);
     }
 
     public class CngKeySerializer : ICngKeySerializer
     {
-        #region Fields
-
         private readonly Dictionary<int, int> MappingSizeAndMagicNumberForPrivateKey = new Dictionary<int, int>
         {
             {
@@ -64,10 +59,6 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
                 66, 894649157
             }
         };
-
-#endregion
-
-        #region Public methods
 
         public string SerializeCngKeyWithPrivateKey(CngKey toBeSerialized)
         {
@@ -218,8 +209,5 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
                 return CngKey.Import(blob, CngKeyBlobFormat.EccPublicBlob);
             }
         }
-
-        #endregion
     }
 }
-#endif

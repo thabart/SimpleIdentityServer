@@ -47,9 +47,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client", "03. Client", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Home", "src\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Client.Home.csproj", "{9182253C-9ABA-4E00-B338-018B93288195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Common", "SimpleIdentityServer.Rfid.Common\SimpleIdentityServer.Rfid.Common.csproj", "{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Common", "src\SimpleIdentityServer.Rfid.Common\SimpleIdentityServer.Rfid.Common.csproj", "{846CE59D-C909-4FD6-81D4-7218ADEF6DF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Common", "SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj", "{7B4740AA-CEAC-4A15-AD04-87D4F066F261}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Common", "src\SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj", "{7B4740AA-CEAC-4A15-AD04-87D4F066F261}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

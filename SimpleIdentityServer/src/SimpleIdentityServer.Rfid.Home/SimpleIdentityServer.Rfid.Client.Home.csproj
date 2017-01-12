@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,6 +61,12 @@
     <Reference Include="Prism.Wpf, Version=6.2.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Wpf.6.2.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleIdentityServer.Core.Common">
+      <HintPath>..\SimpleIdentityServer.Rfid.Client.Common\lib\SimpleIdentityServer.Core.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleIdentityServer.Core.Jwt">
+      <HintPath>..\SimpleIdentityServer.Rfid.Client.Common\lib\SimpleIdentityServer.Core.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -122,13 +129,9 @@
     <Resource Include="Images\CardInUse.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj">
+    <ProjectReference Include="..\SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj">
       <Project>{7b4740aa-ceac-4a15-ad04-87d4f066f261}</Project>
       <Name>SimpleIdentityServer.Rfid.Client.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj">
-      <Project>{7709d106-0aa1-4fe2-be16-9e997f483311}</Project>
-      <Name>SimpleIdentityServer.Core.Jwt</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

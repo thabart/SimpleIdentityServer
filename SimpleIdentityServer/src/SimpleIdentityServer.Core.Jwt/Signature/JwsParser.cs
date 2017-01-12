@@ -37,8 +37,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
     {
         private readonly ICreateJwsSignature _createJwsSignature;
 
-        public JwsParser(
-            ICreateJwsSignature createJwsSignature)
+        public JwsParser(ICreateJwsSignature createJwsSignature)
         {
             _createJwsSignature = createJwsSignature;
         }

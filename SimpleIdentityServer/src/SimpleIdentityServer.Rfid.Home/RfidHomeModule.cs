@@ -1,8 +1,9 @@
 ﻿using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
+using SimpleIdentityServer.Core.Jwt.Serializer;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Rfid.Client.Home.Views;
-// using SimpleIdentityServer.Core.Jwt.Signature;
 
 namespace SimpleIdentityServer.Rfid.Client.Home
 {
@@ -19,7 +20,9 @@ namespace SimpleIdentityServer.Rfid.Client.Home
 
         public void Initialize()
         {
-            // _container.RegisterType<IJwsParser, JwsParser>();
+            _container.RegisterType<IJwsParser, JwsParser>();
+            _container.RegisterType<ICreateJwsSignature, CreateJwsSignature>();
+            _container.RegisterType<ICngKeySerializer, CngKeySerializer>();
             _registry.RegisterViewWithRegion("MainRegion", typeof(HomeView));
         }
     }
