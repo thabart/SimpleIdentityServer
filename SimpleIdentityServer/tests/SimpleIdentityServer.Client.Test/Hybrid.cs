@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Client.Test
         {
             _jwsParser = new JwsParser(null);
             _jsonWebKeyConverter = new JsonWebKeyConverter();
-            // id_token
+            // code+id_token
             await RpResponseTypeCodeIdToken();
             await RpScopeUserInfoClaims(SubCodeIdTokenPath, new string[] { "id_token", "code" });
             await RpNonceUnlessCodeFlow(SubCodeIdTokenPath, new string[] { "id_token", "code" });
@@ -39,6 +39,24 @@ namespace SimpleIdentityServer.Client.Test
             await RpUserInfoBadSubClaim(SubCodeIdTokenPath, new string[] { "id_token", "code" });
             await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token", "code" });
             await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token", "code" });
+            // code+id_token+token
+            await RpResponseTypeCodeIdTokenToken();
+            await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
         }
 
         private static async Task RpResponseTypeCodeIdToken()
@@ -79,11 +97,11 @@ namespace SimpleIdentityServer.Client.Test
                             ClientId = client.ClientId,
                             State = state,
                             RedirectUri = Constants.RedirectUriCode,
-                            ResponseType = "id_token",
+                            ResponseType = "id_token code",
                             Scope = "openid",
                             Nonce = nonce
                         });
-                Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("id_token")} has been returned", writer);
+                Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("code")} has been returned", writer);
             }
         }
 
@@ -447,12 +465,65 @@ namespace SimpleIdentityServer.Client.Test
                 var payload = _jwsParser.GetPayload(idToken);
                 if (!payload.ContainsKey("c_hash"))
                 {
+                    Logger.Log("the payload doesn't contain 'c_hash'", writer);
+                }
+                else
+                {
+                    var cHash = payload["c_hash"].ToString();
+                    Logger.Log($"the c_hash {cHash} is not valid", writer);
+                }
+            }
+        }
+
+        private static async Task RpIdTokenBadAtHash(string subPath, IEnumerable<string> responseTypes)
+        {
+            using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-bad-at_hash.log"))
+            {
+                var identityServerClientFactory = new IdentityServerClientFactory();
+                var state = Guid.NewGuid().ToString();
+                var nonce = Guid.NewGuid().ToString();
+                Logger.Log("Call OpenIdConfiguration", writer);
+                var discovery = await identityServerClientFactory.CreateDiscoveryClient()
+                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-id_token-bad-at_hash.log/.well-known/openid-configuration");
+                Logger.Log("Register client", writer);
+                var client = await identityServerClientFactory.CreateRegistrationClient()
+                    .ExecuteAsync(new Core.Common.DTOs.Client
+                    {
+                        RedirectUris = new List<string>
+                        {
+                            Constants.RedirectUriCode
+                        },
+                        ApplicationType = "web",
+                        GrantTypes = new List<string>
+                        {
+                            "implicit",
+                            "authorization_code"
+                        },
+                        ResponseTypes = responseTypes
+                    }, discovery.RegistrationEndPoint);
+                Logger.Log("Get authorization", writer);
+                var result = await identityServerClientFactory.CreateAuthorizationClient()
+                    .ExecuteAsync(discovery.AuthorizationEndPoint,
+                        new Core.Common.DTOs.AuthorizationRequest
+                        {
+                            ClientId = client.ClientId,
+                            State = state,
+                            RedirectUri = Constants.RedirectUriCode,
+                            ResponseType = string.Join(" ", responseTypes),
+                            Scope = "openid",
+                            Nonce = nonce
+                        });
+                var idToken = result.Content.Value<string>("id_token");
+                Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
+                var payload = _jwsParser.GetPayload(idToken);
+                if (!payload.ContainsKey("at_hash"))
+                {
                     Logger.Log("the payload doesn't contain 'at_hash'", writer);
                 }
                 else
                 {
-                    var atHash = payload["c_hash"].ToString();
-                    Logger.Log($"the hash {atHash} is not valid", writer);
+                    var atHash = payload["at_hash"].ToString();
+                    Logger.Log($"the at_hash {atHash} is not valid", writer);
                 }
             }
         }
@@ -976,6 +1047,53 @@ namespace SimpleIdentityServer.Client.Test
                 var userInfo = await identityServerClientFactory.CreateUserInfoClient()
                     .GetUserInfoAsync(discovery.UserInfoEndPoint, accessToken, false);
                 Logger.Log("user information has been returned", writer);
+            }
+        }
+
+        private static async Task RpResponseTypeCodeIdTokenToken()
+        {
+            using (var writer = File.AppendText(LogPath + SubCodeIdTokenTokenPath + "rp-response_type-code+id_token+token"))
+            {
+                var identityServerClientFactory = new IdentityServerClientFactory();
+                var state = Guid.NewGuid().ToString();
+                var nonce = Guid.NewGuid().ToString();
+                Logger.Log("Call OpenIdConfiguration", writer);
+                var discovery = await identityServerClientFactory.CreateDiscoveryClient()
+                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-response_type-code+id_token+token/.well-known/openid-configuration");
+                Logger.Log("Register client", writer);
+                var client = await identityServerClientFactory.CreateRegistrationClient()
+                    .ExecuteAsync(new Core.Common.DTOs.Client
+                    {
+                        RedirectUris = new List<string>
+                        {
+                            Constants.RedirectUriCode
+                        },
+                        ApplicationType = "web",
+                        GrantTypes = new List<string>
+                        {
+                            "implicit",
+                            "authorization_code"
+                        },
+                        ResponseTypes = new List<string>
+                        {
+                            "id_token",
+                            "code",
+                            "token"
+                        }
+                    }, discovery.RegistrationEndPoint);
+                Logger.Log("Get authorization", writer);
+                var result = await identityServerClientFactory.CreateAuthorizationClient()
+                    .ExecuteAsync(discovery.AuthorizationEndPoint,
+                        new Core.Common.DTOs.AuthorizationRequest
+                        {
+                            ClientId = client.ClientId,
+                            State = state,
+                            RedirectUri = Constants.RedirectUriCode,
+                            ResponseType = "id_token code token",
+                            Scope = "openid",
+                            Nonce = nonce
+                        });
+                Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("code")} & token {result.Content.Value<string>("access_token")} have been returned", writer);
             }
         }
     }
