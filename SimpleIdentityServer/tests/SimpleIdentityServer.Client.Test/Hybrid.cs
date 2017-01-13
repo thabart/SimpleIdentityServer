@@ -23,41 +23,41 @@ namespace SimpleIdentityServer.Client.Test
             _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             // code+id_token
-            await RpResponseTypeCodeIdToken();
-            await RpScopeUserInfoClaims(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpNonceUnlessCodeFlow(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpNonceInvalid(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenAud(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenBadCHash(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenIssuerMismatch(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenBadSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenIat(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpIdTokenSub(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpUserInfoBadSubClaim(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token code" });
-            await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpResponseTypeCodeIdToken();
+            // await RpScopeUserInfoClaims(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpNonceUnlessCodeFlow(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpNonceInvalid(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpTokenEndpointClientSecretBasic(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenAud(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenBadCHash(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenIssuerMismatch(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenBadSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenIat(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpIdTokenSub(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpUserInfoBadSubClaim(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token code" });
+            // await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token code" });
             // code+id_token+token
-            // await RpResponseTypeCodeIdTokenToken();
-            // await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            // await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            await RpResponseTypeCodeIdTokenToken();
+            await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
         }
 
         private static async Task RpResponseTypeCodeIdToken()
@@ -492,7 +492,7 @@ namespace SimpleIdentityServer.Client.Test
                 var nonce = Guid.NewGuid().ToString();
                 Logger.Log("Call OpenIdConfiguration", writer);
                 var discovery = await identityServerClientFactory.CreateDiscoveryClient()
-                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-id_token-bad-at_hash.log/.well-known/openid-configuration");
+                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-id_token-bad-at_hash/.well-known/openid-configuration");
                 Logger.Log("Register client", writer);
                 var client = await identityServerClientFactory.CreateRegistrationClient()
                     .ExecuteAsync(new Core.Common.DTOs.Client
@@ -1086,7 +1086,7 @@ namespace SimpleIdentityServer.Client.Test
 
         private static async Task RpResponseTypeCodeIdTokenToken()
         {
-            using (var writer = File.AppendText(LogPath + SubCodeIdTokenTokenPath + "rp-response_type-code+id_token+token"))
+            using (var writer = File.AppendText(LogPath + SubCodeIdTokenTokenPath + "rp-response_type-code+id_token+token.log"))
             {
                 var identityServerClientFactory = new IdentityServerClientFactory();
                 var state = Guid.NewGuid().ToString();
