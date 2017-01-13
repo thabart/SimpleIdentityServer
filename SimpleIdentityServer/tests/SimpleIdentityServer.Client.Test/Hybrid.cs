@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Collections.Generic;
@@ -19,44 +20,44 @@ namespace SimpleIdentityServer.Client.Test
 
         public static async Task Start()
         {
-            _jwsParser = new JwsParser(null);
+            _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             // code+id_token
             await RpResponseTypeCodeIdToken();
-            await RpScopeUserInfoClaims(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpNonceUnlessCodeFlow(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpNonceInvalid(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenAud(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenBadCHash(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenIssuerMismatch(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenBadSigRS256(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenIat(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenSigRS256(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpIdTokenSub(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpUserInfoBadSubClaim(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token", "code" });
-            await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token", "code" });
+            await RpScopeUserInfoClaims(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpNonceUnlessCodeFlow(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpNonceInvalid(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenAud(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenBadCHash(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenIssuerMismatch(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenBadSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenIat(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenSigRS256(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpIdTokenSub(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpUserInfoBadSubClaim(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token code" });
+            await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token code" });
             // code+id_token+token
-            await RpResponseTypeCodeIdTokenToken();
-            await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
-            await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpResponseTypeCodeIdTokenToken();
+            // await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
+            // await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token", "token", "code" });
         }
 
         private static async Task RpResponseTypeCodeIdToken()
@@ -85,8 +86,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "code"
+                            "id_token code"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -99,7 +99,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token code",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("code")} has been returned", writer);
             }
@@ -141,11 +142,12 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
-                Logger.Log($"the email is {payload["email"]}", writer);
+                Logger.Log($"the email is {payload["sub"]}", writer);
             }
         }
 
@@ -185,7 +187,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -236,7 +239,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -288,7 +292,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var code = auth.Content.Value<string>("code");
                 Logger.Log("Get the identity token with client_secret_basic authentication method", writer);
@@ -336,7 +341,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -387,7 +393,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -431,7 +438,7 @@ namespace SimpleIdentityServer.Client.Test
                 var nonce = Guid.NewGuid().ToString();
                 Logger.Log("Call OpenIdConfiguration", writer);
                 var discovery = await identityServerClientFactory.CreateDiscoveryClient()
-                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-id_token-bad-c_hash.log/.well-known/openid-configuration");
+                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-id_token-bad-c_hash/.well-known/openid-configuration");
                 Logger.Log("Register client", writer);
                 var client = await identityServerClientFactory.CreateRegistrationClient()
                     .ExecuteAsync(new Core.Common.DTOs.Client
@@ -458,7 +465,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
@@ -511,7 +519,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
@@ -564,7 +573,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -615,7 +625,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -686,7 +697,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -757,7 +769,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -808,7 +821,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -879,7 +893,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -930,11 +945,17 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
-                var accessToken = result.Content.Value<string>("access_token");
-                Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
+                var code = result.Content.Value<string>("code");
+                Logger.Log($"IdToken {idToken} & code {result.Content.Value<string>("code")} have been returned", writer);
+                Logger.Log("Get access token", writer);
+                var token = await identityServerClientFactory.CreateAuthSelector()
+                    .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                    .UseAuthorizationCode(code, Constants.RedirectUriCode)
+                    .ExecuteAsync(discovery.TokenEndPoint);
                 var payload = _jwsParser.GetPayload(idToken);
                 if (!payload.ContainsKey("sub"))
                 {
@@ -944,7 +965,7 @@ namespace SimpleIdentityServer.Client.Test
                 {
                     var sub = payload["sub"].ToString();
                     var userInfo = await identityServerClientFactory.CreateUserInfoClient()
-                        .GetUserInfoAsync(discovery.UserInfoEndPoint, accessToken);
+                        .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken);
                     var userInfoSub = userInfo.Value<string>("sub");
                     if (userInfoSub == sub)
                     {
@@ -994,12 +1015,19 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
-                var accessToken = result.Content.Value<string>("access_token");
+                var code = result.Content.Value<string>("code");
+                Logger.Log("Get access token", writer);
+                var token = await identityServerClientFactory.CreateAuthSelector()
+                    .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                    .UseAuthorizationCode(code, Constants.RedirectUriCode)
+                    .ExecuteAsync(discovery.TokenEndPoint);
+                var payload = _jwsParser.GetPayload(idToken);
                 var userInfo = await identityServerClientFactory.CreateUserInfoClient()
-                    .GetUserInfoAsync(discovery.UserInfoEndPoint, accessToken, true);
+                    .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken, true);
                 Logger.Log("user information has been returned", writer);
             }
         }
@@ -1040,12 +1068,18 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
-                var accessToken = result.Content.Value<string>("access_token");
+                var code = result.Content.Value<string>("code");
+                Logger.Log("Get access token", writer);
+                var token = await identityServerClientFactory.CreateAuthSelector()
+                    .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                    .UseAuthorizationCode(code, Constants.RedirectUriCode)
+                    .ExecuteAsync(discovery.TokenEndPoint);
                 var userInfo = await identityServerClientFactory.CreateUserInfoClient()
-                    .GetUserInfoAsync(discovery.UserInfoEndPoint, accessToken, false);
+                    .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken, false);
                 Logger.Log("user information has been returned", writer);
             }
         }
@@ -1076,9 +1110,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "code",
-                            "token"
+                            "id_token code token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -1091,7 +1123,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token code token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("code")} & token {result.Content.Value<string>("access_token")} have been returned", writer);
             }
