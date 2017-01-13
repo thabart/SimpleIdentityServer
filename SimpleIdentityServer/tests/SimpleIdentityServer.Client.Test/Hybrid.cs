@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Client.Test
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
-        private static string LogPath = @"C:\Users\thabart\Desktop\Logger.Logs\Hybrid";
+        private static string LogPath = @"C:\Users\thabart\Desktop\Logs\Hybrid";
         private static string SubCodeIdTokenPath = @"\code+id_token\";
         private static string SubCodeIdTokenTokenPath = @"\code+id_token+token\";
         private static string SubCodeTokenPath = @"\code+token\";

@@ -24,8 +24,10 @@ namespace SimpleIdentityServer.Client.Test
         {
             // Basic.Start().Wait();
             // Console.WriteLine("Basic is finished");
-            Implicit.Start().Wait();
-            Console.WriteLine("Implicit is finished");
+            // Implicit.Start().Wait();
+            // Console.WriteLine("Implicit is finished");
+            Hybrid.Start().Wait();
+           Console.WriteLine("Hybrid is finished");
             Console.ReadLine();
         }
     }

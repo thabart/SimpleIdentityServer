@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.Core.Jwt.Converter;
+using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,13 @@ namespace SimpleIdentityServer.Client.Test
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
-        private static string LogPath = @"C:\Users\thabart\Desktop\Logger.Logs\Implicit";
+        private static string LogPath = @"C:\Users\thabart\Desktop\Logs\Implicit";
         private static string SubIdTokenPath = @"\id_token\";
         private static string SubIdTokenTokenPath = @"\id_token+token\";
 
         public static async Task Start()
         {
-            _jwsParser = new JwsParser(null);
+            _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             // id_token
             await RpResponseTypeIdToken();
@@ -35,18 +36,18 @@ namespace SimpleIdentityServer.Client.Test
             await RpIdTokenSub(SubIdTokenPath, new string[] { "id_token" });
             // id_token+token
             await RpResponseTypeIdTokenToken();
-            await RpScopeUserInfoClaims(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpNonceUnlessCodeFlow(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpNonceInvalid(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenAud(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenKidAbsentSingleJwks(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenIssuerMismatch(SubIdTokenTokenPath, new string[] { "id_token", "token" });
+            await RpScopeUserInfoClaims(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpNonceUnlessCodeFlow(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpNonceInvalid(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenAud(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenKidAbsentSingleJwks(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenIssuerMismatch(SubIdTokenTokenPath, new string[] { "id_token token" });
             await RpIdTokenBadAtHash();
-            await RpIdTokenKidAbsentMultipleJwks(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenBadSigRS256(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenIat(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenSigRS256(SubIdTokenTokenPath, new string[] { "id_token", "token" });
-            await RpIdTokenSub(SubIdTokenTokenPath, new string[] { "id_token", "token" });
+            await RpIdTokenKidAbsentMultipleJwks(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenBadSigRS256(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenIat(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenSigRS256(SubIdTokenTokenPath, new string[] { "id_token token" });
+            await RpIdTokenSub(SubIdTokenTokenPath, new string[] { "id_token token" });
             await RpUserInfoBadSubClaim();
             await RpUserInfoBearerBody();
             await RpUserInfoBearerHeader();
@@ -90,7 +91,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 Logger.Log($"IdToken has been returned {result.Content.Value<string>("id_token")}", writer);
             }
@@ -131,11 +133,12 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
-                Logger.Log($"the email is {payload["email"]}", writer);
+                Logger.Log($"the email is {payload["sub"]}", writer);
             }
         }
 
@@ -174,7 +177,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -224,7 +228,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -274,7 +279,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -324,7 +330,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -394,7 +401,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -444,7 +452,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -514,7 +523,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -584,7 +594,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -634,7 +645,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var header = _jwsParser.GetHeader(idToken);
@@ -704,7 +716,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = string.Join(" ", responseTypes),
                             Scope = "openid email profile",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var payload = _jwsParser.GetPayload(idToken);
@@ -744,8 +757,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "token"
+                            "id_token token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -758,7 +770,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
             }
@@ -789,8 +802,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "token"
+                            "id_token token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -803,7 +815,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
@@ -845,8 +858,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "token"
+                            "id_token token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -859,7 +871,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var accessToken = result.Content.Value<string>("access_token");
@@ -912,8 +925,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "token"
+                            "id_token token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -926,7 +938,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var accessToken = result.Content.Value<string>("access_token");
@@ -961,8 +974,7 @@ namespace SimpleIdentityServer.Client.Test
                         },
                         ResponseTypes = new List<string>
                         {
-                            "id_token",
-                            "token"
+                            "id_token token"
                         }
                     }, discovery.RegistrationEndPoint);
                 Logger.Log("Get authorization", writer);
@@ -975,7 +987,8 @@ namespace SimpleIdentityServer.Client.Test
                             RedirectUri = Constants.RedirectUriCode,
                             ResponseType = "id_token token",
                             Scope = "openid",
-                            Nonce = nonce
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 var idToken = result.Content.Value<string>("id_token");
                 var accessToken = result.Content.Value<string>("access_token");

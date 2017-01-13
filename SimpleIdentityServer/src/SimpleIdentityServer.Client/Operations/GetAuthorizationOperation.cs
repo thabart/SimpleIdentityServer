@@ -14,12 +14,16 @@
 // limitations under the License.
 #endregion
 
+using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs;
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace SimpleIdentityServer.Client.Operations
 {
@@ -53,17 +57,41 @@ namespace SimpleIdentityServer.Client.Operations
             var uriBuilder = new UriBuilder(uri);
             uriBuilder.Query = request.GetQueryString();
             var response = await httpClient.GetAsync(uriBuilder.Uri);
-            var json = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             var result = new ApiResult
             {
                 StatusCode = response.StatusCode
             };
 
-            if (!string.IsNullOrWhiteSpace(json))
+            if (!string.IsNullOrWhiteSpace(content))
             {
                 try
                 {
-                    result.Content = JObject.Parse(json);
+                    if (request.ResponseMode != null && request.ResponseMode == ResponseModes.FormPost)
+                    {
+                        var source = WebUtility.HtmlDecode(content);
+                        var doc  = new HtmlDocument();
+                        doc.LoadHtml(source);
+                        var jsonObj = new JObject();
+                        var inputs = doc.DocumentNode.Descendants().Where(d => d.Name == "input" && d.Attributes != null && d.Attributes.Any(a => a.Name == "type" && a.Value == "hidden"));
+                        foreach(var input in inputs)
+                        {
+                            var nameAttr = input.Attributes.FirstOrDefault(a => a.Name == "name");
+                            var valueAttr = input.Attributes.FirstOrDefault(a => a.Name == "value");
+                            if (nameAttr == null || valueAttr == null)
+                            {
+                                continue;
+                            }
+
+                            jsonObj.Add(new JProperty(nameAttr.Value, valueAttr.Value));
+                        }
+
+                        result.Content = jsonObj;
+                    }
+                    else
+                    {
+                        result.Content = JObject.Parse(content);
+                    }
                 }
                 catch
                 {

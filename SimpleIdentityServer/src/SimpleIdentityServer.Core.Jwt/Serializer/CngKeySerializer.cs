@@ -211,3 +211,5 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
         }
     }
 }
+
+#endif
