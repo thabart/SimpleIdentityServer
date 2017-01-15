@@ -102,6 +102,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rfid\CardListener.cs" />
+    <Compile Include="Rfid\Reader.cs" />
+    <Compile Include="Rfid\RfidManager.cs" />
     <Compile Include="ValidateTab.xaml.cs">
       <DependentUpon>ValidateTab.xaml</DependentUpon>
     </Compile>
@@ -114,6 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\CardInUse.png" />
+    <Content Include="function.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
