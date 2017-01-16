@@ -1,0 +1,276 @@
+1484157231.022 Init ===========================================
+1484157231.023 HTTP request {
+    "endpoint": ".well-known/openid-configuration",
+    "method": "GET"
+}
+1484157231.023 Request {
+    "name": "ProviderConfiguration",
+    "path": "/simpleIdServer/rp-nonce-invalid/.well-known/openid-configuration"
+}
+1484157231.023 Request args 
+1484157231.056 ProviderConfigurationResponse {
+    "acr_values_supported": [
+        "PASSWORD"
+    ],
+    "authorization_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/authorization",
+    "claim_types_supported": [
+        "normal",
+        "aggregated",
+        "distributed"
+    ],
+    "claims_parameter_supported": true,
+    "claims_supported": [
+        "address",
+        "profile",
+        "birthdate",
+        "zoneinfo",
+        "updated_at",
+        "preferred_username",
+        "locale",
+        "name",
+        "phone_number",
+        "website",
+        "phone_number_verified",
+        "sub",
+        "family_name",
+        "email_verified",
+        "middle_name",
+        "email",
+        "given_name",
+        "gender",
+        "nickname",
+        "picture"
+    ],
+    "end_session_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/end_session",
+    "grant_types_supported": [
+        "authorization_code",
+        "implicit",
+        "urn:ietf:params:oauth:grant-type:jwt-bearer"
+    ],
+    "id_token_encryption_alg_values_supported": [
+        "RSA1_5",
+        "RSA-OAEP",
+        "A128KW",
+        "A192KW",
+        "A256KW",
+        "ECDH-ES",
+        "ECDH-ES+A128KW",
+        "ECDH-ES+A192KW",
+        "ECDH-ES+A256KW"
+    ],
+    "id_token_encryption_enc_values_supported": [
+        "A128CBC-HS256",
+        "A192CBC-HS384",
+        "A256CBC-HS512",
+        "A128GCM",
+        "A192GCM",
+        "A256GCM"
+    ],
+    "id_token_signing_alg_values_supported": [
+        "RS256",
+        "RS384",
+        "RS512",
+        "ES256",
+        "ES384",
+        "ES512",
+        "HS256",
+        "HS384",
+        "HS512",
+        "PS256",
+        "PS384",
+        "PS512",
+        "none"
+    ],
+    "issuer": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid",
+    "jwks_uri": "https://rp.certification.openid.net:8080/static/jwks_LqKMd8QT6zJLWL1z.json",
+    "registration_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/registration",
+    "request_object_encryption_alg_values_supported": [
+        "RSA1_5",
+        "RSA-OAEP",
+        "A128KW",
+        "A192KW",
+        "A256KW",
+        "ECDH-ES",
+        "ECDH-ES+A128KW",
+        "ECDH-ES+A192KW",
+        "ECDH-ES+A256KW"
+    ],
+    "request_object_encryption_enc_values_supported": [
+        "A128CBC-HS256",
+        "A192CBC-HS384",
+        "A256CBC-HS512",
+        "A128GCM",
+        "A192GCM",
+        "A256GCM"
+    ],
+    "request_object_signing_alg_values_supported": [
+        "RS256",
+        "RS384",
+        "RS512",
+        "ES256",
+        "ES384",
+        "ES512",
+        "HS256",
+        "HS384",
+        "HS512",
+        "PS256",
+        "PS384",
+        "PS512",
+        "none"
+    ],
+    "request_parameter_supported": true,
+    "request_uri_parameter_supported": true,
+    "require_request_uri_registration": true,
+    "response_modes_supported": [
+        "query",
+        "fragment",
+        "form_post"
+    ],
+    "response_types_supported": [
+        "code",
+        "id_token",
+        "id_token token",
+        "code id_token",
+        "code token",
+        "code id_token token"
+    ],
+    "scopes_supported": [
+        "address",
+        "profile",
+        "email",
+        "offline_access",
+        "phone",
+        "openid",
+        "openid"
+    ],
+    "subject_types_supported": [
+        "public",
+        "pairwise"
+    ],
+    "token_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/token",
+    "token_endpoint_auth_methods_supported": [
+        "client_secret_post",
+        "client_secret_basic",
+        "client_secret_jwt",
+        "private_key_jwt"
+    ],
+    "token_endpoint_auth_signing_alg_values_supported": [
+        "RS256",
+        "RS384",
+        "RS512",
+        "ES256",
+        "ES384",
+        "ES512",
+        "HS256",
+        "HS384",
+        "HS512",
+        "PS256",
+        "PS384",
+        "PS512"
+    ],
+    "userinfo_encryption_alg_values_supported": [
+        "RSA1_5",
+        "RSA-OAEP",
+        "A128KW",
+        "A192KW",
+        "A256KW",
+        "ECDH-ES",
+        "ECDH-ES+A128KW",
+        "ECDH-ES+A192KW",
+        "ECDH-ES+A256KW"
+    ],
+    "userinfo_encryption_enc_values_supported": [
+        "A128CBC-HS256",
+        "A192CBC-HS384",
+        "A256CBC-HS512",
+        "A128GCM",
+        "A192GCM",
+        "A256GCM"
+    ],
+    "userinfo_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/userinfo",
+    "userinfo_signing_alg_values_supported": [
+        "RS256",
+        "RS384",
+        "RS512",
+        "ES256",
+        "ES384",
+        "ES512",
+        "HS256",
+        "HS384",
+        "HS512",
+        "PS256",
+        "PS384",
+        "PS512",
+        "none"
+    ],
+    "version": "3.0"
+}
+1484157231.057 Response {"claims_supported": ["address", "profile", "birthdate", "zoneinfo", "updated_at", "preferred_username", "locale", "name", "phone_number", "website", "phone_number_verified", "sub", "family_name", "email_verified", "middle_name", "email", "given_name", "gender", "nickname", "picture"], "acr_values_supported": ["PASSWORD"], "require_request_uri_registration": true, "request_object_encryption_enc_values_supported": ["A128CBC-HS256", "A192CBC-HS384", "A256CBC-HS512", "A128GCM", "A192GCM", "A256GCM"], "end_session_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/end_session", "id_token_encryption_alg_values_supported": ["RSA1_5", "RSA-OAEP", "A128KW", "A192KW", "A256KW", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW"], "authorization_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/authorization", "response_types_supported": ["code", "id_token", "id_token token", "code id_token", "code token", "code id_token token"], "request_parameter_supported": true, "request_object_encryption_alg_values_supported": ["RSA1_5", "RSA-OAEP", "A128KW", "A192KW", "A256KW", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW"], "jwks_uri": "https://rp.certification.openid.net:8080/static/jwks_LqKMd8QT6zJLWL1z.json", "grant_types_supported": ["authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer"], "claim_types_supported": ["normal", "aggregated", "distributed"], "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic", "client_secret_jwt", "private_key_jwt"], "token_endpoint_auth_signing_alg_values_supported": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "PS256", "PS384", "PS512"], "userinfo_encryption_alg_values_supported": ["RSA1_5", "RSA-OAEP", "A128KW", "A192KW", "A256KW", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW"], "request_object_signing_alg_values_supported": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "PS256", "PS384", "PS512", "none"], "issuer": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid", "id_token_signing_alg_values_supported": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "PS256", "PS384", "PS512", "none"], "request_uri_parameter_supported": true, "claims_parameter_supported": true, "registration_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/registration", "userinfo_encryption_enc_values_supported": ["A128CBC-HS256", "A192CBC-HS384", "A256CBC-HS512", "A128GCM", "A192GCM", "A256GCM"], "userinfo_signing_alg_values_supported": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "PS256", "PS384", "PS512", "none"], "id_token_encryption_enc_values_supported": ["A128CBC-HS256", "A192CBC-HS384", "A256CBC-HS512", "A128GCM", "A192GCM", "A256GCM"], "userinfo_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/userinfo", "token_endpoint": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid/token", "scopes_supported": ["address", "profile", "email", "offline_access", "phone", "openid", "openid"], "response_modes_supported": ["query", "fragment", "form_post"], "subject_types_supported": ["public", "pairwise"], "version": "3.0"}
+
+1484157231.373 Init ===========================================
+1484157231.373 HTTP request {
+    "authz": "Basic",
+    "endpoint": "registration",
+    "method": "POST"
+}
+1484157231.373 Request {
+    "name": "ClientRegistration"
+}
+1484157231.476 Request args {"redirect_uris":["https://localhost:5106/Authenticate/Callback"],"response_types":["code"],"grant_types":["authorization_code"],"application_type":"web","default_max_age":0.0,"require_auth_time":false,"scim_profile":false}
+1484157231.476 RegistrationRequest {
+    "application_type": "web",
+    "default_max_age": 0.0,
+    "grant_types": [
+        "authorization_code"
+    ],
+    "redirect_uris": [
+        "https://localhost:5106/Authenticate/Callback"
+    ],
+    "require_auth_time": false,
+    "response_types": [
+        "code"
+    ],
+    "scim_profile": false
+}
+1484157231.479 HTTP response status_code:201
+1484157231.479 Response {"client_id_issued_at": 1484157231, "registration_client_uri": "https://rp.certification.openid.net:8080/simpleIdServer/registration?client_id=rv6J7ctaHJBv", "client_secret_expires_at": 1484243631, "redirect_uris": ["https://localhost:5106/Authenticate/Callback"], "application_type": "web", "client_secret": "64494f20589fdc1c6fd311e8436665f27ff253b8c0ef15fc75c68183", "grant_types": ["authorization_code"], "response_types": ["code"], "client_id": "rv6J7ctaHJBv", "registration_access_token": "MClrESyzbbwC2euxj8BWhFt3nAwqwS7Q"}
+
+1484157236.459 Init ===========================================
+1484157236.459 HTTP request {
+    "endpoint": "authorization",
+    "method": "GET"
+}
+1484157236.459 Request {
+    "name": "Authorization"
+}
+1484157236.459 Request args scope=openid%20email%20profile&response_type=code&redirect_uri=https://localhost:5106/Authenticate/Callback&state=b2edd8c1-1a10-4af3-a4ec-2296aca8a1a5&nonce=ff761774-da37-45ae-b8b1-8fc909fa4317&max_age=0&client_id=rv6J7ctaHJBv
+1484157236.46 AuthorizationRequest {
+    "client_id": "rv6J7ctaHJBv",
+    "max_age": 0,
+    "nonce": "ff761774-da37-45ae-b8b1-8fc909fa4317",
+    "redirect_uri": "https://localhost:5106/Authenticate/Callback",
+    "response_type": "code",
+    "scope": "openid email profile",
+    "state": "b2edd8c1-1a10-4af3-a4ec-2296aca8a1a5"
+}
+1484157236.462 AuthorizationResponse {
+    "client_id": "rv6J7ctaHJBv",
+    "code": "F1hKbhXDyMGZsMldtAxJAQFnCMT5Zp30GMVAM9qC5QKvMbn07zpQ8qglZ8DGvVwxa/JvR7EfSaT1xJiZpSnhc9j/IZjOluLs/IiktrrH9rsoRKlOV1gzoLq5F6Wc/kzLcipwxQRHOfw9ag5A1rVlCQ==",
+    "iss": "https://rp.certification.openid.net:8080/simpleIdServer/rp-nonce-invalid",
+    "scope": "openid email profile",
+    "state": "b2edd8c1-1a10-4af3-a4ec-2296aca8a1a5"
+}
+1484157236.463 Response https://localhost:5106/Authenticate/Callback?scope=openid+email+profile&code=F1hKbhXDyMGZsMldtAxJAQFnCMT5Zp30GMVAM9qC5QKvMbn07zpQ8qglZ8DGvVwxa%2FJvR7EfSaT1xJiZpSnhc9j%2FIZjOluLs%2FIiktrrH9rsoRKlOV1gzoLq5F6Wc%2FkzLcipwxQRHOfw9ag5A1rVlCQ%3D%3D&state=b2edd8c1-1a10-4af3-a4ec-2296aca8a1a5&client_id=rv6J7ctaHJBv&iss=https%3A%2F%2Frp.certification.openid.net%3A8080%2FsimpleIdServer%2Frp-nonce-invalid
+
+1484157237.233 Init ===========================================
+1484157237.233 HTTP request {
+    "authz": "Basic cnY2SjdjdGFISkJ2OjY0NDk0ZjIwNTg5ZmRjMWM2ZmQzMTFlODQzNjY2NWYyN2ZmMjUzYjhjMGVmMTVmYzc1YzY4MTgz",
+    "endpoint": "token",
+    "method": "POST"
+}
+1484157237.233 Request {
+    "name": "AccessToken"
+}
+1484157237.233 Request args code=F1hKbhXDyMGZsMldtAxJAQFnCMT5Zp30GMVAM9qC5QKvMbn07zpQ8qglZ8DGvVwxa%2FJvR7EfSaT1xJiZpSnhc9j%2FIZjOluLs%2FIiktrrH9rsoRKlOV1gzoLq5F6Wc%2FkzLcipwxQRHOfw9ag5A1rVlCQ%3D%3D&grant_type=authorization_code&redirect_uri=https%3A%2F%2Flocalhost%3A5106%2FAuthenticate%2FCallback
+1484157237.241 Response {"scope": "openid email profile", "token_type": "Bearer", "state": "b2edd8c1-1a10-4af3-a4ec-2296aca8a1a5", "access_token": "pXJJr6Y4HnOuLdBe5czOVpdsvE6hcOBfcfwRWl+lkztkYcNGTDcz2lDnntcCmDWdNgfmetLBWE1b20LpuG61dtKIjyJw1+teFlyY9qkHC0QUXoqgF8euJxRmj5MuXChplOsScwuXl/NgK+wkgpSbIQ==", "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImJfRGxmVk5CbWdHSFViekxmYzNKa1I5SUpJTmNZZ2NRN01yZ0hmUkxhcDAifQ.eyJzdWIiOiAiMWIyZmM5MzQxYTE2YWU0ZTMwMDgyOTY1ZDUzN2FlNDdjMjFhMGYyN2ZkNDNlYWI3ODMzMGVkODE3NTFhZTZkYiIsICJpc3MiOiAiaHR0cHM6Ly9ycC5jZXJ0aWZpY2F0aW9uLm9wZW5pZC5uZXQ6ODA4MC9zaW1wbGVJZFNlcnZlci9ycC1ub25jZS1pbnZhbGlkIiwgImF1ZCI6IFsicnY2SjdjdGFISkJ2Il0sICJub25jZSI6ICIwMTIzNDU2NzgiLCAiZXhwIjogMTQ4NDI0MzYzNywgImF1dGhfdGltZSI6IDE0ODQxNTcyMzYsICJpYXQiOiAxNDg0MTU3MjM3LCAiYWNyIjogIlBBU1NXT1JEIn0.EhabBRuRcCwELupilBYuN3fCxy6cAiC4WUplKFGZDombE5RoQr3hHLh1nrnt4NiAeaNkQhv9xcXde56Y3OOMm0RlG80CEHaBXLT7-OjkCqMk0Dk86v16VhXzxQTotd9Vj6NUG3gD3laR8CgXvNjGd_R4nW6PNG_9c_SHa-tk0cXbQRQWJRaGwUmiuwV2ZAe_sdl00E9K-mRofAY6V-PAyGVaNYFG2nZrvfe2w8KgHxRB3Ee35oKihK_b7R4KW_zDGamRxHrdo7inYHlu6U8l_sVvfFg1HQBhAemMBRFC8BzYVhxvfTagxZh4B_5AtwqpP5Ruwt3y1s_KysZIV3gMDw"}
+
