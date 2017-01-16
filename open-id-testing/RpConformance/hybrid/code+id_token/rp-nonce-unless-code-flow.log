@@ -1,0 +1,4 @@
+Log Entry : 13-01-17 15:21:38 : Call OpenIdConfiguration
+Log Entry : 13-01-17 15:21:38 : Register client
+Log Entry : 13-01-17 15:21:38 : Get authorization
+Log Entry : 13-01-17 15:21:39 : the id_token nonce & auth_nonce are equals
