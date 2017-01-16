@@ -60,20 +60,20 @@ namespace SimpleIdentityServer.Client.Test
             // await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
             // code+token
             await RpResponseTypeCodeToken();
-            await RpScopeUserInfoClaims(SubCodeTokenPath, new string[] { "code token" });
-            await RpNonceUnlessCodeFlow(SubCodeTokenPath, new string[] { "code token" });
-            await RpNonceInvalid(SubCodeTokenPath, new string[] { "code token" });
+            await RpScopeUserInfoClaims(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpNonceUnlessCodeFlow(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpNonceInvalid(SubCodeTokenPath, new string[] { "code token" }, true);
             await RpTokenEndpointClientSecretBasic(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenAud(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenKidAbsentSingleJwks(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenIssuerMismatch(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenKidAbsentMultipleJwks(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenBadSigRS256(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenIat(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenSigRS256(SubCodeTokenPath, new string[] { "code token" });
-            await RpIdTokenSub(SubCodeTokenPath, new string[] { "code token" });
-            await RpUserInfoBadSubClaim(SubCodeTokenPath, new string[] { "code token" });
-            await RpUserInfoBearerBody(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenAud(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenKidAbsentSingleJwks(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenIssuerMismatch(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenKidAbsentMultipleJwks(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenBadSigRS256(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenIat(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenSigRS256(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpIdTokenSub(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpUserInfoBadSubClaim(SubCodeTokenPath, new string[] { "code token" }, true);
+            await RpUserInfoBearerBody(SubCodeTokenPath, new string[] { "code token" }, true);
             await RpUserInfoBearerHeader(SubCodeTokenPath, new string[] { "code token" });
         }
 
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Client.Test
             }
         }
 
-        private static async Task RpScopeUserInfoClaims(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpScopeUserInfoClaims(string subPath, IEnumerable<string> responseTypes, bool useUserInfo = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-scope-userinfo-claims.log"))
             {
@@ -162,13 +162,23 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                Logger.Log($"the email is {payload["sub"]}", writer);
+
+                if (useUserInfo)
+                {
+                    var userInfo = await identityServerClientFactory.CreateUserInfoClient()
+                        .GetUserInfoAsync(discovery.UserInfoEndPoint, result.Content.Value<string>("access_token"), true);
+                    Logger.Log($"the subject is {userInfo["sub"]}", writer);
+                }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    Logger.Log($"the subject is {payload["sub"]}", writer);
+                }
             }
         }
 
-        private static async Task RpNonceUnlessCodeFlow(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpNonceUnlessCodeFlow(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-nonce-unless-code-flow.log"))
             {
@@ -207,20 +217,40 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Nonce == nonce)
+                if (useTokenEdp)
                 {
-                    Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Nonce == nonce)
+                    {
+                        Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the nonce are not equals", writer);
+                    }
                 }
                 else
                 {
-                    Logger.Log("the nonce are not equals", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Nonce == nonce)
+                    {
+                        Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the nonce are not equals", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpNonceInvalid(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpNonceInvalid(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-nonce-invalid.log"))
             {
@@ -259,15 +289,35 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Nonce == nonce)
+                if (useTokenEdp)
                 {
-                    Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Nonce == nonce)
+                    {
+                        Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the nonce are not equals", writer);
+                    }
                 }
                 else
                 {
-                    Logger.Log("the nonce are not equals", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Nonce == nonce)
+                    {
+                        Logger.Log($"the id_token nonce & auth_nonce are equals", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the nonce are not equals", writer);
+                    }
                 }
             }
         }
@@ -322,7 +372,7 @@ namespace SimpleIdentityServer.Client.Test
             }
         }
 
-        private static async Task RpIdTokenAud(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenAud(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-aud.log"))
             {
@@ -361,20 +411,40 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Audiences == null || !payload.Audiences.Any())
+                if (useTokenEdp)
                 {
-                    Logger.Log("The audience is missing", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Audiences == null || !payload.Audiences.Any())
+                    {
+                        Logger.Log("The audience is missing", writer);
+                    }
+                    else if (!payload.Audiences.Contains(client.ClientId))
+                    {
+                        Logger.Log("The audience doesn't match the client id", writer);
+                    }
                 }
-                else if (!payload.Audiences.Contains(client.ClientId))
+                else
                 {
-                    Logger.Log("The audience doesn't match the client id", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Audiences == null || !payload.Audiences.Any())
+                    {
+                        Logger.Log("The audience is missing", writer);
+                    }
+                    else if (!payload.Audiences.Contains(client.ClientId))
+                    {
+                        Logger.Log("The audience doesn't match the client id", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpIdTokenKidAbsentSingleJwks(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenKidAbsentSingleJwks(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-kid-absent-single-jwks.log"))
             {
@@ -413,40 +483,82 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var header = _jwsParser.GetHeader(idToken);
-                Logger.Log($"receive the identity token {idToken}", writer);
-                if (string.IsNullOrWhiteSpace(header.Kid))
+
+                if (useTokenEdp)
                 {
-                    Logger.Log("the kid doesn't exist", writer);
-                }
-                else
-                {
-                    var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
-                        .ExecuteAsync(discovery.JwksUri);
-                    var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                    var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
-                    if (key == null)
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var header = _jwsParser.GetHeader(token.IdToken);
+                    Logger.Log($"receive the identity token {token.IdToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
                     {
-                        Logger.Log("The kid doesn't exist", writer);
+                        Logger.Log("the kid doesn't exist", writer);
                     }
                     else
                     {
-                        var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
-                        if (jwsPayload == null)
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
                         {
-                            Logger.Log("the json web key is not correct", writer);
+                            Logger.Log("The kid doesn't exist", writer);
                         }
                         else
                         {
-                            Logger.Log($"identity token is correct {idToken}", writer);
+                            var jwsPayload = _jwsParser.ValidateSignature(token.IdToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the json web key is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {token.IdToken}", writer);
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var header = _jwsParser.GetHeader(idToken);
+                    Logger.Log($"receive the identity token {idToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
+                    {
+                        Logger.Log("the kid doesn't exist", writer);
+                    }
+                    else
+                    {
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
+                        {
+                            Logger.Log("The kid doesn't exist", writer);
+                        }
+                        else
+                        {
+                            var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the json web key is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {idToken}", writer);
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static async Task RpIdTokenBadCHash(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenBadCHash(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-bad-c_hash.log"))
             {
@@ -485,22 +597,43 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
-                var payload = _jwsParser.GetPayload(idToken);
-                if (!payload.ContainsKey("c_hash"))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the payload doesn't contain 'c_hash'", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (!payload.ContainsKey("c_hash"))
+                    {
+                        Logger.Log("the payload doesn't contain 'c_hash'", writer);
+                    }
+                    else
+                    {
+                        var cHash = payload["c_hash"].ToString();
+                        Logger.Log($"the c_hash {cHash} is not valid", writer);
+                    }
                 }
                 else
                 {
-                    var cHash = payload["c_hash"].ToString();
-                    Logger.Log($"the c_hash {cHash} is not valid", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (!payload.ContainsKey("c_hash"))
+                    {
+                        Logger.Log("the payload doesn't contain 'c_hash'", writer);
+                    }
+                    else
+                    {
+                        var cHash = payload["c_hash"].ToString();
+                        Logger.Log($"the c_hash {cHash} is not valid", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpIdTokenBadAtHash(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenBadAtHash(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-bad-at_hash.log"))
             {
@@ -539,22 +672,44 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
-                var payload = _jwsParser.GetPayload(idToken);
-                if (!payload.ContainsKey("at_hash"))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the payload doesn't contain 'at_hash'", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    Logger.Log($"Access token {result.Content.Value<string>("access_token")} have been returned", writer);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (!payload.ContainsKey("at_hash"))
+                    {
+                        Logger.Log("the payload doesn't contain 'at_hash'", writer);
+                    }
+                    else
+                    {
+                        var atHash = payload["at_hash"].ToString();
+                        Logger.Log($"the at_hash {atHash} is not valid", writer);
+                    }
                 }
                 else
                 {
-                    var atHash = payload["at_hash"].ToString();
-                    Logger.Log($"the at_hash {atHash} is not valid", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    Logger.Log($"IdToken {idToken} & access token {result.Content.Value<string>("access_token")} have been returned", writer);
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (!payload.ContainsKey("at_hash"))
+                    {
+                        Logger.Log("the payload doesn't contain 'at_hash'", writer);
+                    }
+                    else
+                    {
+                        var atHash = payload["at_hash"].ToString();
+                        Logger.Log($"the at_hash {atHash} is not valid", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpIdTokenIssuerMismatch(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenIssuerMismatch(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-issuer-mismatch.log"))
             {
@@ -593,20 +748,40 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Issuer != Constants.BaseUrl + "/rp-id_token-issuer-mismatch")
+                if (useTokenEdp)
                 {
-                    Logger.Log($"the issuer is not correct {payload.Issuer} != {Constants.BaseUrl + "/rp-id_token-issuer-mismatch"}", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Issuer != Constants.BaseUrl + "/rp-id_token-issuer-mismatch")
+                    {
+                        Logger.Log($"the issuer is not correct {payload.Issuer} != {Constants.BaseUrl + "/rp-id_token-issuer-mismatch"}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the issuer is correct", writer);
+                    }
                 }
                 else
                 {
-                    Logger.Log("the issuer is correct", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Issuer != Constants.BaseUrl + "/rp-id_token-issuer-mismatch")
+                    {
+                        Logger.Log($"the issuer is not correct {payload.Issuer} != {Constants.BaseUrl + "/rp-id_token-issuer-mismatch"}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the issuer is correct", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpIdTokenKidAbsentMultipleJwks(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenKidAbsentMultipleJwks(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-kid-absent-multiple-jwks.log"))
             {
@@ -645,40 +820,80 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var header = _jwsParser.GetHeader(idToken);
-                Logger.Log($"receive the identity token {idToken}", writer);
-                if (string.IsNullOrWhiteSpace(header.Kid))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the kid doesn't exist", writer);
-                }
-                else
-                {
-                    var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
-                        .ExecuteAsync(discovery.JwksUri);
-                    var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                    var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
-                    if (key == null)
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var header = _jwsParser.GetHeader(token.IdToken);
+                    Logger.Log($"receive the identity token {token.IdToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
                     {
-                        Logger.Log("The kid doesn't exist", writer);
+                        Logger.Log("the kid doesn't exist", writer);
                     }
                     else
                     {
-                        var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
-                        if (jwsPayload == null)
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
                         {
-                            Logger.Log("the json web key is not correct", writer);
+                            Logger.Log("The kid doesn't exist", writer);
                         }
                         else
                         {
-                            Logger.Log($"identity token is correct {idToken}", writer);
+                            var jwsPayload = _jwsParser.ValidateSignature(token.IdToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the json web key is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {token.IdToken}", writer);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var header = _jwsParser.GetHeader(idToken);
+                    Logger.Log($"receive the identity token {idToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
+                    {
+                        Logger.Log("the kid doesn't exist", writer);
+                    }
+                    else
+                    {
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
+                        {
+                            Logger.Log("The kid doesn't exist", writer);
+                        }
+                        else
+                        {
+                            var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the json web key is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {idToken}", writer);
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static async Task RpIdTokenBadSigRS256(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenBadSigRS256(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-bad-sig-rs256.log"))
             {
@@ -717,40 +932,80 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var header = _jwsParser.GetHeader(idToken);
-                Logger.Log($"receive the identity token {idToken}", writer);
-                if (string.IsNullOrWhiteSpace(header.Kid))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the kid doesn't exist", writer);
-                }
-                else
-                {
-                    var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
-                        .ExecuteAsync(discovery.JwksUri);
-                    var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                    var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
-                    if (key == null)
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var header = _jwsParser.GetHeader(token.IdToken);
+                    Logger.Log($"receive the identity token {token.IdToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
                     {
-                        Logger.Log("The kid doesn't exist", writer);
+                        Logger.Log("the kid doesn't exist", writer);
                     }
                     else
                     {
-                        var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
-                        if (jwsPayload == null)
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
                         {
-                            Logger.Log("the id_token signature is not correct", writer);
+                            Logger.Log("The kid doesn't exist", writer);
                         }
                         else
                         {
-                            Logger.Log($"identity token is correct {idToken}", writer);
+                            var jwsPayload = _jwsParser.ValidateSignature(token.IdToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the id_token signature is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {token.IdToken}", writer);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var header = _jwsParser.GetHeader(idToken);
+                    Logger.Log($"receive the identity token {idToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
+                    {
+                        Logger.Log("the kid doesn't exist", writer);
+                    }
+                    else
+                    {
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
+                        {
+                            Logger.Log("The kid doesn't exist", writer);
+                        }
+                        else
+                        {
+                            var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the id_token signature is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {idToken}", writer);
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static async Task RpIdTokenIat(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenIat(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-iat.log"))
             {
@@ -789,20 +1044,40 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Keys.Contains("iat"))
+                if (useTokenEdp)
                 {
-                    Logger.Log($"the payload contains an iat {payload.Iat}", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Keys.Contains("iat"))
+                    {
+                        Logger.Log($"the payload contains an iat {payload.Iat}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the payload doesn't contain iat", writer);
+                    }
                 }
                 else
                 {
-                    Logger.Log("the payload doesn't contain iat", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Keys.Contains("iat"))
+                    {
+                        Logger.Log($"the payload contains an iat {payload.Iat}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the payload doesn't contain iat", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpIdTokenSigRS256(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenSigRS256(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-sig-rs256.log"))
             {
@@ -841,40 +1116,80 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var header = _jwsParser.GetHeader(idToken);
-                Logger.Log($"receive the identity token {idToken}", writer);
-                if (string.IsNullOrWhiteSpace(header.Kid))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the kid doesn't exist", writer);
-                }
-                else
-                {
-                    var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
-                        .ExecuteAsync(discovery.JwksUri);
-                    var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-                    var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
-                    if (key == null)
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var header = _jwsParser.GetHeader(token.IdToken);
+                    Logger.Log($"receive the identity token {token.IdToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
                     {
-                        Logger.Log("The kid doesn't exist", writer);
+                        Logger.Log("the kid doesn't exist", writer);
                     }
                     else
                     {
-                        var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
-                        if (jwsPayload == null)
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
                         {
-                            Logger.Log("the id_token signature is not correct", writer);
+                            Logger.Log("The kid doesn't exist", writer);
                         }
                         else
                         {
-                            Logger.Log($"identity token is correct {idToken}", writer);
+                            var jwsPayload = _jwsParser.ValidateSignature(token.IdToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the id_token signature is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {token.IdToken}", writer);
+                            }
                         }
                     }
                 }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var header = _jwsParser.GetHeader(idToken);
+                    Logger.Log($"receive the identity token {idToken}", writer);
+                    if (string.IsNullOrWhiteSpace(header.Kid))
+                    {
+                        Logger.Log("the kid doesn't exist", writer);
+                    }
+                    else
+                    {
+                        var jsonWebKeySet = await identityServerClientFactory.CreateJwksClient()
+                            .ExecuteAsync(discovery.JwksUri);
+                        var keys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+                        var key = keys.FirstOrDefault(k => k.Kid == header.Kid);
+                        if (key == null)
+                        {
+                            Logger.Log("The kid doesn't exist", writer);
+                        }
+                        else
+                        {
+                            var jwsPayload = _jwsParser.ValidateSignature(idToken, key);
+                            if (jwsPayload == null)
+                            {
+                                Logger.Log("the id_token signature is not correct", writer);
+                            }
+                            else
+                            {
+                                Logger.Log($"identity token is correct {idToken}", writer);
+                            }
+                        }
+                    }
+                }                   
             }
         }
 
-        private static async Task RpIdTokenSub(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpIdTokenSub(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-id_token-sub.log"))
             {
@@ -913,20 +1228,40 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var payload = _jwsParser.GetPayload(idToken);
-                if (payload.Keys.Contains("sub"))
+                if (useTokenEdp)
                 {
-                    Logger.Log($"the payload contains a sub {payload["sub"]}", writer);
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (payload.Keys.Contains("sub"))
+                    {
+                        Logger.Log($"the payload contains a sub {payload["sub"]}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the payload doesn't contain sub", writer);
+                    }
                 }
                 else
                 {
-                    Logger.Log("the payload doesn't contain sub", writer);
+                    var idToken = result.Content.Value<string>("id_token");
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (payload.Keys.Contains("sub"))
+                    {
+                        Logger.Log($"the payload contains a sub {payload["sub"]}", writer);
+                    }
+                    else
+                    {
+                        Logger.Log("the payload doesn't contain sub", writer);
+                    }
                 }
             }
         }
 
-        private static async Task RpUserInfoBadSubClaim(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpUserInfoBadSubClaim(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-userinfo-bad-sub-claim.log"))
             {
@@ -965,38 +1300,69 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
-                var code = result.Content.Value<string>("code");
-                Logger.Log($"IdToken {idToken} & code {result.Content.Value<string>("code")} have been returned", writer);
-                Logger.Log("Get access token", writer);
-                var token = await identityServerClientFactory.CreateAuthSelector()
-                    .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
-                    .UseAuthorizationCode(code, Constants.RedirectUriCode)
-                    .ExecuteAsync(discovery.TokenEndPoint);
-                var payload = _jwsParser.GetPayload(idToken);
-                if (!payload.ContainsKey("sub"))
+                if (useTokenEdp)
                 {
-                    Logger.Log("the identity token doesn't contain subject", writer);
-                }
-                else
-                {
-                    var sub = payload["sub"].ToString();
-                    var userInfo = await identityServerClientFactory.CreateUserInfoClient()
-                        .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken);
-                    var userInfoSub = userInfo.Value<string>("sub");
-                    if (userInfoSub == sub)
+                    var accessToken = result.Content.Value<string>("access_token");
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(accessToken, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(token.IdToken);
+                    if (!payload.ContainsKey("sub"))
                     {
-                        Logger.Log("the subject is correct", writer);
+                        Logger.Log("the identity token doesn't contain subject", writer);
                     }
                     else
                     {
-                        Logger.Log("the subject is not correct", writer);
+                        var sub = payload["sub"].ToString();
+                        var userInfo = await identityServerClientFactory.CreateUserInfoClient()
+                            .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken);
+                        var userInfoSub = userInfo.Value<string>("sub");
+                        if (userInfoSub == sub)
+                        {
+                            Logger.Log("the subject is correct", writer);
+                        }
+                        else
+                        {
+                            Logger.Log("the subject is not correct", writer);
+                        }
+                    }
+                }
+                else
+                {
+                    var idToken = result.Content.Value<string>("id_token");
+                    var code = result.Content.Value<string>("code");
+                    Logger.Log($"IdToken {idToken} & code {result.Content.Value<string>("code")} have been returned", writer);
+                    Logger.Log("Get access token", writer);
+                    var token = await identityServerClientFactory.CreateAuthSelector()
+                        .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
+                        .UseAuthorizationCode(code, Constants.RedirectUriCode)
+                        .ExecuteAsync(discovery.TokenEndPoint);
+                    var payload = _jwsParser.GetPayload(idToken);
+                    if (!payload.ContainsKey("sub"))
+                    {
+                        Logger.Log("the identity token doesn't contain subject", writer);
+                    }
+                    else
+                    {
+                        var sub = payload["sub"].ToString();
+                        var userInfo = await identityServerClientFactory.CreateUserInfoClient()
+                            .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken);
+                        var userInfoSub = userInfo.Value<string>("sub");
+                        if (userInfoSub == sub)
+                        {
+                            Logger.Log("the subject is correct", writer);
+                        }
+                        else
+                        {
+                            Logger.Log("the subject is not correct", writer);
+                        }
                     }
                 }
             }
         }
 
-        private static async Task RpUserInfoBearerBody(string subPath, IEnumerable<string> responseTypes)
+        private static async Task RpUserInfoBearerBody(string subPath, IEnumerable<string> responseTypes, bool useTokenEdp = false)
         {
             using (var writer = File.AppendText(LogPath + subPath + "rp-userinfo-bearer-body.log"))
             {
@@ -1035,14 +1401,12 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
                 var code = result.Content.Value<string>("code");
                 Logger.Log("Get access token", writer);
                 var token = await identityServerClientFactory.CreateAuthSelector()
                     .UseClientSecretBasicAuth(client.ClientId, client.ClientSecret)
                     .UseAuthorizationCode(code, Constants.RedirectUriCode)
                     .ExecuteAsync(discovery.TokenEndPoint);
-                var payload = _jwsParser.GetPayload(idToken);
                 var userInfo = await identityServerClientFactory.CreateUserInfoClient()
                     .GetUserInfoAsync(discovery.UserInfoEndPoint, token.AccessToken, true);
                 Logger.Log("user information has been returned", writer);
@@ -1088,7 +1452,6 @@ namespace SimpleIdentityServer.Client.Test
                             Nonce = nonce,
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
-                var idToken = result.Content.Value<string>("id_token");
                 var code = result.Content.Value<string>("code");
                 Logger.Log("Get access token", writer);
                 var token = await identityServerClientFactory.CreateAuthSelector()
