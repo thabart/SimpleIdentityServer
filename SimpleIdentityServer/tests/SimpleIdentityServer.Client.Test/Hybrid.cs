@@ -41,23 +41,40 @@ namespace SimpleIdentityServer.Client.Test
             // await RpUserInfoBearerBody(SubCodeIdTokenPath, new string[] { "id_token code" });
             // await RpUserInfoBearerHeader(SubCodeIdTokenPath, new string[] { "id_token code" });
             // code+id_token+token
-            await RpResponseTypeCodeIdTokenToken();
-            await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
-            await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpResponseTypeCodeIdTokenToken();
+            // await RpScopeUserInfoClaims(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpNonceUnlessCodeFlow(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpNonceInvalid(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpTokenEndpointClientSecretBasic(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenAud(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenKidAbsentSingleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenBadCHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenIssuerMismatch(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenBadAtHash(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenKidAbsentMultipleJwks(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenBadSigRS256(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenIat(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpIdTokenSub(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpUserInfoBadSubClaim(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpUserInfoBearerBody(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // await RpUserInfoBearerHeader(SubCodeIdTokenTokenPath, new string[] { "id_token token code" });
+            // code+token
+            await RpResponseTypeCodeToken();
+            await RpScopeUserInfoClaims(SubCodeTokenPath, new string[] { "code token" });
+            await RpNonceUnlessCodeFlow(SubCodeTokenPath, new string[] { "code token" });
+            await RpNonceInvalid(SubCodeTokenPath, new string[] { "code token" });
+            await RpTokenEndpointClientSecretBasic(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenAud(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenKidAbsentSingleJwks(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenIssuerMismatch(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenKidAbsentMultipleJwks(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenBadSigRS256(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenIat(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenSigRS256(SubCodeTokenPath, new string[] { "code token" });
+            await RpIdTokenSub(SubCodeTokenPath, new string[] { "code token" });
+            await RpUserInfoBadSubClaim(SubCodeTokenPath, new string[] { "code token" });
+            await RpUserInfoBearerBody(SubCodeTokenPath, new string[] { "code token" });
+            await RpUserInfoBearerHeader(SubCodeTokenPath, new string[] { "code token" });
         }
 
         private static async Task RpResponseTypeCodeIdToken()
@@ -1127,6 +1144,52 @@ namespace SimpleIdentityServer.Client.Test
                             ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
                         });
                 Logger.Log($"IdToken {result.Content.Value<string>("id_token")} & code {result.Content.Value<string>("code")} & token {result.Content.Value<string>("access_token")} have been returned", writer);
+            }
+        }
+
+        private static async Task RpResponseTypeCodeToken()
+        {
+            using (var writer = File.AppendText(LogPath + SubCodeTokenPath + "rp-response_type-code+token.log"))
+            {
+                var identityServerClientFactory = new IdentityServerClientFactory();
+                var state = Guid.NewGuid().ToString();
+                var nonce = Guid.NewGuid().ToString();
+                Logger.Log("Call OpenIdConfiguration", writer);
+                var discovery = await identityServerClientFactory.CreateDiscoveryClient()
+                    .GetDiscoveryInformationAsync(Constants.BaseUrl + "/rp-response_type-code+token/.well-known/openid-configuration");
+                Logger.Log("Register client", writer);
+                var client = await identityServerClientFactory.CreateRegistrationClient()
+                    .ExecuteAsync(new Core.Common.DTOs.Client
+                    {
+                        RedirectUris = new List<string>
+                        {
+                            Constants.RedirectUriCode
+                        },
+                        ApplicationType = "web",
+                        GrantTypes = new List<string>
+                        {
+                            "implicit",
+                            "authorization_code"
+                        },
+                        ResponseTypes = new List<string>
+                        {
+                            "code token"
+                        }
+                    }, discovery.RegistrationEndPoint);
+                Logger.Log("Get authorization", writer);
+                var result = await identityServerClientFactory.CreateAuthorizationClient()
+                    .ExecuteAsync(discovery.AuthorizationEndPoint,
+                        new Core.Common.DTOs.AuthorizationRequest
+                        {
+                            ClientId = client.ClientId,
+                            State = state,
+                            RedirectUri = Constants.RedirectUriCode,
+                            ResponseType = "code token",
+                            Scope = "openid",
+                            Nonce = nonce,
+                            ResponseMode = Core.Common.DTOs.ResponseModes.FormPost
+                        });
+                Logger.Log($"Code {result.Content.Value<string>("code")} & token {result.Content.Value<string>("access_token")} have been returned", writer);
             }
         }
     }

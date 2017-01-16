@@ -2066,7 +2066,7 @@
   },
   "libraries": {
     "HtmlAgilityPack.NetCore/1.5.0.1": {
-      "sha512": "N6FUlFbidfiWu1TcrNDQufaU5TbZ2RRn+kYHjwsLxcklQU8Cnmul+pTn2clKausZRHeFVxGp2ZECIWuDvot8Hg==",
+      "sha512": "4rl5hUO6uIKPXeJ5nAJ9SRqTTlDcufQkoQYPI45xgizGvz8JWgGNN4p1uHm8fL9CZzH0I1cV9HEoOJBD8w5y7w==",
       "type": "package",
       "path": "HtmlAgilityPack.NetCore/1.5.0.1",
       "files": [
@@ -2299,7 +2299,7 @@
       ]
     },
     "runtime.native.System.Net.Http/4.0.1": {
-      "sha512": "ca8oLM6d3QzlVwzoqm+4hhgFgosxhs8AZMZvPTUIfO4B2VK5N6fi6+QPNbWOPKHW8Ue5Bm7ePWnnBzgcIFVfPw==",
+      "sha512": "Nh0UPZx2Vifh8r+J+H2jxifZUD3sBrmolgiFWJd2yiNrxO0xTa6bAw3YwRn1VOiSen/tUXMS31ttNItCZ6lKuA==",
       "type": "package",
       "path": "runtime.native.System.Net.Http/4.0.1",
       "files": [
@@ -4921,7 +4921,7 @@
       ]
     },
     "System.Security.Cryptography.Cng/4.2.0": {
-      "sha512": "MvosdrBaNilM9HAB5BM1THLYvr7+RXeq2zBqA3rlZFqv8nEmJJiBoS4zwuqg7LrYEDIcEVWuWUMpckqJSJWXmQ==",
+      "sha512": "cUJ2h+ZvONDe28Szw3st5dOHdjndhJzQ2WObDEXAWRPEQBtVItVoxbXM/OEsTthl3cNn2dk2k0I3y45igCQcLw==",
       "type": "package",
       "path": "System.Security.Cryptography.Cng/4.2.0",
       "files": [
