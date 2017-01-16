@@ -1,0 +1,5 @@
+Log Entry : 11-01-17 17:54:09 : Call OpenIdConfiguration
+Log Entry : 11-01-17 17:54:09 : Register the client
+Log Entry : 11-01-17 17:54:10 : Get an authorization code
+Log Entry : 11-01-17 17:54:10 : Get an identity token
+Log Entry : 11-01-17 17:54:11 : the payload is valid 1b2fc9341a16ae4e30082965d537ae47c21a0f27fd43eab78330ed81751ae6db

@@ -1,0 +1,4 @@
+Log Entry : 11-01-17 17:54:00 : Call OpenIdConfiguration
+Log Entry : 11-01-17 17:54:00 : Get an authorization code
+Log Entry : 11-01-17 17:54:01 : Get an identity token
+Log Entry : 11-01-17 17:54:01 : The audience doesn't match the client id

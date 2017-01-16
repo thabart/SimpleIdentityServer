@@ -1,0 +1,6 @@
+Log Entry : 11-01-17 17:53:48 : Call OpenIdConfiguration
+Log Entry : 11-01-17 17:53:49 : Register the client
+Log Entry : 11-01-17 17:53:49 : Get authorization
+Log Entry : 11-01-17 17:53:49 : Get access token
+Log Entry : 11-01-17 17:53:50 : Get user information
+Log Entry : 11-01-17 17:53:50 : claims has been returned, the subject is : 1b2fc9341a16ae4e30082965d537ae47c21a0f27fd43eab78330ed81751ae6db

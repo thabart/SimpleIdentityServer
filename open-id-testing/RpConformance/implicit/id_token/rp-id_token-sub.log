@@ -1,0 +1,4 @@
+Log Entry : 13-01-17 10:18:03 : Call OpenIdConfiguration
+Log Entry : 13-01-17 10:18:03 : Register client
+Log Entry : 13-01-17 10:18:04 : Get authorization
+Log Entry : 13-01-17 10:18:04 : the payload doesn't contain sub

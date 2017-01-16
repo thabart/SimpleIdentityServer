@@ -1,0 +1,4 @@
+Log Entry : 13-01-17 15:29:18 : Call OpenIdConfiguration
+Log Entry : 13-01-17 15:29:19 : Register client
+Log Entry : 13-01-17 15:29:20 : Get authorization
+Log Entry : 13-01-17 15:29:20 : the payload doesn't contain iat

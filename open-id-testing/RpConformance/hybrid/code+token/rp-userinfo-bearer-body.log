@@ -1,0 +1,5 @@
+Log Entry : 16-01-17 19:05:11 : Call OpenIdConfiguration
+Log Entry : 16-01-17 19:05:11 : Register client
+Log Entry : 16-01-17 19:05:12 : Get authorization
+Log Entry : 16-01-17 19:05:12 : Get access token
+Log Entry : 16-01-17 19:05:14 : user information has been returned

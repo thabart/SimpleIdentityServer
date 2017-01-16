@@ -1,0 +1,4 @@
+Log Entry : 11-01-17 17:53:50 : Call OpenIdConfiguration
+Log Entry : 11-01-17 17:53:51 : Get an authorization code
+Log Entry : 11-01-17 17:53:56 : Get an identity token
+Log Entry : 11-01-17 17:53:57 : The nonce in identity token is not correct

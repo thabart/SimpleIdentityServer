@@ -1,0 +1,5 @@
+Log Entry : 11-01-17 17:54:45 : Call OpenIdConfiguration
+Log Entry : 11-01-17 17:54:46 : Register the client
+Log Entry : 11-01-17 17:54:46 : Get an authorization code
+Log Entry : 11-01-17 17:54:47 : Get an access token
+Log Entry : 11-01-17 17:54:49 : the subject are not equals 1b2fc9341a16ae4e30082965d537ae47c21a0f27fd43eab78330ed81751ae6db != foobar

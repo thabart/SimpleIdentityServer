@@ -1,0 +1,4 @@
+Log Entry : 16-01-17 19:04:39 : Call OpenIdConfiguration
+Log Entry : 16-01-17 19:04:40 : Register client
+Log Entry : 16-01-17 19:04:40 : Get authorization
+Log Entry : 16-01-17 19:04:41 : the issuer is not correct https://example.org/ != https://rp.certification.openid.net:8080/simpleIdServer/rp-id_token-issuer-mismatch
