@@ -24,6 +24,7 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Client.Selectors;
 using System;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Client.Builders;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -37,6 +38,22 @@ namespace SimpleIdentityServer.Host.Tests
         public AuthorizationClientFixture(TestScimServerFixture server)
         {
             _server = server;
+        }
+
+        [Fact]
+        public async Task When_Requesting_AuthorizationCode_And_Code_Verifier_Is_Passed_Then_AuthCode_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var builder = new PkceBuilder();
+            var pkce = builder.Build(CodeChallengeMethods.S256);
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
+
+
         }
 
         [Fact]

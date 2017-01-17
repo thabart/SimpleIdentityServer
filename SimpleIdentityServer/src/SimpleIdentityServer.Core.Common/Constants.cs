@@ -171,6 +171,8 @@ namespace SimpleIdentityServer.Core.Common
         public const string AcrValues = "acr_values";
         public const string Request = "request";
         public const string RequestUri = "request_uri";
+        public const string CodeChallenge = "code_challenge";
+        public const string CodeChallengeMethod = "code_challenge_method";
     }
 
     public static class ResponseModeNames
@@ -194,6 +196,12 @@ namespace SimpleIdentityServer.Core.Common
         public const string Popup = "popup";
         public const string Touch = "touch";
         public const string Wap = "wap";
+    }
+
+    public static class CodeChallenges
+    {
+        public const string Plain = "plain";
+        public const string S256 = "S256";
     }
 
     public static class GrantedTokenNames

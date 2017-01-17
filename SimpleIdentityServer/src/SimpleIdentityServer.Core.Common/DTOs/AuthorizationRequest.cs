@@ -60,6 +60,15 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         Wap
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum CodeChallengeMethods
+    {
+        [EnumMember(Value = CodeChallenges.Plain)]
+        Plain,
+        [EnumMember(Value = CodeChallenges.S256)]
+        S256
+    }
+
     [DataContract]
     public class AuthorizationRequest
     {
@@ -142,6 +151,16 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         /// </summary>
         [DataMember(Name = RequestAuthorizationCodeNames.RequestUri)]
         public string RequestUri { get; set; }
+        /// <summary>
+        /// Code challenge.
+        /// </summary>
+        [DataMember(Name = RequestAuthorizationCodeNames.CodeChallenge)]
+        public string CodeChallenge { get; set; }
+        /// <summary>
+        /// Code challenge method.
+        /// </summary>
+        [DataMember(Name = RequestAuthorizationCodeNames.CodeChallengeMethod)]
+        public CodeChallengeMethods? CodeChallengeMethod { get; set; }
         [DataMember(Name = ClientAuthNames.ClientId)]
         public string ClientId { get; set; }
 
