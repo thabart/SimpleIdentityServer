@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Client.Selectors
 {
     public interface ITokenGrantTypeSelector
     {
-        ITokenClient UseAuthorizationCode(string code, string redirectUrl);
+        ITokenClient UseAuthorizationCode(string code, string redirectUrl, string codeVerifier = null);
         ITokenClient UseClientCredentials(params string[] scopes);
         ITokenClient UseClientCredentials(List<string> scopes);
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Client.Selectors
             _revokeTokenClient = revokeTokenClient;
         }
 
-        public ITokenClient UseAuthorizationCode(string code, string redirectUrl)
+        public ITokenClient UseAuthorizationCode(string code, string redirectUrl, string codeVerifier = null)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -64,6 +64,11 @@ namespace SimpleIdentityServer.Client.Selectors
             _requestBuilder.Content.Add(RequestTokenNames.Code, code);
             _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.AuthorizationCode);
             _requestBuilder.Content.Add(RequestTokenNames.RedirectUri, redirectUrl);
+            if (!string.IsNullOrWhiteSpace(codeVerifier))
+            {
+                _requestBuilder.Content.Add(RequestTokenNames.CodeVerifier, codeVerifier);
+            }
+
             return _tokenClient;
         }
 

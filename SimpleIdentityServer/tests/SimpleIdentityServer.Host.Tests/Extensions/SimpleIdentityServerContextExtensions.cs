@@ -373,6 +373,12 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         Id = "3",
                         ClientId = "hybrid_client",
                         ResourceOwnerId = "administrator"
+                    },
+                    new Consent
+                    {
+                        Id = "4",
+                        ClientId = "pkce_client",
+                        ResourceOwnerId = "administrator"
                     }
                 };
                 context.Consents.AddRange(consents);
@@ -413,6 +419,16 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     new ConsentScope
                     {
                         ConsentId = "3",
+                        ScopeName = "openid"
+                    },
+                    new ConsentScope
+                    {
+                        ConsentId = "4",
+                        ScopeName = "api1"
+                    },
+                    new ConsentScope
+                    {
+                        ConsentId = "4",
                         ScopeName = "openid"
                     }
                 };

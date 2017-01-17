@@ -114,6 +114,40 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
+        public async Task When_Pkce_Validation_Failed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
+            {
+                ClientAssertion = "clientAssertion",
+                ClientAssertionType = "clientAssertionType",
+                ClientId = "clientId",
+                ClientSecret = "clientSecret"
+            };
+            var authorizationCode = new AuthorizationCode
+            {
+                ClientId = "clientId"
+            };
+            var client = new AuthenticationResult(new Client(), null);
+
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(client));
+            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult(authorizationCode));
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(false);
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.True(exception.Message == ErrorDescriptions.TheCodeVerifierIsNotCorrect);
+        }
+
+        [Fact]
         public async Task When_Granted_Client_Is_Not_The_Same_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -131,7 +165,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = "clientId"
             };
-            
+
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -169,6 +205,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri"
             };
 
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -204,6 +242,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow.AddSeconds(-30)
             };
 
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -241,6 +281,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 CreateDateTime = DateTime.UtcNow
             };
 
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authorizationCodeRepositoryFake.Setup(a => a.RemoveAsync(It.IsAny<string>())).Returns(Task.FromResult(true));
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -301,6 +343,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdTokenPayLoad = new JwsPayload()
             };
 
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -356,6 +400,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
 
+            _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
+                .Returns(true);
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))

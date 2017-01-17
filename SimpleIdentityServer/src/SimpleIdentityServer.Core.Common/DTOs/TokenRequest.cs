@@ -53,5 +53,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string ClientAssertionType { get; set; }
         [DataMember(Name = ClientAuthNames.ClientAssertion)]
         public string ClientAssertion { get; set; }
+        [DataMember(Name = RequestTokenNames.CodeVerifier)]
+        public string CodeVerifier { get; set; }
     }
 }

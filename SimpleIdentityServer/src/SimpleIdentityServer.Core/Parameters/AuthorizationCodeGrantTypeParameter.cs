@@ -42,5 +42,9 @@ namespace SimpleIdentityServer.Core.Parameters
         /// Gets or sets the client assertion.
         /// </summary>
         public string ClientAssertion { get; set; }
+        /// <summary>
+        /// Gets or sets the code verifier.
+        /// </summary>
+        public string CodeVerifier { get; set; }
     }
 }

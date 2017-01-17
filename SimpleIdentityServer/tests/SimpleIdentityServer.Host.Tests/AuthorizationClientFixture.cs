@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         [Fact]
-        public async Task When_Requesting_AuthorizationCode_And_Code_Verifier_Is_Passed_Then_AuthCode_Is_Returned()
+        public async Task When_Requesting_Token_And_CodeVerifier_Is_Passed_Then_Token_Is_Returned()
         {
             const string baseUrl = "http://localhost:5000";
             // ARRANGE
@@ -58,11 +58,18 @@ namespace SimpleIdentityServer.Host.Tests
                 "state")
             {
                 CodeChallenge = pkce.CodeChallenge,
-                CodeChallengeMethod = CodeChallengeMethods.S256
+                CodeChallengeMethod = CodeChallengeMethods.S256,
+                Prompt = PromptNames.None
             });
+            Uri location = result.Location;
+            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
+            var token = await _clientAuthSelector.UseClientSecretPostAuth("pkce_client", "pkce_client")
+                .UseAuthorizationCode(queries["code"], "http://localhost:5000/callback", pkce.CodeVerifier)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
-            Assert.NotNull(result);
+            Assert.NotNull(token);
+            Assert.NotEmpty(token.AccessToken);
         }
 
         [Fact]

@@ -14,9 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -25,6 +29,7 @@ namespace SimpleIdentityServer.Core.Validators
         IEnumerable<string> GetRedirectionUrls(Client client, params string[] urls);
         bool CheckGrantTypes(Client client, params GrantType[] grantTypes);
         bool CheckResponseTypes(Client client, params ResponseType[] responseTypes);
+        bool CheckPkce(Client client, string codeVerifier, AuthorizationCode code);
     }
 
     public class ClientValidator : IClientValidator
@@ -76,6 +81,33 @@ namespace SimpleIdentityServer.Core.Validators
             }
 
             return client.ResponseTypes != null && responseTypes.All(rt => client.ResponseTypes.Contains(rt));
+        }
+
+        public bool CheckPkce(Client client, string codeVerifier, AuthorizationCode code)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            if (code == null)
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            if (!client.RequirePkce)
+            {
+                return true;
+            }
+
+            if (code.CodeChallengeMethod.Value == Parameters.CodeChallengeMethods.Plain)
+            {
+                return codeVerifier == code.CodeChallenge;
+            }
+
+            var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(codeVerifier));
+            var codeChallenge = hashed.Base64EncodeBytes();
+            return code.CodeChallenge == codeChallenge;
         }
     }
 }

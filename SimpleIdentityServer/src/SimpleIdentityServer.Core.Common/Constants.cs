@@ -130,6 +130,7 @@ namespace SimpleIdentityServer.Core.Common
         public const string Code = "code";
         public const string RedirectUri = "redirect_uri";
         public const string RefreshToken = "refresh_token";
+        public const string CodeVerifier = "code_verifier";
     }
 
     public static class GrantTypes

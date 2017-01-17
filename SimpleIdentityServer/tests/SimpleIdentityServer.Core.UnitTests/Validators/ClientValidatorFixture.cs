@@ -14,10 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Validators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
@@ -168,6 +172,100 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ACTS & ASSERTS
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token));
             Assert.False(_clientValidator.CheckGrantTypes(client, GrantType.refresh_token, GrantType.password));
+        }
+
+        #endregion
+
+        #region CheckPkce
+
+        [Fact]
+        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACTS & ASSERTS
+            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Client(), null, null));
+        }
+
+        [Fact]
+        public void When_RequirePkce_Is_False_Then_True_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACT
+            var result = _clientValidator.CheckPkce(new Client
+            {
+                RequirePkce = false
+            }, null, new AuthorizationCode());
+
+            // ASSERT
+            Assert.True(result);
+
+        }
+
+        [Fact]
+        public void When_Plain_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACT
+            var result = _clientValidator.CheckPkce(new Client
+            {
+                RequirePkce = true
+            }, "invalid_code", new AuthorizationCode
+            {
+                CodeChallenge = "code",
+                CodeChallengeMethod = Parameters.CodeChallengeMethods.Plain
+            });
+
+            // ASSERT
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void When_RS256_CodeChallenge_Is_Not_Correct_Then_False_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+
+            // ACT
+            var result = _clientValidator.CheckPkce(new Client
+            {
+                RequirePkce = true
+            }, "code", new AuthorizationCode
+            {
+                CodeChallenge = "code",
+                CodeChallengeMethod = Parameters.CodeChallengeMethods.RS256
+            });
+
+            // ASSERT
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void When_RS256_CodeChallenge_Is_Correct_Then_True_Is_Returned()
+        {
+            // ARRANGE
+            InitializeMockingObjects();
+            var hashed = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes("code"));
+            var codeChallenge = hashed.Base64EncodeBytes();
+
+            // ACT
+            var result = _clientValidator.CheckPkce(new Client
+            {
+                RequirePkce = true
+            }, "code", new AuthorizationCode
+            {
+                CodeChallenge = codeChallenge,
+                CodeChallengeMethod = Parameters.CodeChallengeMethods.RS256
+            });
+
+            // ASSERT
+            Assert.True(result);
         }
 
         #endregion

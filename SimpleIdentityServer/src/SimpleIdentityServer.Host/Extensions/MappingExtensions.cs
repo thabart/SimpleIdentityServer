@@ -131,7 +131,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 Code = request.Code,
                 RedirectUri = request.RedirectUri,
                 ClientAssertion = request.ClientAssertion,
-                ClientAssertionType = request.ClientAssertionType
+                ClientAssertionType = request.ClientAssertionType,
+                CodeVerifier = request.CodeVerifier
             };
         }
 

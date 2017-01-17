@@ -160,7 +160,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
             }
 
-            // 3. Ensure the authorization code was issued to the authenticated client.
+            // 3. Check PKCE
+            if (!_clientValidator.CheckPkce(client, authorizationCodeGrantTypeParameter.CodeVerifier, authorizationCode))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheCodeVerifierIsNotCorrect);
+            }
+
+            // 4. Ensure the authorization code was issued to the authenticated client.
             var authorizationClientId = authorizationCode.ClientId;
             if (authorizationClientId != client.ClientId)
             {
@@ -175,7 +181,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
             }
 
-            // 4. Ensure the authorization code is still valid.
+            // 5. Ensure the authorization code is still valid.
             var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync();
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;

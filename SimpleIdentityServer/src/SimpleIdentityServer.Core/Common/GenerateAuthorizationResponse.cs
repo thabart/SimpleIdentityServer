@@ -179,7 +179,7 @@ namespace SimpleIdentityServer.Core.Common
                 if (client.RequirePkce)
                 {
                     authorizationCode.CodeChallenge = authorizationParameter.CodeChallenge;
-                    authorizationCode.CodeChallengeMethod = authorizationCode.CodeChallengeMethod;
+                    authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod;
                 }
 
                 await _authorizationCodeRepository.AddAsync(authorizationCode);
