@@ -22,6 +22,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 
                     b.Property<string>("ClientId");
 
+                    b.Property<string>("CodeChallenge");
+
+                    b.Property<int?>("CodeChallengeMethod");
+
                     b.Property<DateTime>("CreateDateTime");
 
                     b.Property<string>("IdTokenPayload");
@@ -93,6 +97,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.Property<string>("RequestUris");
 
                     b.Property<bool>("RequireAuthTime");
+
+                    b.Property<bool>("RequirePkce");
 
                     b.Property<string>("ResponseTypes");
 

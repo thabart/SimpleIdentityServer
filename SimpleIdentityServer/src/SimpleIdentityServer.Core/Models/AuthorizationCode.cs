@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Parameters;
 using System;
 
 namespace SimpleIdentityServer.Core.Models
@@ -55,5 +56,15 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
         public string Scopes { get; set; }
+
+        /// <summary>
+        /// Code challenge.
+        /// </summary>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Code challenge method.
+        /// </summary>
+        public CodeChallengeMethods? CodeChallengeMethod { get; set; }
     }
 }

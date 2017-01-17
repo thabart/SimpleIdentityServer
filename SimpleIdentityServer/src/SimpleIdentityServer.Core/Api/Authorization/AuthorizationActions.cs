@@ -72,7 +72,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 parameter.ResponseType,
                 parameter.Scope,
                 parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
-            // TODO : Check PKCE is required by the client.
             if (client.RequirePkce && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
             {
                 throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId));

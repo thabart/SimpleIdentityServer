@@ -50,6 +50,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         CreateDateTime = authorizationCode.CreateDateTime,
                         Scopes = authorizationCode.Scopes,
                         RedirectUri = authorizationCode.RedirectUri,
+                        CodeChallenge = authorizationCode.CodeChallenge,
+                        CodeChallengeMethod = (int?)authorizationCode.CodeChallengeMethod,
                         IdTokenPayload = authorizationCode.IdTokenPayload == null ? string.Empty : authorizationCode.IdTokenPayload.SerializeWithJavascript(),
                         UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
                     };

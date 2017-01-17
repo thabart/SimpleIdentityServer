@@ -38,5 +38,15 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets the concatenated list of scopes.
         /// </summary>
         public string Scopes { get; set; }
+
+        /// <summary>
+        /// Gets or sets code challenge
+        /// </summary>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Get or sets code challenge method.
+        /// </summary>
+        public int? CodeChallengeMethod { get; set; }
     }
 }

@@ -247,7 +247,9 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 RedirectUri = authorizationCode.RedirectUri,
                 Scopes = authorizationCode.Scopes,
                 UserInfoPayLoad = string.IsNullOrWhiteSpace(authorizationCode.UserInfoPayLoad) ? null : authorizationCode.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>(),
-                IdTokenPayload = string.IsNullOrWhiteSpace(authorizationCode.IdTokenPayload) ? null : authorizationCode.IdTokenPayload.DeserializeWithJavascript<JwsPayload>()
+                IdTokenPayload = string.IsNullOrWhiteSpace(authorizationCode.IdTokenPayload) ? null : authorizationCode.IdTokenPayload.DeserializeWithJavascript<JwsPayload>(),
+                CodeChallenge = authorizationCode.CodeChallenge,
+                CodeChallengeMethod = authorizationCode.CodeChallengeMethod == null ? null : (Core.Parameters.CodeChallengeMethods?)authorizationCode.CodeChallengeMethod
             };
         }
 

@@ -14,6 +14,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     Code = table.Column<string>(nullable: false),
                     ClientId = table.Column<string>(nullable: true),
+                    CodeChallenge = table.Column<string>(nullable: true),
+                    CodeChallengeMethod = table.Column<int>(nullable: true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
                     IdTokenPayload = table.Column<string>(nullable: true),
                     RedirectUri = table.Column<string>(nullable: true),
@@ -63,6 +65,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     RequestObjectSigningAlg = table.Column<string>(nullable: true),
                     RequestUris = table.Column<string>(nullable: true),
                     RequireAuthTime = table.Column<bool>(nullable: false),
+                    RequirePkce = table.Column<bool>(nullable: false),
                     ResponseTypes = table.Column<string>(nullable: true),
                     ScimProfile = table.Column<bool>(nullable: false),
                     SectorIdentifierUri = table.Column<string>(nullable: true),

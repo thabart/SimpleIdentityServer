@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20170106160454_Initialize")]
+    [Migration("20170117143129_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,6 +22,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.Property<string>("Code");
 
                     b.Property<string>("ClientId");
+
+                    b.Property<string>("CodeChallenge");
+
+                    b.Property<int?>("CodeChallengeMethod");
 
                     b.Property<DateTime>("CreateDateTime");
 
@@ -94,6 +98,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                     b.Property<string>("RequestUris");
 
                     b.Property<bool>("RequireAuthTime");
+
+                    b.Property<bool>("RequirePkce");
 
                     b.Property<string>("ResponseTypes");
 

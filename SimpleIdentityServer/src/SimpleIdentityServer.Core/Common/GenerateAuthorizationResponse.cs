@@ -176,6 +176,12 @@ namespace SimpleIdentityServer.Core.Common
 
             if (newAuthorizationCodeGranted)
             {
+                if (client.RequirePkce)
+                {
+                    authorizationCode.CodeChallenge = authorizationParameter.CodeChallenge;
+                    authorizationCode.CodeChallengeMethod = authorizationCode.CodeChallengeMethod;
+                }
+
                 await _authorizationCodeRepository.AddAsync(authorizationCode);
                 _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
                     authorizationCode.Code,
