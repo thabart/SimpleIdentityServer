@@ -1,96 +1,54 @@
-﻿using System;
-using Windows.ApplicationModel;
+﻿using Caliburn.Micro;
+using RfidValidator.ViewModels;
+using System;
+using System.Collections.Generic;
 using Windows.ApplicationModel.Activation;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace RfidValidator
 {
-    /// <summary>
-    /// Fournit un comportement spécifique à l'application afin de compléter la classe Application par défaut.
-    /// </summary>
-    sealed partial class App : Application
+    sealed partial class App
     {
-        /// <summary>
-        /// Initialise l'objet d'application de singleton.  Il s'agit de la première ligne du code créé
-        /// à être exécutée. Elle correspond donc à l'équivalent logique de main() ou WinMain().
-        /// </summary>
+        private WinRTContainer _container;
+        private IEventAggregator _eventAggregator;
+
         public App()
         {
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            InitializeComponent();
         }
 
-        /// <summary>
-        /// Invoqué lorsque l'application est lancée normalement par l'utilisateur final.  D'autres points d'entrée
-        /// seront utilisés par exemple au moment du lancement de l'application pour l'ouverture d'un fichier spécifique.
-        /// </summary>
-        /// <param name="e">Détails concernant la requête et le processus de lancement.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override void Configure()
         {
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
-            // assurez-vous juste que la fenêtre est active
-            if (rootFrame == null)
-            {
-                // Créez un Frame utilisable comme contexte de navigation et naviguez jusqu'à la première page
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: chargez l'état de l'application précédemment suspendue
-                }
-
-                // Placez le frame dans la fenêtre active
-                Window.Current.Content = rootFrame;
-            }
-
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
-                {
-                    // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
-                    // puis configurez la nouvelle page en transmettant les informations requises en tant que
-                    // paramètre
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
-                // Vérifiez que la fenêtre actuelle est active
-                Window.Current.Activate();
-            }
+            _container = new WinRTContainer();
+            _container.RegisterWinRTServices();
+            _container.PerRequest<ShellViewModel>()
+                .PerRequest<AccountTabViewModel>()
+                .PerRequest<ValidateTabViewModel>();
+            _eventAggregator = _container.GetInstance<IEventAggregator>();
         }
 
-        /// <summary>
-        /// Appelé lorsque la navigation vers une page donnée échoue
-        /// </summary>
-        /// <param name="sender">Frame à l'origine de l'échec de navigation.</param>
-        /// <param name="e">Détails relatifs à l'échec de navigation</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            if (args.PreviousExecutionState == ApplicationExecutionState.Running)
+            {
+                return;
+            }
+
+            DisplayRootViewFor<ShellViewModel>();
         }
 
-        /// <summary>
-        /// Appelé lorsque l'exécution de l'application est suspendue.  L'état de l'application est enregistré
-        /// sans savoir si l'application pourra se fermer ou reprendre sans endommager
-        /// le contenu de la mémoire.
-        /// </summary>
-        /// <param name="sender">Source de la requête de suspension.</param>
-        /// <param name="e">Détails de la requête de suspension.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        protected override object GetInstance(Type service, string key)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: enregistrez l'état de l'application et arrêtez toute activité en arrière-plan
-            deferral.Complete();
+            return _container.GetInstance(service, key);
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            return _container.GetAllInstances(service);
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            _container.BuildUp(instance);
         }
     }
 }

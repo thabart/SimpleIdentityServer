@@ -1,9 +1,10 @@
 ﻿<Page
-    x:Class="RfidValidator.MainPage"
+    x:Class="RfidValidator.Views.ShellView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RfidValidator"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cm="using:Caliburn.Micro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Loaded="PageLoaded">
@@ -25,9 +26,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Style="{StaticResource MenuItem}" Click="NavigateToValidate">Validate</Button>
-            <Button Style="{StaticResource MenuItem}" Click="NavigateToAccount">Your subscription</Button>
+            <Button Style="{StaticResource MenuItem}" x:Name="ShowValidate">Validate</Button>
+            <Button Style="{StaticResource MenuItem}" x:Name="ShowSubscription">Your subscription</Button>
         </StackPanel>
-        <Frame x:Name="Content" Grid.Row="1" />
+        <Frame x:Name="Content" Grid.Row="1" cm:Message.Attach="[Event Loaded] = [SetupNavigationService($source)]" />
     </Grid>
 </Page>

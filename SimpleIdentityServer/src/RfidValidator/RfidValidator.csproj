@@ -92,21 +92,24 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountTab.xaml.cs">
-      <DependentUpon>AccountTab.xaml</DependentUpon>
+    <Compile Include="ViewModels\AccountTabViewModel.cs" />
+    <Compile Include="ViewModels\ValidateTabViewModel.cs" />
+    <Compile Include="Views\AccountTabView.xaml.cs">
+      <DependentUpon>AccountTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Views\ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rfid\CardListener.cs" />
     <Compile Include="Rfid\Reader.cs" />
     <Compile Include="Rfid\RfidManager.cs" />
-    <Compile Include="ValidateTab.xaml.cs">
-      <DependentUpon>ValidateTab.xaml</DependentUpon>
+    <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\ValidateTabView.xaml.cs">
+      <DependentUpon>ValidateTabView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -134,19 +137,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="AccountTab.xaml">
+    <Page Include="Views\AccountTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Views\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ValidateTab.xaml">
+    <Page Include="Views\ValidateTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Caliburn.Micro">
+      <HintPath>references\Caliburn.Micro.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform.Core">
+      <HintPath>references\Caliburn.Micro.Platform.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform.UWP">
+      <HintPath>references\Caliburn.Micro.Platform.UWP.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

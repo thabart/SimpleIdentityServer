@@ -1,10 +1,10 @@
 ﻿using Windows.UI.Xaml.Controls;
 
-namespace RfidValidator
+namespace RfidValidator.Views
 {
-    public sealed partial class AccountTab : Page
+    public sealed partial class ValidateTabView
     {
-        public AccountTab()
+        public ValidateTabView()
         {
             this.InitializeComponent();
         }
