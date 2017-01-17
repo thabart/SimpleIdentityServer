@@ -13,12 +13,15 @@ namespace SimpleIdentityServer.Client.Test
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
-        private static string LogPath = @"C:\Users\thabart\Desktop\Logs\Implicit";
+        private static string LogPath = @"Logs\Implicit";
         private static string SubIdTokenPath = @"\id_token\";
         private static string SubIdTokenTokenPath = @"\id_token+token\";
 
         public static async Task Start()
         {
+            DirectoryHelper.DropAndCreate(@"Logs\Implicit");
+            DirectoryHelper.DropAndCreate(@"Logs\Implicit\id_token");
+            DirectoryHelper.DropAndCreate(@"Logs\Implicit\id_token+token");
             _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             // id_token

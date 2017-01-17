@@ -13,10 +13,11 @@ namespace SimpleIdentityServer.Client.Test
     {
         private static IJwsParser _jwsParser;
         private static IJsonWebKeyConverter _jsonWebKeyConverter;
-        private static string LogPath = @"C:\Users\thabart\Desktop\Logs\Basic\";
+        private static string LogPath = @"Logs\Basic\";
 
         public static async Task Start()
         {
+            DirectoryHelper.DropAndCreate(@"Logs\Basic");
             _jwsParser = new JwsParser(new CreateJwsSignature(new CngKeySerializer()));
             _jsonWebKeyConverter = new JsonWebKeyConverter();
             await RpResponseTypeCode();
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Client.Test
             await RpUserInfoBearerBody();
             await RpUserInfoBearerHeader();
         }
-        
+
         private static async Task RpResponseTypeCode()
         {
             using (var writer = File.AppendText(LogPath + "rp-response_type-code.log"))

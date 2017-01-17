@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.IO;
 
 namespace SimpleIdentityServer.Client.Test
 {
@@ -22,10 +23,11 @@ namespace SimpleIdentityServer.Client.Test
     {
         public static void Main(string[] args)
         {
-            // Basic.Start().Wait();
-            // Console.WriteLine("Basic is finished");
-            // Implicit.Start().Wait();
-            // Console.WriteLine("Implicit is finished");
+            DirectoryHelper.DropAndCreate("Logs");
+            Basic.Start().Wait();
+            Console.WriteLine("Basic is finished");
+            Implicit.Start().Wait();
+            Console.WriteLine("Implicit is finished");
             Hybrid.Start().Wait();
             Console.WriteLine("Hybrid is finished");
             Console.ReadLine();
