@@ -705,6 +705,41 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     },
                     new DataAccess.SqlServer.Models.Client
                     {
+                        ClientId = "pkce_client",
+                        ClientName = "pkce_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "pkce_client"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            }
+                        },
+                        GrantTypes = "0",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "http://localhost:5000/callback",
+                        RequirePkce = true
+                    },
+                    new DataAccess.SqlServer.Models.Client
+                    {
                         ClientId = "hybrid_client",
                         ClientName = "hybrid_client",
                         ClientSecrets = new List<ClientSecret>

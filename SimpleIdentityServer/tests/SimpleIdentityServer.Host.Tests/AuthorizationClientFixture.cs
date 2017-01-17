@@ -51,9 +51,18 @@ namespace SimpleIdentityServer.Host.Tests
             var pkce = builder.Build(CodeChallengeMethods.S256);
 
             // ACT
-            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(
+                new[] { "openid", "api1" },
+                new[] { ResponseTypes.Code },
+                "pkce_client", "http://localhost:5000/callback",
+                "state")
+            {
+                CodeChallenge = pkce.CodeChallenge,
+                CodeChallengeMethod = CodeChallengeMethods.S256
+            });
 
-
+            // ASSERT
+            Assert.NotNull(result);
         }
 
         [Fact]

@@ -193,6 +193,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         public bool ScimProfile { get; set; }
 
         /// <summary>
+        /// Client requires PKCE.
+        /// </summary>
+        public bool RequirePkce { get; set; }
+
+        /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
         /// </summary>
         public virtual List<ClientScope> ClientScopes { get; set; }

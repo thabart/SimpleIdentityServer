@@ -36,14 +36,14 @@ namespace SimpleIdentityServer.Host.Extensions
             {
                 AcrValues = request.AcrValues,
                 ClientId = request.ClientId,
-                Display = (Core.Parameters.Display)request.Display,
+                Display = request.Display == null ? Core.Parameters.Display.page : (Core.Parameters.Display)request.Display,
                 IdTokenHint = request.IdTokenHint,
                 LoginHint = request.LoginHint,
                 MaxAge = request.MaxAge,
                 Nonce = request.Nonce,
                 Prompt = request.Prompt,
                 RedirectUrl = request.RedirectUri,
-                ResponseMode  = (Core.Parameters.ResponseMode)request.ResponseMode,
+                ResponseMode  = request.ResponseMode == null ? Core.Parameters.ResponseMode.None : (Core.Parameters.ResponseMode)request.ResponseMode,
                 ResponseType = request.ResponseType,
                 Scope = request.Scope,
                 State = request.State,
@@ -71,6 +71,12 @@ namespace SimpleIdentityServer.Host.Extensions
                 }
 
                 result.Claims = claimsParameter;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.CodeChallenge) && request.CodeChallengeMethod != null)
+            {
+                result.CodeChallenge = request.CodeChallenge;
+                result.CodeChallengeMethod = (Core.Parameters.CodeChallengeMethods)request.CodeChallengeMethod;
             }
 
             return result;

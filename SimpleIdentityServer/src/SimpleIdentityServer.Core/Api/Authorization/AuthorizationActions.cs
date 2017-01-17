@@ -24,6 +24,8 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
@@ -70,6 +72,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 parameter.ResponseType,
                 parameter.Scope,
                 parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
+            // TODO : Check PKCE is required by the client.
+            if (client.RequirePkce && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId));
+            }
+
             var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);
             var authorizationFlow = _authorizationFlowHelper.GetAuthorizationFlow(responseTypes, parameter.State);
             switch (authorizationFlow)

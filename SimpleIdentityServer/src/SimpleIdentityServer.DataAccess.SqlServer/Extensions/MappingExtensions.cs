@@ -220,7 +220,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 GrantTypes = grantTypes,
                 ResponseTypes = responseTypes,
                 ScimProfile = client.ScimProfile,
-                Secrets = clientSecrets
+                Secrets = clientSecrets,
+                RequirePkce = client.RequirePkce
             };
         }
 

@@ -18,6 +18,8 @@ using Moq;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
@@ -44,6 +46,34 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private IAuthorizationActions _authorizationActions;
 
         [Fact]
+        public async Task When_Client_Require_PKCE_And_NoCodeChallenge_Is_Passed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            const string clientId = "clientId";
+            const string responseType = "id_token";
+            const string scope = "openid";
+            InitializeFakeObjects();
+            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(new Client
+                {
+                    RequirePkce = true,
+                    ClientId = clientId
+                }));
+
+            var authorizationParameter = new AuthorizationParameter
+            {
+                ClientId = clientId,
+                ResponseType = responseType,
+                Scope = scope,
+            };
+
+            // ACT & ASSERT
+            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _authorizationActions.GetAuthorization(authorizationParameter, null));
+            Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
+        }
+
+        [Fact]
         public void When_Starting_Implicit_Authorization_Process_Then_Event_Is_Started_And_Ended()
         {
             // ARRANGE
@@ -57,6 +87,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 }
             };
 
+            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(new Client
+                {
+                    RequirePkce = false
+                }));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
@@ -105,6 +140,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 }
             };
 
+            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(new Client
+                {
+                    RequirePkce = false
+                }));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {
@@ -153,6 +193,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 }
             };
 
+            _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
+                .Returns(Task.FromResult(new Client
+                {
+                    RequirePkce = false
+                }));
             _parameterParserHelperFake.Setup(p => p.ParseResponseTypes(It.IsAny<string>()))
                 .Returns(new List<ResponseType>
                 {

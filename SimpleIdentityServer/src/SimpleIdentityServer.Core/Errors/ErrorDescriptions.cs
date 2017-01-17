@@ -123,5 +123,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheResourceOwnerIsNotALocalAccount = "the resource owner is not a local account";
         public const string TheClientIdDoesntExist = "the client id {0} doesn't exist";
         public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't contains a shared secret";
+        public const string TheClientRequiresPkce = "the client {0} requires PKCE";
     }
 }

@@ -237,5 +237,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets use SCIM protocol to access user information.
         /// </summary>
         public bool ScimProfile { get; set; }
+
+        /// <summary>
+        /// Client require PKCE.
+        /// </summary>
+        public bool RequirePkce { get; set; }
     }
 }

@@ -46,6 +46,12 @@ namespace SimpleIdentityServer.Core.Parameters
         select_account
     }
 
+    public enum CodeChallengeMethods
+    {
+        Plain,
+        RS256
+    }
+
     public class ClaimParameter
     {
         public string Name { get; set; }
@@ -169,5 +175,7 @@ namespace SimpleIdentityServer.Core.Parameters
         public string LoginHint { get; set; }
         public string AcrValues { get; set; }
         public ClaimsParameter Claims { get; set; }
+        public string CodeChallenge { get; set; }
+        public CodeChallengeMethods? CodeChallengeMethod { get; set; } 
     }
 }
