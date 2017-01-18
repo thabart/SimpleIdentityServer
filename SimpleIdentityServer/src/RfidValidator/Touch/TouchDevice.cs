@@ -2,16 +2,20 @@
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
+using Windows.Foundation;
 
 namespace RfidValidator.Touch
 {
     public interface ITouchDevice
     {
-        void ReadTouchPoints();
+        Point ReadTouchPoints();
+        int Pressure { get; }
     }
 
     public class TouchDevice : ITouchDevice
     {
+        private Point _lastRawTouchPosition;
+        private int _currentPressure;
         private const int MIN_PRESSURE = 5;
         private const int CS_PIN = 1;
         private const byte CMD_START = 0x80;
@@ -30,6 +34,14 @@ namespace RfidValidator.Touch
             _spiDevice = spiDevice;
         }
 
+        public int Pressure
+        {
+            get
+            {
+                return _currentPressure;
+            }
+        }
+
         public static async Task<TouchDevice> Get()
         {
             var touchSettings = new SpiConnectionSettings(CS_PIN);
@@ -41,7 +53,7 @@ namespace RfidValidator.Touch
             return new TouchDevice(spiDevice);
         }
 
-        public void ReadTouchPoints()
+        public Point ReadTouchPoints()
         {
             int p, a1, a2, b1, b2, x , y;
             byte[] writeBuffer24 = new byte[3],
@@ -86,13 +98,27 @@ namespace RfidValidator.Touch
                         y = ((a2 << 4) | (b2 >> 4)); //12bit: ((a<<4)|(b>>4)) //10bit: ((a<<2)|(b>>6))
                         if (x > 0 && y > 0)
                         {
-
+                            _lastRawTouchPosition = new Point(x, y);
                         }
+
+                        _currentPressure = p;
                     }
                 }
             }
 
-            string s = "";
+            return Callibrate(_lastRawTouchPosition);
+        }
+
+        private static Point Callibrate(Point point)
+        {
+            double a = 3.15409128024388E-05,
+                b = 0.420590878983739,
+                c = -18.148018074036,
+                d = 0.231517337616446,
+                e = 0.0926216289324861,
+                f = -25.352836508323;
+            return new Point(a * point.X + b * point.Y + c,
+                d * point.X + e * point.Y + f);
         }
     }
 }
