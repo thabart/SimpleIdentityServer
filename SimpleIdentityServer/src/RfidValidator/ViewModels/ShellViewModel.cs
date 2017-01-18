@@ -1,10 +1,18 @@
 ﻿using Caliburn.Micro;
+using RfidValidator.Rfid;
+#if ARM
+using RfidValidator.Touch;
+#endif
+using System;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
 namespace RfidValidator.ViewModels
 {
     public class ShellViewModel : Screen
     {
+        public const UInt16 UsagePage = 0xFF00;
+        public const UInt16 UsageId = 0x01;
         private readonly WinRTContainer _container;
         private readonly IEventAggregator _eventAggregator;
         private INavigationService _navigationService;
@@ -23,6 +31,9 @@ namespace RfidValidator.ViewModels
             }
 
             _navigationService = _container.RegisterNavigationService(frame);
+#if ARM
+            InitializeTouch();
+#endif
         }
 
         public void ShowValidate()
@@ -34,5 +45,14 @@ namespace RfidValidator.ViewModels
         {
             _navigationService.For<AccountTabViewModel>().Navigate();
         }
+
+#if ARM
+        private async Task InitializeTouch()
+        {
+            var touchScreen = await TouchDevice.Get();
+            var touchProcessor = new TouchProcessor(touchScreen);
+            touchProcessor.Start();
+        }
+#endif
     }
 }
