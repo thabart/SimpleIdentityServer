@@ -58,6 +58,7 @@ namespace RfidValidator.Touch
             int p, a1, a2, b1, b2, x , y;
             byte[] writeBuffer24 = new byte[3],
                 readBuffer24 = new byte[3];
+            _currentPressure = 0;
 
             // 1. Get pressure
             writeBuffer24[0] = (byte)(CMD_START | CMD_8BIT | CMD_DIFF | CMD_Z1_POS);
@@ -111,12 +112,12 @@ namespace RfidValidator.Touch
 
         private static Point Callibrate(Point point)
         {
-            double a = 3.15409128024388E-05,
-                b = 0.420590878983739,
-                c = -18.148018074036,
-                d = 0.231517337616446,
-                e = 0.0926216289324861,
-                f = -25.352836508323;
+            double a = 0.000714963586760861,
+                b = 0.42033135307066,
+                c = -25.7193496091206,
+                d = 0.258411503886986,
+                e = -0.00210547895741404,
+                f = -18.4881347996583;
             return new Point(a * point.X + b * point.Y + c,
                 d * point.X + e * point.Y + f);
         }

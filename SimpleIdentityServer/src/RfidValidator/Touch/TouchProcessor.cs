@@ -17,11 +17,13 @@ namespace RfidValidator.Touch
     {
         private bool _penPressed;
         private readonly ITouchDevice _touchDevice;
+        private readonly CoreDispatcher _dispatcher;
         private CancellationTokenSource _cancellationToken;
 
-        public TouchProcessor(ITouchDevice touchDevice)
+        public TouchProcessor(ITouchDevice touchDevice, CoreDispatcher dispatcher)
         {
             _touchDevice = touchDevice;
+            _dispatcher = dispatcher;
             _penPressed = false;
         }
 
@@ -42,7 +44,7 @@ namespace RfidValidator.Touch
             });
         }
 
-        private void ReadTouch()
+        public void ReadTouch()
         {
             var touchPosition = _touchDevice.ReadTouchPoints();
             int pressure = _touchDevice.Pressure;
@@ -51,30 +53,27 @@ namespace RfidValidator.Touch
                 if (!_penPressed)
                 {
                     _penPressed = true;
-                    var dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
-                    var _ = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    var _ = _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         PointerDown?.Invoke(this, new PointerEventArgs() { Position = touchPosition, Pressure = pressure });
                     });
                 }
-                /*
                 else
                 {
-                    var _ = Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    var _ = _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
-                        _PointerMoved?.Invoke(this, new PointerEventArgs() { Position = device.TouchPosition, Pressure = pressure });
+                        PointerMoved?.Invoke(this, new PointerEventArgs() { Position = touchPosition, Pressure = pressure });
                     });
-                }*/
+                }
             }
-            /*
-            else if (pressure < 2 && penPressed == true)
+            else if (pressure < 2 && _penPressed == true)
             {
-                penPressed = false;
-                var _ = Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                _penPressed = false;
+                var _ = _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    _PointerUp?.Invoke(this, new PointerEventArgs() { Position = device.TouchPosition });
+                    PointerUp?.Invoke(this, new PointerEventArgs() { Position = touchPosition });
                 });
-            }*/
+            }
         }
     }
 }
