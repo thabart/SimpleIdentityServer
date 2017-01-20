@@ -49,30 +49,38 @@ int RfidDevice::ControlBuzzer(unsigned char freq, unsigned char duration, unsign
 	return Statue;
 }
 
+int RfidDevice::GetVersionNumber(unsigned char *buffer)
+{
+	int Statue;
+	int result = SendCommand(Get_VersionNum, NULL, 0, buffer, &Statue);
+	if (result != 0)
+		return result;
+	return Statue;
+}
+
 int RfidDevice::CheckData(unsigned char *data, int h, int t)
 {
 	int check;
 	int i;
-	check = data[h];
+	/*
+	check = data[10];
 	for (i = h + 1; i <= t; i++)
 	{
 		check = check^data[i];
-	}
-	return check;
+	}*/
+	return data[10] ^ data[11];
 }
 
 void RfidDevice::ClearBuffer()
 {
 	int i;
-	Data[0] = 0x01;
 	for (i = 0; i < 8; i++)
 	{
-		Data[i] = 0x00;
+		Buffer[i] = 0x00;
 	}
 
-	p = 1;
+	p = 8;
 	Buffer[0] = 0x01;
-	// Buffer[0] = STX;
 }
 
 void RfidDevice::WriteBuffer(unsigned char data)
@@ -94,24 +102,30 @@ int RfidDevice::SendCommand(int command, unsigned char *sDATA, int sDLen, unsign
 {
 	int result;
 	ClearBuffer();
+	WriteBuffer(STX);
 	WriteBuffer(0x00);
 	WriteBuffer(sDLen + 1);
 	WriteBuffer(command);
 	WriteBuffers(sDATA, sDLen);
-	SendData();
+	result = SendData();
+	if (result != 0) {
+		return result;
+	}
+
 	return 0;
 }
 
 int RfidDevice::SendData()
 {
 	int length, BCC, i, receive;
-	BCC = CheckData(Buffer, 1, p - 1);
+	BCC = CheckData(Buffer, 8, p - 1);
 	WriteBuffer(BCC);
 	WriteBuffer(ETX);
-	Data[6] = p;
+	Buffer[6] = p - 8;
 
+	// SEND DATA
 	printf("Send data:");
-	for (i = 0; i<p; i++)
+	for (i = 0; i < DATALEN; i++)
 		printf("%02x ", Buffer[i]);
 	printf("\n");
 	receive = libusb_control_transfer(
@@ -120,8 +134,24 @@ int RfidDevice::SendData()
 		LIBUSB_REQUEST_SET_CONFIGURATION,
 		0x301,
 		0,
-		Data,
+		Buffer,
 		DATALEN,
 		500);
+
+	// RECEIVE DATA
+	receive = libusb_control_transfer(
+		_handler,
+		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_IN,
+		LIBUSB_REQUEST_CLEAR_FEATURE,
+		0x302,
+		0,
+		Buffer,
+		DATALEN,
+		500);
+
+	printf("Receive data:");
+	for (i = 0; i<DATALEN; i++)
+		printf("%02x ", Buffer[i]);
+	printf("\n");
 	return 0;
 }

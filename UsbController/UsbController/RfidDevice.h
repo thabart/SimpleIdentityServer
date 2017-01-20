@@ -25,9 +25,8 @@ using namespace std;
 class RfidDevice {
 private:
 	libusb_device_handle * _handler;
-	unsigned char Data[DATALEN] = { 1 };
-	unsigned char *Buffer = &Data[8];
-	int p = 1;
+	unsigned char Buffer[DATALEN];
+	int p = 8;
 	int CheckData(unsigned char *data, int h, int t);
 	void ClearBuffer();
 	void WriteBuffer(unsigned char data);
@@ -39,5 +38,6 @@ public:
 	boolean connect(uint16_t vendorId, uint16_t productId);
 	int ControlLed(unsigned char freq, unsigned char duration, unsigned char* buffer);
 	int ControlBuzzer(unsigned char freq, unsigned char duration, unsigned char *buffer);
+	int GetVersionNumber(unsigned char *buffer);
 };
 
