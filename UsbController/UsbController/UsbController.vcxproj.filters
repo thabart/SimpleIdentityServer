@@ -41,6 +41,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ucrtbased.dll" />
-    <None Include="..\..\libusb\MS32\dll\libusb-1.0.dll" />
   </ItemGroup>
 </Project>
