@@ -47,7 +47,7 @@
     <Capability Name="internetClient" />
     <DeviceCapability Name="humaninterfacedevice">
       <!--SuperMutt Device-->
-      <Device Id="vidpid:0A81 0701 usb">
+      <Device Id="vidpid:FFFF 0035 usb">
         <Function Type="usage:ffa0 0001" />
       </Device>
     </DeviceCapability>

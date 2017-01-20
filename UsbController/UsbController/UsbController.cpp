@@ -28,6 +28,7 @@ void printdev(libusb_device *dev) {
 	cout << "Device Class: " << (int)desc.bDeviceClass << "  ";
 	cout << "VendorID: " << desc.idVendor << "  ";
 	cout << "ProductID: " << desc.idProduct << endl;
+	cout << "device sub class " << (int)desc.bDeviceSubClass << endl;
 }
 
 int main()
@@ -79,7 +80,7 @@ int main()
 		cout << "Cannot open the device" << endl;
 		return 1;
 	}
-
+	
 	libusb_free_device_list(devs, 1); //free the list, unref the devices in it	
 	r = libusb_claim_interface(devHandler, 0);
 	if (r < 0) {
@@ -88,25 +89,25 @@ int main()
 	}
 
 	int actual;
-	unsigned char* data = new unsigned char[8];
-	data[0] = 0x01; data[1] = 0x00; data[2] = 0x03; data[3] = Control_Buzzer; data[4] = 0x0A;
-	data[5] = 0x0A; data[6] = 0x8A; data[7] = 0xBB;
+	unsigned char* data = new unsigned char[0x100];
+	int ind = 0;
+	for (ind = 0; ind < 256; ind++) {
+		data[ind] = 0x00;
+	}
+	data[0] = 0x01; data[6] = 0x08; data[8] = 0xAA; data[10] = 0x03; data[11] = Control_Buzzer; data[12] = 0x02;
+	data[13] = 0x02; data[14] = 0x8A; data[15] = 0xBB;
+	printf("Send data:");
+	for (ind = 0; ind<256; ind++)
+		printf("%02x ", data[ind]);
+	printf("\n");
+
 	r = libusb_control_transfer(devHandler,
 		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_OUT,
 		LIBUSB_REQUEST_SET_CONFIGURATION,
 		0x301,
 		0,
 		data,
-		8,
-		500);
-	r = libusb_control_transfer(
-		devHandler,
-		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_IN,
-		LIBUSB_REQUEST_CLEAR_FEATURE,
-		0x302,
-		0,
-		data,
-		8,
+		0x100,
 		500);
 	if (r != 0x100) {
 		cout << "error " << endl;
