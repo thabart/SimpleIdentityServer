@@ -34,9 +34,8 @@ void printdev(libusb_device *dev) {
 int main()
 {
 	bool isConnected;
-	RfidDevice* rfidDevice = NULL;
-	unsigned char* serNumbers = NULL;
-	rfidDevice = new RfidDevice();
+	unsigned char* serNumbers = new unsigned char[0x100];
+	RfidDevice* rfidDevice = new RfidDevice();
 	isConnected = rfidDevice->connect(65535, 53);
 	if (!isConnected) {
 		cout << "the device is not connected" << endl;
@@ -47,7 +46,11 @@ int main()
 
 	unsigned char buffer;
 	// rfidDevice->ControlBuzzer(0x0a, 0x0a, &buffer);
-	rfidDevice->GetVersionNumber(serNumbers);
+	int length = rfidDevice->GetVersionNumber(serNumbers);
+	printf("Receive data:");
+	for (int i = 0; i<length; i++)
+		printf("%02x ", serNumbers[i]);
+	printf("\n");
 	string input;
 	getline(cin, input);
 

@@ -33,6 +33,7 @@ private:
 	void WriteBuffers(unsigned char *data, int length);
 	int SendCommand(int command, unsigned char *sDATA, int sDLen, unsigned char *rDATA, int*Statue);
 	int SendData();
+	int GetData(unsigned char *rDATA);
 public:
 	// Connect to the RFID device.
 	boolean connect(uint16_t vendorId, uint16_t productId);

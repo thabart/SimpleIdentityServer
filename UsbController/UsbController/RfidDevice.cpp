@@ -60,15 +60,13 @@ int RfidDevice::GetVersionNumber(unsigned char *buffer)
 
 int RfidDevice::CheckData(unsigned char *data, int h, int t)
 {
-	int check;
-	int i;
-	/*
-	check = data[10];
-	for (i = h + 1; i <= t; i++)
+	int check = data[h];
+	for (int i = h + 1; i <= t; i++)
 	{
 		check = check^data[i];
-	}*/
-	return data[10] ^ data[11];
+	}
+
+	return check;
 }
 
 void RfidDevice::ClearBuffer()
@@ -100,35 +98,31 @@ void RfidDevice::WriteBuffers(unsigned char *data, int length)
 
 int RfidDevice::SendCommand(int command, unsigned char *sDATA, int sDLen, unsigned char *rDATA, int*Statue)
 {
-	int result;
+	int result, length, BCC, i, receive;
 	ClearBuffer();
 	WriteBuffer(STX);
 	WriteBuffer(0x00);
 	WriteBuffer(sDLen + 1);
 	WriteBuffer(command);
 	WriteBuffers(sDATA, sDLen);
-	result = SendData();
-	if (result != 0) {
-		return result;
-	}
-
-	return 0;
+	BCC = CheckData(Buffer, 10, 10 + sDLen + 1);
+	WriteBuffer(BCC);
+	WriteBuffer(ETX);
+	Buffer[6] = p - 8;
+	// SEND DATA
+	SendData();
+	// READ DATA
+	return GetData(rDATA);
 }
 
 int RfidDevice::SendData()
 {
-	int length, BCC, i, receive;
-	BCC = CheckData(Buffer, 8, p - 1);
-	WriteBuffer(BCC);
-	WriteBuffer(ETX);
-	Buffer[6] = p - 8;
-
 	// SEND DATA
 	printf("Send data:");
-	for (i = 0; i < DATALEN; i++)
+	for (int i = 0; i < DATALEN; i++)
 		printf("%02x ", Buffer[i]);
 	printf("\n");
-	receive = libusb_control_transfer(
+	return libusb_control_transfer(
 		_handler,
 		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_OUT,
 		LIBUSB_REQUEST_SET_CONFIGURATION,
@@ -137,21 +131,23 @@ int RfidDevice::SendData()
 		Buffer,
 		DATALEN,
 		500);
+	/*
+	printf("Receive data:");
+	for (i = 0; i<DATALEN; i++)
+		printf("%02x ", Buffer[i]);
+	printf("\n");
+	return 0;*/
+}
 
-	// RECEIVE DATA
-	receive = libusb_control_transfer(
+int RfidDevice::GetData(unsigned char *rDATA)
+{
+	return libusb_control_transfer(
 		_handler,
 		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_IN,
 		LIBUSB_REQUEST_CLEAR_FEATURE,
 		0x302,
 		0,
-		Buffer,
+		rDATA,
 		DATALEN,
 		500);
-
-	printf("Receive data:");
-	for (i = 0; i<DATALEN; i++)
-		printf("%02x ", Buffer[i]);
-	printf("\n");
-	return 0;
 }
