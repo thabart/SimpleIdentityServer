@@ -92,6 +92,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rfid\RfidRc522.cs" />
     <Compile Include="Touch\TouchDevice.cs" />
     <Compile Include="Touch\TouchProcessor.cs" />
     <Compile Include="ViewModels\AccountTabViewModel.cs" />

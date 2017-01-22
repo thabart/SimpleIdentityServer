@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using RfidValidator.Rfid;
 using RfidValidator.Touch;
 using System;
 using System.Diagnostics;
@@ -45,6 +46,7 @@ namespace RfidValidator.ViewModels
 #if ARM
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             InitializeTouch(dispatcher);
+            InitializeRfid();
 #endif
         }
 
@@ -66,6 +68,12 @@ namespace RfidValidator.ViewModels
             touchProcessor.PointerMoved += OnPointerMoved;
             touchProcessor.PointerUp += OnPointerUp;
             touchProcessor.Start();
+        }
+
+        private async Task InitializeRfid()
+        {
+            var rfid = new RfidRc522();
+            await rfid.Start();
         }
 
         private void OnPointerDown(object sender, Touch.PointerEventArgs e)
