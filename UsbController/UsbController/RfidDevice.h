@@ -31,14 +31,15 @@ private:
 	void ClearBuffer();
 	void WriteBuffer(unsigned char data);
 	void WriteBuffers(unsigned char *data, int length);
-	int SendCommand(int command, unsigned char *sDATA, int sDLen, unsigned char *rDATA, int*Statue);
+	void WriteCommand(int command, unsigned char *sDATA, int sDLen);
 	int SendData();
-	int GetData(unsigned char *rDATA);
+	int GetData(unsigned char * rData);
 public:
 	// Connect to the RFID device.
 	boolean connect(uint16_t vendorId, uint16_t productId);
 	int ControlLed(unsigned char freq, unsigned char duration, unsigned char* buffer);
 	int ControlBuzzer(unsigned char freq, unsigned char duration, unsigned char *buffer);
-	int GetVersionNumber(unsigned char *buffer);
+	int GetVersionNumber(unsigned char * rData);
+	int GetSerialNumber(unsigned char* rData);
 };
 

@@ -34,6 +34,7 @@ void printdev(libusb_device *dev) {
 int main()
 {
 	bool isConnected;
+	unsigned char* verNumbers = new unsigned char[0x100];
 	unsigned char* serNumbers = new unsigned char[0x100];
 	RfidDevice* rfidDevice = new RfidDevice();
 	isConnected = rfidDevice->connect(65535, 53);
@@ -46,11 +47,34 @@ int main()
 
 	unsigned char buffer;
 	// rfidDevice->ControlBuzzer(0x0a, 0x0a, &buffer);
-	int length = rfidDevice->GetVersionNumber(serNumbers);
-	printf("Receive data:");
-	for (int i = 0; i<length; i++)
-		printf("%02x ", serNumbers[i]);
-	printf("\n");
+	// 1. Read the version number
+	int verLength = rfidDevice->GetVersionNumber(verNumbers);
+	if (verLength <= 0)
+	{
+		cout << "the serial number cannot be read" << endl;
+	}
+	else
+	{
+		printf("Version number : ");
+		for (int i = 0; i < verLength; i++)
+			printf("%02x ", verNumbers[i]);
+		printf("\n");
+	}
+
+	// 2. Get the serial number
+	int serLength = rfidDevice->GetSerialNumber(serNumbers);
+	if (serLength <= 0) 
+	{
+		cout << "the serial number cannot be read" << endl;
+	}
+	else
+	{
+		printf("Serial number : ");
+		for (int i = 0; i < serLength; i++)
+			printf("%02x ", serNumbers[i]);
+		printf("\n");
+	}
+
 	string input;
 	getline(cin, input);
 

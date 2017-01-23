@@ -31,10 +31,8 @@ int RfidDevice::ControlLed(unsigned char freq, unsigned char duration, unsigned 
 	unsigned char DATA[2];
 	DATA[0] = freq;
 	DATA[1] = duration;
-	int result = SendCommand(Control_Led2, DATA, 2, buffer, &Statue);
-	if (result != 0)
-		return result;
-	return Statue;
+	WriteCommand(Control_Led2, DATA, 2);
+	return SendData();
 }
 
 int RfidDevice::ControlBuzzer(unsigned char freq, unsigned char duration, unsigned char *buffer)
@@ -43,19 +41,21 @@ int RfidDevice::ControlBuzzer(unsigned char freq, unsigned char duration, unsign
 	unsigned char DATA[2];
 	DATA[0] = freq;
 	DATA[1] = duration;
-	int result = SendCommand(Control_Buzzer, DATA, 2, buffer, &Statue);
-	if (result != 0)
-		return result;
-	return Statue;
+	WriteCommand(Control_Buzzer, DATA, 2);
+	return SendData();
 }
 
-int RfidDevice::GetVersionNumber(unsigned char *buffer)
+int RfidDevice::GetVersionNumber(unsigned char * rData)
 {
-	int Statue;
-	int result = SendCommand(Get_VersionNum, NULL, 0, buffer, &Statue);
-	if (result != 0)
-		return result;
-	return Statue;
+	WriteCommand(Get_VersionNum, NULL, 0);
+	SendData();
+	return GetData(rData);
+}
+
+int RfidDevice::GetSerialNumber(unsigned char* rData) {
+	WriteCommand(GetSerlNum, NULL, 0);
+	SendData();
+	return GetData(rData);
 }
 
 int RfidDevice::CheckData(unsigned char *data, int h, int t)
@@ -96,7 +96,7 @@ void RfidDevice::WriteBuffers(unsigned char *data, int length)
 	}
 }
 
-int RfidDevice::SendCommand(int command, unsigned char *sDATA, int sDLen, unsigned char *rDATA, int*Statue)
+void RfidDevice::WriteCommand(int command, unsigned char *sDATA, int sDLen)
 {
 	int result, length, BCC, i, receive;
 	ClearBuffer();
@@ -109,10 +109,6 @@ int RfidDevice::SendCommand(int command, unsigned char *sDATA, int sDLen, unsign
 	WriteBuffer(BCC);
 	WriteBuffer(ETX);
 	Buffer[6] = p - 8;
-	// SEND DATA
-	SendData();
-	// READ DATA
-	return GetData(rDATA);
 }
 
 int RfidDevice::SendData()
@@ -139,15 +135,36 @@ int RfidDevice::SendData()
 	return 0;*/
 }
 
-int RfidDevice::GetData(unsigned char *rDATA)
+int RfidDevice::GetData(unsigned char * rData)
 {
-	return libusb_control_transfer(
+	int startIndex = 13;
+	unsigned char * result = new unsigned char[DATALEN];
+	int length = libusb_control_transfer(
 		_handler,
 		LIBUSB_RECIPIENT_INTERFACE | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_ENDPOINT_IN,
 		LIBUSB_REQUEST_CLEAR_FEATURE,
 		0x302,
 		0,
-		rDATA,
+		result,
 		DATALEN,
 		500);
+	if (length < 0)
+	{
+		return NULL;
+	}
+
+	char dataLength = result[10] - 2;
+	int index = 0;
+	for (int indice = startIndex; indice < dataLength + startIndex; indice++)
+	{
+		rData[index] = result[indice];
+		index++;
+	}
+
+	printf("Receive data:");
+	for (int i = 0; i<length; i++)
+		printf("%02x ", result[i]);
+	printf("\n");
+
+	return dataLength;
 }
