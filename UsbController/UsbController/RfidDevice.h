@@ -1,6 +1,15 @@
 #include <iostream>
 #include <libusb.h>
 
+//MF
+#define MF_Read							0x20
+#define MF_Write						0x21
+#define MF_InitVal						0x22
+#define MF_Decrement					0x23
+#define MF_Increment					0x24
+#define	MF_GET_SNR						0x25
+#define ISO14443_TypeA_Transfer_Command	0x28
+
 // System settings
 #define  SetAddress 	0x80
 #define  SetBaudrate 	0x81
@@ -41,5 +50,6 @@ public:
 	int ControlBuzzer(unsigned char freq, unsigned char duration, unsigned char *buffer);
 	int GetVersionNumber(unsigned char * rData);
 	int GetSerialNumber(unsigned char* rData);
+	int GetCardNumber(unsigned char mode, unsigned char apiHalt, unsigned char* rData);
 };
 

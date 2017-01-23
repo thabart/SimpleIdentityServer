@@ -36,6 +36,7 @@ int main()
 	bool isConnected;
 	unsigned char* verNumbers = new unsigned char[0x100];
 	unsigned char* serNumbers = new unsigned char[0x100];
+	unsigned char* cardNumbers = new unsigned char[0x100];
 	RfidDevice* rfidDevice = new RfidDevice();
 	isConnected = rfidDevice->connect(65535, 53);
 	if (!isConnected) {
@@ -72,6 +73,20 @@ int main()
 		printf("Serial number : ");
 		for (int i = 0; i < serLength; i++)
 			printf("%02x ", serNumbers[i]);
+		printf("\n");
+	}
+
+	// 3. Get the card number
+	int cardNumberLength = rfidDevice->GetCardNumber(0x26, 0x00, cardNumbers);
+	if (cardNumberLength <= 0) 
+	{
+		cout << "the card number is not valid" << endl;
+	}
+	else
+	{
+		printf("Card number : ");
+		for (int i = 0; i < cardNumberLength; i++)
+			printf("%02x ", cardNumbers[i]);
 		printf("\n");
 	}
 

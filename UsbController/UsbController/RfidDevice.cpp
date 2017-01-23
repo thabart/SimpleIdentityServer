@@ -58,6 +58,16 @@ int RfidDevice::GetSerialNumber(unsigned char* rData) {
 	return GetData(rData);
 }
 
+int RfidDevice::GetCardNumber(unsigned char mode, unsigned char apiHalt, unsigned char* rData)
+{
+	unsigned char data[2];
+	data[0] = mode;
+	data[1] = apiHalt;
+	WriteCommand(MF_GET_SNR, data, 2);
+	SendData();
+	return GetData(rData);
+}
+
 int RfidDevice::CheckData(unsigned char *data, int h, int t)
 {
 	int check = data[h];
