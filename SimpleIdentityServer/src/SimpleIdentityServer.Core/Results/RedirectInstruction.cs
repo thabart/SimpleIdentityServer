@@ -34,9 +34,7 @@ namespace SimpleIdentityServer.Core.Results
         }
 
         public IList<Parameter> Parameters { get; private set; }
-
         public IdentityServerEndPoints Action { get; set; }
-
         public ResponseMode ResponseMode { get; set; }
 
         public void AddParameter(string name, string value)

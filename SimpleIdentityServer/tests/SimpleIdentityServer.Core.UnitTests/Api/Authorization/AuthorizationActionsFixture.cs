@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
@@ -43,6 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
+        private Mock<IEventAggregateRepository> _evtAggregateRepositoryStub;
         private IAuthorizationActions _authorizationActions;
 
         [Fact]
@@ -242,6 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
+            _evtAggregateRepositoryStub = new Mock<IEventAggregateRepository>();
             _authorizationActions = new AuthorizationActions(
                 _getAuthorizationCodeOperationFake.Object,
                 _getTokenViaImplicitWorkflowOperationFake.Object,
@@ -249,7 +252,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Object,
                 _parameterParserHelperFake.Object,
                 _simpleIdentityServerEventSourceFake.Object,
-                _authorizationFlowHelperFake.Object);
+                _authorizationFlowHelperFake.Object,
+                _evtAggregateRepositoryStub.Object);
         }
     }
 }
