@@ -14,16 +14,13 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Core.Models
 {
-    public interface IEventAggregateRepository
+    public class SearchEventAggregatesResult
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<SearchEventAggregatesResult> Search(SearchParameter searchParameter);
+        public int TotalResults { get; set; }
+        public IEnumerable<EventAggregate> Events { get; set; }
     }
 }

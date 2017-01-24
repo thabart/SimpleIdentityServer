@@ -23,14 +23,26 @@ namespace SimpleIdentityServer.EventStore.Host
             public const string Events = "events";
         }
 
-        public static class EventResponseNames
+        public static class SearchParameterNames
         {
-            public const string Id = "id";
-            public const string AggregateId = "aggregate_id";
-            public const string Payload = "payload";
-            public const string Description = "description";
-            public const string CreatedOn = "created_on";
+            public const string SortBy = "sortBy";
+            public const string SortOrder = "sortOrder";
+            public const string StartIndex = "startIndex";
+            public const string Count = "count";
+        }
 
+        public static class SearchResultResponseNames
+        {
+            public const string TotalResult = "totalResults";
+            public const string ItemsPerPage = "itemsPerPage";
+            public const string StartIndex = "startIndex";
+            public const string Resources = "resources";   
+        }
+
+        public static class SortOrderNames
+        {
+            public static string Ascending = "ascending";
+            public static string Descending = "descending";
         }
     }
 }

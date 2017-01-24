@@ -14,16 +14,26 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Core.Parameters
 {
-    public interface IEventAggregateRepository
+    public enum SortOrders
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<SearchEventAggregatesResult> Search(SearchParameter searchParameter);
+        Ascending,
+        Descending
+    }
+
+    public class SearchParameter
+    {
+        public SearchParameter()
+        {
+            Count = 100;
+            StartIndex = 1;
+            SortOrder = SortOrders.Ascending;
+        }
+
+        public string SortBy { get; set; }
+        public SortOrders SortOrder { get; set; }
+        public int StartIndex { get; set; }
+        public int Count { get; set; }
     }
 }

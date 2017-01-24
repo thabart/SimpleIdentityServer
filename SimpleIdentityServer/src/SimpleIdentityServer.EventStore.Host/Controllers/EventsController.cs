@@ -15,29 +15,33 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.Host.Extensions;
+using SimpleIdentityServer.EventStore.Host.Parsers;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.Host.Controllers
 {
     [Route(Constants.RouteNames.Events)]
-    public class EventsController
+    public class EventsController : Controller
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly ISearchParameterParser _searchParameterParser;
 
-        public EventsController(IEventAggregateRepository repository)
+        public EventsController(IEventAggregateRepository repository, 
+            ISearchParameterParser searchParameterParser)
         {
             _repository = repository;
+            _searchParameterParser = searchParameterParser;
         }
 
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> Search()
         {
-            // support : itemsPerPage, totalResult, startIndex
-            var result = await _repository.Get();
-            var content = result.Select(r => r.ToDto());
-            return new OkObjectResult(content);
+            var searchParameter = _searchParameterParser.ParseQuery(Request.Query);
+            var result = await _repository.Search(searchParameter);
+            return new OkObjectResult(result.ToDto(searchParameter));
         }
     }
 }

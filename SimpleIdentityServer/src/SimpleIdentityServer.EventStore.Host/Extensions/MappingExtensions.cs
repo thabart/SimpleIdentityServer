@@ -14,9 +14,13 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.EventStore.Host.DTOs.Responses;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.EventStore.Host.Extensions
 {
@@ -36,6 +40,33 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
                 Description = evt.Description,
                 CreatedOn = evt.CreatedOn,
                 Payload = evt.Payload
+            };
+        }
+
+        public static SearchResultResponse ToDto(this SearchEventAggregatesResult search, SearchParameter parameter)
+        {
+            if (search == null)
+            {
+                throw new ArgumentNullException(nameof(search));
+            }
+
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IEnumerable<EventResponse> resources = new List<EventResponse>();
+            if (search.Events != null)
+            {
+                resources = search.Events.Select(e => e.ToDto());
+            }
+
+            return new SearchResultResponse
+            {
+                TotalResult = search.TotalResults,
+                Resources = resources,
+                ItemsPerPage = parameter.Count,
+                StartIndex = parameter.StartIndex
             };
         }
     }

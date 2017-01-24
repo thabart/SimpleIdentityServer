@@ -14,13 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Extensions;
-using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.EF.Repositories
 {
@@ -64,9 +67,48 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
             return record.ToDomain();
         }
 
-        public async Task<IEnumerable<EventAggregate>> Get()
+        public async Task<SearchEventAggregatesResult> Search(SearchParameter searchParameter)
         {
-            return await _context.Events.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false);
+            if (searchParameter == null)
+            {
+                throw new ArgumentNullException(nameof(searchParameter));
+            }
+
+            var _mappingJsonNameToModelName = new Dictionary<string, string>
+            {
+                { Core.Common.EventResponseNames.Id, "Id" },
+                { Core.Common.EventResponseNames.AggregateId, "AggregateId" },
+                { Core.Common.EventResponseNames.Payload, "Payload" },
+                { Core.Common.EventResponseNames.Description, "Description" },
+                { Core.Common.EventResponseNames.CreatedOn, "CreatedOn" }
+
+            };
+
+            IOrderedQueryable<Models.EventAggregate> events = null;
+            var rule = _mappingJsonNameToModelName.FirstOrDefault(m => m.Key == searchParameter.SortBy);
+            if (!rule.Equals(default(KeyValuePair<string, string>)) && !string.IsNullOrWhiteSpace(rule.Value))
+            {
+                if (searchParameter.SortOrder == SortOrders.Ascending)
+                {
+                    events = _context.Events.OrderBy(rule.Value);
+                }
+                else
+                {
+                    events = _context.Events.OrderByDescending(rule.Value);
+                }
+            }
+            else
+            {
+                events = _context.Events.OrderBy(r => r.CreatedOn);
+            }
+
+            int totalResult = await events.CountAsync().ConfigureAwait(false);
+            var result = events.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
+            return new SearchEventAggregatesResult
+            {
+                Events = await result.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false),
+                TotalResults = totalResult
+            };
         }
     }
 }

@@ -14,23 +14,21 @@
 // limitations under the License.
 #endregion
 
-using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.EventStore.Host.DTOs.Responses
 {
     [DataContract]
-    public class EventResponse
+    public class SearchResultResponse
     {
-        [DataMember(Name = Core.Common.EventResponseNames.Id)]
-        public string Id { get; set; }
-        [DataMember(Name = Core.Common.EventResponseNames.AggregateId)]
-        public string AggregateId { get; set; }
-        [DataMember(Name = Core.Common.EventResponseNames.Payload)]
-        public string Payload { get; set; }
-        [DataMember(Name = Core.Common.EventResponseNames.Description)]
-        public string Description { get; set; }
-        [DataMember(Name = Core.Common.EventResponseNames.CreatedOn)]
-        public DateTime CreatedOn { get; set; }
+        [DataMember(Name = Constants.SearchResultResponseNames.TotalResult)]
+        public int TotalResult { get; set; }
+        [DataMember(Name = Constants.SearchResultResponseNames.ItemsPerPage)]
+        public int ItemsPerPage { get; set; }
+        [DataMember(Name = Constants.SearchResultResponseNames.StartIndex)]
+        public int StartIndex { get; set; }
+        [DataMember(Name = Constants.SearchResultResponseNames.Resources)]
+        public IEnumerable<object> Resources { get; set; }
     }
 }
