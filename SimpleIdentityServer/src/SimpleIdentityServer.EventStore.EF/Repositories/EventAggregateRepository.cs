@@ -19,6 +19,8 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.EventStore.EF.Repositories
 {
@@ -60,6 +62,11 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
             }
 
             return record.ToDomain();
+        }
+
+        public async Task<IEnumerable<EventAggregate>> Get()
+        {
+            return await _context.Events.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
     }
 }

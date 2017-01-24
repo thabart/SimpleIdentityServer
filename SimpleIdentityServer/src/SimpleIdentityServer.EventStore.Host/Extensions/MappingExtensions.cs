@@ -14,17 +14,29 @@
 // limitations under the License.
 #endregion
 
-
 using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SimpleIdentityServer.EventStore.Host.DTOs.Responses;
+using System;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.EventStore.Host.Extensions
 {
-    public interface IEventAggregateRepository
+    internal static class MappingExtensions
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<IEnumerable<EventAggregate>> Get();
+        public static EventResponse ToDto(this EventAggregate evt)
+        {
+            if (evt == null)
+            {
+                throw new ArgumentNullException(nameof(evt));
+            }
+
+            return new EventResponse
+            {
+                Id = evt.Id,
+                AggregateId = evt.AggregateId,
+                Description = evt.Description,
+                CreatedOn = evt.CreatedOn,
+                Payload = evt.Payload
+            };
+        }
     }
 }

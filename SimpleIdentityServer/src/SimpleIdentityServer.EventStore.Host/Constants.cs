@@ -14,17 +14,23 @@
 // limitations under the License.
 #endregion
 
-
-using SimpleIdentityServer.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.EventStore.Host
 {
-    public interface IEventAggregateRepository
+    public class Constants
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<IEnumerable<EventAggregate>> Get();
+        public static class RouteNames
+        {
+            public const string Events = "events";
+        }
+
+        public static class EventResponseNames
+        {
+            public const string Id = "id";
+            public const string AggregateId = "aggregate_id";
+            public const string Payload = "payload";
+            public const string Description = "description";
+            public const string CreatedOn = "created_on";
+
+        }
     }
 }
