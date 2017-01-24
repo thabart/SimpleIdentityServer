@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,33 @@ namespace RfidValidator.Rfid
         private const byte txControl = 0x14;
         private const byte txMode = 0x12;
         private const byte version = 0x37;
+        private const byte divIrq = 0x05;
+        private const byte cRCResultRegH = 0x21;
+        private const byte cRCResultRegL = 0x22;
+
+        public static byte CRCResultRegH
+        {
+            get
+            {
+                return cRCResultRegH;
+            }
+        }
+
+        public static byte CRCResultRegL
+        {
+            get
+            {
+                return cRCResultRegL;
+            }
+        }
+
+        public static byte DivIrq
+        {
+            get
+            {
+                return divIrq;
+            }
+        }
 
         public static byte BitFraming
         {
@@ -282,6 +310,15 @@ namespace RfidValidator.Rfid
         private const byte idle = 0x00;
         private const byte mifareAuthenticate = 0x0E;
         private const byte transceive = 0x0C;
+        private const byte calcCRC = 0x03;
+
+        public static byte CalcCrc
+        {
+            get
+            {
+                return calcCRC;
+            }
+        }
 
         public static byte Idle
         {
@@ -526,9 +563,16 @@ namespace RfidValidator.Rfid
             {
                 return null;
             }
-            
+
+            var data = new List<byte>
+            {
+                PiccCommands.Read,
+                blockNumber
+            };
+            data.AddRange(CalculateCrc(data.ToArray()));
+
             // Read block
-            Transceive(PcdCommands.Transceive, true, PiccCommands.Read, blockNumber);
+            Transceive(PcdCommands.Transceive, true, data.ToArray());
             return ReadFromFifo(16);
         }
 
@@ -685,8 +729,7 @@ namespace RfidValidator.Rfid
         {
             return ReadRegister(Registers.FifoLevel);
         }
-
-
+        
         protected byte ReadRegister(byte register)
         {
             register <<= 1;
@@ -721,13 +764,28 @@ namespace RfidValidator.Rfid
             var currentValue = ReadRegister(register);
             WriteRegister(register, (byte)(currentValue & ~bits));
         }
-
-
+        
         private byte[] TransferSpi(byte[] writeBuffer)
         {
             var readBuffer = new byte[writeBuffer.Length];
             _spi.TransferFullDuplex(writeBuffer, readBuffer);
             return readBuffer;
+        }
+
+        private byte[] CalculateCrc(byte[] data)
+        {
+            WriteRegister(Registers.Command, PcdCommands.Idle);         //  Put reader in Idle mode
+            WriteRegister(Registers.DivIrq, 0x04);                      // Clear the CRCIRq interrupt request bit
+            SetRegisterBits(Registers.FifoLevel, 0x80);                 // FlushBuffer = 1, FIFO initialization      
+            WriteToFifo(data);                                          // Write data to the FIFO
+            WriteRegister(Registers.Command, PcdCommands.CalcCrc);      // Start the calculation
+
+            Task.Delay(25).Wait();
+
+            var result = new byte[2];
+            result[0] = ReadRegister(Registers.CRCResultRegL);
+            result[1] = ReadRegister(Registers.CRCResultRegH);
+            return result;
         }
     }
 }
