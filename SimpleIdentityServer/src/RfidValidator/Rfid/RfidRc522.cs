@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Gpio;
@@ -449,9 +450,9 @@ namespace RfidValidator.Rfid
         public void Reset()
         {
             _resetPowerDown.Write(GpioPinValue.Low);
-            System.Threading.Tasks.Task.Delay(50).Wait();
+            Task.Delay(50).Wait();
             _resetPowerDown.Write(GpioPinValue.High);
-            System.Threading.Tasks.Task.Delay(50).Wait();
+            Task.Delay(50).Wait();
 
             // Force 100% ASK modulation
             WriteRegister(Registers.TxAsk, 0x40);
@@ -462,7 +463,6 @@ namespace RfidValidator.Rfid
             // Enable antenna
             SetRegisterBits(Registers.TxControl, 0x03);
         }
-
 
         public bool IsTagPresent()
         {
@@ -526,26 +526,34 @@ namespace RfidValidator.Rfid
             {
                 return null;
             }
-
+            
             // Read block
-            Transceive(true, PiccCommands.Read, blockNumber);
+            Transceive(PcdCommands.Transceive, true, PiccCommands.Read, blockNumber);
             return ReadFromFifo(16);
         }
 
         internal bool WriteBlock(byte blockNumber, Uid uid, byte[] data, byte[] keyA = null, byte[] keyB = null)
         {
             if (keyA != null)
+            {
                 MifareAuthenticate(PiccCommands.AuthenticateKeyA, blockNumber, uid, keyA);
+            }
             else if (keyB != null)
+            {
                 MifareAuthenticate(PiccCommands.AuthenticateKeyB, blockNumber, uid, keyB);
+            }
             else
+            {
                 return false;
+            }
 
             // Write block
             Transceive(true, PiccCommands.Write, blockNumber);
-
-            if (ReadFromFifo() != PiccResponses.Acknowledge)
+            var resp = ReadFromFifo();
+            if (resp != PiccResponses.Acknowledge)
+            {
                 return false;
+            }
 
             // Make sure we write only 16 bytes
             var buffer = new byte[16];
@@ -558,26 +566,23 @@ namespace RfidValidator.Rfid
         
         protected void MifareAuthenticate(byte command, byte blockNumber, Uid uid, byte[] key)
         {
-            // Put reader in Idle mode
-            WriteRegister(Registers.Command, PcdCommands.Idle);
-
-            // Clear the FIFO
-            SetRegisterBits(Registers.FifoLevel, 0x80);
-
+            const int MF_KEY_SIZE = 6;
+            byte waitIRq = 0x10;
             // Create Authentication packet
-            var data = new byte[12];
-            data[0] = command;
-            data[1] = (byte)(blockNumber & 0xFF);
-            key.CopyTo(data, 2);
-            uid.Bytes.CopyTo(data, 8);
+            var sendData = new byte[12];
+            sendData[0] = command;
+            sendData[1] = 7; // TODO : Pass in parameter : (Trailer block).
+            for (var i = 0; i < MF_KEY_SIZE; i++) // 6 key bytes.
+            {
+                sendData[2 + i] = key[i];
+            }
 
-            WriteToFifo(data);
+            for (var i = 0; i < 4; i++) // The last 4 bytes of the UID.
+            {
+                sendData[8 + i] = uid.Bytes[i + uid.Bytes.Count() - 4];
+            }
 
-            // Put reader in MfAuthent mode
-            WriteRegister(Registers.Command, PcdCommands.MifareAuthenticate);
-
-            // Wait for (a generous) 25 ms
-            Task.Delay(25).Wait();
+            Transceive(command, false, sendData);
         }
 
         protected void Transceive(bool enableCrc, params byte[] data)
@@ -603,10 +608,45 @@ namespace RfidValidator.Rfid
             SetRegisterBits(Registers.BitFraming, 0x80);
 
             // Wait for (a generous) 25 ms
-            Task.Delay(25).Wait();
+            System.Threading.Tasks.Task.Delay(25).Wait();
 
             // Stop sending
             ClearRegisterBits(Registers.BitFraming, 0x80);
+
+            if (enableCrc)
+            {
+                // Disable CRC
+                ClearRegisterBits(Registers.TxMode, 0x80);
+                ClearRegisterBits(Registers.RxMode, 0x80);
+            }
+        }
+
+        protected void Transceive(byte command, bool enableCrc, params byte[] data)
+        {
+            if (enableCrc)
+            {
+                // Enable CRC
+                SetRegisterBits(Registers.TxMode, 0x80);
+                SetRegisterBits(Registers.RxMode, 0x80);
+            }
+
+            byte txLastBits = 0;
+            byte bitFraming = 0;
+
+            WriteRegister(Registers.Command, PcdCommands.Idle); //  Put reader in Idle mode
+            WriteRegister(Registers.ComIrq, 0x7F);              // Clear all seven interrupt request bits
+            SetRegisterBits(Registers.FifoLevel, 0x80);         // FlushBuffer = 1, FIFO initialization            
+            WriteToFifo(data);                                  // Write the data to the FIFO
+            WriteRegister(Registers.BitFraming, bitFraming);    // Bit adjustments
+            WriteRegister(Registers.Command, command);     
+            if (command == PcdCommands.Transceive)
+            {
+                SetRegisterBits(Registers.BitFraming, 0x80);
+            }
+            
+
+            // Wait for (a generous) 25 ms
+            Task.Delay(25).Wait();
 
             if (enableCrc)
             {
@@ -636,7 +676,9 @@ namespace RfidValidator.Rfid
         protected void WriteToFifo(params byte[] values)
         {
             foreach (var b in values)
+            {
                 WriteRegister(Registers.FifoData, b);
+            }
         }
 
         protected int GetFifoLevel()
