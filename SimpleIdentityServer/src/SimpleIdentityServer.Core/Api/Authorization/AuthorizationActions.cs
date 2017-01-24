@@ -14,21 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Events;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using System;
+using System.Security.Principal;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Models;
-using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Core.Api.Authorization
 {
@@ -47,7 +46,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
-        private readonly IEventAggregateRepository _evtAggregateRepository;
+        private readonly IEventPublisher _eventPublisher;
         
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
@@ -57,7 +56,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             IParameterParserHelper parameterParserHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
-            IEventAggregateRepository evtAggregateRepository)
+            IEventPublisher eventPublisher)
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
             _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
@@ -67,20 +66,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _parameterParserHelper = parameterParserHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
-            _evtAggregateRepository = evtAggregateRepository;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
         {
-            var aggregateId = Guid.NewGuid().ToString();
-            await _evtAggregateRepository.Add(new EventAggregate
-            {
-                Id = Guid.NewGuid().ToString(),
-                Description = $"Start {parameter.ResponseType} flow",
-                RequestPayload = JsonConvert.SerializeObject(parameter),
-                CreatedOn = DateTime.UtcNow,
-                AggregateId = aggregateId
-            });
+            var processId = Guid.NewGuid().ToString();
+            _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  parameter));
             try
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);

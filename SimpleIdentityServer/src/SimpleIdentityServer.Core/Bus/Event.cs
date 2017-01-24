@@ -14,22 +14,10 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.EventStore.EF.Mappings;
-using SimpleIdentityServer.EventStore.EF.Models;
-
-namespace SimpleIdentityServer.EventStore.EF
+namespace SimpleIdentityServer.Core.Bus
 {
-    public class EventStoreContext : DbContext
+    public class Event : Message
     {
-        public EventStoreContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
-
-        public virtual DbSet<EventAggregate> Events { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.AddEventAggregate();
-            base.OnModelCreating(modelBuilder);
-        }
+        public string Version { get; set; }
     }
 }

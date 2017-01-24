@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>b56b6ae1-e9aa-49cb-9943-ca0afd69705f</ProjectGuid>
+    <ProjectGuid>57ec2310-910a-4f76-8a61-c8600d66bd94</ProjectGuid>
     <RootNamespace>SimpleIdentityServer.EventStore.EF</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>

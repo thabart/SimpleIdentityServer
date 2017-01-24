@@ -23,7 +23,6 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Authentication.Middleware;
 using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Services;
 using System.Collections.Generic;
@@ -81,7 +80,8 @@ namespace SimpleIdentityServer.Startup
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    IsDataMigrated = true
+                    IsOpenIdDataMigrated = true,
+                    IsEvtStoreDataMigrated = true,
                 },
                 Logging = new LoggingOptions
                 {
@@ -100,25 +100,46 @@ namespace SimpleIdentityServer.Startup
                 TwoFactorServiceStore = twoFactorServiceStore
             };
 
-            var dbtype = Configuration["Db:Type"];
-            if (string.Equals(dbtype, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
+            var openIdType = Configuration["Db:OpenIdType"];
+            var evtStoreType = Configuration["Db:EvtStoreType"];
+            if (string.Equals(openIdType, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
             {
-                _options.DataSource.DataSourceType = DataSourceTypes.SqlServer;
-                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlServer;
+                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
             }
-            else if (string.Equals(dbtype, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(openIdType, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
             {
-                _options.DataSource.DataSourceType = DataSourceTypes.SqlLite;
-                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlLite;
+                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
             }
-            else if (string.Equals(dbtype, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(openIdType, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
             {
-                _options.DataSource.DataSourceType = DataSourceTypes.Postgre;
-                _options.DataSource.ConnectionString = Configuration["Db:ConnectionString"];
+                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.Postgre;
+                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
             }
             else
             {
-                _options.DataSource.DataSourceType = DataSourceTypes.InMemory;
+                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
+            }
+
+            if (string.Equals(evtStoreType, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlServer;
+                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
+            }
+            else if (string.Equals(evtStoreType, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlLite;
+                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
+            }
+            else if (string.Equals(evtStoreType, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.Postgre;
+                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
+            }
+            else
+            {
+                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.InMemory;
             }
 
             bool isLogFileEnabled,

@@ -46,9 +46,11 @@ namespace SimpleIdentityServer.Benchmark
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    IsDataMigrated = false,
-                    DataSourceType = DataSourceTypes.SqlServer,
-                    ConnectionString = "Data Source=.;Initial Catalog=SimpleIdentityServer;Integrated Security=True;"
+                    IsOpenIdDataMigrated = false,
+                    OpenIdDataSourceType = DataSourceTypes.SqlServer,
+                    OpenIdConnectionString = "Data Source=.;Initial Catalog=SimpleIdentityServer;Integrated Security=True;",
+                    IsEvtStoreDataMigrated = false,
+                    EvtStoreDataSourceType = DataSourceTypes.InMemory
                 },
                 Logging = new LoggingOptions
                 {

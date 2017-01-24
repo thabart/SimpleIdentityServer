@@ -39,6 +39,47 @@ namespace SimpleIdentityServer.EventStore.EF
             return serviceCollection;
         }
 
+        public static IServiceCollection AddEventStoreSqlLite(this IServiceCollection serviceCollection, string connectionString)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<EventStoreContext>(options =>
+                    options.UseSqlite(connectionString));
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddEventStorePostgre(this IServiceCollection serviceCollection, string connectionString)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<EventStoreContext>(options =>
+                    options.UseNpgsql(connectionString));
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddEventStoreInMemory(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            RegisterServices(serviceCollection);
+            serviceCollection.AddEntityFramework()
+                .AddDbContext<EventStoreContext>((options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))));
+            return serviceCollection;
+        }
+
 
         private static void RegisterServices(IServiceCollection serviceCollection)
         {

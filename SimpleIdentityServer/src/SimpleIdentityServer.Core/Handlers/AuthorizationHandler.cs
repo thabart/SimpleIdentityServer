@@ -14,22 +14,22 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.EventStore.EF.Mappings;
-using SimpleIdentityServer.EventStore.EF.Models;
+using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core.Events;
+using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.EventStore.EF
+namespace SimpleIdentityServer.Core.Handlers
 {
-    public class EventStoreContext : DbContext
+    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>
     {
-        public EventStoreContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
-
-        public virtual DbSet<EventAggregate> Events { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public AuthorizationHandler()
         {
-            modelBuilder.AddEventAggregate();
-            base.OnModelCreating(modelBuilder);
+
+        }
+
+        public Task Handle(AuthorizationRequestReceived message)
+        {
+            return null;
         }
     }
 }

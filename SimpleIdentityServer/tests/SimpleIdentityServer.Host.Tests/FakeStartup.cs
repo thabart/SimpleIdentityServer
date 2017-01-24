@@ -55,8 +55,10 @@ namespace SimpleIdentityServer.Host.Tests
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    DataSourceType = DataSourceTypes.InMemory,
-                    IsDataMigrated = false
+                    OpenIdDataSourceType = DataSourceTypes.InMemory,
+                    IsOpenIdDataMigrated = false,
+                    EvtStoreDataSourceType = DataSourceTypes.InMemory,
+                    IsEvtStoreDataMigrated = false
                 },
                 Logging = new LoggingOptions
                 {
@@ -163,7 +165,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerLogging()
                 .AddLogging()
-                .AddSimpleIdentityServerInMemory();
+                .AddSimpleIdentityServerInMemory()
+                .AddDefaultBus();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 

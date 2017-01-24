@@ -41,7 +41,8 @@
     "SimpleIdentityServer.Core.Jwt": { "target": "project" },
     "SimpleIdentityServer.DataAccess.SqlServer": { "target": "project" },
     "SimpleIdentityServer.Client": { "target": "project" },
-    "SimpleIdentityServer.Configuration.Client": {"target": "project"}
+    "SimpleIdentityServer.Configuration.Client": { "target": "project" },
+    "SimpleIdentityServer.EventStore.EF": { "target": "project" }
   },
   "frameworks": {
     "net46": {

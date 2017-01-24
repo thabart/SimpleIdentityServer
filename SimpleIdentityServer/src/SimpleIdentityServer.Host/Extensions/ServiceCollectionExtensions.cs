@@ -23,10 +23,12 @@ using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
@@ -36,8 +38,7 @@ using System;
 namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
-    {       
-         
+    {
         public static IServiceCollection AddSimpleIdentityServer(
             this IServiceCollection serviceCollection,
             Action<IdentityServerOptions> optionsCallback)
@@ -82,22 +83,38 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options.DataSource));
             }
 
-            switch(options.DataSource.DataSourceType)
+            switch(options.DataSource.OpenIdDataSourceType)
             {
                 case DataSourceTypes.SqlServer:
-                    serviceCollection.AddSimpleIdentityServerSqlServer(options.DataSource.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerSqlServer(options.DataSource.OpenIdConnectionString);
                     break;
                 case DataSourceTypes.SqlLite:
-                    serviceCollection.AddSimpleIdentityServerSqlLite(options.DataSource.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerSqlLite(options.DataSource.OpenIdConnectionString);
                     break;
                 case DataSourceTypes.Postgre:
-                    serviceCollection.AddSimpleIdentityServerPostgre(options.DataSource.ConnectionString);
+                    serviceCollection.AddSimpleIdentityServerPostgre(options.DataSource.OpenIdConnectionString);
                     break;
                 case DataSourceTypes.InMemory:
                     serviceCollection.AddSimpleIdentityServerInMemory();
                     break;
                 default:
-                    throw new ArgumentException($"the data source '{options.DataSource.DataSourceType}' type is not supported");
+                    throw new ArgumentException($"the data source '{options.DataSource.OpenIdDataSourceType}' type is not supported");
+            }
+
+            switch(options.DataSource.EvtStoreDataSourceType)
+            {
+                case DataSourceTypes.SqlServer:
+                    serviceCollection.AddEventStoreSqlServer(options.DataSource.EvtStoreConnectionString);
+                    break;
+                case DataSourceTypes.SqlLite:
+                    serviceCollection.AddEventStoreSqlLite(options.DataSource.EvtStoreConnectionString);
+                    break;
+                case DataSourceTypes.Postgre:
+                    serviceCollection.AddEventStorePostgre(options.DataSource.EvtStoreConnectionString);
+                    break;
+                case DataSourceTypes.InMemory:
+                    serviceCollection.AddEventStoreInMemory();
+                    break;
             }
             
             ConfigureSimpleIdentityServer(
@@ -181,6 +198,7 @@ namespace SimpleIdentityServer.Host
                 .AddIdServerClient()
                 .AddConfigurationClient()
                 .AddIdServerLogging()
+                .AddBus(options)
                 .AddDataProtection();
 
             // Configure SeriLog pipeline
@@ -220,6 +238,20 @@ namespace SimpleIdentityServer.Host
             Log.Logger = log;
             services.AddLogging();
             services.AddSingleton<ILogger>(log);
+        }
+
+        private static IServiceCollection AddBus(this IServiceCollection services,
+            IdentityServerOptions options)
+        {
+            if (options.Event == null || options.Event.Publisher == null)
+            {
+                var handlers = options.Event == null ? null : options.Event.Handlers;
+                services.AddDefaultBus(handlers);
+                return services;
+            }
+
+            services.AddTransient(typeof(IEventPublisher), options.Event.Publisher);
+            return services;
         }
     }
 }

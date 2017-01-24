@@ -24,8 +24,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 {
     public static class SimpleIdentityServerSqlServerExtensions
     {
-        #region Public methods
-
         public static IServiceCollection AddSimpleIdentityServerSqlServer(
             this IServiceCollection serviceCollection, 
             string connectionString)
@@ -67,10 +65,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             return serviceCollection;
         }
 
-        #endregion
-
-        #region Private method
-
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ITranslationRepository, TranslationRepository>();
@@ -84,7 +78,5 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
             serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();
         }
-
-        #endregion
     }
 }

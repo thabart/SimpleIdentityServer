@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
@@ -86,14 +87,24 @@ namespace SimpleIdentityServer.Host
             // 2. Protect against IFRAME attack
             app.UseXFrame();
 
-            // 3. Migrate all the database
-            if (options.DataSource.IsDataMigrated)
+            // 3. Migrate OpenId database.
+            if (options.DataSource.IsOpenIdDataMigrated)
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                     simpleIdentityServerContext.Database.EnsureCreated();
                     simpleIdentityServerContext.EnsureSeedData();
+                }
+            }
+
+            // 4. Migrate EvtStore database.
+            if (options.DataSource.IsEvtStoreDataMigrated)
+            {
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var evtStoreContext = serviceScope.ServiceProvider.GetService<EventStoreContext>();
+                    evtStoreContext.Database.EnsureCreated();
                 }
             }
         }

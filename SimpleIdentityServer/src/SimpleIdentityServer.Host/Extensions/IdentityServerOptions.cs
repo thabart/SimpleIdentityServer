@@ -15,56 +15,47 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Services;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
     public sealed class LoggingOptions
     {
-        public FileLogOptions FileLogOptions { get; set; }
+        public LoggingOptions()
+        {
+            FileLogOptions = new FileLogOptions();
+            ElasticsearchOptions = new ElasticsearchOptions();
+        }
 
+        public FileLogOptions FileLogOptions { get; set; }
         public ElasticsearchOptions ElasticsearchOptions { get; set; }
     }
 
     public sealed class FileLogOptions
     {
-        #region Constructor
-
         public FileLogOptions()
         {
+            IsEnabled = false;
             PathFormat = "log-{Date}.txt";
         }
 
-        #endregion
-
-        #region Properties
-
         public bool IsEnabled { get; set; }
-
         public string PathFormat { get; set; }
-
-        #endregion
     }
 
     public sealed class ElasticsearchOptions
     {
-        #region Constructor
-
         public ElasticsearchOptions()
         {
+            IsEnabled = false;
             Url = "http://localhost:9200";
         }
 
-        #endregion
-
-        #region Properties
-
         public bool IsEnabled { get; set; }
-
         public string Url { get; set; }
-
-        #endregion
     }
 
     public enum DataSourceTypes
@@ -77,16 +68,26 @@ namespace SimpleIdentityServer.Host
 
     public sealed class DataSourceOptions
     {
-        public bool IsDataMigrated { get; set; }
+        public DataSourceOptions()
+        {
+            IsOpenIdDataMigrated = true;
+            IsEvtStoreDataMigrated = true;
+            OpenIdDataSourceType = DataSourceTypes.InMemory;
+            EvtStoreDataSourceType = DataSourceTypes.InMemory;
+        }
+
+        public bool IsOpenIdDataMigrated { get; set; }
+        public bool IsEvtStoreDataMigrated { get; set; }
         /// <summary>
         /// Choose the type of your DataSource
         /// </summary>
-        public DataSourceTypes DataSourceType { get; set; }
-
+        public DataSourceTypes OpenIdDataSourceType { get; set; }
         /// <summary>
         /// Connection string
         /// </summary>
-        public string ConnectionString { get; set; }
+        public string OpenIdConnectionString { get; set; }
+        public DataSourceTypes EvtStoreDataSourceType { get; set; }
+        public string EvtStoreConnectionString { get; set; }
     }
 
     public class AuthenticateOptions
@@ -100,12 +101,20 @@ namespace SimpleIdentityServer.Host
         public bool IsEnabled { get; set; }
     }
 
+    public class EventOptions
+    {
+        public Type Publisher { get; set; }
+        public IEnumerable<IHandler> Handlers { get; set; }
+    }
+
     public class IdentityServerOptions
     {
         public IdentityServerOptions()
         {
             Authenticate = new AuthenticateOptions();
             Scim = new ScimOptions();
+            Logging = new LoggingOptions();
+            DataSource = new DataSourceOptions();
         }
         /// <summary>
         /// Enable or disable the developer mode
@@ -127,6 +136,10 @@ namespace SimpleIdentityServer.Host
         /// Scim options.
         /// </summary>
         public ScimOptions Scim { get; set; }
+        /// <summary>
+        /// Configure the event publisher &|or handlers.
+        /// </summary>
+        public EventOptions Event { get; set; }
         /// <summary>
         /// Service used to authenticate the resource owner.
         /// </summary>

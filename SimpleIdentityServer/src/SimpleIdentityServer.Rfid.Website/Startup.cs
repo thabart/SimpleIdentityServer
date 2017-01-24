@@ -54,8 +54,10 @@ namespace SimpleIdentityServer.Rfid.Website
                 },
                 DataSource = new DataSourceOptions
                 {
-                    DataSourceType = DataSourceTypes.InMemory,
-                    IsDataMigrated = false
+                    OpenIdDataSourceType = DataSourceTypes.InMemory,
+                    IsOpenIdDataMigrated = false,
+                    EvtStoreDataSourceType = DataSourceTypes.InMemory,
+                    IsEvtStoreDataMigrated = false
                 },
                 Authenticate = new AuthenticateOptions
                 {

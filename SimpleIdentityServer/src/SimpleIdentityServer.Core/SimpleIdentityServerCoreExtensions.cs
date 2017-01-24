@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
@@ -31,8 +32,11 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Factories;
+using SimpleIdentityServer.Core.Handlers;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.JwtToken;
@@ -50,6 +54,7 @@ using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
@@ -149,6 +154,30 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
             return serviceCollection;
+        }
+
+        public static IServiceCollection AddDefaultBus(this IServiceCollection services, IEnumerable<IHandler> handlers = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddTransient<AuthorizationHandler>();
+            var provider = services.BuildServiceProvider();
+            var evtHandlerStore = new EvtHandlerStore();
+            evtHandlerStore.Register(provider.GetService<AuthorizationHandler>());
+            if (handlers != null)
+            {
+                foreach (var handler in handlers)
+                {
+                    evtHandlerStore.Register(handler);
+                }
+            }
+
+            services.AddSingleton(typeof(IEvtHandlerStore), evtHandlerStore);
+            services.AddTransient<IEventPublisher, FakeBus>();
+            return services;
         }
     }
 }
