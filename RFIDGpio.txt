@@ -1,5 +1,9 @@
+RFID :
 GPIO 18 : Reset
 GPIO 19 : MISO
 GPIO 20 : MOSI
 GPIO 21 : Clock
 GPIO 16 : SS
+
+SCREEN:
+TODO

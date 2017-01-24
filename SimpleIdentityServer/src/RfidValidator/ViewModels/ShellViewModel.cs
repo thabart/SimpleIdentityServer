@@ -5,7 +5,11 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
+using Windows.Devices.HumanInterfaceDevice;
+using Windows.Devices.SmartCards;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -72,8 +76,14 @@ namespace RfidValidator.ViewModels
 
         private async Task InitializeRfid()
         {
-            var rfid = new RfidRc522();
-            await rfid.Start();
+            var listener = new CardListener();
+            listener.CardReceived += CardReceived;
+            listener.Start();
+        }
+
+        private void CardReceived(object sender, CardReceivedArgs e)
+        {
+            Debug.WriteLine("card has been received");
         }
 
         private void OnPointerDown(object sender, Touch.PointerEventArgs e)

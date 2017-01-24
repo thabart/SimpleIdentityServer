@@ -23,12 +23,14 @@ namespace RfidValidator.Rfid
         private string _cardNumber;
         private readonly CancellationTokenSource _token;
         private readonly Task _task;
+        private readonly RfidRc522 _rfidRc522;
 
         public CardListener()
         {
             _cardNumber = string.Empty;
             _task = ListenCard();
             _token = new CancellationTokenSource();
+            _rfidRc522 = new RfidRc522();
         }
 
         public event EventHandler<CardReceivedArgs> CardReceived;
@@ -47,6 +49,7 @@ namespace RfidValidator.Rfid
         {
             return new Task(async () =>
             {
+                await _rfidRc522.Start();
                 while (true)
                 {
                     if (_token.IsCancellationRequested)
@@ -54,6 +57,17 @@ namespace RfidValidator.Rfid
                         break;
                     }
 
+                    if (_rfidRc522.IsTagPresent())
+                    {
+                        Uid uid = _rfidRc522.ReadUid();
+                        _rfidRc522.HaltTag();
+                        byte[] size = _rfidRc522.ReadBlock(4, uid, new byte[] {
+                            0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+                        });
+                        string s = "";
+                    }
+
+                    /*
                     var cardNumber = RfidManager.GetSerialNumberCard();
                     if (string.IsNullOrWhiteSpace(cardNumber))
                     {
@@ -79,6 +93,7 @@ namespace RfidValidator.Rfid
                             _cardNumber = cardNumber;
                         }
                     }
+                    */
 
                     await Task.Delay(1000);
                 }
