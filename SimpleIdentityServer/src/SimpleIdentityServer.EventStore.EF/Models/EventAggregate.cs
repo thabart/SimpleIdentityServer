@@ -24,8 +24,7 @@ namespace SimpleIdentityServer.EventStore.EF.Models
         public string Id { get; set; }
         public string ParentId { get; set; }
         public string AggregateId { get; set; }
-        public string RequestPayload { get; set; }
-        public string ResponsePayload { get; set; }
+        public string Payload { get; set; }
         public string Description { get; set; }
         public DateTime CreatedOn { get; set; }
         public virtual IEnumerable<EventAggregate> Links { get; set; }

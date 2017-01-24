@@ -14,22 +14,41 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Events;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
     public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>
     {
-        public AuthorizationHandler()
-        {
+        private readonly IEventAggregateRepository _repository;
 
+        public AuthorizationHandler(IEventAggregateRepository repository)
+        {
+            _repository = repository;
         }
 
-        public Task Handle(AuthorizationRequestReceived message)
+        public async Task Handle(AuthorizationRequestReceived message)
         {
-            return null;
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = JsonConvert.SerializeObject(message.Parameter);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Start authorization process",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload
+            });
         }
     }
 }

@@ -35,8 +35,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 AggregateId = evtAggregate.AggregateId,
                 CreatedOn = evtAggregate.CreatedOn,
                 Description = evtAggregate.Description,
-                RequestPayload = evtAggregate.RequestPayload,
-                ResponsePayload = evtAggregate.ResponsePayload
+                Payload = evtAggregate.Payload
             };
         }
 
@@ -53,8 +52,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 AggregateId = evtAggregate.AggregateId,
                 CreatedOn = evtAggregate.CreatedOn,
                 Description = evtAggregate.Description,
-                RequestPayload = evtAggregate.RequestPayload,
-                ResponsePayload = evtAggregate.ResponsePayload
+                Payload = evtAggregate.Payload
             };
         }
     }

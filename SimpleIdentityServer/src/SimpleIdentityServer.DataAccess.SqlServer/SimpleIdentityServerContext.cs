@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
     {
         #region Constructor
 
-        public SimpleIdentityServerContext(DbContextOptions dbContextOptions):base(dbContextOptions)
+        public SimpleIdentityServerContext(DbContextOptions<SimpleIdentityServerContext> dbContextOptions):base(dbContextOptions)
         {
         }
 

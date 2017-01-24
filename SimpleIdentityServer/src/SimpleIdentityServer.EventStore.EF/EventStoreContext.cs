@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.EventStore.EF
 {
     public class EventStoreContext : DbContext
     {
-        public EventStoreContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
+        public EventStoreContext(DbContextOptions<EventStoreContext> dbContextOptions) : base(dbContextOptions) { }
 
         public virtual DbSet<EventAggregate> Events { get; set; }
 

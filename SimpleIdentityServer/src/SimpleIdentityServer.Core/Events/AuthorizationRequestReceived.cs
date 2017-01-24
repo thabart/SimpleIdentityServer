@@ -31,5 +31,20 @@ namespace SimpleIdentityServer.Core.Events
             _processId = processId;
             _parameter = parameter;
         }
+
+        public string Id
+        {
+            get { return _id; }
+        }
+
+        public string ProcessId 
+        {
+            get { return _processId; }
+        }
+
+        public  AuthorizationParameter Parameter
+        {
+            get { return _parameter; }
+        }
     }
 }
