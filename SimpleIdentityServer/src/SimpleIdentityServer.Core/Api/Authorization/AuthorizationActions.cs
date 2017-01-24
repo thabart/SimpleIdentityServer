@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             }
             catch(IdentityServerException ex)
             {
-
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
                 throw;
             }
         }

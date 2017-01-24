@@ -164,9 +164,11 @@ namespace SimpleIdentityServer.Core
             }
 
             services.AddTransient<AuthorizationHandler>();
+            services.AddTransient<OpenIdErrorHandler>();
             var provider = services.BuildServiceProvider();
             var evtHandlerStore = new EvtHandlerStore();
             evtHandlerStore.Register(provider.GetService<AuthorizationHandler>());
+            evtHandlerStore.Register(provider.GetService<OpenIdErrorHandler>());
             if (handlers != null)
             {
                 foreach (var handler in handlers)
