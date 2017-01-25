@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.EventStore.Host
             public const string SortOrder = "sortOrder";
             public const string StartIndex = "startIndex";
             public const string Count = "count";
+            public const string Filter = "filter";
         }
 
         public static class SearchResultResponseNames

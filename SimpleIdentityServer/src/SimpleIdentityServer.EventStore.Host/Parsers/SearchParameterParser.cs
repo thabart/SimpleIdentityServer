@@ -39,6 +39,7 @@ namespace SimpleIdentityServer.EventStore.Host.Parsers
             {
                 TrySetStr((r) => result.SortBy = r, key, Constants.SearchParameterNames.SortBy, query);
                 TrySetStr((r) => result.SortOrder = GetSortOrder(r), key, Constants.SearchParameterNames.SortOrder, query);
+                TrySetStr((r) => result.Filter = r, key, Constants.SearchParameterNames.Filter, query);
                 TrySetInt((r) => result.StartIndex = r <= 0 ? result.StartIndex : r, key, Constants.SearchParameterNames.StartIndex, query);
                 TrySetInt((r) => result.Count = r <= 0 ? result.Count : r, key, Constants.SearchParameterNames.Count, query);
             }

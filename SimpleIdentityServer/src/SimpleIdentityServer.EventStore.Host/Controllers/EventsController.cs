@@ -15,11 +15,9 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.Host.Extensions;
 using SimpleIdentityServer.EventStore.Host.Parsers;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.Host.Controllers

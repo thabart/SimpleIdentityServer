@@ -35,5 +35,6 @@ namespace SimpleIdentityServer.Core.Parameters
         public SortOrders SortOrder { get; set; }
         public int StartIndex { get; set; }
         public int Count { get; set; }
+        public string Filter { get; set; }
     }
 }

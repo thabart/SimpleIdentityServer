@@ -74,34 +74,25 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
                 throw new ArgumentNullException(nameof(searchParameter));
             }
 
-            var _mappingJsonNameToModelName = new Dictionary<string, string>
+
+            IQueryable<Models.EventAggregate> events = _context.Events;
+            if (!string.IsNullOrWhiteSpace(searchParameter.Filter))
             {
-                { Core.Common.EventResponseNames.Id, "Id" },
-                { Core.Common.EventResponseNames.AggregateId, "AggregateId" },
-                { Core.Common.EventResponseNames.Payload, "Payload" },
-                { Core.Common.EventResponseNames.Description, "Description" },
-                { Core.Common.EventResponseNames.CreatedOn, "CreatedOn" }
+                events = events.Where(searchParameter.Filter);
+            }
 
-            };
-
-            IOrderedQueryable<Models.EventAggregate> events = null;
-            var rule = _mappingJsonNameToModelName.FirstOrDefault(m => m.Key == searchParameter.SortBy);
-            if (!rule.Equals(default(KeyValuePair<string, string>)) && !string.IsNullOrWhiteSpace(rule.Value))
+            if (!string.IsNullOrWhiteSpace(searchParameter.SortBy))
             {
                 if (searchParameter.SortOrder == SortOrders.Ascending)
                 {
-                    events = _context.Events.OrderBy(rule.Value);
+                    events = events.OrderBy(searchParameter.SortBy);
                 }
                 else
                 {
-                    events = _context.Events.OrderByDescending(rule.Value);
+                    events = events.OrderByDescending(searchParameter.SortBy);
                 }
             }
-            else
-            {
-                events = _context.Events.OrderBy(r => r.CreatedOn);
-            }
-
+            
             int totalResult = await events.CountAsync().ConfigureAwait(false);
             var result = events.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
             return new SearchEventAggregatesResult
