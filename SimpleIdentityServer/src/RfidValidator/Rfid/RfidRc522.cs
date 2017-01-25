@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
@@ -500,59 +499,60 @@ namespace RfidValidator.Rfid
             Task.Delay(50).Wait();
             _resetPowerDown.Write(GpioPinValue.High);
             Task.Delay(50).Wait();
+
+            // Force 100% ASK modulation
             WriteRegister(Registers.TxAsk, 0x40);
+
+            // Set CRC to 0x6363
             WriteRegister(Registers.Mode, 0x3D);
+
+            // Enable antenna
             SetRegisterBits(Registers.TxControl, 0x03);
         }
 
+
         public bool IsTagPresent()
         {
-            // WriteRegister(Registers.BitFraming, 0x07);
-            TransceiveData(new byte[]
-            {
-                PiccCommands.Request
-            }, false, 0, 0, false);
-            // WriteRegister(Registers.BitFraming, 0x00);
-            var fifoLevel = GetFifoLevel();
-            var fifoShort = ReadFromFifoShort();
-            Debug.WriteLine(fifoLevel + " " + fifoShort);
-            return fifoLevel == 2 && fifoShort == PiccResponses.AnswerToRequest;
+            WriteRegister(Registers.BitFraming, 0x07);
+            Transceive(false, PiccCommands.Request);
+            WriteRegister(Registers.BitFraming, 0x00);
+            return GetFifoLevel() == 2 && ReadFromFifoShort() == PiccResponses.AnswerToRequest;
         }
 
         public Uid ReadUid()
         {
-            var sendData = new byte[]
-            {
-                PiccCommands.Anticollision_1,
-                PiccCommands.Anticollision_2
-            };
-            var piccResponse = TransceiveData(sendData, true, 5, 0, false);
-            return new Uid(piccResponse.Response.ToArray());
+            Transceive(false, PiccCommands.Anticollision_1, PiccCommands.Anticollision_2);
+            return new Uid(ReadFromFifo(5));
         }
 
         public void HaltTag()
         {
-            var sendData = new byte[]
+            var sendData = new List<byte>
             {
                 PiccCommands.Halt_1,
-                PiccCommands.Halt_2
+                0
             };
-            TransceiveData(sendData, false, 0, 0, false);
+            sendData.AddRange(CalculateCrc(sendData.ToArray()));
+            TransceiveData(sendData.ToArray(), false, 0, 0, false);
+        }
+
+        public void StopCrypto()
+        {
+            ClearRegisterBits(0x08, 0x08);
         }
 
         public bool SelectTag(Uid uid)
         {
-            var sendData = new byte[7];
-            sendData[0] = PiccCommands.Select_1;
-            sendData[1] = PiccCommands.Select_2;
-            uid.FullUid.CopyTo(sendData, 2);
-            TransceiveData(sendData, false, 0, 0, false);
+            var data = new byte[7];
+            data[0] = PiccCommands.Select_1;
+            data[1] = PiccCommands.Select_2;
+            uid.FullUid.CopyTo(data, 2);
+            Transceive(true, data);
             return GetFifoLevel() == 1 && ReadFromFifo() == PiccResponses.SelectAcknowledge;
         }
 
-        public IEnumerable<byte> ReadBlock(byte blockNumber, Uid uid, byte[] keyA = null, byte[] keyB = null)
+        public byte[] ReadBlock(byte blockNumber, Uid uid, byte[] keyA = null, byte[] keyB = null)
         {
-            // 1. Authenticate
             if (keyA != null)
             {
                 MifareAuthenticate(PiccCommands.AuthenticateKeyA, blockNumber, uid, keyA);
@@ -566,73 +566,53 @@ namespace RfidValidator.Rfid
                 return null;
             }
 
-            // 2. Construct the payload.
             var sendData = new List<byte>
             {
                 PiccCommands.Read,
                 blockNumber
             };
             sendData.AddRange(CalculateCrc(sendData.ToArray()));
-            for (var i = 4; i < 18; i++)
-            {
-                sendData.Add(0x00);
-            }
-            var buffer = sendData.ToArray();
-
-            // 3. Transmit the buffer and receive the response, validate CRC_A.
-            return TransceiveData(buffer, true, 18, 0, true).Response;
+            var r = TransceiveData(sendData.ToArray(), true, 16, 0, true);
+            return r.Response.ToArray();
         }
 
         public bool WriteBlock(byte blockNumber, Uid uid, byte[] data, byte[] keyA = null, byte[] keyB = null)
         {
-            if (data == null || data.Count() > 16)
-            {
-                throw new ArgumentException("Either the parameter is NULL or the size is > 16");
-            }
-
-            // 1. Authenticate
             if (keyA != null)
-            {
                 MifareAuthenticate(PiccCommands.AuthenticateKeyA, blockNumber, uid, keyA);
-            }
             else if (keyB != null)
-            {
                 MifareAuthenticate(PiccCommands.AuthenticateKeyB, blockNumber, uid, keyB);
-            }
             else
-            {
                 return false;
-            }
 
-            // 2. Tell the PIC we want to write to block blockAddr.
-            var sendData = new List<byte>
-            {
-                PiccCommands.Write,
-                blockNumber
-            };
-            sendData.AddRange(CalculateCrc(sendData.ToArray()));
-            var buffer = sendData.ToArray();
-            TransceiveData(buffer, false, 0, 0, false);
+            // Write block
+            Transceive(true, PiccCommands.Write, blockNumber);
 
+            if (ReadFromFifo() != PiccResponses.Acknowledge)
+                return false;
 
-            // 2. Transfer the data.
             // Make sure we write only 16 bytes
-            var newBuffer = new byte[16];
+            var buffer = new byte[16];
             data.CopyTo(buffer, 0);
-            newBuffer.ToList().AddRange(CalculateCrc(newBuffer));
-            TransceiveData(newBuffer, false, 0, 0, false);
-            return true;
+
+            Transceive(true, buffer);
+
+            return ReadFromFifo() == PiccResponses.Acknowledge;
+        }
+        private PiccResponse TransceiveData(byte[] sendData, bool getData, byte backLength, byte rxAlign, bool checkCrc)
+        {
+            byte waitIrq = 0x30;
+            return CommunicateWithPicc(PcdCommands.Transceive, waitIrq, sendData, getData, backLength, rxAlign, checkCrc);
         }
 
-        private PiccResponse MifareAuthenticate(byte command, byte blockNumber, Uid uid, byte[] key)
+        private void MifareAuthenticate(byte command, byte blockNumber, Uid uid, byte[] key)
         {
-            const int MF_KEY_SIZE = 6;
-            byte waitIRq = 0x10;
+            byte waitIrq = 0x10;
             // Create Authentication packet
             var sendData = new byte[12];
             sendData[0] = command;
-            sendData[1] = 7; // TODO : Pass in parameter : (Trailer block).
-            for (var i = 0; i < MF_KEY_SIZE; i++) // 6 key bytes.
+            sendData[1] = 7;
+            for (var i = 0; i < 6; i++) // 6 key bytes.
             {
                 sendData[2 + i] = key[i];
             }
@@ -642,43 +622,40 @@ namespace RfidValidator.Rfid
                 sendData[8 + i] = uid.Bytes[i + uid.Bytes.Count() - 4];
             }
 
-            return CommunicateWithPicc(PcdCommands.MifareAuthenticate, waitIRq, sendData, false, 0, 0, false);
-        }
-
-        /// <summary>
-        /// Execute the Transceive command
-        /// CRC validation can only be done if backData & backLength are specified.
-        /// </summary>
-        /// <param name="sendData">Data to transfer to the FIFO</param>
-        /// <param name="getData">NULL or buffer if data should be read back after executing the command.</param>
-        /// <param name="backLength">Max number of bytes to write to backData.</param>
-        /// <param name="rxAlign">Defines the bit position in backData[0] for the first received. Default 0.</param>
-        /// <param name="checkCrc">The last two bytes of the response is assumed to be a CRC_A that must be validated.</param>
-        private PiccResponse TransceiveData(byte[] sendData, bool getData, byte backLength, byte rxAlign, bool checkCrc)
-        {
-            byte waitIrq = 0x30;
-            return CommunicateWithPicc(PcdCommands.Transceive, waitIrq, sendData, getData, backLength, rxAlign, checkCrc);
+            CommunicateWithPicc(PcdCommands.MifareAuthenticate, waitIrq, sendData, false, 0, 0, false);
         }
 
         private PiccResponse CommunicateWithPicc(
-            byte command, 
-            byte waitIrq, 
-            byte[] sendData, 
-            bool getData,
-            int backLength,
-            byte rxAlign, 
-            bool checkCrc)
+           byte command,
+           byte waitIrq,
+           byte[] sendData,
+           bool getData,
+           int backLength,
+           byte rxAlign,
+           bool checkCrc)
         {
+            byte irqEn = 0x00;
             byte txLastBit = 0;
-            byte bitFraming = 0;
+            byte bitFraming = (byte)((rxAlign << 4) + txLastBit);
             byte n;
 
-            WriteRegister(Registers.Command, PcdCommands.Idle); //  Put reader in Idle mode
-            WriteRegister(Registers.ComIrq, 0x7F);              // Clear all seven interrupt request bits
+            if (command == PcdCommands.MifareAuthenticate)
+            {
+                irqEn = 0x12;
+            }
+            else if (command == PcdCommands.Transceive)
+            {
+                irqEn = 0x77;
+            }
+                        
+            WriteRegister(Registers.ComIrqEnable, (byte)(irqEn | 0x80));
+            ClearRegisterBits(Registers.ComIrq, 0x80);
             SetRegisterBits(Registers.FifoLevel, 0x80);         // FlushBuffer = 1, FIFO initialization            
+            WriteRegister(Registers.Command, PcdCommands.Idle); //  Put reader in Idle mode
+            // WriteRegister(Registers.ComIrq, 0x7F);              // Clear all seven interrupt request bits
             WriteToFifo(sendData);                              // Write the data to the FIFO
-            WriteRegister(Registers.BitFraming, bitFraming);    // Bit adjustments
             WriteRegister(Registers.Command, command);
+            // WriteRegister(Registers.BitFraming, bitFraming);    // Bit adjustments
             if (command == PcdCommands.Transceive)
             {
                 SetRegisterBits(Registers.BitFraming, 0x80);
@@ -692,8 +669,9 @@ namespace RfidValidator.Rfid
             // HIALERTIRQ = 8 = FIFO buffer is almost full
             // LOALERTIRQ = 4 = FIFO buffer is almost empty
             // ERRIRQ = 2 = an error is dected.
+
             int i = 2000;
-            while(true)
+            while (true)
             {
                 n = ReadRegister(Registers.ComIrq);                 // ComIrqReg[7..0] bits are: Set1 TxIRq RxIRq IdleIRq HiAlertIRq LoAlertIRq ErrIRq TimerIRq
                 if ((n & waitIrq) == 0)
@@ -706,7 +684,8 @@ namespace RfidValidator.Rfid
                     throw new TimeoutException("Timeout in communication");
                 }
             }
-           
+
+            SetRegisterBits(Registers.BitFraming, 0x80);
 
             // WrErr = 128
             // TempErr = 64 = internal temperature sensor detects overheating
@@ -716,10 +695,12 @@ namespace RfidValidator.Rfid
             // PartityErr = 2 = Parity check failed.
             // ProtoErr = 1 = The number of bytes received in one data stream is incorrect.
             byte errorRegValue = ReadRegister(Registers.Error); // ErrorReg[7..0] bits are: WrErr TempErr reserved BufferOvfl CollErr CRCErr ParityErr ProtocolErr
+            var r = errorRegValue & 0x1B;
+            /*
             if ((errorRegValue & 0x13) == 0)
             {
                 throw new InvalidOperationException("Error in communication");
-            }
+            }*/
 
             var result = new PiccResponse();
             if (getData)
@@ -729,12 +710,13 @@ namespace RfidValidator.Rfid
                 result.ValidBits = ReadRegister(Registers.Control) & 0x07;
             }
 
-
+            /*
             if ((errorRegValue & 0x08) == 0)
             {
                 throw new InvalidOperationException("Collision detected");
-            }
+            }*/
 
+            /*
             if (getData && checkCrc)
             {
                 if (result.ValidBits == 4)
@@ -754,9 +736,55 @@ namespace RfidValidator.Rfid
                 {
                     throw new InvalidOperationException("The CRC_A does not match.");
                 }
-            }
+            }*/
 
             return result;
+        }
+
+        private void Transceive(bool enableCrc, params byte[] data)
+        {
+            if (enableCrc)
+            {
+                // Enable CRC
+                SetRegisterBits(Registers.TxMode, 0x80);
+                SetRegisterBits(Registers.RxMode, 0x80);
+            }
+
+            // Put reader in Idle mode
+            WriteRegister(Registers.Command, PcdCommands.Idle);
+
+            // Clear the FIFO
+            SetRegisterBits(Registers.FifoLevel, 0x80);
+
+            // Write the data to the FIFO
+            WriteToFifo(data);
+
+            // Put reader in Transceive mode and start sending
+            WriteRegister(Registers.Command, PcdCommands.Transceive);
+            SetRegisterBits(Registers.BitFraming, 0x80);
+
+            // Wait for (a generous) 25 ms
+            System.Threading.Tasks.Task.Delay(25).Wait();
+
+            // Stop sending
+            ClearRegisterBits(Registers.BitFraming, 0x80);
+
+            if (enableCrc)
+            {
+                // Disable CRC
+                ClearRegisterBits(Registers.TxMode, 0x80);
+                ClearRegisterBits(Registers.RxMode, 0x80);
+            }
+        }
+        
+        private byte[] ReadFromFifo(int length)
+        {
+            var buffer = new byte[length];
+
+            for (int i = 0; i < length; i++)
+                buffer[i] = ReadRegister(Registers.FifoData);
+
+            return buffer;
         }
 
         private byte ReadFromFifo()
@@ -781,7 +809,9 @@ namespace RfidValidator.Rfid
         {
             register <<= 1;
             register |= 0x80;
+
             var writeBuffer = new byte[] { register, 0x00 };
+
             return TransferSpi(writeBuffer)[1];
         }
 
@@ -789,18 +819,8 @@ namespace RfidValidator.Rfid
         {
             var low = ReadRegister(Registers.FifoData);
             var high = (ushort)(ReadRegister(Registers.FifoData) << 8);
+
             return (ushort)(high | low);
-        }
-
-        private byte[] ReadFromFifo(int length)
-        {
-            var buffer = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                buffer[i] = ReadRegister(Registers.FifoData);
-            }
-
-            return buffer;
         }
 
         private void WriteRegister(byte register, byte value)
@@ -825,7 +845,9 @@ namespace RfidValidator.Rfid
         private byte[] TransferSpi(byte[] writeBuffer)
         {
             var readBuffer = new byte[writeBuffer.Length];
+
             _spi.TransferFullDuplex(writeBuffer, readBuffer);
+
             return readBuffer;
         }
 
@@ -837,22 +859,7 @@ namespace RfidValidator.Rfid
             WriteToFifo(data);                                          // Write data to the FIFO
             WriteRegister(Registers.Command, PcdCommands.CalcCrc);      // Start the calculation
 
-            byte n;
-            int i = 5000;
-            while(true)
-            {
-                n = ReadRegister(Registers.DivIrq);
-                if ((n & 0x04) == 0)
-                {
-                    break;
-                }
-
-                if (--i == 0)
-                {
-                    throw new TimeoutException("Timeout in communication");
-                }
-            }
-
+            Task.Delay(25).Wait();
             var result = new byte[2];
             result[0] = ReadRegister(Registers.CRCResultRegL);
             result[1] = ReadRegister(Registers.CRCResultRegM);
