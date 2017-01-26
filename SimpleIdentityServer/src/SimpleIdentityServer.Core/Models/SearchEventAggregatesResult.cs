@@ -18,9 +18,37 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
 {
+    public class GroupedEventAggregate
+    {
+        public GroupedEventAggregate(object key, IEnumerable<EventAggregate> evts)
+        {
+            Key = key;
+            Events = evts;
+        }
+
+        public object Key { get; set; }
+        public IEnumerable<EventAggregate> Events { get; set; }
+    }
+
     public class SearchEventAggregatesResult
     {
-        public int TotalResults { get; set; }
-        public IEnumerable<EventAggregate> Events { get; set; }
+        public SearchEventAggregatesResult(int totalResults, IEnumerable<EventAggregate> evts)
+        {
+            TotalResults = totalResults;
+            Events = evts;
+            IsGrouped = false;
+        }
+
+        public SearchEventAggregatesResult(int totalResults, IEnumerable<GroupedEventAggregate> groupedEvts)
+        {
+            TotalResults = totalResults;
+            GroupedEvents = groupedEvts;
+            IsGrouped = true;
+        }
+
+        public int TotalResults { get; private set; }
+        public IEnumerable<EventAggregate> Events { get; private set; }
+        public IEnumerable<GroupedEventAggregate> GroupedEvents { get; private set; }
+        public bool IsGrouped { get; private set; }
     }
 }

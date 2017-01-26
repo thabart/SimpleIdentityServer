@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             ParameterExpression arg = Expression.Parameter(entityType, "x");
             MemberExpression property = Expression.Property(arg, rule.Value);
             var selector = Expression.Lambda(property, new ParameterExpression[] { arg });
-            var enumarableType = typeof(System.Linq.Queryable);
+            var enumarableType = typeof(Queryable);
             var method = enumarableType.GetMethods()
                  .Where(m => m.Name == "OrderBy" && m.IsGenericMethodDefinition)
                  .Where(m =>
@@ -128,6 +128,44 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                  .MakeGenericMethod(entityType);
             var newQuery = (IOrderedQueryable<TSource>)genericMethod
                  .Invoke(genericMethod, new object[] { query, selector });
+            return newQuery;
+        }
+
+        public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IEnumerable<TSource> query, string groupBy)
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (string.IsNullOrWhiteSpace(groupBy))
+            {
+                throw new ArgumentNullException(nameof(groupBy));
+            }
+
+            var rule = _mappingJsonNameToModelName.FirstOrDefault(m => m.Key == groupBy);
+            if (rule.Equals(default(KeyValuePair<string, string>)) || string.IsNullOrWhiteSpace(rule.Value))
+            {
+                throw new InvalidOperationException("the property doesn't exist");
+            }
+
+            var entityType = typeof(TSource);
+            var propertyInfo = entityType.GetProperty(rule.Value);
+            ParameterExpression arg = Expression.Parameter(entityType, "x");
+            MemberExpression keyProperty = Expression.Property(arg, rule.Value);
+            var keySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { arg });
+            var enumarableType = typeof(Queryable);
+            var method = enumarableType.GetMethods()
+                 .Where(m => m.Name == "GroupBy" && m.IsGenericMethodDefinition)
+                 .Where(m =>
+                 {
+                     var parameters = m.GetParameters().ToList();
+                     return parameters.Count == 2;
+                 }).Single();
+            MethodInfo genericMethod = method
+                 .MakeGenericMethod(entityType, propertyInfo.PropertyType);
+            var newQuery = (IQueryable<IGrouping<object,TSource>>)genericMethod
+                 .Invoke(genericMethod, new object[] { query, keySelector });
             return newQuery;
         }
     }

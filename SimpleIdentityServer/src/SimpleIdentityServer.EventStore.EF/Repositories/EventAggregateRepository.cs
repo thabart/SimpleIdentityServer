@@ -76,6 +76,7 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
 
 
             IQueryable<Models.EventAggregate> events = _context.Events;
+
             if (!string.IsNullOrWhiteSpace(searchParameter.Filter))
             {
                 events = events.Where(searchParameter.Filter);
@@ -92,14 +93,24 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
                     events = events.OrderByDescending(searchParameter.SortBy);
                 }
             }
-            
-            int totalResult = await events.CountAsync().ConfigureAwait(false);
-            var result = events.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
-            return new SearchEventAggregatesResult
+
+            if (!string.IsNullOrWhiteSpace(searchParameter.GroupBy))
             {
-                Events = await result.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false),
-                TotalResults = totalResult
-            };
+                var grouped = events.GroupBy(searchParameter.GroupBy);
+                var totalResults = await grouped.CountAsync().ConfigureAwait(false);
+                var pagedGroupingResult = grouped.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
+                var groupedEvtAggregates = new List<GroupedEventAggregate>();
+                foreach (var kvp in pagedGroupingResult)
+                {
+                    groupedEvtAggregates.Add(new GroupedEventAggregate(kvp.Key, kvp.Select(k => k.ToDomain())));
+                }
+
+                return new SearchEventAggregatesResult(totalResults, groupedEvtAggregates);
+            }
+
+            int totalResult = await events.CountAsync().ConfigureAwait(false);
+            var pagedResult = events.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
+            return new SearchEventAggregatesResult(totalResult, await pagedResult.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false));
         }
     }
 }

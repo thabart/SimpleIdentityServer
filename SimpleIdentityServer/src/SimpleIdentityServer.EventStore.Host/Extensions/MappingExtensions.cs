@@ -17,33 +17,29 @@
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.EventStore.Host.DTOs.Responses;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleIdentityServer.EventStore.Host.Extensions
 {
     internal static class MappingExtensions
     {
-        public static EventResponse ToDto(this EventAggregate evt)
+        public static JObject ToDto(this EventAggregate evt)
         {
             if (evt == null)
             {
                 throw new ArgumentNullException(nameof(evt));
             }
 
-            return new EventResponse
-            {
-                Id = evt.Id,
-                AggregateId = evt.AggregateId,
-                Description = evt.Description,
-                CreatedOn = evt.CreatedOn,
-                Payload = evt.Payload
-            };
+            var result = new JObject();
+            result.Add(new JProperty(Core.Common.EventResponseNames.Id, evt.Id));
+            result.Add(new JProperty(Core.Common.EventResponseNames.AggregateId, evt.AggregateId));
+            result.Add(new JProperty(Core.Common.EventResponseNames.Description, evt.Description));
+            result.Add(new JProperty(Core.Common.EventResponseNames.CreatedOn, evt.CreatedOn));
+            result.Add(new JProperty(Core.Common.EventResponseNames.Payload, evt.Payload));
+            return result;
         }
 
-        public static SearchResultResponse ToDto(this SearchEventAggregatesResult search, SearchParameter parameter)
+        public static JObject ToDto(this SearchEventAggregatesResult search, SearchParameter parameter)
         {
             if (search == null)
             {
@@ -55,12 +51,11 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            return new SearchResultResponse
-            {
-                TotalResult = search.TotalResults,
-                ItemsPerPage = parameter.Count,
-                StartIndex = parameter.StartIndex
-            };
+            var result = new JObject();
+            result.Add(new JProperty(Constants.SearchResultResponseNames.TotalResult, search.TotalResults));
+            result.Add(new JProperty(Constants.SearchResultResponseNames.ItemsPerPage, parameter.Count));
+            result.Add(new JProperty(Constants.SearchResultResponseNames.StartIndex, parameter.StartIndex));
+            return result;
         }
     }
 }

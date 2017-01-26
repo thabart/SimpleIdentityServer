@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.EventStore.Host
             public const string StartIndex = "startIndex";
             public const string Count = "count";
             public const string Filter = "filter";
+            public const string GroupBy = "groupby";
         }
 
         public static class SearchResultResponseNames

@@ -36,5 +36,6 @@ namespace SimpleIdentityServer.Core.Parameters
         public int StartIndex { get; set; }
         public int Count { get; set; }
         public string Filter { get; set; }
+        public string GroupBy { get; set; }
     }
 }

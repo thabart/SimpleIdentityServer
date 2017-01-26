@@ -15,14 +15,12 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.Host.Builders;
-using SimpleIdentityServer.EventStore.Host.DTOs.Responses;
 using SimpleIdentityServer.EventStore.Host.Extensions;
 using SimpleIdentityServer.EventStore.Host.Parsers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.Host.Controllers
@@ -49,7 +47,7 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
             var searchParameter = _searchParameterParser.ParseQuery(Request.Query);
             var result = await _repository.Search(searchParameter);
             var content = result.ToDto(searchParameter);
-            FillHalInformation(content, result.Events);
+            FillHalInformation(content, result);
             return new OkObjectResult(content);
         }
 
@@ -63,29 +61,56 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
             }
 
             var content = result.ToDto();
-            FillHalInformation(content);
+            FillHalInformation(content, result.Id);
             return new OkObjectResult(content);
         }
 
-        private void FillHalInformation(SearchResultResponse search, IEnumerable<EventAggregate> events)
+        private void FillHalInformation(JObject search, SearchEventAggregatesResult result)
         {
             var links = _halLinkBuilder.AddSelfLink($"/{Constants.RouteNames.Events}/.search").Build();
-            search.Links = links;
-            if (events != null)
+            search.Add(new JProperty(Constants.HalResponseNames.Links, links));
+            JArray evtArr = null;
+            if (result.IsGrouped)
             {
-                search.Embedded = events.Select(e =>
+                if (result.GroupedEvents != null)
                 {
-                    var dto = e.ToDto();
-                    FillHalInformation(dto);
-                    return dto;
-                });
+                    var embeddedContent = new JObject();
+                    foreach(var groupedEvt in result.GroupedEvents)
+                    {
+                        evtArr = new JArray();
+                        foreach (var evt in groupedEvt.Events)
+                        {
+                            var dto = evt.ToDto();
+                            FillHalInformation(dto, evt.Id);
+                            evtArr.Add(dto);
+                        }
+                        embeddedContent.Add(new JProperty(groupedEvt.Key.ToString(), evtArr));
+                    }
+
+                    search.Add(new JProperty(Constants.HalResponseNames.Embedded, embeddedContent));
+                }
+
+                return;
+            }
+
+            if (result.Events != null)
+            {
+                evtArr = new JArray();
+                foreach (var evt in result.Events)
+                {
+                    var dto = evt.ToDto();
+                    FillHalInformation(dto, evt.Id);
+                    evtArr.Add(dto);
+                }
+
+                search.Add(new JProperty(Constants.HalResponseNames.Embedded, evtArr));
             }
         }
 
-        private void FillHalInformation(EventResponse evt)
+        private void FillHalInformation(JObject evt, string id)
         {
-            var links = _halLinkBuilder.AddSelfLink($"/{Constants.RouteNames.Events}/{evt.Id}").Build();
-            evt.Links = links;
+            var links = _halLinkBuilder.AddSelfLink($"/{Constants.RouteNames.Events}/{id}").Build();
+            evt.Add(new JProperty(Constants.HalResponseNames.Links, links));
         }
     }
 }
