@@ -37,13 +37,30 @@ namespace SimpleIdentityServer.EventStore.Host
             public const string TotalResult = "totalResults";
             public const string ItemsPerPage = "itemsPerPage";
             public const string StartIndex = "startIndex";
-            public const string Resources = "resources";   
         }
 
         public static class SortOrderNames
         {
             public static string Ascending = "ascending";
             public static string Descending = "descending";
+        }
+
+        public static class HalResponseNames
+        {
+            public const string Links = "_links";
+            public const string Embedded = "_embedded";
+        }
+
+        public static class HalLinkResponseNames
+        {
+            public const string Self = "self";
+        }
+
+        public static class HalLinkPropertyResponseNames
+        {
+            public const string Href = "href";
+            public const string Name = "name";
+            public const string Templated = "templated";
         }
     }
 }

@@ -20,7 +20,7 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.EventStore.Host.DTOs.Responses
 {
     [DataContract]
-    public class EventResponse
+    public class EventResponse : HalResourceResponse
     {
         [DataMember(Name = Core.Common.EventResponseNames.Id)]
         public string Id { get; set; }

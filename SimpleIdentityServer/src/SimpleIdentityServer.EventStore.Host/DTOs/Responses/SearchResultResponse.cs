@@ -14,13 +14,12 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.EventStore.Host.DTOs.Responses
 {
     [DataContract]
-    public class SearchResultResponse
+    public class SearchResultResponse : HalResourceResponse
     {
         [DataMember(Name = Constants.SearchResultResponseNames.TotalResult)]
         public int TotalResult { get; set; }
@@ -28,7 +27,5 @@ namespace SimpleIdentityServer.EventStore.Host.DTOs.Responses
         public int ItemsPerPage { get; set; }
         [DataMember(Name = Constants.SearchResultResponseNames.StartIndex)]
         public int StartIndex { get; set; }
-        [DataMember(Name = Constants.SearchResultResponseNames.Resources)]
-        public IEnumerable<object> Resources { get; set; }
     }
 }

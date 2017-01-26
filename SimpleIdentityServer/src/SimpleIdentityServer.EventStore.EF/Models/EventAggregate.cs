@@ -15,19 +15,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EventStore.EF.Models
 {
     public class EventAggregate
     {
         public string Id { get; set; }
-        public string ParentId { get; set; }
         public string AggregateId { get; set; }
         public string Payload { get; set; }
         public string Description { get; set; }
         public DateTime CreatedOn { get; set; }
-        public virtual IEnumerable<EventAggregate> Links { get; set; }
-        public virtual EventAggregate Parent { get; set; }
     }
 }

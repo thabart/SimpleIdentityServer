@@ -55,16 +55,9 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            IEnumerable<EventResponse> resources = new List<EventResponse>();
-            if (search.Events != null)
-            {
-                resources = search.Events.Select(e => e.ToDto());
-            }
-
             return new SearchResultResponse
             {
                 TotalResult = search.TotalResults,
-                Resources = resources,
                 ItemsPerPage = parameter.Count,
                 StartIndex = parameter.StartIndex
             };

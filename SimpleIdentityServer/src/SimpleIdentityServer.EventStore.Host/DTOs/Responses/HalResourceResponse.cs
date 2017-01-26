@@ -14,25 +14,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.EventStore.EF.Models;
-using System;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.EventStore.EF.Mappings
+namespace SimpleIdentityServer.EventStore.Host.DTOs.Responses
 {
-    internal static class EventAggregateMapping
+    [DataContract]
+    public class HalResourceResponse
     {
-        public static ModelBuilder AddEventAggregate(this ModelBuilder modelBuilder)
-        {
-            if (modelBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(modelBuilder));
-            }
-
-            modelBuilder.Entity<EventAggregate>()
-                .ToTable("events")
-                .HasKey(e => e.Id);
-            return modelBuilder;
-        }
+        [DataMember(Name = Constants.HalResponseNames.Embedded)]
+        public IEnumerable<object> Embedded { get; set; }
+        [DataMember(Name = Constants.HalResponseNames.Links)]
+        public JObject Links { get; set; }
     }
 }

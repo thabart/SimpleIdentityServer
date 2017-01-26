@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.Host.Builders;
 using SimpleIdentityServer.EventStore.Host.Parsers;
 
 namespace SimpleIdentityServer.EventStore.Host
@@ -73,6 +74,7 @@ namespace SimpleIdentityServer.EventStore.Host
         private static void RegisterDependencies(IServiceCollection services)
         {
             services.AddTransient<ISearchParameterParser, SearchParameterParser>();
+            services.AddTransient<IHalLinkBuilder, HalLinkBuilder>();
             services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EvtStore;Integrated Security=True;");
         }
     }
