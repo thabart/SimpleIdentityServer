@@ -60,19 +60,11 @@ namespace RfidValidator.Rfid
                     if (_rfidRc522.IsTagPresent())
                     {
                         Uid uid = _rfidRc522.ReadUid();
-                        bool s = _rfidRc522.SelectTag(uid);
+                        var b = _rfidRc522.SelectTag(uid);
                         var size = _rfidRc522.ReadBlock(4, uid, new byte[] {
                             0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
                         });
-                        /*
-                        _rfidRc522.WriteBlock(4, uid, new byte[]
-                        {
-                            0x02,0x02,0x02,0x02,0x02,0x02,0,0,0,0,0,0,0,0,0,0
-                        }, new byte[] {
-                            0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
-                        });*/
                         _rfidRc522.HaltTag();
-                        _rfidRc522.StopCrypto();
                     }
 
                     /*
