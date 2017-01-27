@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,17 +21,17 @@ namespace RfidValidator.Rfid
 
     public class CardListener : IDisposable
     {
+        private RfidManager _rfidManager;
         private string _cardNumber;
         private readonly CancellationTokenSource _token;
         private readonly Task _task;
-        private readonly RfidRc522 _rfidRc522;
 
         public CardListener()
         {
             _cardNumber = string.Empty;
             _task = ListenCard();
             _token = new CancellationTokenSource();
-            _rfidRc522 = new RfidRc522();
+            _rfidManager = new RfidManager();
         }
 
         public event EventHandler<CardReceivedArgs> CardReceived;
@@ -49,7 +50,9 @@ namespace RfidValidator.Rfid
         {
             return new Task(async () =>
             {
-                await _rfidRc522.Start();
+#if ARM
+                await _rfidManager.Start();
+#endif
                 while (true)
                 {
                     if (_token.IsCancellationRequested)
@@ -57,19 +60,8 @@ namespace RfidValidator.Rfid
                         break;
                     }
 
-                    if (_rfidRc522.IsTagPresent())
-                    {
-                        Uid uid = _rfidRc522.ReadUid();
-                        var b = _rfidRc522.SelectTag(uid);
-                        var size = _rfidRc522.ReadBlock(4, uid, new byte[] {
-                            0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
-                        });
-                        _rfidRc522.HaltTag();
-                    }
-
-                    /*
-                    var cardNumber = RfidManager.GetSerialNumberCard();
-                    if (string.IsNullOrWhiteSpace(cardNumber))
+                    var cardNumber = _rfidManager.GetSerialNumberCard();
+                    if (string.IsNullOrEmpty(cardNumber))
                     {
                         _cardNumber = string.Empty;
                     }
@@ -77,23 +69,24 @@ namespace RfidValidator.Rfid
                     {
                         if (cardNumber != _cardNumber)
                         {
-                            _cardNumber = cardNumber;
                             if (CardReceived != null)
                             {
                                 try
                                 {
-                                    var buffer = RfidManager.ReadFromCard();
+                                    var buffer = _rfidManager.ReadFromCard();
                                     CardReceived(this, new CardReceivedArgs(cardNumber, Encoding.UTF8.GetString(buffer.ToArray())));
+                                    _cardNumber = cardNumber;
                                 }
-                                catch
+                                catch(Exception ex)
                                 {
+                                    Debug.WriteLine(ex.Message);
+#if ARM
+                                    _rfidManager.Stop();
+#endif
                                 }
                             }
-
-                            _cardNumber = cardNumber;
                         }
                     }
-                    */
 
                     await Task.Delay(1000);
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Gpio;
@@ -399,8 +400,13 @@ namespace RfidValidator.Rfid
 
         public sealed override string ToString()
         {
-            var formatString = "x" + (Bytes.Length * 2);
-            return GetHashCode().ToString(formatString);
+            var builder = new StringBuilder();
+            foreach (var b in FullUid)
+            {
+                builder.AppendFormat("{0:X2}", b);
+            }
+
+            return builder.ToString();
         }
     }
 

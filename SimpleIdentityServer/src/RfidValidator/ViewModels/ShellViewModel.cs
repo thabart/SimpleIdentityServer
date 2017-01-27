@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.HumanInterfaceDevice;
-using Windows.Devices.SmartCards;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Core;
@@ -50,8 +49,8 @@ namespace RfidValidator.ViewModels
 #if ARM
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             InitializeTouch(dispatcher);
-            InitializeRfid();
 #endif
+            InitializeRfid();   
         }
 
         public void ShowValidate()
@@ -83,7 +82,7 @@ namespace RfidValidator.ViewModels
 
         private void CardReceived(object sender, CardReceivedArgs e)
         {
-            Debug.WriteLine("card has been received");
+            Debug.WriteLine($"identity token : {e.IdentityToken} & card number : {e.CardNumber}");
         }
 
         private void OnPointerDown(object sender, Touch.PointerEventArgs e)

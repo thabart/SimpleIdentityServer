@@ -2,17 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RfidValidator.Rfid
 {
-    public static class RfidManager
+    public class RfidManager
     {
         const int blockSize = 16;
         const int maxBlocks = 64;
         const int sizeIndex = 4;
         const int startDataIndex = 5;
+#if ARM
+        private readonly RfidRc522 _rfidRc522;
+        private Uid _uid;
+#endif
 
-        public static void WriteToCard(byte[] bytes)
+        public RfidManager()
+        {
+#if ARM
+            _rfidRc522 = new RfidRc522();
+            _uid = null;
+#endif
+        }
+
+#if ARM
+        public async Task Start()
+        {
+            await _rfidRc522.Start();
+        }
+
+        public void Stop()
+        {
+            _rfidRc522.HaltTag();
+        }
+#endif
+
+        public void WriteToCard(byte[] bytes)
         {
             // ISO Standard 14443A Memory type EEPROM
             // Number of blocks : 64
@@ -70,30 +95,22 @@ namespace RfidValidator.Rfid
             }
         }
 
-        public static IEnumerable<byte> ReadFromCard()
+        public IEnumerable<byte> ReadFromCard()
         {
-            byte mode = 0x00;
-            var bufferSize = new byte[16];
-            // 1. Read the size.
-            Reader.MF_Read(mode, Convert.ToByte(sizeIndex), 1, new byte[]
+#if ARM
+            if (_uid == null)
             {
-                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
-            }, bufferSize);
-            var length = bufferSize.TakeWhile(b => b != 0).Count();
-            var text = Encoding.UTF8.GetString(bufferSize, 0, length);
-            int size;
-            if (!int.TryParse(text, out size))
-            {
-                throw new InvalidOperationException("the size cannot be read");
+                throw new InvalidOperationException("no uid has been selected");
             }
 
-            double t = (double)size / (double)blockSize;
-            double numberOfBlocks = Math.Ceiling((double)size / blockSize);
-            if (numberOfBlocks > maxBlocks)
+            var isTagSelected = _rfidRc522.SelectTag(_uid);
+            if (!isTagSelected)
             {
-                throw new InvalidOperationException("too many blocks");
+                throw new InvalidOperationException("the tag has not been selected");
             }
-
+#endif
+            // 1. Get the number of blocks to read.
+            var numberOfBlocks = GetNumberOfBlocks();
             // 2. Read the content.
             var result = new List<byte>();
             var index = 1;
@@ -106,13 +123,7 @@ namespace RfidValidator.Rfid
                         continue;
                     }
 
-                    var buffer = new byte[16];
-                    var newIndex = Convert.ToByte(blockIndex - 1);
-                    // Console.WriteLine($"Index {newIndex}");
-                    Reader.MF_Read(mode, newIndex, 1, new byte[]
-                    {
-                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
-                    }, buffer);
+                    var buffer = ReadBlock(blockIndex);
                     var nextBlockIndex = blockIndex + 1;
                     if (index == numberOfBlocks || (index + 1 == numberOfBlocks && nextBlockIndex % 4 == 0))
                     {
@@ -128,11 +139,23 @@ namespace RfidValidator.Rfid
                 }
             }
 
+#if ARM
+            _rfidRc522.HaltTag();
+#endif
             return result;
         }
 
-        public static string GetSerialNumberCard()
+        public string GetSerialNumberCard()
         {
+#if ARM
+            if (!_rfidRc522.IsTagPresent())
+            {
+                return string.Empty;
+            }
+
+            _uid = _rfidRc522.ReadUid();
+            return _uid.ToString();
+#else
             byte mode = 0x26, halt = 0x00;
             byte[] snr = new byte[1], value = new byte[4];
             var error = Reader.MF_Getsnr(mode, halt, snr, value);
@@ -144,6 +167,59 @@ namespace RfidValidator.Rfid
             {
                 return ToStr(value);
             }
+#endif
+        }
+
+        private double GetNumberOfBlocks()
+        {
+            var bufferSize = new byte[16];
+#if ARM
+            bufferSize = _rfidRc522.ReadBlock(sizeIndex, _uid, new byte[]
+            {
+                0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+            });
+#else
+            byte mode = 0x00;
+            Reader.MF_Read(mode, Convert.ToByte(sizeIndex), 1, new byte[]
+            {
+                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
+            }, bufferSize);
+#endif
+            var length = bufferSize.TakeWhile(b => b != 0).Count();
+            var text = Encoding.UTF8.GetString(bufferSize, 0, length);
+            int size;
+            if (!int.TryParse(text, out size))
+            {
+                throw new InvalidOperationException("the size cannot be read");
+            }
+
+            double t = (double)size / (double)blockSize;
+            double numberOfBlocks = Math.Ceiling((double)size / blockSize);
+            if (numberOfBlocks > maxBlocks)
+            {
+                throw new InvalidOperationException("too many blocks");
+            }
+
+            return numberOfBlocks;
+        }
+
+        private byte[] ReadBlock(int blockIndex)
+        {
+            var buffer = new byte[16];
+            var newIndex = Convert.ToByte(blockIndex - 1);
+#if ARM
+            buffer = _rfidRc522.ReadBlock(newIndex, _uid, new byte[]
+            {
+                0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+            });
+#else
+            byte mode = 0x00;
+            Reader.MF_Read(mode, newIndex, 1, new byte[]
+            {
+                        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0,0,0,0,0,0,0,0,0,0
+            }, buffer);
+#endif
+            return buffer;
         }
 
         private static string ToStr(byte[] bytes)
