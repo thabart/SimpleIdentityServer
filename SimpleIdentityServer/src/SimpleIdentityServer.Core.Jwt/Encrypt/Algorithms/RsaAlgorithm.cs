@@ -31,13 +31,16 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeEncrypted,
             JsonWebKey jsonWebKey)
         {
-#if NET46 || NET45
+#if UAP
+            // TODO : Implement
+            return null;
+#elif NET46 || NET45
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Encrypt(toBeEncrypted, _oaep);
             }
-#else
+#elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
@@ -49,13 +52,15 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeDecrypted, 
             JsonWebKey jsonWebKey)
         {
-#if NET46 || NET45
+#if UAP
+            return null;
+#elif NET46 || NET45
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
                 return rsa.Decrypt(toBeDecrypted, _oaep);
             }
-#else
+#elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);

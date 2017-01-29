@@ -44,6 +44,11 @@
         "System.Security.Cryptography.Cng": "4.2.0",
         "System.Security.Cryptography.OpenSsl": "4.0.0",
         "System.Security.Cryptography.Algorithms.Extensions": "*"
+      },
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD"
+        ]
       }
     }
   }

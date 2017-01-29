@@ -111,7 +111,10 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
 
-#if NET46 || NET45
+#if UAP
+            // TODO : Implement
+            return null;
+#elif NET46 || NET45
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -119,7 +122,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
                 var byteToBeConverted = rsa.SignData(bytesToBeSigned, hashMethod);
                 return byteToBeConverted.Base64EncodeBytes();
             }
-#else
+#elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -148,13 +151,16 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
             var plainBytes = ASCIIEncoding.ASCII.GetBytes(input);
             var hashMethod = _mappingJwsAlgorithmToRsaHashingAlgorithms[algorithm];
-#if NET46 || NET45
+#if UAP
+            // TODO : Implement
+            return false;
+#elif NET46 || NET45
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(serializedKeys);
                 return rsa.VerifyData(plainBytes, hashMethod, signature);
             }
-#else
+#elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
                 rsa.FromXmlString(serializedKeys);
@@ -165,7 +171,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
         #endregion
 
-#region Elliptic Curve algorithm
+        #region Elliptic Curve algorithm
 
 #if NET46 || NET45
 
@@ -227,6 +233,6 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
 #endif
 
-#endregion
+        #endregion
     }
 }

@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-#if NET45
+#if NET45 || UAP
 #else
 using Microsoft.AspNetCore.Http;
 #endif
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.Common.Serializers
             return Deserialize<T>(this.ConvertNameValueCollection(input));
         }
 
-#if NET45
+#if NET45 || UAP
 
 #else
 
@@ -261,7 +261,7 @@ namespace SimpleIdentityServer.Core.Common.Serializers
 
             return output.ToString().TrimEnd(new[] { '&' });
         }
-#if NET45
+#if NET45 || UAP
 
 #else
         private string ConvertNameValueCollection(IFormCollection form)

@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. UI Layer", "01. UI Laye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfidValidator", "src\RfidValidator\RfidValidator.csproj", "{FCF09E39-BA2B-4221-8685-E2B5451817D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Core.Jwt.UWP", "src\SimpleIdentityServer.Core.Jwt.UWP\SimpleIdentityServer.Core.Jwt.UWP.csproj", "{E0515202-D974-4081-B2FC-C28BA6D0EB92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,11 +43,28 @@ Global
 		{FCF09E39-BA2B-4221-8685-E2B5451817D2}.Release|x86.ActiveCfg = Release|x86
 		{FCF09E39-BA2B-4221-8685-E2B5451817D2}.Release|x86.Build.0 = Release|x86
 		{FCF09E39-BA2B-4221-8685-E2B5451817D2}.Release|x86.Deploy.0 = Release|x86
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|ARM.Build.0 = Debug|ARM
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|x64.ActiveCfg = Debug|x64
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|x64.Build.0 = Debug|x64
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|x86.ActiveCfg = Debug|x86
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Debug|x86.Build.0 = Debug|x86
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|ARM.ActiveCfg = Release|ARM
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|ARM.Build.0 = Release|ARM
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|x64.ActiveCfg = Release|x64
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|x64.Build.0 = Release|x64
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|x86.ActiveCfg = Release|x86
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FCF09E39-BA2B-4221-8685-E2B5451817D2} = {D336017E-3EC2-4968-8A70-79BC23E6466C}
+		{E0515202-D974-4081-B2FC-C28BA6D0EB92} = {DCE2DBAA-FA22-44A9-BE49-0D67F66E08C0}
 	EndGlobalSection
 EndGlobal
