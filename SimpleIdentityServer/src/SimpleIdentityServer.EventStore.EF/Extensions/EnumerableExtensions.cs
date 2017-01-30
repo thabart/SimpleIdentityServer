@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace SimpleIdentityServer.EventStore.EF.Extensions
 {
@@ -167,6 +168,41 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             var newQuery = (IQueryable<IGrouping<object,TSource>>)genericMethod
                  .Invoke(genericMethod, new object[] { query, keySelector });
             return newQuery;
+        }
+
+        public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> query, string filter)
+        {
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
+            var fieldNames = filter.Split(',');
+            var entityType = typeof(TSource);
+            var propertyInfo = entityType.GetProperty(filter);
+            var sourceProperties = fieldNames.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
+            var anonType = CreateNewAnonymousType<TSource>(fieldNames);
+            var arg = Expression.Parameter(entityType, "x");
+            var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
+            var selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+            return (IQueryable<dynamic>)query.Provider.CreateQuery(Expression.Call(typeof(Queryable), "Select", new Type[] { typeof(TSource), anonType.AsType() },
+                 Expression.Constant(query), selector));
+        }
+
+        private static TypeInfo CreateNewAnonymousType<TSource>(IEnumerable<string> fieldNames)
+        {
+            var dynamicAssemblyName = new AssemblyName("TempAssm");
+            var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
+            var dynamicModule = dynamicAssembly.DefineDynamicModule("TempAssm");
+            TypeBuilder dynamicAnonymousType = dynamicModule.DefineType("TempCl", TypeAttributes.Public);
+            var modelType = typeof(TSource);
+            foreach(var fieldName in fieldNames)
+            {
+                var property = modelType.GetProperty(fieldName);
+                dynamicAnonymousType.DefineField(fieldName, property.PropertyType, FieldAttributes.Public);
+            }
+
+            return dynamicAnonymousType.CreateTypeInfo();
         }
     }
 }
