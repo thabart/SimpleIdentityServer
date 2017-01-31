@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         private const char _instructionSeparator = '$';
         private const string _selectInstruction = "select";
         private const string _whereInstruction = "where";
+        private const string _groupByInstruction = "groupby";
         private static IEnumerable<string> _supportedInstructions = new List<string>
         {
             _selectInstruction,
-            _whereInstruction
+            _whereInstruction,
+            _groupByInstruction
         };
         private static IEnumerable<char> _openSign = new[]
         {
@@ -57,6 +59,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
             SelectInstruction selectInstruction = null;
             WhereInstruction whereInst = null;
+            GroupByInstruction groupByInst = null;
             foreach(var instruction in instructions)
             {
                 var attrs = SplitInstruction(instruction);
@@ -73,17 +76,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
                 else if (string.Equals(method, _whereInstruction, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    IEnumerable<string> parameters;
                     whereInst = new WhereInstruction();
-                    if (IsInstruction(parameter, out parameters))
-                    {
-                        parameters = SplitInstructions(parameter);
-                        whereInst.SetInstruction(ExtractInstruction(parameters));
-                    }
-                    else
-                    {
-                        whereInst.SetParameter(parameter);
-                    }
+                    FillInstruction(whereInst, parameter);
+                }
+                else if (string.Equals(method, _groupByInstruction, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    groupByInst = new GroupByInstruction();
+                    FillInstruction(groupByInst, parameter);
                 }
             }
 
@@ -93,10 +92,25 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             selectInstruction.WhereInst = whereInst;
+            selectInstruction.GroupByInst = groupByInst;
             return selectInstruction;
         }
 
-        public static bool IsInstruction(string instruction, out IEnumerable<string> parameters)
+        private static void FillInstruction(BaseInstruction instruction, string parameter)
+        {
+            IEnumerable<string> parameters;
+            if (IsInstruction(parameter, out parameters))
+            {
+                parameters = SplitInstructions(parameter);
+                instruction.SetInstruction(ExtractInstruction(parameters));
+            }
+            else
+            {
+                instruction.SetParameter(parameter);
+            }
+        }
+
+        private static bool IsInstruction(string instruction, out IEnumerable<string> parameters)
         {
             parameters = null;
             if (string.IsNullOrWhiteSpace(instruction))

@@ -97,6 +97,44 @@ namespace SimpleIdentityServer.EventStore.Tests
             Assert.True(result.First() == "thierry");
         }
 
+        [Fact]
+        public void When_Execute_GroupBy_Instruction_Then_Two_Records_Are_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+            persons.GroupBy(p => p.FirstName);
+
+            // ARRANGE
+            InitializeFakeObjects();
+
+            var results = persons.Select(p => new { p.FirstName });
+            string s2 = results.GetType().FullName;
+
+            // ACT
+            var instruction = _parser.Parse("groupby$FirstName");
+            var result = instruction.Evaluate(persons);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 2);
+        }
+
         private void InitializeFakeObjects()
         {
             _parser = new FilterParser();

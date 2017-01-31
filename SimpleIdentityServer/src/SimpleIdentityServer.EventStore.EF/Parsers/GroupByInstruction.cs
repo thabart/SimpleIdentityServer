@@ -14,40 +14,40 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.EventStore.EF.Extensions;
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using SimpleIdentityServer.EventStore.EF.Extensions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class SelectInstruction
+    public class GroupByInstruction : BaseInstruction
     {
-        private readonly string _filter;
+        private SelectInstruction _selectInstruction;
+        private string _parameter;
 
-        public SelectInstruction() { }
-
-        public SelectInstruction(string filter)
+        public GroupByInstruction()
         {
-            _filter = filter;
+            _selectInstruction = null;
         }
 
-        public WhereInstruction WhereInst { get; set; }
-        public GroupByInstruction GroupByInst { get; set; }
-
-        public IEnumerable<dynamic> Evaluate<TEntity>(IQueryable<TEntity> elts)
+        public override void SetInstruction(SelectInstruction instruction)
         {
-            if (GroupByInst != null)
+            _selectInstruction = instruction;
+        }
+
+        public override void SetParameter(string parameter)
+        {
+            _parameter = parameter;
+        }
+
+        public IQueryable<IGrouping<object, TSource>> Evaluate<TSource>(IQueryable<TSource> elts)
+        {
+            if (elts == null)
             {
-                return GroupByInst.Evaluate(elts);
+                throw new ArgumentNullException(nameof(elts));
             }
 
-            if (WhereInst != null)
-            {
-                elts = WhereInst.Evaluate(elts);
-            }
-
-            var result = elts.Select(_filter);
-            return result;
+            return elts.GroupBy(_parameter);
         }
     }
 }
