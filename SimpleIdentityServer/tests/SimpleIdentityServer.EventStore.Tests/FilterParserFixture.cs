@@ -64,6 +64,39 @@ namespace SimpleIdentityServer.EventStore.Tests
             Assert.True(result.First().FirstName == "thierry");
         }
 
+        [Fact]
+        public void When_Execute_Where_Instruction_And_Return_First_Name_Then_Str_Is_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+
+            // ARRANGE
+            InitializeFakeObjects();
+
+            var results = persons.Select(p => new { p.FirstName });
+            string s2 = results.GetType().FullName;
+
+            // ACT
+            var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry)");
+            var result = instruction.Evaluate(persons);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+            Assert.True(result.First() == "thierry");
+        }
+
         private void InitializeFakeObjects()
         {
             _parser = new FilterParser();

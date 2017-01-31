@@ -178,11 +178,23 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 fieldNames = entityType.GetProperties().Select(m => m.Name).ToArray();
             }
 
+            var arg = Expression.Parameter(entityType, "x");
+            LambdaExpression selector = null;
+            if (fieldNames.Count() == 1)
+            {
+                var field = fieldNames.First();
+                var propertyInfo = entityType.GetProperty(field);
+                MemberExpression property = Expression.Property(arg, field);
+                selector = Expression.Lambda(property, new ParameterExpression[] { arg });
+                return (IQueryable<dynamic>)query.Provider.CreateQuery(
+                    Expression.Call(typeof(Queryable), "Select", new Type[] { typeof(TSource), propertyInfo.PropertyType },
+                     Expression.Constant(query), selector));
+            }
+
             var sourceProperties = fieldNames.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
             var anonType = CreateNewAnonymousType<TSource>(fieldNames);
-            var arg = Expression.Parameter(entityType, "x");
             var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
-            var selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+            selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
             return (IQueryable<dynamic>)query.Provider.CreateQuery(Expression.Call(typeof(Queryable), "Select", new Type[] { typeof(TSource), anonType.AsType() },
                  Expression.Constant(query), selector));
         }
