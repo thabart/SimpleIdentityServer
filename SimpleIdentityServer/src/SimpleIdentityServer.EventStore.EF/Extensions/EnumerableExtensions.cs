@@ -20,6 +20,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Extensions
 {
@@ -97,24 +98,18 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            var splitted = filter.Split('=');
+            var splitted = Regex.Split(Regex.Replace(filter, @"\s+", ""), "eq");
             if (splitted.Count() != 2)
             {
                 throw new ArgumentException("the filter is not correct");
             }
 
             var propertyName = splitted.First();
-            var value = splitted.ElementAt(1);
-            var rule = _mappingJsonNameToModelName.FirstOrDefault(m => m.Key == propertyName);
-            if (rule.Equals(default(KeyValuePair<string, string>)) || string.IsNullOrWhiteSpace(rule.Value))
-            {
-                throw new InvalidOperationException("the property doesn't exist");
-            }
-            
+            var value = splitted.ElementAt(1);            
             var entityType = typeof(TSource);
-            var propertyInfo = entityType.GetProperty(rule.Value);
+            var propertyInfo = entityType.GetProperty(propertyName);
             var arg = Expression.Parameter(entityType, "x");
-            var property = Expression.Property(arg, rule.Value);
+            var property = Expression.Property(arg, propertyName);
             var equalExpr = Expression.Equal(property, Expression.Constant(value));
             var selector = Expression.Lambda(equalExpr, new ParameterExpression[] { arg });
             var enumarableType = typeof(Queryable);
@@ -172,14 +167,17 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
 
         public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> query, string filter)
         {
-            if (string.IsNullOrWhiteSpace(filter))
+            var entityType = typeof(TSource);
+            string[] fieldNames = null;
+            if (!string.IsNullOrWhiteSpace(filter))
             {
-                throw new ArgumentNullException(nameof(filter));
+                fieldNames = filter.Split(',');
+            }
+            else
+            {
+                fieldNames = entityType.GetProperties().Select(m => m.Name).ToArray();
             }
 
-            var fieldNames = filter.Split(',');
-            var entityType = typeof(TSource);
-            var propertyInfo = entityType.GetProperty(filter);
             var sourceProperties = fieldNames.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
             var anonType = CreateNewAnonymousType<TSource>(fieldNames);
             var arg = Expression.Parameter(entityType, "x");

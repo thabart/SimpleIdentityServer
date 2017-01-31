@@ -14,34 +14,13 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.EventStore.EF.Extensions;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class SelectInstruction
+    public abstract class BaseInstruction
     {
-        private readonly string _filter;
-
-        public WhereInstruction WhereInst { get; set; }
-
-        public SelectInstruction() { }
-
-        public SelectInstruction(string filter)
-        {
-            _filter = filter;
-        }
-
-        public IEnumerable<dynamic> Evaluate<TEntity>(IQueryable<TEntity> elts)
-        {
-            if (WhereInst != null)
-            {
-                elts = WhereInst.Evaluate(elts);
-            }
-
-            var result = elts.Select(_filter);
-            return result;
-        }
+        public abstract void SetInstruction(SelectInstruction instruction);
+        public abstract void SetParameter(string parameter);
     }
 }

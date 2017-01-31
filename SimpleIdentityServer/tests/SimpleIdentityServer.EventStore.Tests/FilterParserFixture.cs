@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.EventStore.Tests
         private FilterParser _parser;
 
         [Fact]
-        public void When()
+        public void When_Execute_Where_Instruction_Then_One_Record_Is_Returned()
         {
             var persons = (new List<Person>
             {
@@ -55,10 +55,13 @@ namespace SimpleIdentityServer.EventStore.Tests
             string s2 = results.GetType().FullName;
 
             // ACT
-            var instruction = _parser.Parse("select=FirstName,LastName");
+            var instruction = _parser.Parse("where$(FirstName eq thierry)");
             var result = instruction.Evaluate(persons);
 
-            string s = "";
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+            Assert.True(result.First().FirstName == "thierry");
         }
 
         private void InitializeFakeObjects()

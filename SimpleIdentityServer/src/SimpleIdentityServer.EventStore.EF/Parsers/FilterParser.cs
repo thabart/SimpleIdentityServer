@@ -23,6 +23,14 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public class FilterParser
     {
+        private const char _instructionSeparator = '$';
+        private const string _selectInstruction = "select";
+        private const string _whereInstruction = "where";
+        private static IEnumerable<string> _supportedInstructions = new List<string>
+        {
+            _selectInstruction,
+            _whereInstruction
+        };
         private static IEnumerable<char> _openSign = new[]
         {
             '(',
@@ -48,18 +56,34 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         private static SelectInstruction ExtractInstruction(IEnumerable<string> instructions)
         {
             SelectInstruction selectInstruction = null;
+            WhereInstruction whereInst = null;
             foreach(var instruction in instructions)
             {
-                var attrs = SplitStr(instruction, '=');
-                if (attrs.Count() != 2)
+                var attrs = SplitInstruction(instruction);
+                if (!attrs.Any())
                 {
                     throw new InvalidOperationException($"the instruction {instruction} is not valid");
                 }
                 
                 var method = attrs.First();
-                if (string.Equals(method, "select", StringComparison.CurrentCultureIgnoreCase))
+                var parameter = attrs.ElementAt(1);
+                if (string.Equals(method, _selectInstruction, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    selectInstruction = new SelectInstruction(attrs.ElementAt(1));
+                    selectInstruction = new SelectInstruction(parameter);
+                }
+                else if (string.Equals(method, _whereInstruction, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    IEnumerable<string> parameters;
+                    whereInst = new WhereInstruction();
+                    if (IsInstruction(parameter, out parameters))
+                    {
+                        parameters = SplitInstructions(parameter);
+                        whereInst.SetInstruction(ExtractInstruction(parameters));
+                    }
+                    else
+                    {
+                        whereInst.SetParameter(parameter);
+                    }
                 }
             }
 
@@ -68,7 +92,42 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 selectInstruction = new SelectInstruction();
             }
 
+            selectInstruction.WhereInst = whereInst;
             return selectInstruction;
+        }
+
+        public static bool IsInstruction(string instruction, out IEnumerable<string> parameters)
+        {
+            parameters = null;
+            if (string.IsNullOrWhiteSpace(instruction))
+            {
+                return false;
+            }
+
+            var splitted = instruction.Split(_instructionSeparator);
+            if (!splitted.Any() || !_supportedInstructions.Contains(splitted.First()) || splitted.Count() != 2)
+            {
+                return false;
+            }
+
+            parameters = new[] 
+            {
+                splitted.First(),
+                splitted.ElementAt(1).TrimStart('(').TrimEnd(')')
+            };
+            return true;
+
+        }
+
+        private static IEnumerable<string> SplitInstruction(string instruction)
+        {
+            IEnumerable<string> parameters;
+            if (!IsInstruction(instruction, out parameters))
+            {
+                return new string[0];
+            }
+
+            return parameters;
         }
 
         private static IEnumerable<string> SplitInstructions(string filter)
@@ -101,7 +160,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 // 2. Add string.
                 if (level == 0 && (character == separator || i == str.Length))
                 {
-                    attrs.Add(strBuilder.ToString().TrimStart('(').TrimEnd(')'));
+                    attrs.Add(strBuilder.ToString());
                     strBuilder.Clear();
                     continue;
                 }
