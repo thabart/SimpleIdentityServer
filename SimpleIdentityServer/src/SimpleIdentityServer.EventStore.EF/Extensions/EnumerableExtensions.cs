@@ -212,6 +212,47 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                  Expression.Constant(query), selector));
         }
 
+        public static IQueryable<TSource> Join<TSource>(this IQueryable<TSource> query, string filter)
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+            
+            var tuple = filter.Split('|');
+            if (tuple.Count() != 2)
+            {
+                throw new ArgumentException("the filter is not correct");
+            }
+
+            var outerKey = tuple.First();
+            var innerKey = tuple.ElementAt(1);
+            var entityType = typeof(TSource);
+            var propertyInfoOuter = entityType.GetProperty(outerKey);
+            var propertyInfoInner = entityType.GetProperty(innerKey);
+            ParameterExpression arg = Expression.Parameter(entityType, "x");
+            MemberExpression propertyOuter = Expression.Property(arg, outerKey);
+            MemberExpression propertyInner = Expression.Property(arg, innerKey);
+            var selectorPropertyOuter = Expression.Lambda(propertyOuter, new ParameterExpression[] { arg });
+            var selectorPropertyInner = Expression.Lambda(propertyInner, new ParameterExpression[] { arg });
+            var enumarableType = typeof(Queryable);
+            var method = enumarableType.GetMethods()
+                 .Where(m => m.Name == "OrderBy" && m.IsGenericMethodDefinition)
+                 .Where(m =>
+                 {
+                     return m.GetParameters().ToList().Count == 5;
+                 }).First();
+            MethodInfo genericMethod = method.MakeGenericMethod(entityType, propertyInfoOuter.PropertyType, propertyInfoInner.PropertyType, entityType);
+            var newQuery = (IQueryable<TSource>)genericMethod
+                 .Invoke(genericMethod, new object[] { query, propertyOuter, propertyInner,  null});
+            return newQuery;
+        }
+
         private static TypeInfo CreateNewAnonymousType<TSource>(IEnumerable<string> fieldNames)
         {
             var dynamicAssemblyName = new AssemblyName("TempAssm");

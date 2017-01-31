@@ -51,9 +51,6 @@ namespace SimpleIdentityServer.EventStore.Tests
             // ARRANGE
             InitializeFakeObjects();
 
-            var results = persons.Select(p => new { p.FirstName });
-            string s2 = results.GetType().FullName;
-
             // ACT
             var instruction = _parser.Parse("where$(FirstName eq thierry)");
             var result = instruction.Evaluate(persons);
@@ -83,9 +80,6 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ARRANGE
             InitializeFakeObjects();
-
-            var results = persons.Select(p => new { p.FirstName });
-            string s2 = results.GetType().FullName;
 
             // ACT
             var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry)");
@@ -118,13 +112,9 @@ namespace SimpleIdentityServer.EventStore.Tests
                     LastName = "lastname"
                 }
             }).AsQueryable();
-            persons.GroupBy(p => p.FirstName);
 
             // ARRANGE
             InitializeFakeObjects();
-
-            var results = persons.Select(p => new { p.FirstName });
-            string s2 = results.GetType().FullName;
 
             // ACT
             var instruction = _parser.Parse("groupby$FirstName");
@@ -133,6 +123,40 @@ namespace SimpleIdentityServer.EventStore.Tests
             // ASSERTS
             Assert.NotNull(result);
             Assert.True(result.Count() == 2);
+        }
+
+        [Fact]
+        public void When_Exute_Join_Instruction_Then_OneRecord_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "thierry"
+                },
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+            var res = persons.Join(persons, p => p.FirstName, p => p.LastName, (p, p2) => p);
+
+            // ACT
+            var instruction = _parser.Parse("groupby$FirstName|LastName");
+            // var result = instruction.Evaluate(persons);
+
+            // ASSERTS
+            // Assert.NotNull(result);
+            // Assert.True(result.Count() == 2);
         }
 
         private void InitializeFakeObjects()
