@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.EventStore.EF.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -27,6 +28,7 @@ namespace SimpleIdentityServer.EventStore.Tests
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
+            public DateTime BirthDate { get; set; }
         }
 
         private FilterParser _parser;
@@ -118,6 +120,44 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             var instruction = _parser.Parse("groupby$FirstName");
+            var result = instruction.Evaluate(persons);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 2);
+        }
+
+        [Fact]
+        public void When_Execute_GroupBy_And_Select_MinDateTime_Then_Two_DateTime_Are_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname",
+                    BirthDate = DateTime.UtcNow
+                },
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname",
+                    BirthDate = DateTime.UtcNow.AddHours(3)
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname",
+                    BirthDate = DateTime.UtcNow
+                }
+            }).AsQueryable();
+            var res = persons.GroupBy(p => p.FirstName).Select(x => x.OrderBy(y => y.BirthDate)).Select(x => x.First());
+
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var instruction = _parser.Parse("groupby$on(FirstName),aggregate(min with BirthDate)");
             var result = instruction.Evaluate(persons);
 
             // ASSERTS

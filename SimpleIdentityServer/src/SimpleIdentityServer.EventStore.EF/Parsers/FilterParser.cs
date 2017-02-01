@@ -134,10 +134,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 return false;
             }
 
+            var value = splitted.ElementAt(1);
+            if (value.StartsWith("(") && value.EndsWith(")"))
+            {
+                value = value.TrimStart('(').TrimEnd(')');
+            }
+
             parameters = new[] 
             {
                 splitted.First(),
-                splitted.ElementAt(1).TrimStart('(').TrimEnd(')')
+                value
             };
             return true;
 

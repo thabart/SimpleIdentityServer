@@ -26,6 +26,15 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
 {
     internal static class EnumerableExtensions
     {
+        private static string _onInstruction = "on";
+        private static string _aggregateInstruction = "aggregate";
+
+        private static IEnumerable<string> _groupByInstructions = new[]
+        {
+            _onInstruction,
+            _aggregateInstruction
+        };
+
         private static Dictionary<string, string> _mappingJsonNameToModelName = new Dictionary<string, string>
         {
             { Core.Common.EventResponseNames.Id, "Id" },
@@ -129,6 +138,40 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
 
         public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IQueryable<TSource> query, string groupBy)
         {
+            Func<IEnumerable<string>, Type, Type, IQueryable <IGrouping<object, TSource>>> callback = (fieldNames, eType, qType) =>
+            {
+                var method = qType.GetMethods()
+                     .Where(m => m.Name == "GroupBy" && m.IsGenericMethodDefinition)
+                     .Where(m =>
+                     {
+                         return m.GetParameters().ToList().Count == 2;
+                     }).First();
+                ParameterExpression arg = Expression.Parameter(eType, "x");
+                MethodInfo genericMethod;
+                LambdaExpression selector = null;
+                if (fieldNames.Count() == 1)
+                {
+                    var fieldName = fieldNames.First();
+                    var propertyInfo = eType.GetProperty(fieldName);
+                    MemberExpression keyProperty = Expression.Property(arg, fieldName);
+                    var keySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { arg });
+                    genericMethod = method.MakeGenericMethod(eType, propertyInfo.PropertyType);
+                    selector = Expression.Lambda(keyProperty, new ParameterExpression[] { arg });
+                }
+                else
+                {
+                    var sourceProperties = fieldNames.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
+                    var anonType = CreateNewAnonymousType<TSource>(fieldNames);
+                    var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
+                    selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+                    genericMethod = method.MakeGenericMethod(eType, anonType.AsType());
+                }
+
+                var newQuery = (IQueryable<IGrouping<object, TSource>>)genericMethod
+                     .Invoke(genericMethod, new object[] { query, selector });
+                return newQuery;
+            };
+
             if (query == null)
             {
                 throw new ArgumentNullException(nameof(query));
@@ -139,39 +182,38 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 throw new ArgumentNullException(nameof(groupBy));
             }
 
-            var entityType = typeof(TSource);
-            ParameterExpression arg = Expression.Parameter(entityType, "x");
-            var fieldNames = groupBy.Split(',');
-            LambdaExpression selector = null;
-            var enumarableType = typeof(Queryable);
-            var method = enumarableType.GetMethods()
-                 .Where(m => m.Name == "GroupBy" && m.IsGenericMethodDefinition)
-                 .Where(m =>
-                 {
-                     var parameters = m.GetParameters().ToList();
-                     return parameters.Count == 2;
-                 }).Single();
-            MethodInfo genericMethod;
-            if (fieldNames.Count() == 1)
+            Type entityType = typeof(TSource),
+                queryableType = typeof(Queryable);
+
+            // 1. Split the value & extract the field names or requests.
+            var splitted = groupBy.Split(',');
+            var instructions = splitted.Select(s =>
             {
-                var propertyInfo = entityType.GetProperty(groupBy);
-                MemberExpression keyProperty = Expression.Property(arg, groupBy);
-                var keySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { arg });
-                genericMethod = method.MakeGenericMethod(entityType, propertyInfo.PropertyType);
-                selector = Expression.Lambda(keyProperty, new ParameterExpression[] { arg });
-            }
-            else
+                return ExtractInstruction(s);
+            }).Where(s => s.HasValue);
+            if (instructions.Count() > 0)
             {
-                var sourceProperties = fieldNames.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
-                var anonType = CreateNewAnonymousType<TSource>(fieldNames);
-                var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
-                selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
-                genericMethod = method.MakeGenericMethod(entityType, anonType.AsType());
+                if (instructions.Count() != splitted.Count())
+                {
+                    throw new ArgumentException("At least one parameter is not an instruction : <operation>(<parameter>)");
+                }
+
+                if (instructions.Any(i => !_groupByInstructions.Contains(i.Value.Key)))
+                {
+                    throw new ArgumentException("At least one instruction is not supported");
+                }
+
+                var onInstruction = instructions.FirstOrDefault(i => i.Value.Key == _onInstruction);
+                if (onInstruction == null)
+                {
+                    throw new ArgumentException("The 'on' instruction must be specified");
+                }
+
+                var fieldNames = onInstruction.Value.Value.Split(',');
+                return callback(fieldNames, entityType, queryableType);
             }
 
-            var newQuery = (IQueryable<IGrouping<object, TSource>>)genericMethod
-                 .Invoke(genericMethod, new object[] { query, selector });
-            return newQuery;
+            return callback(splitted, entityType, queryableType);
         }
 
         public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> query, string filter)
@@ -269,6 +311,18 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             }
 
             return dynamicAnonymousType.CreateTypeInfo();
+        }
+
+        private static KeyValuePair<string, string>? ExtractInstruction(string instruction)
+        {
+            var indOpen = instruction.IndexOf('(');
+            var indEnd = instruction.IndexOf(')');
+            if (indOpen == -1 || indEnd == -1)
+            {
+                return null;
+            }
+
+            return new KeyValuePair<string, string>(instruction.Substring(0, indOpen), instruction.Substring(indOpen + 1, indEnd - indOpen - 1));
         }
     }
 }
