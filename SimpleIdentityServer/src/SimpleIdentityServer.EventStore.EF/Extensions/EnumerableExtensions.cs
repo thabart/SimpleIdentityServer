@@ -236,20 +236,22 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             var propertyInfoOuter = entityType.GetProperty(outerKey);
             var propertyInfoInner = entityType.GetProperty(innerKey);
             ParameterExpression arg = Expression.Parameter(entityType, "x");
+            ParameterExpression sArg = Expression.Parameter(entityType, "y");
             MemberExpression propertyOuter = Expression.Property(arg, outerKey);
             MemberExpression propertyInner = Expression.Property(arg, innerKey);
             var selectorPropertyOuter = Expression.Lambda(propertyOuter, new ParameterExpression[] { arg });
             var selectorPropertyInner = Expression.Lambda(propertyInner, new ParameterExpression[] { arg });
+            var selectorResult = Expression.Lambda(arg, new ParameterExpression[] { arg, sArg });
             var enumarableType = typeof(Queryable);
             var method = enumarableType.GetMethods()
-                 .Where(m => m.Name == "OrderBy" && m.IsGenericMethodDefinition)
+                 .Where(m => m.Name == "Join" && m.IsGenericMethodDefinition)
                  .Where(m =>
                  {
                      return m.GetParameters().ToList().Count == 5;
                  }).First();
-            MethodInfo genericMethod = method.MakeGenericMethod(entityType, propertyInfoOuter.PropertyType, propertyInfoInner.PropertyType, entityType);
+            MethodInfo genericMethod = method.MakeGenericMethod(entityType, entityType, propertyInfoInner.PropertyType, entityType);
             var newQuery = (IQueryable<TSource>)genericMethod
-                 .Invoke(genericMethod, new object[] { query, propertyOuter, propertyInner,  null});
+                 .Invoke(genericMethod, new object[] { query, query, selectorPropertyOuter, selectorPropertyInner, selectorResult });
             return newQuery;
         }
 

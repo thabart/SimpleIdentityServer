@@ -27,11 +27,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         private const string _selectInstruction = "select";
         private const string _whereInstruction = "where";
         private const string _groupByInstruction = "groupby";
+        private const string _innerJoinInstruction = "join";
         private static IEnumerable<string> _supportedInstructions = new List<string>
         {
             _selectInstruction,
             _whereInstruction,
-            _groupByInstruction
+            _groupByInstruction,
+            _innerJoinInstruction
         };
         private static IEnumerable<char> _openSign = new[]
         {
@@ -60,6 +62,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             SelectInstruction selectInstruction = null;
             WhereInstruction whereInst = null;
             GroupByInstruction groupByInst = null;
+            InnerJoinInstruction innerJoinInst = null;
             foreach(var instruction in instructions)
             {
                 var attrs = SplitInstruction(instruction);
@@ -84,6 +87,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     groupByInst = new GroupByInstruction();
                     FillInstruction(groupByInst, parameter);
                 }
+                else if (string.Equals(method, _innerJoinInstruction, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    innerJoinInst = new InnerJoinInstruction();
+                    FillInstruction(innerJoinInst, parameter);
+                }
             }
 
             if (selectInstruction == null)
@@ -93,6 +101,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             selectInstruction.WhereInst = whereInst;
             selectInstruction.GroupByInst = groupByInst;
+            selectInstruction.JoinInst = innerJoinInst;
+
             return selectInstruction;
         }
 

@@ -148,15 +148,14 @@ namespace SimpleIdentityServer.EventStore.Tests
                     LastName = "lastname"
                 }
             }).AsQueryable();
-            var res = persons.Join(persons, p => p.FirstName, p => p.LastName, (p, p2) => p);
 
             // ACT
-            var instruction = _parser.Parse("groupby$FirstName|LastName");
-            // var result = instruction.Evaluate(persons);
+            var instruction = _parser.Parse("join$FirstName|LastName");
+            var result = instruction.Evaluate(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 2);
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 2);
         }
 
         private void InitializeFakeObjects()

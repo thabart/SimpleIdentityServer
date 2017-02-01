@@ -33,12 +33,18 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public WhereInstruction WhereInst { get; set; }
         public GroupByInstruction GroupByInst { get; set; }
+        public InnerJoinInstruction JoinInst { get; set; }
 
         public IEnumerable<dynamic> Evaluate<TEntity>(IQueryable<TEntity> elts)
         {
             if (GroupByInst != null)
             {
                 return GroupByInst.Evaluate(elts);
+            }
+
+            if (JoinInst != null)
+            {
+                elts = JoinInst.Evaluate(elts);
             }
 
             if (WhereInst != null)
