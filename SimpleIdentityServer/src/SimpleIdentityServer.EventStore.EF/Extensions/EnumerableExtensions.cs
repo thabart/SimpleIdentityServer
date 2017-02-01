@@ -210,7 +210,29 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 }
 
                 var fieldNames = onInstruction.Value.Value.Split(',');
-                return callback(fieldNames, entityType, queryableType);
+                var result = callback(fieldNames, entityType, queryableType);
+                var aggregateInstruction = instructions.FirstOrDefault(i => i.Value.Key == _aggregateInstruction);
+                if (aggregateInstruction != null)
+                {
+                    var aggregateInstructionVal = ExtractAggregateInstruction(aggregateInstruction.Value.Value);
+                    if (aggregateInstructionVal == null)
+                    {
+                        throw new ArgumentException("the aggregate instruction is not correct");
+                    }
+
+                    var propertyName = aggregateInstructionVal.Value.Value;
+                    var propertyInfo = entityType.GetProperty(propertyName);
+                    var sourceArg = Expression.Parameter(typeof(TSource), "s");
+                    var groupByArg = Expression.Parameter(typeof(IGrouping<object, TSource>), "g");
+                    var keyProperty = Expression.Property(sourceArg, aggregateInstructionVal.Value.Value);
+                    var orderBySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { sourceArg });
+                    var orderByCall = Expression.Call(typeof(Queryable), "OrderBy", new Type[] { typeof(TSource), propertyInfo.PropertyType }, Expression.Constant(query), orderBySelector);
+                    var selectSelector = Expression.Lambda(orderByCall, new ParameterExpression[] { groupByArg });
+
+                    string s = "";
+                }
+
+                return result;
             }
 
             return callback(splitted, entityType, queryableType);
@@ -323,6 +345,23 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             }
 
             return new KeyValuePair<string, string>(instruction.Substring(0, indOpen), instruction.Substring(indOpen + 1, indEnd - indOpen - 1));
+        }
+
+        private static KeyValuePair<string, string>? ExtractAggregateInstruction(string instruction)
+        {
+            if (string.IsNullOrWhiteSpace(instruction))
+            {
+                return null;
+            }
+
+            instruction = Regex.Replace(instruction, @"\s+", "");
+            var splitted = instruction.Split(new string[] { "with" }, StringSplitOptions.RemoveEmptyEntries);
+            if (splitted.Count() != 2)
+            {
+                return null;
+            }
+
+            return new KeyValuePair<string, string>(splitted.First(), splitted.ElementAt(1));
         }
     }
 }
