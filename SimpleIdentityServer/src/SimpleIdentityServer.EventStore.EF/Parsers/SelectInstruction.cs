@@ -14,46 +14,19 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.EventStore.EF.Extensions;
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class SelectInstruction
+    public class SelectInstruction : BaseInstruction
     {
-        private readonly string _filter;
+        public const string Name = "select";
 
-        public SelectInstruction() { }
-
-        public SelectInstruction(string filter)
+        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
         {
-            _filter = filter;
-        }
-
-        public WhereInstruction WhereInst { get; set; }
-        public GroupByInstruction GroupByInst { get; set; }
-        public InnerJoinInstruction JoinInst { get; set; }
-
-        public IEnumerable<dynamic> Evaluate<TEntity>(IQueryable<TEntity> elts)
-        {
-            if (GroupByInst != null)
-            {
-                return GroupByInst.Evaluate(elts);
-            }
-
-            if (JoinInst != null)
-            {
-                elts = JoinInst.Evaluate(elts);
-            }
-
-            if (WhereInst != null)
-            {
-                elts = WhereInst.Evaluate(elts);
-            }
-
-            var result = elts.Select(_filter);
-            return result;
+            throw new NotImplementedException();
         }
     }
 }

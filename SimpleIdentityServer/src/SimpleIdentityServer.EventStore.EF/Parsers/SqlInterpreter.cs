@@ -15,22 +15,33 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class InnerJoinInstruction : BaseInstruction
+    public class SqlInterpreter
     {
-        public const string Name = "join";
+        private readonly IEnumerable<BaseInstruction> _instructions;
 
-        public InnerJoinInstruction()
+        public SqlInterpreter(IEnumerable<BaseInstruction> instructions)
         {
+            _instructions = instructions;
         }
 
-        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
+        public void Execute<TSource>(IQueryable<TSource> records)
         {
-            throw new NotImplementedException();
+            if (records == null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            foreach(var record in _instructions)
+            {
+                Expression expr = record.GetExpression(records);
+                string s = "";
+            }
         }
     }
 }

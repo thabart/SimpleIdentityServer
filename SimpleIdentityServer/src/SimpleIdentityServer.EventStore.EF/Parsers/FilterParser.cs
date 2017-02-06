@@ -24,16 +24,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     public class FilterParser
     {
         private const char _instructionSeparator = '$';
-        private const string _selectInstruction = "select";
-        private const string _whereInstruction = "where";
-        private const string _groupByInstruction = "groupby";
-        private const string _innerJoinInstruction = "join";
+        private const string _subInstructionKey = "target";
         private static IEnumerable<string> _supportedInstructions = new List<string>
         {
-            _selectInstruction,
-            _whereInstruction,
-            _groupByInstruction,
-            _innerJoinInstruction
+            SelectInstruction.Name,
+            WhereInstruction.Name,
+            GroupByInstruction.Name,
+            InnerJoinInstruction.Name
         };
         private static IEnumerable<char> _openSign = new[]
         {
@@ -46,7 +43,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             ']'
         };
 
-        public SelectInstruction Parse(string path)
+        public SqlInterpreter Parse(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -54,15 +51,12 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             var instructions = SplitInstructions(path);
-            return ExtractInstruction(instructions);
+            return new SqlInterpreter(ExtractInstruction(instructions));
         }
 
-        private static SelectInstruction ExtractInstruction(IEnumerable<string> instructions)
+        private static IEnumerable<BaseInstruction> ExtractInstruction(IEnumerable<string> instructions)
         {
-            SelectInstruction selectInstruction = null;
-            WhereInstruction whereInst = null;
-            GroupByInstruction groupByInst = null;
-            InnerJoinInstruction innerJoinInst = null;
+            var result = new List<BaseInstruction>();
             foreach(var instruction in instructions)
             {
                 var attrs = SplitInstruction(instruction);
@@ -73,46 +67,39 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 
                 var method = attrs.First();
                 var parameter = attrs.ElementAt(1);
-                if (string.Equals(method, _selectInstruction, StringComparison.CurrentCultureIgnoreCase))
+                BaseInstruction record = null;
+                if (string.Equals(method, SelectInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    selectInstruction = new SelectInstruction(parameter);
+                    record = new SelectInstruction();
                 }
-                else if (string.Equals(method, _whereInstruction, StringComparison.CurrentCultureIgnoreCase))
+                else if (string.Equals(method, WhereInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    whereInst = new WhereInstruction();
-                    FillInstruction(whereInst, parameter);
+                    record = new WhereInstruction();
                 }
-                else if (string.Equals(method, _groupByInstruction, StringComparison.CurrentCultureIgnoreCase))
+                else if (string.Equals(method, GroupByInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    groupByInst = new GroupByInstruction();
-                    FillInstruction(groupByInst, parameter);
+                    record = new GroupByInstruction();
                 }
-                else if (string.Equals(method, _innerJoinInstruction, StringComparison.CurrentCultureIgnoreCase))
+                else if (string.Equals(method, InnerJoinInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    innerJoinInst = new InnerJoinInstruction();
-                    FillInstruction(innerJoinInst, parameter);
+                    record = new InnerJoinInstruction();
                 }
+
+                FillInstruction(record, parameter);
+                result.Add(record);
             }
 
-            if (selectInstruction == null)
-            {
-                selectInstruction = new SelectInstruction();
-            }
-
-            selectInstruction.WhereInst = whereInst;
-            selectInstruction.GroupByInst = groupByInst;
-            selectInstruction.JoinInst = innerJoinInst;
-
-            return selectInstruction;
+            return result;
         }
 
         private static void FillInstruction(BaseInstruction instruction, string parameter)
         {
             IEnumerable<string> parameters;
-            if (IsInstruction(parameter, out parameters))
+            var subInstr = GetSubInstruction(parameter);
+            if (!string.IsNullOrWhiteSpace(subInstr))
             {
-                parameters = SplitInstructions(parameter);
-                instruction.SetInstruction(ExtractInstruction(parameters));
+                parameters = SplitInstructions(subInstr);
+                instruction.AddInstruction(ExtractInstruction(parameters));
             }
             else
             {
@@ -128,7 +115,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 return false;
             }
 
-            var splitted = instruction.Split(_instructionSeparator);
+            var splitted = SplitStr(instruction, _instructionSeparator);
             if (!splitted.Any() || !_supportedInstructions.Contains(splitted.First()) || splitted.Count() != 2)
             {
                 return false;
@@ -147,6 +134,18 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             };
             return true;
 
+        }
+
+        private static string GetSubInstruction(string parameter)
+        {
+            if (!parameter.Contains(_subInstructionKey))
+            {
+                return null;
+            }
+
+            var startIndex = parameter.IndexOf('(');
+            var lastIndex = parameter.LastIndexOf(')');
+            return parameter.Substring(startIndex + 1, lastIndex - startIndex - 1);
         }
 
         private static IEnumerable<string> SplitInstruction(string instruction)

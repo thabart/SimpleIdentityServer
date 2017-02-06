@@ -16,38 +16,21 @@
 
 using System;
 using System.Linq;
-using SimpleIdentityServer.EventStore.EF.Extensions;
+using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public class WhereInstruction : BaseInstruction
     {
-        private SelectInstruction _selectInstruction;
-        private string _parameter;
+        public const string Name = "where";
 
         public WhereInstruction()
         {
-            _selectInstruction = null;
         }
 
-        public override void SetInstruction(SelectInstruction instruction)
+        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
         {
-            _selectInstruction = instruction;
-        }
-
-        public override void SetParameter(string parameter)
-        {
-            _parameter = parameter;
-        }
-
-        public IQueryable<TEntity> Evaluate<TEntity>(IQueryable<TEntity> elts)
-        {
-            if (elts == null)
-            {
-                throw new ArgumentNullException(nameof(elts));
-            }
-
-            return elts.Where(_parameter);
+            throw new NotImplementedException();
         }
     }
 }

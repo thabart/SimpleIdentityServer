@@ -14,13 +14,44 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public abstract class BaseInstruction
     {
-        public abstract void SetInstruction(SelectInstruction instruction);
-        public abstract void SetParameter(string parameter);
+        protected ICollection<BaseInstruction> Instructions;
+        protected string Parameter;
+
+        public BaseInstruction()
+        {
+            Instructions = new List<BaseInstruction>();
+        }
+
+        public void AddInstruction(IEnumerable<BaseInstruction> instructions)
+        {
+            if (instructions == null)
+            {
+                throw new ArgumentNullException(nameof(instructions));
+            }
+
+            foreach(var instruction in instructions)
+            {
+                Instructions.Add(instruction);
+            }
+        }
+
+        public void SetParameter(string parameter)
+        {
+            if (string.IsNullOrWhiteSpace(parameter))
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+        }
+
+        public abstract MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query);
     }
 }

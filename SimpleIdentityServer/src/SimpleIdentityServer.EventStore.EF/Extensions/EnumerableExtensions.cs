@@ -257,7 +257,6 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 return (IQueryable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(query);
             }
 
-            // return callback(splitted, entityType, queryableType);
             return null;
         }
 
