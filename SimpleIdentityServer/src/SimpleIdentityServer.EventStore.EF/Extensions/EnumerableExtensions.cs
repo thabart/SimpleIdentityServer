@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -136,15 +137,14 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             return newQuery;
         }
 
-        public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IQueryable<TSource> query, string groupBy)
+        public static IQueryable<dynamic> GroupBy<TSource>(this IQueryable<TSource> query, string groupBy)
         {
-            Func<IEnumerable<string>, Type, Type, MethodCallExpression> getGroupByInst = (fieldNames, eType, qType) =>
+            Func<IEnumerable<string>, Type, Type, ParameterExpression, MethodCallExpression> getGroupByInst = (fieldNames, eType, qType, groupByArg) =>
             {
                 var method = qType.GetMethods()
                      .Where(m => m.Name == "GroupBy" && m.IsGenericMethodDefinition)
                      .Where(m => m.GetParameters().ToList().Count == 2).First();
                 ParameterExpression arg = Expression.Parameter(eType, "x");
-                var groupByArg = Expression.Parameter(typeof(IQueryable<TSource>), "z");
                 MethodInfo genericMethod;
                 LambdaExpression selector = null;
                 if (fieldNames.Count() == 1)
@@ -179,7 +179,8 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             }
 
             Type entityType = typeof(TSource),
-                queryableType = typeof(Queryable);
+                queryableType = typeof(Queryable),
+                enumerableType = typeof(Enumerable);
 
             // 1. Split the value & extract the field names or requests.
             var splitted = groupBy.Split(',');
@@ -205,8 +206,11 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                     throw new ArgumentException("The 'on' instruction must be specified");
                 }
 
+                // f
+                var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
                 var fieldNames = onInstruction.Value.Value.Split(',');
-                var groupByInst = getGroupByInst(fieldNames, entityType, queryableType);
+                var groupByInst = getGroupByInst(fieldNames, entityType, queryableType, finalSelectArg);
+                MethodCallExpression instruction = null;
                 var aggregateInstruction = instructions.FirstOrDefault(i => i.Value.Key == _aggregateInstruction);
                 if (aggregateInstruction != null)
                 {
@@ -216,36 +220,41 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                         throw new ArgumentException("the aggregate instruction is not correct");
                     }
 
+                    var method = queryableType.GetMethods()
+                         .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
+                         .Where(m => m.GetParameters().ToList().Count == 2).First()
+                         .MakeGenericMethod(new Type[] { typeof(IQueryable<TSource>), typeof(IQueryable<TSource>) } );
+
                     var propertyName = aggregateInstructionVal.Value.Value;
                     var propertyInfo = entityType.GetProperty(propertyName);
-                    var orderByInfo = queryableType.GetMethods()
-                         .Where(m => m.Name == "OrderBy" && m.IsGenericMethodDefinition)
-                         .Where(m => m.GetParameters().ToList().Count() == 2).First()
-                         .MakeGenericMethod(entityType, propertyInfo.PropertyType);
                     var target = Expression.Constant(query);
                     // o
                     var orderArg = Expression.Parameter(typeof(TSource), "o");
                     // s
-                    var selectArg = Expression.Parameter(typeof(IGrouping<string, TSource>), "s");
-                    // var modelConversion = Expression.Convert(modelParameter, modelType);
+                    var selectArg = Expression.Parameter(typeof(IEnumerable<TSource>), "s");
+                    // b
+                    var selectFirstArg = Expression.Parameter(typeof(IEnumerable<TSource>), "b");
                     // o => o.[Value]
                     var keyProperty = Expression.Property(orderArg, propertyName);
                     var orderBySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { orderArg });
                     // s => s.OrderBy(o => o.[Value])
-                    // var orderByCall = Expression.Call(orderByInfo, selectArg, orderBySelector);
-                    var orderByCall = Expression.Call(queryableType, "OrderBy", new[] { typeof(TSource), propertyInfo.PropertyType }, selectArg, orderBySelector);
+                    var orderByCall = Expression.Call(enumerableType, "OrderBy", new[] { typeof(TSource), propertyInfo.PropertyType }, selectArg, orderBySelector);
                     var selectBody = Expression.Lambda(orderByCall, new ParameterExpression[] { selectArg });
-                    // Select (s => s.OrderBy(o => o.[Value]))
-                    var selectRequest = Expression.Call(queryableType, "Select", new[] { typeof(IGrouping<string, TSource>), typeof(IOrderedEnumerable<TSource>) }, groupByInst, selectBody);
-
-                    string s = "";
+                    var quotedSelectBody = Expression.Quote(selectBody);
+                    // z.GroupBy(x => x.FirstName).Select(s => s.OrderBy(o => o.BirthDate))
+                    var selectRequest = Expression.Call(queryableType, "Select", new[] { typeof(IEnumerable<TSource>), typeof(IOrderedEnumerable<TSource>) }, groupByInst, quotedSelectBody);
+                    // b => b.First()
+                    var selectFirstRequest = Expression.Call(enumerableType, "First", new[] { typeof(TSource) }, selectFirstArg);
+                    var selectFirstLambda = Expression.Lambda(selectFirstRequest, new ParameterExpression[] { selectFirstArg });
+                    instruction = Expression.Call(queryableType, "Select", new[] { typeof(IEnumerable<TSource>), typeof(TSource) }, selectRequest, selectFirstLambda);
+                    int i = 0;
+                } else
+                {
+                    instruction = groupByInst;
                 }
 
-                // return result;
-                /*
-                var newQuery = (IQueryable<IGrouping<object, TSource>>)genericMethod
-                     .Invoke(genericMethod, new object[] { query, selector });*/
-                return null;
+                var finalSelectRequestBody = Expression.Lambda(instruction, new ParameterExpression[] { finalSelectArg });
+                return (IQueryable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(query);
             }
 
             // return callback(splitted, entityType, queryableType);

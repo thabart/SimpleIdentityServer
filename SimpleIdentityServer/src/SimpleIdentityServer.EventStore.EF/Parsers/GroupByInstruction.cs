@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             _parameter = parameter;
         }
 
-        public IQueryable<IGrouping<object, TSource>> Evaluate<TSource>(IQueryable<TSource> elts)
+        public IQueryable<dynamic> Evaluate<TSource>(IQueryable<TSource> elts)
         {
             if (elts == null)
             {

@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("groupby$FirstName");
+            var instruction = _parser.Parse("groupby$on(FirstName)");
             var result = instruction.Evaluate(persons);
 
             // ASSERTS

@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
                 var groupedEvtAggregates = new List<GroupedEventAggregate>();
                 foreach (var kvp in pagedGroupingResult)
                 {
-                    groupedEvtAggregates.Add(new GroupedEventAggregate(kvp.Key, kvp.Select(k => k.ToDomain())));
+                    // groupedEvtAggregates.Add(new GroupedEventAggregate(kvp.Key, kvp.Select(k => k.ToDomain())));
                 }
 
                 return new SearchEventAggregatesResult(totalResults, groupedEvtAggregates);
