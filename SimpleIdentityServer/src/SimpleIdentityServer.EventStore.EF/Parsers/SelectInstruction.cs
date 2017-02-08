@@ -16,7 +16,9 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
@@ -24,9 +26,59 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     {
         public const string Name = "select";
 
-        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
+        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
         {
-            throw new NotImplementedException();
+            string[] fieldNames = null;
+            if (!string.IsNullOrWhiteSpace(Parameter))
+            {
+                fieldNames = Parameter.Split(',');
+            }
+            else
+            {
+                fieldNames = sourceType.GetProperties().Select(m => m.Name).ToArray();
+            }
+
+            var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+            // x
+            var arg = Expression.Parameter(sourceType, "x");
+            // f
+            var finalSelectArg = Expression.Parameter(sourceQueryableType, "f");
+            LambdaExpression selector = null;
+            Type type = null;
+            if (fieldNames.Count() == 1)
+            {
+                var field = fieldNames.First();
+                var propertyInfo = sourceType.GetProperty(field);
+                MemberExpression property = Expression.Property(arg, field);
+                selector = Expression.Lambda(property, new ParameterExpression[] { arg });
+                type = propertyInfo.PropertyType;
+            }
+            else
+            {
+                var sourceProperties = fieldNames.ToDictionary(name => name, name => sourceType.GetProperty(name));
+                var anonType = ReflectionHelper.CreateNewAnonymousType(sourceType, fieldNames);
+                var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
+                selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+                type = anonType.AsType();
+            }
+
+            var enumarableType = typeof(Queryable);
+            var selectMethod = enumarableType.GetMethods()
+                 .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
+                 .Where(m =>
+                 {
+                     var parameters = m.GetParameters().ToList();
+                     return parameters.Count == 2;
+                 }).First().MakeGenericMethod(sourceType, type);
+
+            if (SubInstruction != null)
+            {
+                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter);
+                Expression.Call(selectMethod, subExpr.Value.Value, selector);
+                return new KeyValuePair<string, Expression>(Name, Expression.Call(typeof(Queryable), "Select", new Type[] { sourceType, type }, subExpr.Value.Value, selector));
+            }
+
+            return null;
         }
     }
 }

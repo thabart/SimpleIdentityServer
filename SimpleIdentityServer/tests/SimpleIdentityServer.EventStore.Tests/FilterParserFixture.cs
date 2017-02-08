@@ -55,12 +55,12 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             var instruction = _parser.Parse("where$(FirstName eq thierry)");
-            // var result = instruction.Evaluate(persons);
+            var result = instruction.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 1);
-            // Assert.True(result.First().FirstName == "thierry");
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+            Assert.True(result.First().FirstName == "thierry");
         }
 
         [Fact]
@@ -79,18 +79,49 @@ namespace SimpleIdentityServer.EventStore.Tests
                     LastName = "lastname"
                 }
             }).AsQueryable();
+            // var p2 = persons.Where(p => p.FirstName == "thierry").OrderBy(p => p.FirstName).Select(p => p.FirstName);
+            // var res = persons.GroupBy(p => p.FirstName).Select(x => x.OrderBy(y => y.BirthDate)).Select(x => x.First());
 
-            // ARRANGE
             InitializeFakeObjects();
 
             // ACT
             var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry)");
-            // var result = instruction.Evaluate(persons);
+            var result = instruction.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 1);
-            // Assert.True(result.First() == "thierry");
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+            Assert.True(result.First() == "thierry");
+        }
+
+        [Fact]
+        public void When_Execute_Where_And_OrderBy_Instruction_Then_Two_Str_Are_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+
+            InitializeFakeObjects();
+
+            // ACT
+            var instruction = _parser.Parse("select$FirstName where$(LastName eq lastname) orderby$(FirstName)");
+            var result = instruction.Execute(persons);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 2);
+            Assert.True(result.First() == "laetitia");
+            Assert.True(result.ElementAt(1) == "thierry");
         }
 
         [Fact]
@@ -157,7 +188,7 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             var instruction = _parser.Parse("groupby$on(FirstName),aggregate(min with BirthDate)");
-            // var result = instruction.Evaluate(persons);
+            // instruction.Execute(persons);
 
             // ASSERTS
             // Assert.NotNull(result);
@@ -223,7 +254,7 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             var interpreter = _parser.Parse("join$target(groupby$on(FirstName),aggregate(min with BirthDate))");
-            interpreter.Execute(persons);
+            // interpreter.Execute(persons);
             string s = "";
 
             // ASSERTS

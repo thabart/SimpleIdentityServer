@@ -30,7 +30,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             SelectInstruction.Name,
             WhereInstruction.Name,
             GroupByInstruction.Name,
-            InnerJoinInstruction.Name
+            InnerJoinInstruction.Name,
+            OrderByInstruction.Name
         };
         private static IEnumerable<char> _openSign = new[]
         {
@@ -51,26 +52,32 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             var instructions = SplitInstructions(path);
-            return new SqlInterpreter(ExtractInstruction(instructions));
+            var inst = ExtractInstruction(instructions);
+            return new SqlInterpreter(inst);
         }
 
-        private static IEnumerable<BaseInstruction> ExtractInstruction(IEnumerable<string> instructions)
+        private static BaseInstruction ExtractInstruction(IEnumerable<string> instructions)
         {
-            var result = new List<BaseInstruction>();
+            BaseInstruction selectInstruction = null,
+                firstInstruction = null,
+                previousInstruction = null;
             foreach(var instruction in instructions)
             {
+                // 1. Check instruction is valid.
                 var attrs = SplitInstruction(instruction);
                 if (!attrs.Any())
                 {
                     throw new InvalidOperationException($"the instruction {instruction} is not valid");
                 }
                 
+                // 2. Retrieve and create the instruction.
                 var method = attrs.First();
                 var parameter = attrs.ElementAt(1);
                 BaseInstruction record = null;
                 if (string.Equals(method, SelectInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    record = new SelectInstruction();
+                    selectInstruction = new SelectInstruction();
+                    selectInstruction.SetParameter(parameter);
                 }
                 else if (string.Equals(method, WhereInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -84,12 +91,40 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 {
                     record = new InnerJoinInstruction();
                 }
+                else if (string.Equals(method, OrderByInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    record = new OrderByInstruction();
+                }
 
-                FillInstruction(record, parameter);
-                result.Add(record);
+                if (record != null)
+                {
+                    FillInstruction(record, parameter);
+                    // 3.1. Store the first instruction.
+                    if (firstInstruction == null)
+                    {
+                        firstInstruction = record;
+                    }
+
+                    // 3.2. Store the previous instruction
+                    if (previousInstruction == null)
+                    {
+                        previousInstruction = record;
+                        continue;
+                    }
+
+                    // 3.3 Change the previous instruction.
+                    previousInstruction.SetSubInstruction(record);
+                    previousInstruction = record;
+                }
             }
 
-            return result;
+            if (selectInstruction == null)
+            {
+                selectInstruction = new SelectInstruction();
+            }
+
+            selectInstruction.SetSubInstruction(firstInstruction);
+            return selectInstruction;
         }
 
         private static void FillInstruction(BaseInstruction instruction, string parameter)
@@ -99,7 +134,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             if (!string.IsNullOrWhiteSpace(subInstr))
             {
                 parameters = SplitInstructions(subInstr);
-                instruction.AddInstruction(ExtractInstruction(parameters));
+                var subInst = ExtractInstruction(parameters);
+                subInst.IsRoot = false;
+                instruction.SetSubInstruction(subInst);
             }
             else
             {

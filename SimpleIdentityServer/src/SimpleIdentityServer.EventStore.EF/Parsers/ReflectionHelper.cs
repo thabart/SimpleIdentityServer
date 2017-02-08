@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -24,14 +25,18 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     {
         public static TypeInfo CreateNewAnonymousType<TSource>(IEnumerable<string> fieldNames)
         {
+            return CreateNewAnonymousType(typeof(TSource), fieldNames);
+        }
+
+        public static TypeInfo CreateNewAnonymousType(Type sourceType, IEnumerable<string> fieldNames)
+        {
             var dynamicAssemblyName = new AssemblyName("TempAssm");
             var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
             var dynamicModule = dynamicAssembly.DefineDynamicModule("TempAssm");
             TypeBuilder dynamicAnonymousType = dynamicModule.DefineType("TempCl", TypeAttributes.Public);
-            var modelType = typeof(TSource);
             foreach (var fieldName in fieldNames)
             {
-                var property = modelType.GetProperty(fieldName);
+                var property = sourceType.GetProperty(fieldName);
                 dynamicAnonymousType.DefineField(fieldName, property.PropertyType, FieldAttributes.Public);
             }
 

@@ -23,47 +23,32 @@ using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class WhereInstruction : BaseInstruction
+    public class OrderByInstruction : BaseInstruction
     {
-        public const string Name = "where";
-
-        public WhereInstruction()
-        {
-        }
+        public const string Name = "orderby";
 
         public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
         {
-            var splitted = Regex.Split(Regex.Replace(Parameter, @"\s+", ""), "eq");
-            if (splitted.Count() != 2)
-            {
-                throw new ArgumentException("the filter is not correct");
-            }
-
-            var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
-            var propertyName = splitted.First();
-            var value = splitted.ElementAt(1);
-            var propertyInfo = sourceType.GetProperty(propertyName);
-            var arg = Expression.Parameter(sourceType, "x");
-            // var fArg = Expression.Parameter(sourceQueryableType, "e");
-            var property = Expression.Property(arg, propertyName);
-            var equalExpr = Expression.Equal(property, Expression.Constant(value));
-            var selector = Expression.Lambda(equalExpr, new ParameterExpression[] { arg });
+            var propertyInfo = sourceType.GetProperty(Parameter);
+            ParameterExpression arg = Expression.Parameter(sourceType, "x");
+            MemberExpression property = Expression.Property(arg, Parameter);
+            var selector = Expression.Lambda(property, new ParameterExpression[] { arg });
             var enumarableType = typeof(Queryable);
-            var genericMethod = enumarableType.GetMethods()
-                 .Where(m => m.Name == "Where" && m.IsGenericMethodDefinition)
+            var method = enumarableType.GetMethods()
+                 .Where(m => m.Name == "OrderBy" && m.IsGenericMethodDefinition)
                  .Where(m =>
                  {
                      var parameters = m.GetParameters().ToList();
                      return parameters.Count == 2;
-                 }).First().MakeGenericMethod(sourceType);
+                 }).Single().MakeGenericMethod(sourceType, propertyInfo.PropertyType);
             if (SubInstruction != null)
             {
                 var subExpr = SubInstruction.GetExpression(sourceType, rootParameter);
-                var call = Expression.Call(genericMethod, subExpr.Value.Value, selector);
+                var call = Expression.Call(method, subExpr.Value.Value, selector);
                 return new KeyValuePair<string, Expression>(Name, call);
             }
 
-            return new KeyValuePair<string, Expression>(Name, Expression.Call(genericMethod, rootParameter, selector));
+            return new KeyValuePair<string, Expression>(Name, Expression.Call(method, rootParameter, selector));
         }
     }
 }

@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -28,7 +29,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
         }
 
-        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
+        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
         {
             throw new NotImplementedException();
         }

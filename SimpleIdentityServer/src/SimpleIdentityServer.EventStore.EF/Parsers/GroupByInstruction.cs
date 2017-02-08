@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public const string Name = "groupby";
 
-        public override MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query)
+        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
         {
             Func<IEnumerable<string>, Type, Type, ParameterExpression, MethodCallExpression> getGroupByInst = (names, eType, qType, groupByArg) =>
             {
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
                 else
                 {
-                    var sourceProperties = names.ToDictionary(name => name, name => query.ElementType.GetProperty(name));
-                    var anonType = ReflectionHelper.CreateNewAnonymousType<TSource>(names);
+                    var sourceProperties = names.ToDictionary(name => name, name => sourceType.GetProperty(name));
+                    var anonType = ReflectionHelper.CreateNewAnonymousType(sourceType,  names);
                     var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
                     selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
                     genericMethod = method.MakeGenericMethod(eType, anonType.AsType());
@@ -65,13 +65,12 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 return Expression.Call(genericMethod, groupByArg, selector);
             };
 
-            if (query == null)
+            if (sourceType == null)
             {
-                throw new ArgumentNullException(nameof(query));
+                throw new ArgumentNullException(nameof(sourceType));
             }
 
-            Type entityType = typeof(TSource),
-                queryableType = typeof(Queryable),
+            Type queryableType = typeof(Queryable),
                 enumerableType = typeof(Enumerable);
 
             // 1. Split the value & extract the field names or requests.
@@ -101,9 +100,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             // f
-            var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
+            var finalSelectArg = Expression.Parameter(sourceType, "f");
             var fieldNames = onInstruction.Value.Value.Split(',');
-            var groupByInst = getGroupByInst(fieldNames, entityType, queryableType, finalSelectArg);
+            var groupByInst = getGroupByInst(fieldNames, sourceType, queryableType, finalSelectArg);
             MethodCallExpression instruction = null;
             var aggregateInstruction = instructions.FirstOrDefault(i => i.Value.Key == _aggregateInstruction);
             if (aggregateInstruction != null)
@@ -117,30 +116,29 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var method = queryableType.GetMethods()
                      .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
                      .Where(m => m.GetParameters().ToList().Count == 2).First()
-                     .MakeGenericMethod(new Type[] { typeof(IQueryable<TSource>), typeof(IQueryable<TSource>) });
+                     .MakeGenericMethod(new Type[] { sourceType, sourceType });
 
                 var propertyName = aggregateInstructionVal.Value.Value;
-                var propertyInfo = entityType.GetProperty(propertyName);
-                var target = Expression.Constant(query);
+                var propertyInfo = sourceType.GetProperty(propertyName);
                 // o
-                var orderArg = Expression.Parameter(typeof(TSource), "o");
+                var orderArg = Expression.Parameter(sourceType, "o");
                 // s
-                var selectArg = Expression.Parameter(typeof(IEnumerable<TSource>), "s");
+                var selectArg = Expression.Parameter(sourceType, "s");
                 // b
-                var selectFirstArg = Expression.Parameter(typeof(IEnumerable<TSource>), "b");
+                var selectFirstArg = Expression.Parameter(sourceType, "b");
                 // o => o.[Value]
                 var keyProperty = Expression.Property(orderArg, propertyName);
                 var orderBySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { orderArg });
                 // s => s.OrderBy(o => o.[Value])
-                var orderByCall = Expression.Call(enumerableType, "OrderBy", new[] { typeof(TSource), propertyInfo.PropertyType }, selectArg, orderBySelector);
+                var orderByCall = Expression.Call(enumerableType, "OrderBy", new[] { sourceType, propertyInfo.PropertyType }, selectArg, orderBySelector);
                 var selectBody = Expression.Lambda(orderByCall, new ParameterExpression[] { selectArg });
                 var quotedSelectBody = Expression.Quote(selectBody);
                 // z.GroupBy(x => x.FirstName).Select(s => s.OrderBy(o => o.BirthDate))
-                var selectRequest = Expression.Call(queryableType, "Select", new[] { typeof(IEnumerable<TSource>), typeof(IOrderedEnumerable<TSource>) }, groupByInst, quotedSelectBody);
+                var selectRequest = Expression.Call(queryableType, "Select", new[] { sourceType, sourceType }, groupByInst, quotedSelectBody);
                 // b => b.First()
-                var selectFirstRequest = Expression.Call(enumerableType, "First", new[] { typeof(TSource) }, selectFirstArg);
+                var selectFirstRequest = Expression.Call(enumerableType, "First", new[] { sourceType }, selectFirstArg);
                 var selectFirstLambda = Expression.Lambda(selectFirstRequest, new ParameterExpression[] { selectFirstArg });
-                instruction = Expression.Call(queryableType, "Select", new[] { typeof(IEnumerable<TSource>), typeof(TSource) }, selectRequest, selectFirstLambda);
+                instruction = Expression.Call(queryableType, "Select", new[] { sourceType, sourceType }, selectRequest, selectFirstLambda);
                 int i = 0;
             }
             else
@@ -148,7 +146,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 instruction = groupByInst;
             }
 
-            return instruction;
+            return new KeyValuePair<string, Expression>(Name, instruction);
         }
     }
 }

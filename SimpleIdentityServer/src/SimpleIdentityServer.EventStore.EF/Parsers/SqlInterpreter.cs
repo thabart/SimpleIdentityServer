@@ -23,25 +23,24 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public class SqlInterpreter
     {
-        private readonly IEnumerable<BaseInstruction> _instructions;
+        private readonly BaseInstruction _instruction;
 
-        public SqlInterpreter(IEnumerable<BaseInstruction> instructions)
+        public SqlInterpreter(BaseInstruction instruction)
         {
-            _instructions = instructions;
+            _instruction = instruction;
         }
 
-        public void Execute<TSource>(IQueryable<TSource> records)
+        public IEnumerable<dynamic> Execute<TSource>(IQueryable<TSource> records)
         {
             if (records == null)
             {
                 throw new ArgumentNullException(nameof(records));
             }
 
-            foreach(var record in _instructions)
-            {
-                Expression expr = record.GetExpression(records);
-                string s = "";
-            }
+            var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
+            var expr = _instruction.GetExpression(typeof(TSource), finalSelectArg);
+            var finalSelectRequestBody = Expression.Lambda(expr.Value.Value, new ParameterExpression[] { finalSelectArg });
+            return (IEnumerable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
         }
     }
 }

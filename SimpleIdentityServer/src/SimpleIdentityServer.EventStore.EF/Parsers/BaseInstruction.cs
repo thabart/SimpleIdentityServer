@@ -15,33 +15,37 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public abstract class BaseInstruction
     {
-        protected ICollection<BaseInstruction> Instructions;
+        protected BaseInstruction SubInstruction;
         protected string Parameter;
 
         public BaseInstruction()
         {
-            Instructions = new List<BaseInstruction>();
+            IsRoot = true;
         }
 
-        public void AddInstruction(IEnumerable<BaseInstruction> instructions)
+        public bool IsRoot { get; set; }
+
+        public void SetSubInstruction(BaseInstruction instruction)
         {
-            if (instructions == null)
+            if (instruction == null)
             {
-                throw new ArgumentNullException(nameof(instructions));
+                throw new ArgumentNullException(nameof(instruction));
             }
 
-            foreach(var instruction in instructions)
+            if (SubInstruction != null)
             {
-                Instructions.Add(instruction);
+                throw new InvalidOperationException("only one sub instruction can be set");
             }
+
+            SubInstruction = instruction;
         }
 
         public void SetParameter(string parameter)
@@ -50,8 +54,19 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
+            Parameter = parameter;
         }
 
-        public abstract MethodCallExpression GetExpression<TSource>(IQueryable<TSource> query);
+        public abstract KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter);
+
+        protected bool IsLastRootInstruction()
+        {
+            if (SubInstruction != null && SubInstruction.IsRoot)
+            {
+                return false;
+            }
+
+            return IsRoot;
+        }
     }
 }
