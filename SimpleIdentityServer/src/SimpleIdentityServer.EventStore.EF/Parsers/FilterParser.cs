@@ -118,13 +118,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
             }
 
-            if (selectInstruction == null)
+            if (selectInstruction != null)
             {
-                selectInstruction = new SelectInstruction();
+                selectInstruction.SetSubInstruction(firstInstruction);
+                return selectInstruction;
             }
 
-            selectInstruction.SetSubInstruction(firstInstruction);
-            return selectInstruction;
+            return firstInstruction;
         }
 
         private static void FillInstruction(BaseInstruction instruction, string parameter)

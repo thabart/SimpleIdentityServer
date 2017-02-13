@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     {
         public const string Name = "orderby";
 
-        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
+        public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
             var propertyInfo = sourceType.GetProperty(Parameter);
             ParameterExpression arg = Expression.Parameter(sourceType, "x");
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                  }).Single().MakeGenericMethod(sourceType, propertyInfo.PropertyType);
             if (SubInstruction != null)
             {
-                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter);
+                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
                 var call = Expression.Call(method, subExpr.Value.Value, selector);
                 return new KeyValuePair<string, Expression>(Name, call);
             }

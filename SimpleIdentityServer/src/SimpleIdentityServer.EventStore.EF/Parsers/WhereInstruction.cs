@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
         }
 
-        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
+        public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
             var splitted = Regex.Split(Regex.Replace(Parameter, @"\s+", ""), "eq");
             if (splitted.Count() != 2)
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                  }).First().MakeGenericMethod(sourceType);
             if (SubInstruction != null)
             {
-                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter);
+                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
                 var call = Expression.Call(genericMethod, subExpr.Value.Value, selector);
                 return new KeyValuePair<string, Expression>(Name, call);
             }

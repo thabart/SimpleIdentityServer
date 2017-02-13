@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             Parameter = parameter;
         }
 
-        public abstract KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter);
+        public abstract KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source);
 
         protected bool IsLastRootInstruction()
         {

@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
         }
 
-        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
+        public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
             throw new NotImplementedException();
         }

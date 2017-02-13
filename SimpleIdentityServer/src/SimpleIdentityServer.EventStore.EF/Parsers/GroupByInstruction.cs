@@ -24,8 +24,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public class GroupByInstruction : BaseInstruction
     {
-        private static string _onInstruction = "on";
-        private static string _aggregateInstruction = "aggregate";
+        private const char _fieldSeparator = '|';
+        private const string _onInstruction = "on";
+        private const string _aggregateInstruction = "aggregate";
         private static IEnumerable<string> _groupByInstructions = new[]
         {
             _onInstruction,
@@ -34,15 +35,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public const string Name = "groupby";
 
-        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
+        public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            Func<IEnumerable<string>, Type, Type, ParameterExpression, MethodCallExpression> getGroupByInst = (names, eType, qType, groupByArg) =>
+            // Callback used to generate the group by expression.
+            Func<IEnumerable<string>, Type, Type, Expression, MethodCallExpression> getGroupByInst = (names, eType, qType, groupByArg) =>
             {
                 var method = qType.GetMethods()
                      .Where(m => m.Name == "GroupBy" && m.IsGenericMethodDefinition)
                      .Where(m => m.GetParameters().ToList().Count == 2).First();
                 ParameterExpression arg = Expression.Parameter(eType, "x");
-                MethodInfo genericMethod;
+                MethodInfo genericMethod = null;
                 LambdaExpression selector = null;
                 if (names.Count() == 1)
                 {
@@ -55,10 +57,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
                 else
                 {
-                    var sourceProperties = names.ToDictionary(name => name, name => sourceType.GetProperty(name));
+                    var sourceTypes = names.Select(n => sourceType.GetProperty(n));
+                    var expressions = sourceTypes.Select(s => Expression.Property(arg, s));
                     var anonType = ReflectionHelper.CreateNewAnonymousType(sourceType,  names);
-                    var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
-                    selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+                    var newExpr = Expression.New(anonType.DeclaredConstructors.First(), expressions);
+                    selector = Expression.Lambda(newExpr, arg);
                     genericMethod = method.MakeGenericMethod(eType, anonType.AsType());
                 }
 
@@ -99,9 +102,21 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 throw new ArgumentException("The 'on' instruction must be specified");
             }
 
-            // f
-            var finalSelectArg = Expression.Parameter(sourceType, "f");
-            var fieldNames = onInstruction.Value.Value.Split(',');
+            // r
+            var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+            var sourceEnumerableType = typeof(IEnumerable<>).MakeGenericType(sourceType);
+            var orderedEnumerableType = typeof(IOrderedEnumerable<>).MakeGenericType(sourceType);
+            Expression finalSelectArg;
+            if (IsLastRootInstruction())
+            {
+                finalSelectArg = Expression.Constant(source);
+            }
+            else
+            {
+                finalSelectArg = Expression.Parameter(sourceQueryableType, "r");
+            }
+
+            var fieldNames = onInstruction.Value.Value.Split(_fieldSeparator);
             var groupByInst = getGroupByInst(fieldNames, sourceType, queryableType, finalSelectArg);
             MethodCallExpression instruction = null;
             var aggregateInstruction = instructions.FirstOrDefault(i => i.Value.Key == _aggregateInstruction);
@@ -116,16 +131,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var method = queryableType.GetMethods()
                      .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
                      .Where(m => m.GetParameters().ToList().Count == 2).First()
-                     .MakeGenericMethod(new Type[] { sourceType, sourceType });
+                     .MakeGenericMethod(new Type[] { sourceQueryableType, sourceQueryableType });
 
                 var propertyName = aggregateInstructionVal.Value.Value;
                 var propertyInfo = sourceType.GetProperty(propertyName);
                 // o
                 var orderArg = Expression.Parameter(sourceType, "o");
                 // s
-                var selectArg = Expression.Parameter(sourceType, "s");
+                var selectArg = Expression.Parameter(sourceEnumerableType, "s");
                 // b
-                var selectFirstArg = Expression.Parameter(sourceType, "b");
+                var selectFirstArg = Expression.Parameter(sourceEnumerableType, "b");
                 // o => o.[Value]
                 var keyProperty = Expression.Property(orderArg, propertyName);
                 var orderBySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { orderArg });
@@ -134,11 +149,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var selectBody = Expression.Lambda(orderByCall, new ParameterExpression[] { selectArg });
                 var quotedSelectBody = Expression.Quote(selectBody);
                 // z.GroupBy(x => x.FirstName).Select(s => s.OrderBy(o => o.BirthDate))
-                var selectRequest = Expression.Call(queryableType, "Select", new[] { sourceType, sourceType }, groupByInst, quotedSelectBody);
+                var selectRequest = Expression.Call(queryableType, "Select", new[] { sourceEnumerableType, orderedEnumerableType }, groupByInst, quotedSelectBody);
                 // b => b.First()
                 var selectFirstRequest = Expression.Call(enumerableType, "First", new[] { sourceType }, selectFirstArg);
                 var selectFirstLambda = Expression.Lambda(selectFirstRequest, new ParameterExpression[] { selectFirstArg });
-                instruction = Expression.Call(queryableType, "Select", new[] { sourceType, sourceType }, selectRequest, selectFirstLambda);
+                instruction = Expression.Call(queryableType, "Select", new[] { sourceEnumerableType, sourceType }, selectRequest, selectFirstLambda);
                 int i = 0;
             }
             else

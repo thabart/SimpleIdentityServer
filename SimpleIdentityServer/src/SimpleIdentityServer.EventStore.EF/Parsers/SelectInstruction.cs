@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     {
         public const string Name = "select";
 
-        public override KeyValuePair<string, Expression>? GetExpression(Type sourceType, ParameterExpression rootParameter)
+        public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
             string[] fieldNames = null;
             if (!string.IsNullOrWhiteSpace(Parameter))
@@ -38,11 +38,24 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 fieldNames = sourceType.GetProperties().Select(m => m.Name).ToArray();
             }
 
-            var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+            // 1. Get sub expression.
+            Expression subExpr = null;
+            Type targetType = sourceType;
+            if (SubInstruction != null)
+            {
+                var kvp = SubInstruction.GetExpression(sourceType, rootParameter, source).Value;
+                subExpr = kvp.Value;
+                targetType = subExpr.Type.GetGenericArguments().First();
+                if (string.IsNullOrWhiteSpace(Parameter))
+                {
+                    return kvp;
+                }
+            }
+
             // x
-            var arg = Expression.Parameter(sourceType, "x");
+            var arg = Expression.Parameter(targetType, "x");
             // f
-            var finalSelectArg = Expression.Parameter(sourceQueryableType, "f");
+            var finalSelectArg = Expression.Parameter(typeof(IQueryable<>).MakeGenericType(targetType), "f");
             LambdaExpression selector = null;
             Type type = null;
             if (fieldNames.Count() == 1)
@@ -63,19 +76,17 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             var enumarableType = typeof(Queryable);
-            var selectMethod = enumarableType.GetMethods()
-                 .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
-                 .Where(m =>
-                 {
-                     var parameters = m.GetParameters().ToList();
-                     return parameters.Count == 2;
-                 }).First().MakeGenericMethod(sourceType, type);
-
             if (SubInstruction != null)
             {
-                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter);
-                Expression.Call(selectMethod, subExpr.Value.Value, selector);
-                return new KeyValuePair<string, Expression>(Name, Expression.Call(typeof(Queryable), "Select", new Type[] { sourceType, type }, subExpr.Value.Value, selector));
+                var selectMethod = enumarableType.GetMethods()
+                     .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
+                     .Where(m =>
+                     {
+                         var parameters = m.GetParameters().ToList();
+                         return parameters.Count == 2;
+                     }).First().MakeGenericMethod(targetType, type);
+                Expression.Call(selectMethod, subExpr, selector);
+                return new KeyValuePair<string, Expression>(Name, Expression.Call(typeof(Queryable), "Select", new Type[] { targetType, type }, subExpr, selector));
             }
 
             return null;

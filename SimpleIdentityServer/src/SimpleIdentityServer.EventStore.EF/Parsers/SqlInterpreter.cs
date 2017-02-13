@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
-            var expr = _instruction.GetExpression(typeof(TSource), finalSelectArg);
+            var expr = _instruction.GetExpression(typeof(TSource), finalSelectArg, records);
             var finalSelectRequestBody = Expression.Lambda(expr.Value.Value, new ParameterExpression[] { finalSelectArg });
             return (IEnumerable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
         }

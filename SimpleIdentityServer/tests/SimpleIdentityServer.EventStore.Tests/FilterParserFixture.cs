@@ -26,9 +26,14 @@ namespace SimpleIdentityServer.EventStore.Tests
     {
         private class Person
         {
+            public string Id { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public DateTime BirthDate { get; set; }
+            public override bool Equals(object obj)
+            {
+                return true;
+            }
         }
 
         private FilterParser _parser;
@@ -125,7 +130,7 @@ namespace SimpleIdentityServer.EventStore.Tests
         }
 
         [Fact]
-        public void When_Execute_GroupBy_Instruction_Then_Two_Records_Are_Returned()
+        public void When_Execute_GroupBy_Instruction_Then_Records_Are_Returned()
         {
             var persons = (new List<Person>
             {
@@ -146,16 +151,23 @@ namespace SimpleIdentityServer.EventStore.Tests
                 }
             }).AsQueryable();
 
+            var res = persons.GroupBy(p => new { p.LastName, p.FirstName });
+            ;
             // ARRANGE
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("groupby$on(FirstName)");
-            // var result = instruction.Evaluate(persons);
+            // var first = _parser.Parse("groupby$on(FirstName)");
+            var second = _parser.Parse("groupby$on(FirstName|LastName)");
+            // var firstResult = first.Execute(persons);
+            var secondResult = second.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 2);
+            // Assert.NotNull(firstResult);
+            Assert.NotNull(secondResult);
+            var result = secondResult.Select(r => r.Key.ToString());
+            // Assert.True(firstResult.Count() == 2);
+            Assert.True(secondResult.Count() == 2);
         }
 
         [Fact]
@@ -237,23 +249,42 @@ namespace SimpleIdentityServer.EventStore.Tests
             {
                 new Person
                 {
+                    Id = "1",
+                    BirthDate = DateTime.UtcNow,
                     FirstName = "thierry",
                     LastName = "thierry"
                 },
                 new Person
                 {
+                    Id = "1",
+                    BirthDate = DateTime.UtcNow.AddDays(-1),
                     FirstName = "thierry",
-                    LastName = "lastname"
+                    LastName = "1"
                 },
                 new Person
                 {
+                    Id = "3",
                     FirstName = "laetitia",
-                    LastName = "lastname"
+                    LastName = "2"
                 }
             }).AsQueryable();
+            var query = from p in persons
+                        join sub in (from subP in persons
+                                     group subP by subP.Id into g
+                                     select new
+                                     {
+                                         BirthDate = g.Min(x => x.BirthDate),
+                                         PersonKey = g.Key                                         
+                                     })
+                        on p.Id equals sub.PersonKey  into rels
+                        from tmp in rels
+                        where p.BirthDate == tmp.BirthDate
+                        select new { p.Id, p.BirthDate, p.LastName };
+
 
             // ACT
-            var interpreter = _parser.Parse("join$target(groupby$on(FirstName),aggregate(min with BirthDate))");
+            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),on(Id eq Id)");
+
             // interpreter.Execute(persons);
             string s = "";
 
