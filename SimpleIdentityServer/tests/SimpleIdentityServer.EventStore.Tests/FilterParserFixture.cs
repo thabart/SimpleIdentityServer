@@ -157,16 +157,15 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            // var first = _parser.Parse("groupby$on(FirstName)");
+            var first = _parser.Parse("groupby$on(FirstName)");
             var second = _parser.Parse("groupby$on(FirstName|LastName)");
-            // var firstResult = first.Execute(persons);
+            var firstResult = first.Execute(persons);
             var secondResult = second.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(firstResult);
+            Assert.NotNull(firstResult);
             Assert.NotNull(secondResult);
-            var result = secondResult.Select(r => r.Key.ToString());
-            // Assert.True(firstResult.Count() == 2);
+            Assert.True(firstResult.Count() == 2);
             Assert.True(secondResult.Count() == 2);
         }
 
