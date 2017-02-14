@@ -48,13 +48,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var properties = fieldNames.Select(f => new { Prop = sourceType.GetProperty(f), Name = f });
             var builder = dynamicAnonymousType.DefineConstructor(MethodAttributes.Assembly, CallingConventions.Standard, properties.Select(p => p.Prop.PropertyType).ToArray());
             var constructorIl = builder.GetILGenerator();
-            var equalsMethod = dynamicAnonymousType.DefineMethod("Equals", 
+            /*var equalsMethod = dynamicAnonymousType.DefineMethod("Equals", 
                 MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot
-                | MethodAttributes.Virtual| MethodAttributes.Final,CallingConventions.HasThis, typeof(bool), new[] { typeof(object) });
-            var getHashCodeMethod = dynamicAnonymousType.DefineMethod("GetHashCode",
-                MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot
-                | MethodAttributes.Virtual | MethodAttributes.Final, CallingConventions.HasThis, typeof(int), Type.EmptyTypes);
-            var ilEquals = equalsMethod.GetILGenerator();
+                | MethodAttributes.Virtual| MethodAttributes.Final,CallingConventions.HasThis, typeof(bool), new[] { typeof(object) });*/
+            var getHashCodeMethod = dynamicAnonymousType.DefineMethod("GetHashCode", 
+                MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.HasThis | CallingConventions.Standard, 
+                typeof(int), Type.EmptyTypes);
+            // var ilEquals = equalsMethod.GetILGenerator();
             var ilHashCode = getHashCodeMethod.GetILGenerator();
             constructorIl.Emit(OpCodes.Ldarg_0);
             constructorIl.Emit(OpCodes.Call, objCtor);
@@ -62,10 +62,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             ilEquals.Emit(OpCodes.Ldarg_1);
             ilEquals.Emit(OpCodes.Castclass, dynamicAnonymousType.AsType());
             ilEquals.Emit(OpCodes.Stloc_0);*/
-            Label inequality = ilEquals.DefineLabel();
-            Label end = ilEquals.DefineLabel();
+            // Label inequality = ilEquals.DefineLabel();
+            // Label end = ilEquals.DefineLabel();
             int i = 0;
             // 2. Create the constructor & toString method.
+            var hashMethod = typeof(object).GetMethod("GetHashCode");
             foreach (var property in properties)
             {
                 OpCode opCode;
@@ -89,10 +90,15 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 // 2.2. Build property
                 propertyIl.Emit(OpCodes.Ldarg_0);
                 propertyIl.Emit(OpCodes.Ldfld, field);
-                propertyIl.Emit(OpCodes.Stloc_0);
-                propertyIl.Emit(OpCodes.Ldloc_0);
                 propertyIl.Emit(OpCodes.Ret);
-                // 2.3 Build the equals method
+                // 2.3 Build the get hash method
+                ilHashCode.Emit(OpCodes.Ldarg_0);
+                ilHashCode.Emit(OpCodes.Call, getProperty);
+                ilHashCode.Emit(OpCodes.Callvirt, hashMethod);
+                if (i > 0)
+                {
+                    ilHashCode.Emit(OpCodes.Xor);
+                }
                 /*
                 ilEquals.Emit(OpCodes.Ldarg_0);
                 ilEquals.Emit(OpCodes.Call, getProperty);
@@ -116,20 +122,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             ilEquals.Emit(OpCodes.Ldloc_1);
             ilEquals.Emit(OpCodes.Ret);
             */
-
-            ilHashCode.Emit(OpCodes.Nop);
-            ilHashCode.Emit(OpCodes.Ldc_I4_1);
-            ilHashCode.Emit(OpCodes.Stloc_0);
-            ilHashCode.Emit(OpCodes.Ldloc_0);
+            
             ilHashCode.Emit(OpCodes.Ret);
 
-            ilEquals.Emit(OpCodes.Nop);
-            ilEquals.Emit(OpCodes.Ldc_I4_1);
-            ilEquals.Emit(OpCodes.Stloc_0);
-            ilEquals.Emit(OpCodes.Ldloc_0);
-            ilEquals.Emit(OpCodes.Ret);
-            dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals", new[] { typeof(object) }));
-            dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, typeof(object).GetMethod("GetHashCode"));
+            // ilEquals.Emit(OpCodes.Nop);
+            // ilEquals.Emit(OpCodes.Ldc_I4_1);
+            // ilEquals.Emit(OpCodes.Stloc_0);
+            // ilEquals.Emit(OpCodes.Ldloc_0);
+            // ilEquals.Emit(OpCodes.Ret);
+            // dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals", new[] { typeof(object) }));
+            dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, hashMethod);
             return dynamicAnonymousType.CreateTypeInfo();
         }
 
