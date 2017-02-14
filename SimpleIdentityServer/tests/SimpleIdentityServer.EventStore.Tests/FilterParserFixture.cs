@@ -176,21 +176,15 @@ namespace SimpleIdentityServer.EventStore.Tests
             {
                 new Person
                 {
-                    FirstName = "thierry",
+                    FirstName = "thierry1",
                     LastName = "lastname",
                     BirthDate = DateTime.UtcNow
                 },
                 new Person
                 {
-                    FirstName = "thierry",
+                    FirstName = "thierry2",
                     LastName = "lastname",
                     BirthDate = DateTime.UtcNow.AddHours(3)
-                },
-                new Person
-                {
-                    FirstName = "laetitia",
-                    LastName = "lastname",
-                    BirthDate = DateTime.UtcNow
                 }
             }).AsQueryable();
             
@@ -198,12 +192,23 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("groupby$on(FirstName),aggregate(min with BirthDate)");
-            // instruction.Execute(persons);
+            var firstInstruction = _parser.Parse("groupby$on(LastName),aggregate(min with BirthDate)");
+            var secondInstruction = _parser.Parse("groupby$on(LastName),aggregate(max with BirthDate)");
+            var thirdInstruction = _parser.Parse("groupby$on(LastName),aggregate(max with BirthDate) select$FirstName");
+            var firstResult = firstInstruction.Execute(persons);
+            var secondResult = secondInstruction.Execute(persons);
+            var thirdResult = thirdInstruction.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 2);
+            Assert.NotNull(firstResult);
+            Assert.NotNull(secondResult);
+            Assert.NotNull(thirdResult);
+            Assert.True(firstResult.Count() == 1);
+            Assert.True(secondResult.Count() == 1);
+            Assert.True(thirdResult.Count() == 1);
+            Assert.True(firstResult.First().FirstName == "thierry1");
+            Assert.True(secondResult.First().FirstName == "thierry2");
+            Assert.True(thirdResult.First() == "thierry2");
         }
 
         [Fact]

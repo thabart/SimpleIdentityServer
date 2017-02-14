@@ -128,12 +128,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     throw new ArgumentException("the aggregate instruction is not correct");
                 }
 
+                var kvp = aggregateInstructionVal.Value;
                 var method = queryableType.GetMethods()
                      .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
                      .Where(m => m.GetParameters().ToList().Count == 2).First()
                      .MakeGenericMethod(new Type[] { sourceQueryableType, sourceQueryableType });
 
-                var propertyName = aggregateInstructionVal.Value.Value;
+                var propertyName = kvp.Value;
                 var propertyInfo = sourceType.GetProperty(propertyName);
                 // o
                 var orderArg = Expression.Parameter(sourceType, "o");
@@ -145,7 +146,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var keyProperty = Expression.Property(orderArg, propertyName);
                 var orderBySelector = Expression.Lambda(keyProperty, new ParameterExpression[] { orderArg });
                 // s => s.OrderBy(o => o.[Value])
-                var orderByCall = Expression.Call(enumerableType, "OrderBy", new[] { sourceType, propertyInfo.PropertyType }, selectArg, orderBySelector);
+                MethodCallExpression orderByCall = null;
+                if (string.Equals(kvp.Key, "max", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    orderByCall = Expression.Call(enumerableType, "OrderByDescending", new[] { sourceType, propertyInfo.PropertyType }, selectArg, orderBySelector);
+                }
+                else
+                {
+                    orderByCall = Expression.Call(enumerableType, "OrderBy", new[] { sourceType, propertyInfo.PropertyType }, selectArg, orderBySelector);
+                }
+
                 var selectBody = Expression.Lambda(orderByCall, new ParameterExpression[] { selectArg });
                 var quotedSelectBody = Expression.Quote(selectBody);
                 // z.GroupBy(x => x.FirstName).Select(s => s.OrderBy(o => o.BirthDate))
@@ -154,7 +164,6 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var selectFirstRequest = Expression.Call(enumerableType, "First", new[] { sourceType }, selectFirstArg);
                 var selectFirstLambda = Expression.Lambda(selectFirstRequest, new ParameterExpression[] { selectFirstArg });
                 instruction = Expression.Call(queryableType, "Select", new[] { sourceEnumerableType, sourceType }, selectRequest, selectFirstLambda);
-                int i = 0;
             }
             else
             {
