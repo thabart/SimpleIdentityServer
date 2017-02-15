@@ -18,11 +18,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
     public class InnerJoinInstruction : BaseInstruction
     {
+        private const string innerKey = "inner";
+        private const string outerKey = "outer";
+        private readonly IEnumerable<string> parameters = new List<string>
+        {
+            innerKey,
+            outerKey
+        };
+
         public const string Name = "join";
 
         public InnerJoinInstruction()
@@ -31,7 +40,39 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            throw new NotImplementedException();
+            if (sourceType == null)
+            {
+                throw new ArgumentNullException(nameof(sourceType));
+            }
+
+            // 1. Split the value & extract the field names or requests.
+            var splitted = Parameter.Split(',');
+            var instructions = splitted.Select(s =>
+            {
+                return InstructionHelper.ExtractInstruction(s);
+            }).Where(s => s.HasValue);
+            if (!parameters.Any(p => instructions.Any(i => i.Value.Key == p)))
+            {
+                throw new ArgumentException("either inner or outer parameter is not specified");
+            }
+
+            // 2. Construct the expression.
+            var outer = instructions.First(i => i.Value.Key == outerKey).Value.Value;
+            var inner = instructions.First(i => i.Value.Key == innerKey).Value.Value;
+            var propertyInfoOuter = sourceType.GetProperty(outer);
+            var propertyInfoInner = sourceType.GetProperty(inner);
+            var outerArg = Expression.Parameter(sourceType, "x");
+            var innerArg = Expression.Parameter(sourceType, "y");
+            var propertyOuter = Expression.Property(outerArg, outer);
+            var propertyInner = Expression.Property(innerArg, inner);
+            var selectorOuter = Expression.Lambda(propertyOuter, new ParameterExpression[] { outerArg });
+            var selectorInner = Expression.Lambda(propertyInner, new ParameterExpression[] { innerArg });
+            var selectorResult = Expression.Lambda(outerArg, new ParameterExpression[] { outerArg, innerArg });
+            var enumarableType = typeof(Queryable);
+            var method = enumarableType.GetMethods().Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
+            var genericMethod = method.MakeGenericMethod(sourceType, sourceType, propertyInfoOuter.PropertyType, sourceType);
+            var call = Expression.Call(genericMethod, Expression.Constant(source), Expression.Constant(source), selectorOuter, selectorInner, selectorResult);
+            return new KeyValuePair<string, Expression>(Name, call);
         }
     }
 }

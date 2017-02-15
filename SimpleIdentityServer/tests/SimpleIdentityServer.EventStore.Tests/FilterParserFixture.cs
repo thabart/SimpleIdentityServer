@@ -235,13 +235,15 @@ namespace SimpleIdentityServer.EventStore.Tests
                 }
             }).AsQueryable();
 
+            var res = persons.Join(persons, (fp) => fp.FirstName, (sp) => sp.LastName, (fp, sp) => new { fp });
+
             // ACT
-            var instruction = _parser.Parse("join$FirstName|LastName");
-            // var result = instruction.Evaluate(persons);
+            var instruction = _parser.Parse("join$outer(FirstName),inner(LastName)");
+            var result = instruction.Execute(persons);
 
             // ASSERTS
-            // Assert.NotNull(result);
-            // Assert.True(result.Count() == 2);
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 2);
         }
 
         [Fact]
