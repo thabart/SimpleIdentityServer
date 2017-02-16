@@ -125,6 +125,12 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 tResult = anonymousType.AsType();
             }
 
+            if (SubInstruction != null)
+            {
+                var subExpr = SubInstruction.GetExpression(tResult, rootParameter, source);
+                string s = "";
+            }
+
             var enumarableType = typeof(Queryable);
             var method = enumarableType.GetMethods().Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
             var genericMethod = method.MakeGenericMethod(sourceType, innerType, propertyInfoOuter.PropertyType, tResult);

@@ -69,6 +69,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
 
                 var field = dynamicAnonymousType.DefineField(property.Key, property.Value, FieldAttributes.Public);
+                // var field = dynamicAnonymousType.DefineProperty(property.Key, PropertyAttributes.None, property.Value, new[] { property.Value });
                 var getProperty = dynamicAnonymousType.DefineMethod("get_" + property.Key, MethodAttributes.Assembly, property.Value, null);
                 var propertyIl = getProperty.GetILGenerator();
                 // 2.1 Build constructor

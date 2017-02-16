@@ -51,11 +51,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var enumarableType = typeof(Queryable);
             var genericMethod = enumarableType.GetMethods()
                  .Where(m => m.Name == "Where" && m.IsGenericMethodDefinition)
-                 .Where(m =>
-                 {
-                     var parameters = m.GetParameters().ToList();
-                     return parameters.Count == 2;
-                 }).First().MakeGenericMethod(sourceType);
+                 .Where(m => m.GetParameters().Count() == 2).First().MakeGenericMethod(sourceType);
             if (SubInstruction != null)
             {
                 var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
