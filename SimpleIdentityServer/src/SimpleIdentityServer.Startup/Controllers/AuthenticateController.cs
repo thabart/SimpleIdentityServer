@@ -432,7 +432,6 @@ namespace SimpleIdentityServer.Startup.Controllers
             // 5. Rerieve the claims
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = claimsIdentity.Claims.ToList();
-            IEnumerable<Claim> fileredClaims = null;
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
@@ -445,7 +444,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             if (actionResult.ActionResult != null)
             {
                 var authenticationManager = this.GetAuthenticationManager();
-                await SetLocalCookie(authenticationManager, fileredClaims);
+                await SetLocalCookie(authenticationManager, actionResult.Claims);
                 await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
