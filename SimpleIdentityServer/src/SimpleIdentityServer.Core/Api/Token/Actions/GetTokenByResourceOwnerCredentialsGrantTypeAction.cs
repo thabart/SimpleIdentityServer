@@ -128,7 +128,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 Scope = resourceOwnerGrantTypeParameter.Scope
             };
             var payload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
-            var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
+            var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload);
             if (generatedToken == null)
             {
                 generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
