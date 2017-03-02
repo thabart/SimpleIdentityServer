@@ -48,14 +48,10 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
                 subExpression = subExpr.Value.Value;
-                sourceQueryableType = ((MethodCallExpression)subExpression).Method.ReturnType;
-                sourceType = sourceQueryableType.GetGenericArguments().First();
-            }
-            else
-            {
-                sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+                sourceType = subExpression.Type.GetGenericArguments().First();
             }
 
+            sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
             var arg = Expression.Parameter(sourceType, "x");
             var property = Expression.Property(arg, propertyName);
             var equalExpr = Expression.Equal(property, Expression.Constant(value));
