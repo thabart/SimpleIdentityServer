@@ -39,6 +39,47 @@ namespace SimpleIdentityServer.EventStore.Tests
         private FilterParser _parser;
 
         [Fact]
+        public void When_Parsing_Incorrect_Str_Then_Exception_Are_Thrown()
+        {
+            // ARRAGE
+            InitializeFakeObjects();
+
+            // ACTS & ASSERTS
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("invalid$outer(FirstName),inner(LastName)"));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select"));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$"));
+        }
+
+        [Fact]
+        public void When_Parsing_Then_Instruction_Are_Returned()
+        {
+            // ARRAGE
+            InitializeFakeObjects();
+
+            // ACT
+            var firstInstruction = _parser.Parse("join$outer(FirstName),inner(LastName)").Instruction as InnerJoinInstruction;
+            var secondInstruction = _parser.Parse("select$firstName,lastName").Instruction as SelectInstruction;
+            var thirdInstruction = _parser.Parse("groupby$on(FirstName|LastName)").Instruction as GroupByInstruction;
+            var fourthInstruction = _parser.Parse("select$target(select$firstParameter),secondParameter").Instruction as SelectInstruction;
+            var fifthInstruction = _parser.Parse("select$target(select$target(select$secondParameter)),firstParameter where$(FirstName eq thierry)").Instruction as SelectInstruction;
+
+            // ASSERTS
+            Assert.NotNull(firstInstruction);
+            Assert.True(firstInstruction.GetParameter() == "outer(FirstName),inner(LastName)");
+            Assert.NotNull(secondInstruction);
+            Assert.True(secondInstruction.GetParameter() == "firstName,lastName");
+            Assert.NotNull(thirdInstruction);
+            Assert.True(thirdInstruction.GetParameter() == "on(FirstName|LastName)");
+            Assert.NotNull(fourthInstruction);
+            Assert.True(fourthInstruction.GetParameter() == "secondParameter");
+            Assert.NotNull(fourthInstruction.GetTargetInstruction());
+            Assert.True(fourthInstruction.GetTargetInstruction().GetParameter() == "firstParameter");
+            Assert.NotNull(fifthInstruction);
+            Assert.True(fifthInstruction.GetSubInstruction() is WhereInstruction);
+            Assert.True(fifthInstruction.GetTargetInstruction() is SelectInstruction);
+        }
+
+        [Fact]
         public void When_Execute_Where_Instruction_Then_One_Record_Is_Returned()
         {
             var persons = (new List<Person>
@@ -297,7 +338,7 @@ namespace SimpleIdentityServer.EventStore.Tests
 
 
             // ACT
-            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),on(Id eq Id)");
+            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(FirstName),inner(LastName),select(outer$FirstName|inner)");
 
             // interpreter.Execute(persons);
             string s = "";

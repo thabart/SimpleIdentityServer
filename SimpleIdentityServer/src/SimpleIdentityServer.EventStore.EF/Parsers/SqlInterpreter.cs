@@ -40,7 +40,19 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
             var expr = _instruction.GetExpression(typeof(TSource), finalSelectArg, records);
             var finalSelectRequestBody = Expression.Lambda(expr.Value.Value, new ParameterExpression[] { finalSelectArg });
-            return (IEnumerable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
+            try
+            {
+                return (IEnumerable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
+            } catch (Exception ex)
+            {
+                string s = "";
+                return null;
+            }
+        }
+
+        public BaseInstruction Instruction
+        {
+            get { return _instruction; }
         }
     }
 }

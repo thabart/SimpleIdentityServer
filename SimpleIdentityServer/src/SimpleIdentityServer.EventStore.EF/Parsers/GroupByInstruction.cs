@@ -106,8 +106,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
             var sourceEnumerableType = typeof(IEnumerable<>).MakeGenericType(sourceType);
             var orderedEnumerableType = typeof(IOrderedEnumerable<>).MakeGenericType(sourceType);
-            Expression finalSelectArg;
-            if (IsLastRootInstruction())
+            Expression finalSelectArg = null;
+            if (SubInstruction == null)
             {
                 finalSelectArg = Expression.Constant(source);
             }

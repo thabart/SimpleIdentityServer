@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 if (string.Equals(method, SelectInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
                     selectInstruction = new SelectInstruction();
-                    selectInstruction.SetParameter(parameter);
+                    FillInstruction(selectInstruction, parameter);
                 }
                 else if (string.Equals(method, WhereInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -135,7 +135,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             if (selectInstruction != null)
             {
-                selectInstruction.SetSubInstruction(firstInstruction);
+                if (firstInstruction != null)
+                {
+                    selectInstruction.SetSubInstruction(firstInstruction);
+                }
+
                 return selectInstruction;
             }
 
@@ -150,8 +154,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 parameters = SplitInstructions(subInstr);
                 var subInst = ExtractInstruction(parameters);
-                subInst.IsRoot = false;
-                instruction.SetSubInstruction(subInst);
+                instruction.SetTargetInstruction(subInst);
+                instruction.SetParameter(GetInstructionParameter(parameter));
             }
             else
             {
@@ -190,14 +194,21 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static string GetSubInstruction(string parameter)
         {
-            if (!parameter.Contains(_subInstructionKey))
+            var target = SplitStr(parameter, ',').FirstOrDefault(s => s.Contains(_subInstructionKey));
+            if (target == null)
             {
                 return null;
             }
 
-            var startIndex = parameter.IndexOf('(');
-            var lastIndex = parameter.LastIndexOf(')');
+            var startIndex = target.IndexOf('(');
+            var lastIndex = target.LastIndexOf(')');
             return parameter.Substring(startIndex + 1, lastIndex - startIndex - 1);
+        }
+
+        private static string GetInstructionParameter(string parameter)
+        {
+            var arr = SplitStr(parameter, ',').Where(s => !s.Contains(_subInstructionKey));
+            return string.Join(",", arr);
         }
 
         private static IEnumerable<string> SplitInstruction(string instruction)

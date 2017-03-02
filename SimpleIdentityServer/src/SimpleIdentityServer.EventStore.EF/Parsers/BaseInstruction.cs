@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
@@ -24,14 +23,10 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     public abstract class BaseInstruction
     {
         protected BaseInstruction SubInstruction;
+        protected BaseInstruction TargetInstruction;
         protected string Parameter;
 
-        public BaseInstruction()
-        {
-            IsRoot = true;
-        }
-
-        public bool IsRoot { get; set; }
+        public BaseInstruction() { }
 
         public void SetSubInstruction(BaseInstruction instruction)
         {
@@ -48,25 +43,41 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             SubInstruction = instruction;
         }
 
+        public void SetTargetInstruction(BaseInstruction instruction)
+        {
+            if(instruction == null)
+            {
+                throw new ArgumentNullException(nameof(instruction));
+            }
+
+            if (TargetInstruction != null)
+            {
+                throw new InvalidOperationException("only one target instruction can be set");
+            }
+
+            TargetInstruction = instruction;
+        }
+
         public void SetParameter(string parameter)
         {
-            if (string.IsNullOrWhiteSpace(parameter))
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
             Parameter = parameter;
         }
 
-        public abstract KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source);
-
-        protected bool IsLastRootInstruction()
+        public string GetParameter()
         {
-            if (SubInstruction != null && SubInstruction.IsRoot)
-            {
-                return false;
-            }
-
-            return IsRoot;
+            return Parameter;
         }
+
+        public BaseInstruction GetSubInstruction()
+        {
+            return SubInstruction;
+        }
+
+        public BaseInstruction GetTargetInstruction()
+        {
+            return TargetInstruction;
+        }
+
+        public abstract KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source);
     }
 }
