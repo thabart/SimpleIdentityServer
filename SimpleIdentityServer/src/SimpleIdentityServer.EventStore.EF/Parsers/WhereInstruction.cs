@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
+            var matches = Regex.Matches(Parameter, @"\S* (eq|neq) \S*");
             var splitted = Regex.Split(Regex.Replace(Parameter, @"\s+", ""), "eq");
             if (splitted.Count() != 2)
             {

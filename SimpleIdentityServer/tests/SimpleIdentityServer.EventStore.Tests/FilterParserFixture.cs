@@ -338,7 +338,8 @@ namespace SimpleIdentityServer.EventStore.Tests
 
 
             // ACT
-            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id),inner(Id),select(inner$Id|outer$BirthDate)");
+            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id),inner(Id),select(inner|outer$BirthDate) where(Firstname eq lastname other neq other");
+            //  where$(outer_BirthDate eq inner.BirthDate)
             var result = interpreter.Execute(persons);
             string s = "";
 

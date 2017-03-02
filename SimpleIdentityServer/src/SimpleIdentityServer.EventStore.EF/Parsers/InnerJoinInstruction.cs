@@ -99,22 +99,23 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 foreach(var val in selectValue.Split('|'))
                 {
                     var values = val.Split('$');
-                    if (values.Count() != 2)
+                    if (values.Count() != 2 && values.Count() != 1)
                     {
                         continue;
                     }
 
                     var key = values.First();
-                    var value = values.ElementAt(1);
                     var kvp = selectAttributes.FirstOrDefault(s => s.Key == key);
                     if (IsEmpty(kvp))
                     {
-                        kvp = new KeyValuePair<string, ICollection<string>>(key, new List<string> { value });
+                        kvp = new KeyValuePair<string, ICollection<string>>(key, new List<string>());
                         selectAttributes.Add(kvp);
-                        continue;
                     }
 
-                    kvp.Value.Add(value);
+                    if (values.Count() == 2)
+                    {
+                        kvp.Value.Add(values.ElementAt(1));
+                    }
                 }
 
                 if (!selectAttributes.Any(a => selectParameters.Contains(a.Key)))
