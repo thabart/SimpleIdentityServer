@@ -60,7 +60,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
             BaseInstruction selectInstruction = null,
                 firstInstruction = null,
-                previousInstruction = null;
+                previousInstruction = null,
+                innerInstruction = null;
             foreach(var instruction in instructions)
             {
                 // 1. Check instruction is valid.
@@ -89,7 +90,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 }
                 else if (string.Equals(method, InnerJoinInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    record = new InnerJoinInstruction();
+                    innerInstruction = new InnerJoinInstruction();
+                    FillInstruction(innerInstruction, parameter);
                 }
                 else if (string.Equals(method, OrderByInstruction.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -115,6 +117,19 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     // 3.3 Change the previous instruction.
                     previousInstruction.SetSubInstruction(record);
                     previousInstruction = record;
+                }
+            }
+
+            if (innerInstruction != null)
+            {
+                if (firstInstruction == null)
+                {
+                    firstInstruction = innerInstruction;
+                }
+
+                if (previousInstruction != null)
+                {
+                    previousInstruction.SetSubInstruction(innerInstruction);
                 }
             }
 

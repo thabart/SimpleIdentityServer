@@ -61,10 +61,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             if (fieldNames.Count() == 1)
             {
                 var field = fieldNames.First();
-                var propertyInfo = sourceType.GetProperty(field);
                 MemberExpression property = Expression.Property(arg, field);
                 selector = Expression.Lambda(property, new ParameterExpression[] { arg });
-                type = propertyInfo.PropertyType;
+                type = property.Type;
             }
             else
             {

@@ -39,12 +39,24 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 throw new ArgumentException("the filter is not correct");
             }
 
-            var sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+            Type sourceQueryableType = null;
+            Expression subExpression = null;
             var propertyName = splitted.First();
             var value = splitted.ElementAt(1);
-            var propertyInfo = sourceType.GetProperty(propertyName);
+
+            if (SubInstruction != null)
+            {
+                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
+                subExpression = subExpr.Value.Value;
+                sourceQueryableType = ((MethodCallExpression)subExpression).Method.ReturnType;
+                sourceType = sourceQueryableType.GetGenericArguments().First();
+            }
+            else
+            {
+                sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
+            }
+
             var arg = Expression.Parameter(sourceType, "x");
-            // var fArg = Expression.Parameter(sourceQueryableType, "e");
             var property = Expression.Property(arg, propertyName);
             var equalExpr = Expression.Equal(property, Expression.Constant(value));
             var selector = Expression.Lambda(equalExpr, new ParameterExpression[] { arg });
@@ -52,10 +64,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var genericMethod = enumarableType.GetMethods()
                  .Where(m => m.Name == "Where" && m.IsGenericMethodDefinition)
                  .Where(m => m.GetParameters().Count() == 2).First().MakeGenericMethod(sourceType);
-            if (SubInstruction != null)
+            if (subExpression != null)
             {
-                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
-                var call = Expression.Call(genericMethod, subExpr.Value.Value, selector);
+                var call = Expression.Call(genericMethod, subExpression, selector);
                 return new KeyValuePair<string, Expression>(Name, call);
             }
 

@@ -68,18 +68,18 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     opCode = kvp.Value;
                 }
 
-                var field = dynamicAnonymousType.DefineField(property.Key, property.Value, FieldAttributes.Public);
-                // var field = dynamicAnonymousType.DefineProperty(property.Key, PropertyAttributes.None, property.Value, new[] { property.Value });
-                var getProperty = dynamicAnonymousType.DefineMethod("get_" + property.Key, MethodAttributes.Assembly, property.Value, null);
-                var propertyIl = getProperty.GetILGenerator();
+                var field = dynamicAnonymousType.DefineField($"<{property.Key}>_BackingField", property.Value, FieldAttributes.Public);
+                var prop = dynamicAnonymousType.DefineProperty(property.Key, PropertyAttributes.None, property.Value, new[] { property.Value });
+                var getProperty = dynamicAnonymousType.DefineMethod($"get_{property.Key}", MethodAttributes.Assembly, property.Value, null);
+                var getPropertyIl = getProperty.GetILGenerator();
                 // 2.1 Build constructor
                 constructorIl.Emit(OpCodes.Ldarg_0);
                 constructorIl.Emit(opCode);
                 constructorIl.Emit(OpCodes.Stfld, field);
                 // 2.2. Build property
-                propertyIl.Emit(OpCodes.Ldarg_0);
-                propertyIl.Emit(OpCodes.Ldfld, field);
-                propertyIl.Emit(OpCodes.Ret);
+                getPropertyIl.Emit(OpCodes.Ldarg_0);
+                getPropertyIl.Emit(OpCodes.Ldfld, field);
+                getPropertyIl.Emit(OpCodes.Ret);
                 // 2.3 Build the get hash method
                 ilHashCode.Emit(OpCodes.Ldarg_0);
                 ilHashCode.Emit(OpCodes.Call, getProperty);
@@ -89,6 +89,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     ilHashCode.Emit(OpCodes.Xor);
                 }
 
+                // 2.4 Add methods associated to the property.
+                prop.SetGetMethod(getProperty);
                 i++;
             }
 
