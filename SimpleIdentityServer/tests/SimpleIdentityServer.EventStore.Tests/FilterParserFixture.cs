@@ -80,6 +80,32 @@ namespace SimpleIdentityServer.EventStore.Tests
         }
 
         [Fact]
+        public void When_Parsing_Invalid_Where_Parameter_Then_Exception_Is_Thrown()
+        {
+            // ACT
+            InitializeFakeObjects();
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+
+            // ACTS & ASSERTS
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eqq thierry)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq thierry tot)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq thierry and LastName tot Habart)").Execute(persons));
+        }
+
+        [Fact]
         public void When_Execute_Where_Instruction_Then_One_Record_Is_Returned()
         {
             var persons = (new List<Person>
@@ -127,11 +153,12 @@ namespace SimpleIdentityServer.EventStore.Tests
             }).AsQueryable();
             // var p2 = persons.Where(p => p.FirstName == "thierry").OrderBy(p => p.FirstName).Select(p => p.FirstName);
             // var res = persons.GroupBy(p => p.FirstName).Select(x => x.OrderBy(y => y.BirthDate)).Select(x => x.First());
+            var res = persons.Where(p => p.FirstName == "thierry" && p.LastName == "habart");
 
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry)");
+            var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry and LastName eq lastname and LastName eq lastname)");
             var result = instruction.Execute(persons);
 
             // ASSERTS
