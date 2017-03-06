@@ -82,16 +82,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 binaryExpr = BuildCondition(conditions.First(), arg);
             }
 
-            var splitted = Regex.Split(Regex.Replace(Parameter, @"\s+", ""), "eq");
-            if (splitted.Count() != 2)
-            {
-                throw new ArgumentException("the filter is not correct");
-            }
-
             Type sourceQueryableType = null;
             Expression subExpression = null;
-            var propertyName = splitted.First();
-            var value = splitted.ElementAt(1);
             if (SubInstruction != null)
             {
                 var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
@@ -100,7 +92,6 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);
-            var property = Expression.Property(arg, propertyName);
             var selector = Expression.Lambda(binaryExpr, new ParameterExpression[] { arg });
             var enumarableType = typeof(Queryable);
             var genericMethod = enumarableType.GetMethods()
