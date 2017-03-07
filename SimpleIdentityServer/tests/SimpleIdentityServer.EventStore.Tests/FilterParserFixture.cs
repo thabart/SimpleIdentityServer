@@ -369,7 +369,6 @@ namespace SimpleIdentityServer.EventStore.Tests
             var result = interpreter.Execute(persons);
             var i = result.Count();
             string s = "";
-
             // ASSERTS
             // Assert.NotNull(result);
             // Assert.True(result.Count() == 2);

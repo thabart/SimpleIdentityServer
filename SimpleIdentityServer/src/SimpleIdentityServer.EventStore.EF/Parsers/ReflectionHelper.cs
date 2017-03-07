@@ -96,8 +96,25 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             constructorIl.Emit(OpCodes.Ret);
             ilHashCode.Emit(OpCodes.Ret);
+            // Build equals method.
+            var isNotNull = ilEquals.DefineLabel();
+            var isNull = ilEquals.DefineLabel();
+            var endOfMethod = ilEquals.DefineLabel();
+            ilEquals.Emit(OpCodes.Ldarg_1);
+            ilEquals.Emit(OpCodes.Ldnull);
+            ilEquals.Emit(OpCodes.Ceq);
+
+            ilEquals.Emit(OpCodes.Brtrue_S, isNull);
             ilEquals.Emit(OpCodes.Ldc_I4_1);
+            ilEquals.Emit(OpCodes.Br_S, endOfMethod);
+
+            ilEquals.MarkLabel(isNull);
+            ilEquals.Emit(OpCodes.Ldc_I4_0);
+            ilEquals.Emit(OpCodes.Br_S, endOfMethod);
+
+            ilEquals.MarkLabel(endOfMethod);
             ilEquals.Emit(OpCodes.Ret);
+
             dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals", new[] { typeof(object) }));
             dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, hashMethod);
             return dynamicAnonymousType.CreateTypeInfo();
