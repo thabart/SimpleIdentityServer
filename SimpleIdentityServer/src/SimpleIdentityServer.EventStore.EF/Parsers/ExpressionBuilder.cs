@@ -62,23 +62,28 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             return new BuildLambdaExpressionResult(Expression.Lambda(newExpr, new ParameterExpression[] { propertyArg }), propertyArg, anonType.AsType());
         }
         
-        public static NewExpression BuildAnonymous(string selector, Type type, string parameterName)
+        public static NewExpression BuildNew(string selector, Type type, string parameterName)
         {
             var fieldNames = selector.GetParameters();
             var anonType = ReflectionHelper.CreateNewAnonymousType(type, fieldNames);
-            return BuildAnonymous(fieldNames, type, anonType, parameterName);
+            return BuildAnonymous(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
         }
 
-        public static NewExpression BuildAnonymous(string selector, Type type, TypeInfo anonType, string parameterName)
+        public static NewExpression BuildNew(string selector, Type type, TypeInfo anonType, string parameterName)
         {
             var fieldNames = selector.GetParameters();
-            return BuildAnonymous(fieldNames, type, anonType, parameterName);
+            return BuildAnonymous(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
         }
 
-        private static NewExpression BuildAnonymous(IEnumerable<string> fieldNames, Type type, TypeInfo anonType, string parameterName)
+        public static NewExpression BuildNew(string selector, Type type, TypeInfo anonType, ParameterExpression arg)
         {
-            var propertyArg = Expression.Parameter(type, parameterName);
-            var expressions = fieldNames.Select(s => Expression.Property(propertyArg, s));
+            var fieldNames = selector.GetParameters();
+            return BuildAnonymous(fieldNames, type, anonType, arg);
+        }
+
+        private static NewExpression BuildAnonymous(IEnumerable<string> fieldNames, Type type, TypeInfo anonType, ParameterExpression arg)
+        {
+            var expressions = fieldNames.Select(s => Expression.Property(arg, s));
             var sourceProperties = fieldNames.ToDictionary(name => name, name => type.GetProperty(name));
             return Expression.New(anonType.DeclaredConstructors.First(), expressions);
         }

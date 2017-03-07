@@ -334,7 +334,7 @@ namespace SimpleIdentityServer.EventStore.Tests
                     Id = "1",
                     BirthDate = DateTime.UtcNow,
                     FirstName = "thierry",
-                    LastName = "thierry"
+                    LastName = "1"
                 },
                 new Person
                 {
@@ -347,7 +347,8 @@ namespace SimpleIdentityServer.EventStore.Tests
                 {
                     Id = "3",
                     FirstName = "laetitia",
-                    LastName = "2"
+                    LastName = "2",
+                    BirthDate = DateTime.UtcNow
                 }
             }).AsQueryable();
             var query = from p in persons
@@ -366,6 +367,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)");
             //  where$(outer_BirthDate eq inner.BirthDate)
             var result = interpreter.Execute(persons);
+            var i = result.Count();
             string s = "";
 
             // ASSERTS

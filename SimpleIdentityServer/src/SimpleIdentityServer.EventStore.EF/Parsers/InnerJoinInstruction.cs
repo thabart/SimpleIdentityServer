@@ -83,13 +83,33 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             Type tResult = innerSourceType;
             var fieldNames = outer.GetParameters();
-            var commonAnonType = ReflectionHelper.CreateNewAnonymousType(outerSourceType, fieldNames);
-            var outerExpr = ExpressionBuilder.BuildLambdaExpression(outer, outerSourceType, "x");
-            var innerExpr = ExpressionBuilder.BuildLambdaExpression(inner, innerSourceType, "y");
+            var outerArg = Expression.Parameter(outerSourceType, "x");
+            var innerArg = Expression.Parameter(innerSourceType, "y");
+            LambdaExpression outerLambda = null,
+                innerLambda = null;
+            Type resultType;
+            if (fieldNames.Count() == 1)
+            {
+                resultType = outerSourceType.GetProperty(fieldNames.First()).PropertyType;
+                var outerProperty = Expression.Property(outerArg, fieldNames.First());
+                var innerProperty = Expression.Property(innerArg, fieldNames.First());
+                outerLambda = Expression.Lambda(outerProperty, new ParameterExpression[] { outerArg });
+                innerLambda = Expression.Lambda(innerProperty, new ParameterExpression[] { innerArg });
+            }
+            else
+            {
+                var commonAnonType = ReflectionHelper.CreateNewAnonymousType(outerSourceType, fieldNames);
+                resultType = commonAnonType.AsType();
+                var outerNewExpr = ExpressionBuilder.BuildNew(outer, outerSourceType, commonAnonType, outerArg);
+                var innerNewExpr = ExpressionBuilder.BuildNew(inner, innerSourceType, commonAnonType, innerArg);
+                outerLambda = Expression.Lambda(outerNewExpr, new ParameterExpression[] { outerArg });
+                innerLambda = Expression.Lambda(innerNewExpr, new ParameterExpression[] { innerArg });
+            }
+
             LambdaExpression selectorResult = null;
             if (string.IsNullOrWhiteSpace(selectValue))
             {
-                selectorResult = Expression.Lambda(outerExpr.Parameter, new ParameterExpression[] { outerExpr.Parameter, innerExpr.Parameter });
+                selectorResult = Expression.Lambda(outerArg, new ParameterExpression[] { outerArg, innerArg });
             }
             else
             {
@@ -128,34 +148,34 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 AddTypes(mapping, "inner", innerSourceType, innerSelect);
                 var anonymousType = ReflectionHelper.CreateNewAnonymousType(mapping);
                 var parameters = new List<Expression>();
-                var tmp = GetParameterExpressions(outerExpr.Parameter, outerSelect);
+                var tmp = GetParameterExpressions(outerArg, outerSelect);
                 if (tmp != null)
                 {
                     parameters.AddRange(tmp);
                 }
 
-                tmp = GetParameterExpressions(innerExpr.Parameter, innerSelect);
+                tmp = GetParameterExpressions(innerArg, innerSelect);
                 if (tmp != null)
                 {
                     parameters.AddRange(tmp);
                 }
 
                 var newExpr = Expression.New(anonymousType.DeclaredConstructors.First(), parameters);
-                selectorResult = Expression.Lambda(newExpr, new ParameterExpression[] { innerExpr.Parameter, outerExpr.Parameter });
+                selectorResult = Expression.Lambda(newExpr, new ParameterExpression[] { innerArg, outerArg });
                 tResult = anonymousType.AsType();
             }
             
             var enumarableType = typeof(Queryable);
             var method = enumarableType.GetMethods().Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
-            var genericMethod = method.MakeGenericMethod(outerSourceType, innerSourceType, outerExpr.TargetType, tResult);
+            var genericMethod = method.MakeGenericMethod(outerSourceType, innerSourceType, resultType, tResult);
             MethodCallExpression call = null;
             if (targetExpression == null)
             {
-                call = Expression.Call(genericMethod, Expression.Constant(source), Expression.Constant(source), outerExpr.Lambda, innerExpr.Lambda, selectorResult);
+                call = Expression.Call(genericMethod, Expression.Constant(source), Expression.Constant(source), outerLambda, innerLambda, selectorResult);
             }
             else
             {
-                call = Expression.Call(genericMethod, Expression.Constant(source), targetExpression, Expression.Constant(outerExpr.Lambda), Expression.Constant(innerExpr.Lambda), selectorResult);
+                call = Expression.Call(genericMethod, Expression.Constant(source), targetExpression, Expression.Constant(outerLambda), Expression.Constant(innerLambda), selectorResult);
             }
 
             return new KeyValuePair<string, Expression>(Name, call);
