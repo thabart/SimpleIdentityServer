@@ -40,6 +40,15 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 throw new InvalidOperationException($"the parameter {Parameter} is not correct");
             }
 
+            Type sourceQueryableType = null;
+            Expression subExpression = null;
+            if (SubInstruction != null)
+            {
+                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
+                subExpression = subExpr.Value.Value;
+                sourceType = subExpression.Type.GetGenericArguments().First();
+            }
+
             var conditions = Regex.Split(Parameter, " *(and|or) *");
             var arg = Expression.Parameter(sourceType, "x");
             BinaryExpression binaryExpr = null;
@@ -80,15 +89,6 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             else
             {
                 binaryExpr = BuildCondition(conditions.First(), arg);
-            }
-
-            Type sourceQueryableType = null;
-            Expression subExpression = null;
-            if (SubInstruction != null)
-            {
-                var subExpr = SubInstruction.GetExpression(sourceType, rootParameter, source);
-                subExpression = subExpr.Value.Value;
-                sourceType = subExpression.Type.GetGenericArguments().First();
             }
 
             sourceQueryableType = typeof(IQueryable<>).MakeGenericType(sourceType);

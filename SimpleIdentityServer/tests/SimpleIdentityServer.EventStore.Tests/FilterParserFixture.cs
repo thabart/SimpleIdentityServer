@@ -358,14 +358,12 @@ namespace SimpleIdentityServer.EventStore.Tests
                                          BirthDate = g.Min(x => x.BirthDate),
                                          PersonKey = g.Key                                         
                                      })
-                        on p.Id equals sub.PersonKey  into rels
-                        from tmp in rels
-                        where p.BirthDate == tmp.BirthDate
+                        on new { JoinProperty1 = p.Id, JoinProperty2 = p.BirthDate } equals new { JoinProperty1 = sub.PersonKey, JoinProperty2 = sub.BirthDate }
                         select new { p.Id, p.BirthDate, p.LastName };
 
 
             // ACT
-            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id),inner(Id),select(inner|outer$BirthDate) where(Firstname eq lastname other neq other");
+            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)");
             //  where$(outer_BirthDate eq inner.BirthDate)
             var result = interpreter.Execute(persons);
             string s = "";

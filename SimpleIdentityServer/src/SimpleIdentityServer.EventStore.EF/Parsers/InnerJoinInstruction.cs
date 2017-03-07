@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.EventStore.EF.Extensions;
+using SimpleIdentityServer.EventStore.EF.Mappings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +62,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 throw new ArgumentException("either inner or outer parameter is not specified");
             }
 
-            // 2. Construct the expression.
+            // 2. Construct the expressions.
             var outer = instructions.First(i => i.Value.Key == outerKey).Value.Value;
             var inner = instructions.First(i => i.Value.Key == innerKey).Value.Value;
             var select = instructions.FirstOrDefault(i => i.Value.Key == selectKey);
@@ -80,18 +82,14 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             Type tResult = innerSourceType;
-            var propertyInfoOuter = outerSourceType.GetProperty(outer);
-            var propertyInfoInner = innerSourceType.GetProperty(inner);
-            var outerArg = Expression.Parameter(outerSourceType, "x");
-            var innerArg = Expression.Parameter(innerSourceType, "y");
-            var propertyOuter = Expression.Property(outerArg, outer);
-            var propertyInner = Expression.Property(innerArg, inner);
-            var selectorOuter = Expression.Lambda(propertyOuter, new ParameterExpression[] { outerArg });
-            var selectorInner = Expression.Lambda(propertyInner, new ParameterExpression[] { innerArg });
+            var fieldNames = outer.GetParameters();
+            var commonAnonType = ReflectionHelper.CreateNewAnonymousType(outerSourceType, fieldNames);
+            var outerExpr = ExpressionBuilder.BuildLambdaExpression(outer, outerSourceType, "x");
+            var innerExpr = ExpressionBuilder.BuildLambdaExpression(inner, innerSourceType, "y");
             LambdaExpression selectorResult = null;
             if (string.IsNullOrWhiteSpace(selectValue))
             {
-                selectorResult = Expression.Lambda(outerArg, new ParameterExpression[] { outerArg, innerArg });
+                selectorResult = Expression.Lambda(outerExpr.Parameter, new ParameterExpression[] { outerExpr.Parameter, innerExpr.Parameter });
             }
             else
             {
@@ -106,7 +104,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
                     var key = values.First();
                     var kvp = selectAttributes.FirstOrDefault(s => s.Key == key);
-                    if (IsEmpty(kvp))
+                    if (kvp.IsEmpty())
                     {
                         kvp = new KeyValuePair<string, ICollection<string>>(key, new List<string>());
                         selectAttributes.Add(kvp);
@@ -130,34 +128,34 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 AddTypes(mapping, "inner", innerSourceType, innerSelect);
                 var anonymousType = ReflectionHelper.CreateNewAnonymousType(mapping);
                 var parameters = new List<Expression>();
-                var tmp = GetParameterExpressions(outerArg, outerSelect);
+                var tmp = GetParameterExpressions(outerExpr.Parameter, outerSelect);
                 if (tmp != null)
                 {
                     parameters.AddRange(tmp);
                 }
 
-                tmp = GetParameterExpressions(innerArg, innerSelect);
+                tmp = GetParameterExpressions(innerExpr.Parameter, innerSelect);
                 if (tmp != null)
                 {
                     parameters.AddRange(tmp);
                 }
 
                 var newExpr = Expression.New(anonymousType.DeclaredConstructors.First(), parameters);
-                selectorResult = Expression.Lambda(newExpr, new ParameterExpression[] { innerArg, outerArg });
+                selectorResult = Expression.Lambda(newExpr, new ParameterExpression[] { innerExpr.Parameter, outerExpr.Parameter });
                 tResult = anonymousType.AsType();
             }
             
             var enumarableType = typeof(Queryable);
             var method = enumarableType.GetMethods().Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
-            var genericMethod = method.MakeGenericMethod(outerSourceType, innerSourceType, propertyInfoOuter.PropertyType, tResult);
+            var genericMethod = method.MakeGenericMethod(outerSourceType, innerSourceType, outerExpr.TargetType, tResult);
             MethodCallExpression call = null;
             if (targetExpression == null)
             {
-                call = Expression.Call(genericMethod, Expression.Constant(source), Expression.Constant(source), selectorOuter, selectorInner, selectorResult);
+                call = Expression.Call(genericMethod, Expression.Constant(source), Expression.Constant(source), outerExpr.Lambda, innerExpr.Lambda, selectorResult);
             }
             else
             {
-                call = Expression.Call(genericMethod, Expression.Constant(source), targetExpression, selectorOuter, selectorInner, selectorResult);
+                call = Expression.Call(genericMethod, Expression.Constant(source), targetExpression, Expression.Constant(outerExpr.Lambda), Expression.Constant(innerExpr.Lambda), selectorResult);
             }
 
             return new KeyValuePair<string, Expression>(Name, call);
@@ -165,7 +163,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static void AddTypes(Dictionary<string, Type> dic, string name, Type type, KeyValuePair<string, ICollection<string>> select)
         {
-            if (IsEmpty(select))
+            if (select.IsEmpty())
             {
                 return;
             }
@@ -195,7 +193,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static IEnumerable<Expression> GetParameterExpressions(ParameterExpression arg, KeyValuePair<string, ICollection<string>> parameter)
         {
-            if (IsEmpty(parameter))
+            if (parameter.IsEmpty())
             {
                 return null;
             }
@@ -212,11 +210,6 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             return result;
-        }
-
-        private static bool IsEmpty<T, S>(KeyValuePair<T, S> kvp)
-        {
-            return kvp.Equals(default(KeyValuePair<T, S>));
         }
     }
 }
