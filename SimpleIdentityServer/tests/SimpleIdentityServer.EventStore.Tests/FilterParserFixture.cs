@@ -18,6 +18,8 @@ using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using Xunit;
 
 namespace SimpleIdentityServer.EventStore.Tests
@@ -378,6 +380,16 @@ namespace SimpleIdentityServer.EventStore.Tests
             // ASSERTS
             // Assert.NotNull(result);
             // Assert.True(result.Count() == 2);
+        }
+
+        [Fact]
+        public void SaveAnonymousType()
+        {
+            var dynamicAssemblyName = new AssemblyName("TempAssm");
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
+            var assembly = ReflectionHelper.CreateAssembly(typeof(Person), new[] { "BirthDate", "Id" }, assemblyBuilder);
+            assembly.Save("assm.dll");
+            string s = "";
         }
 
         private void InitializeFakeObjects()

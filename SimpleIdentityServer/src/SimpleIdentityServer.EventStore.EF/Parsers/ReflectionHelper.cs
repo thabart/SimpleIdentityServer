@@ -23,6 +23,12 @@ using System.Reflection.Emit;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
+    public class ReflectionResult
+    {
+        public AssemblyBuilder Builder;
+        public TypeInfo AnonType;
+    }
+
     public class ReflectionHelper
     {
         private static Dictionary<int, OpCode> _mappingIndiceToOpCode = new Dictionary<int, OpCode>
@@ -40,55 +46,63 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             { 3, OpCodes.Stloc_3 }
         };
 
-        public static TypeInfo CreateNewAnonymousType(Type sourceType, IEnumerable<string> fieldNames)
-        {
-            if (sourceType == null)
-            {
-                throw new ArgumentNullException(nameof(sourceType));
-            }
-
-            if (fieldNames == null)
-            {
-                throw new ArgumentNullException(nameof(fieldNames));
-            }
-
-            var kvpLst = fieldNames.Select(f =>
-            {
-                var property = sourceType.GetProperty(f);
-                if (property == null)
-                {
-                    return default(KeyValuePair<string, Type>);
-                }
-
-                return new KeyValuePair<string, Type>(f, property.PropertyType);
-            }).Where(f => !f.IsEmpty());
-            IDictionary<string, Type> dic = new Dictionary<string, Type>();
-            foreach (var kvp in kvpLst)
-            {
-                dic.Add(kvp);
-            }
-
-            return CreateNewAnonymousType(dic);
-        }
-
         public static TypeInfo CreateNewAnonymousType<TSource>(IEnumerable<string> fieldNames)
         {
             return CreateNewAnonymousType(typeof(TSource), fieldNames);
         }
 
+        public static TypeInfo CreateNewAnonymousType(Type sourceType, IEnumerable<string> fieldNames)
+        {
+            return CreateNewAnonymousType(Parse(sourceType, fieldNames));
+        }
+
         public static TypeInfo CreateNewAnonymousType(IDictionary<string, Type> dic)
         {
+            return BuildAnonType(dic).AnonType;
+        }
+
+        public static AssemblyBuilder CreateAssembly<TSource>(IEnumerable<string> fieldNames)
+        {
+            return CreateAssembly(typeof(TSource), fieldNames);
+        }
+
+        public static AssemblyBuilder CreateAssembly<TSource>(IEnumerable<string> fieldNames, AssemblyBuilder assemblyBuilder)
+        {
+            return CreateAssembly(typeof(TSource), fieldNames, assemblyBuilder);
+        }
+
+        public static AssemblyBuilder CreateAssembly(Type sourceType, IEnumerable<string> fieldNames)
+        {
+            return BuildAnonType(Parse(sourceType, fieldNames)).Builder;
+        }
+
+        public static AssemblyBuilder CreateAssembly(Type sourceType, IEnumerable<string> fieldNames, AssemblyBuilder assemblyBuilder)
+        {
+            return BuildAnonType(Parse(sourceType, fieldNames), assemblyBuilder).Builder;
+        }
+
+        public static AssemblyBuilder CreateAssembly(IDictionary<string, Type> dic)
+        {
+            return BuildAnonType(dic).Builder;
+        }
+
+        private static ReflectionResult BuildAnonType(IDictionary<string, Type> dic, AssemblyBuilder assemblyBuilder = null)
+        {
             // 1. Declare the type.
+            if (assemblyBuilder == null)
+            {
+                var dynamicAssemblyName = new AssemblyName("TempAssm");
+                assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
+            }
+
             var objType = Type.GetType("System.Object");
             var objCtor = objType.GetConstructor(new Type[0]);
-            var dynamicAssemblyName = new AssemblyName("TempAssm");
-            var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
-            var dynamicModule = dynamicAssembly.DefineDynamicModule("TempAssm");
+            var dynamicModule = assemblyBuilder.DefineDynamicModule("TempAssm");
             TypeBuilder dynamicAnonymousType = dynamicModule.DefineType("TempCl", TypeAttributes.Public);
             var builder = dynamicAnonymousType.DefineConstructor(MethodAttributes.Assembly, CallingConventions.Standard, dic.Select(p => p.Value).ToArray());
             var constructorIl = builder.GetILGenerator();
             var equalsMethod = dynamicAnonymousType.DefineMethod("Equals",
-                MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.HasThis | CallingConventions.Standard, 
+                MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.HasThis | CallingConventions.Standard,
                 typeof(bool), new[] { typeof(object) });
             var getHashCodeMethod = dynamicAnonymousType.DefineMethod("GetHashCode",
                 MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.HasThis | CallingConventions.Standard,
@@ -188,7 +202,42 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             // var eq = typeof(object).GetMethods();
             // dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals"));
             dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, objHashMethod);
-            return dynamicAnonymousType.CreateTypeInfo();
+            return new ReflectionResult
+            {
+                AnonType = dynamicAnonymousType.CreateTypeInfo(),
+                Builder = assemblyBuilder
+            };
+        }
+
+        private static IDictionary<string, Type> Parse(Type sourceType, IEnumerable<string> fieldNames)
+        {
+            if (sourceType == null)
+            {
+                throw new ArgumentNullException(nameof(sourceType));
+            }
+
+            if (fieldNames == null)
+            {
+                throw new ArgumentNullException(nameof(fieldNames));
+            }
+
+            var kvpLst = fieldNames.Select(f =>
+            {
+                var property = sourceType.GetProperty(f);
+                if (property == null)
+                {
+                    return default(KeyValuePair<string, Type>);
+                }
+
+                return new KeyValuePair<string, Type>(f, property.PropertyType);
+            }).Where(f => !f.IsEmpty());
+            IDictionary<string, Type> dic = new Dictionary<string, Type>();
+            foreach (var kvp in kvpLst)
+            {
+                dic.Add(kvp);
+            }
+
+            return dic;
         }
     }
 }
