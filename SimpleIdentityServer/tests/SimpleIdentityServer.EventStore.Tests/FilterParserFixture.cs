@@ -30,6 +30,9 @@ namespace SimpleIdentityServer.EventStore.Tests
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public DateTime BirthDate { get; set; }
+            public int Order { get; set; }
+            public int Other { get; set; }
+
             public override bool Equals(object obj)
             {
                 return true;
@@ -289,7 +292,8 @@ namespace SimpleIdentityServer.EventStore.Tests
                 new Person
                 {
                     FirstName = "thierry",
-                    LastName = "thierry"
+                    LastName = "thierry",
+                    Order = 1
                 },
                 new Person
                 {
@@ -303,7 +307,8 @@ namespace SimpleIdentityServer.EventStore.Tests
                 }
             }).AsQueryable();
 
-            var res = persons.Join(persons, (fp) => fp.FirstName, (sp) => sp.LastName, (fp, sp) => new { fp.FirstName, sp }).Where(p => p.FirstName == "thierry");
+            var res = persons.Join(persons, (fp) => new { id = fp.FirstName, o = fp.Order }, (sp) => new { id = sp.FirstName, o = sp.Order }, (fp, sp) => new { fp.FirstName, sp });
+            var tmp = res.ToList();
 
             // ACT
             var firstInstruction = _parser.Parse("join$outer(FirstName),inner(LastName)");
@@ -333,22 +338,22 @@ namespace SimpleIdentityServer.EventStore.Tests
                 {
                     Id = "1",
                     BirthDate = DateTime.UtcNow,
-                    FirstName = "thierry",
-                    LastName = "1"
+                    FirstName = "thierry1",
+                    LastName = "lastname1"
                 },
                 new Person
                 {
                     Id = "1",
-                    BirthDate = DateTime.UtcNow.AddDays(-1),
-                    FirstName = "thierry",
-                    LastName = "1"
+                    BirthDate = DateTime.UtcNow.AddDays(2),
+                    FirstName = "thierry2",
+                    LastName = "lastname2"
                 },
                 new Person
                 {
                     Id = "3",
+                    BirthDate = DateTime.UtcNow,
                     FirstName = "laetitia",
-                    LastName = "2",
-                    BirthDate = DateTime.UtcNow
+                    LastName = "2"
                 }
             }).AsQueryable();
             var query = from p in persons
@@ -364,7 +369,8 @@ namespace SimpleIdentityServer.EventStore.Tests
 
 
             // ACT
-            var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)");
+            // join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)
+            var interpreter = _parser.Parse("join$outer(Order|Other),inner(Order|Other)");
             //  where$(outer_BirthDate eq inner.BirthDate)
             var result = interpreter.Execute(persons);
             var i = result.Count();
