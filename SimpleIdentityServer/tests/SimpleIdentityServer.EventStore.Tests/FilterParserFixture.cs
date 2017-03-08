@@ -387,8 +387,9 @@ namespace SimpleIdentityServer.EventStore.Tests
         {
             var dynamicAssemblyName = new AssemblyName("TempAssm");
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
-            var assembly = ReflectionHelper.CreateAssembly(typeof(Person), new[] { "BirthDate", "Id" }, assemblyBuilder);
-            assembly.Save("assm.dll");
+            var moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm.dll", "TempAssm.dll");
+            ReflectionHelper.CreateAssembly(typeof(Person), new[] { "BirthDate", "Id" }, moduleBuilder);
+            assemblyBuilder.Save("TempAssm.dll");
             string s = "";
         }
 

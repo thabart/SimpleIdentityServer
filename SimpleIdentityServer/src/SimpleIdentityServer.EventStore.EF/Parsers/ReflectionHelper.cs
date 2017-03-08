@@ -23,12 +23,6 @@ using System.Reflection.Emit;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class ReflectionResult
-    {
-        public AssemblyBuilder Builder;
-        public TypeInfo AnonType;
-    }
-
     public class ReflectionHelper
     {
         private static Dictionary<int, OpCode> _mappingIndiceToOpCode = new Dictionary<int, OpCode>
@@ -58,47 +52,47 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public static TypeInfo CreateNewAnonymousType(IDictionary<string, Type> dic)
         {
-            return BuildAnonType(dic).AnonType;
+            return BuildAnonType(dic);
         }
 
-        public static AssemblyBuilder CreateAssembly<TSource>(IEnumerable<string> fieldNames)
+        public static TypeInfo CreateAssembly<TSource>(IEnumerable<string> fieldNames)
         {
             return CreateAssembly(typeof(TSource), fieldNames);
         }
 
-        public static AssemblyBuilder CreateAssembly<TSource>(IEnumerable<string> fieldNames, AssemblyBuilder assemblyBuilder)
+        public static TypeInfo CreateAssembly<TSource>(IEnumerable<string> fieldNames, ModuleBuilder moduleBuilder)
         {
-            return CreateAssembly(typeof(TSource), fieldNames, assemblyBuilder);
+            return CreateAssembly(typeof(TSource), fieldNames, moduleBuilder);
         }
 
-        public static AssemblyBuilder CreateAssembly(Type sourceType, IEnumerable<string> fieldNames)
+        public static TypeInfo CreateAssembly(Type sourceType, IEnumerable<string> fieldNames)
         {
-            return BuildAnonType(Parse(sourceType, fieldNames)).Builder;
+            return BuildAnonType(Parse(sourceType, fieldNames));
         }
 
-        public static AssemblyBuilder CreateAssembly(Type sourceType, IEnumerable<string> fieldNames, AssemblyBuilder assemblyBuilder)
+        public static TypeInfo CreateAssembly(Type sourceType, IEnumerable<string> fieldNames, ModuleBuilder moduleBuilder)
         {
-            return BuildAnonType(Parse(sourceType, fieldNames), assemblyBuilder).Builder;
+            return BuildAnonType(Parse(sourceType, fieldNames), moduleBuilder);
         }
 
-        public static AssemblyBuilder CreateAssembly(IDictionary<string, Type> dic)
+        public static TypeInfo CreateAssembly(IDictionary<string, Type> dic)
         {
-            return BuildAnonType(dic).Builder;
+            return BuildAnonType(dic);
         }
 
-        private static ReflectionResult BuildAnonType(IDictionary<string, Type> dic, AssemblyBuilder assemblyBuilder = null)
+        private static TypeInfo BuildAnonType(IDictionary<string, Type> dic, ModuleBuilder moduleBuilder = null)
         {
             // 1. Declare the type.
-            if (assemblyBuilder == null)
+            if (moduleBuilder == null)
             {
                 var dynamicAssemblyName = new AssemblyName("TempAssm");
-                assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
+                var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
+                moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm");
             }
 
+            TypeBuilder dynamicAnonymousType = moduleBuilder.DefineType("TempCl", TypeAttributes.Public);
             var objType = Type.GetType("System.Object");
             var objCtor = objType.GetConstructor(new Type[0]);
-            var dynamicModule = assemblyBuilder.DefineDynamicModule("TempAssm");
-            TypeBuilder dynamicAnonymousType = dynamicModule.DefineType("TempCl", TypeAttributes.Public);
             var builder = dynamicAnonymousType.DefineConstructor(MethodAttributes.Assembly, CallingConventions.Standard, dic.Select(p => p.Value).ToArray());
             var constructorIl = builder.GetILGenerator();
             var equalsMethod = dynamicAnonymousType.DefineMethod("Equals",
@@ -202,11 +196,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             // var eq = typeof(object).GetMethods();
             // dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals"));
             dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, objHashMethod);
-            return new ReflectionResult
-            {
-                AnonType = dynamicAnonymousType.CreateTypeInfo(),
-                Builder = assemblyBuilder
-            };
+            return dynamicAnonymousType.CreateTypeInfo();
         }
 
         private static IDictionary<string, Type> Parse(Type sourceType, IEnumerable<string> fieldNames)
