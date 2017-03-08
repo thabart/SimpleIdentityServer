@@ -93,7 +93,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             TypeBuilder dynamicAnonymousType = moduleBuilder.DefineType("TempCl", TypeAttributes.Public);
             var objType = Type.GetType("System.Object");
             var objCtor = objType.GetConstructor(new Type[0]);
-            var builder = dynamicAnonymousType.DefineConstructor(MethodAttributes.Assembly, CallingConventions.Standard, dic.Select(p => p.Value).ToArray());
+            var builder = dynamicAnonymousType.DefineConstructor(MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName
+                , CallingConventions.Standard, dic.Select(p => p.Value).ToArray());
             var constructorIl = builder.GetILGenerator();
             var equalsMethod = dynamicAnonymousType.DefineMethod("Equals",
                 MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.HasThis | CallingConventions.Standard,
@@ -112,6 +113,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var objHashMethod = typeof(object).GetMethod("GetHashCode");
             foreach (var property in dic)
             {
+                bool ignoreHashCall = false;
                 OpCode opCode = OpCodes.Ldarg_S;
                 var kvp = _mappingIndiceToOpCode.FirstOrDefault(m => m.Key == i);
                 if (!kvp.IsEmpty())
@@ -119,9 +121,9 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     opCode = kvp.Value;
                 }
 
-                var field = dynamicAnonymousType.DefineField($"<{property.Key}>_BackingField", property.Value, FieldAttributes.Public);
+                var field = dynamicAnonymousType.DefineField($"<{property.Key}>_BackingField", property.Value, FieldAttributes.Private);
                 var prop = dynamicAnonymousType.DefineProperty(property.Key, PropertyAttributes.None, property.Value, new[] { property.Value });
-                var getProperty = dynamicAnonymousType.DefineMethod($"get_{property.Key}", MethodAttributes.Assembly, property.Value, null);
+                var getProperty = dynamicAnonymousType.DefineMethod($"get_{property.Key}", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.SpecialName, property.Value, null);
                 var getPropertyIl = getProperty.GetILGenerator();
                 // 2.1 Build constructor
                 constructorIl.Emit(OpCodes.Ldarg_0);
@@ -156,13 +158,19 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     }
                     else
                     {
-                        ilHashCode.Emit(OpCodes.Constrained, property.Value);
+                        ignoreHashCall = true;
+                        ilHashCode.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Ticks"));
+                        ilHashCode.Emit(OpCodes.Conv_I4);
                     }
 
                     // nbValueType++;
                 }
 
-                ilHashCode.Emit(call, hashMethod);
+                if (!ignoreHashCall)
+                {
+                    ilHashCode.Emit(call, hashMethod);
+                }
+
                 if (i > 0)
                 {
                     ilHashCode.Emit(OpCodes.Xor);

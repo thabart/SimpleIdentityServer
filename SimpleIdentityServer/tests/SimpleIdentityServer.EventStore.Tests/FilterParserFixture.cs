@@ -17,9 +17,12 @@
 using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
+using System.Threading;
 using Xunit;
 
 namespace SimpleIdentityServer.EventStore.Tests
@@ -372,11 +375,10 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             // join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)
-            var interpreter = _parser.Parse("join$outer(Id),inner(Id) select$Id|BirthDate");
+            var interpreter = _parser.Parse("join$outer(Id|BirthDate),inner(Id|BirthDate) select$Id|BirthDate");
             //  where$(outer_BirthDate eq inner.BirthDate)
-            var i2 = (int)persons.First().BirthDate.Ticks;
             var result = interpreter.Execute(persons);
-            var i = result.ToList();
+            var i = result.Count();
             string s = "";
             // ASSERTS
             // Assert.NotNull(result);
@@ -386,11 +388,232 @@ namespace SimpleIdentityServer.EventStore.Tests
         [Fact]
         public void SaveAnonymousType()
         {
+            /*
+            Type pointType = null;
+            AppDomain currentDom = Thread.GetDomain();
+            StringBuilder asmFileNameBldr = new StringBuilder();
+            asmFileNameBldr.Append("test");
+            asmFileNameBldr.Append(".exe");
+            string asmFileName = asmFileNameBldr.ToString();
+            AssemblyName myAsmName = new AssemblyName();
+            myAsmName.Name = "MyDynamicAssembly";
+            AssemblyBuilder myAsmBldr = currentDom.DefineDynamicAssembly(
+                               myAsmName,
+                               AssemblyBuilderAccess.RunAndSave);
+            // We've created a dynamic assembly space - now, we need to create a module
+            // within it to reflect the type Point into.
+
+            ModuleBuilder myModuleBldr = myAsmBldr.DefineDynamicModule(asmFileName,
+                                               asmFileName);
+
+            TypeBuilder myTypeBldr = myModuleBldr.DefineType("Point");
+
+            FieldBuilder xField = myTypeBldr.DefineField("x", typeof(int),
+                                                         FieldAttributes.Private);
+            FieldBuilder yField = myTypeBldr.DefineField("y", typeof(int),
+                                                         FieldAttributes.Private);
+
+            // Build the constructor.
+
+            Type objType = Type.GetType("System.Object");
+            ConstructorInfo objCtor = objType.GetConstructor(new Type[0]);
+
+            Type[] ctorParams = new Type[] { typeof(int), typeof(int) };
+            ConstructorBuilder pointCtor = myTypeBldr.DefineConstructor(
+                                       MethodAttributes.Public,
+                                      CallingConventions.Standard,
+                                      ctorParams);
+            ILGenerator ctorIL = pointCtor.GetILGenerator();
+            ctorIL.Emit(OpCodes.Ldarg_0);
+            ctorIL.Emit(OpCodes.Call, objCtor);
+            ctorIL.Emit(OpCodes.Ldarg_0);
+            ctorIL.Emit(OpCodes.Ldarg_1);
+            ctorIL.Emit(OpCodes.Stfld, xField);
+            ctorIL.Emit(OpCodes.Ldarg_0);
+            ctorIL.Emit(OpCodes.Ldarg_2);
+            ctorIL.Emit(OpCodes.Stfld, yField);
+            ctorIL.Emit(OpCodes.Ret);
+
+            // Build the DotProduct method.
+
+            Console.WriteLine("Constructor built.");
+
+            MethodBuilder pointDPBldr = myTypeBldr.DefineMethod("DotProduct",
+                                        MethodAttributes.Public,
+                                        typeof(int),
+                                        new Type[] { myTypeBldr });
+
+            ILGenerator dpIL = pointDPBldr.GetILGenerator();
+            dpIL.Emit(OpCodes.Ldarg_0);
+            dpIL.Emit(OpCodes.Ldfld, xField);
+            dpIL.Emit(OpCodes.Ldarg_1);
+            dpIL.Emit(OpCodes.Ldfld, xField);
+            dpIL.Emit(OpCodes.Mul_Ovf_Un);
+            dpIL.Emit(OpCodes.Ldarg_0);
+            dpIL.Emit(OpCodes.Ldfld, yField);
+            dpIL.Emit(OpCodes.Ldarg_1);
+            dpIL.Emit(OpCodes.Ldfld, yField);
+            dpIL.Emit(OpCodes.Mul_Ovf_Un);
+            dpIL.Emit(OpCodes.Add_Ovf_Un);
+            dpIL.Emit(OpCodes.Ret);
+
+            // Build the PointMain method.
+
+            Console.WriteLine("DotProduct built.");
+
+            MethodBuilder pointMainBldr = myTypeBldr.DefineMethod("PointMain",
+                                        MethodAttributes.Public |
+                                        MethodAttributes.Static,
+                                        typeof(void),
+                                        null);
+            pointMainBldr.InitLocals = true;
+            ILGenerator pmIL = pointMainBldr.GetILGenerator();
+
+            // We have four methods that we wish to call, and must represent as
+            // MethodInfo tokens:
+            // - void Console.WriteLine(string)
+            // - string Console.ReadLine()
+            // - int Convert.Int32(string)
+            // - void Console.WriteLine(string, object[])
+
+            MethodInfo writeMI = typeof(Console).GetMethod(
+                                 "Write",
+                                 new Type[] { typeof(string) });
+            MethodInfo readLineMI = typeof(Console).GetMethod(
+                                    "ReadLine",
+                                    new Type[0]);
+            MethodInfo convertInt32MI = typeof(Convert).GetMethod(
+                                    "ToInt32",
+                                        new Type[] { typeof(string) });
+            Type[] wlParams = new Type[] { typeof(string), typeof(object[]) };
+            MethodInfo writeLineMI = typeof(Console).GetMethod(
+                                 "WriteLine",
+                                 wlParams);
+
+            // Although we could just refer to the local variables by
+            // index (short ints for Ldloc/Stloc, bytes for LdLoc_S/Stloc_S),
+            // this time, we'll use LocalBuilders for clarity and to
+            // demonstrate their usage and syntax.
+
+            LocalBuilder x1LB = pmIL.DeclareLocal(typeof(int));
+            LocalBuilder y1LB = pmIL.DeclareLocal(typeof(int));
+            LocalBuilder x2LB = pmIL.DeclareLocal(typeof(int));
+            LocalBuilder y2LB = pmIL.DeclareLocal(typeof(int));
+            LocalBuilder point1LB = pmIL.DeclareLocal(myTypeBldr);
+            LocalBuilder point2LB = pmIL.DeclareLocal(myTypeBldr);
+            LocalBuilder tempObjArrLB = pmIL.DeclareLocal(typeof(object[]));
+
+            pmIL.Emit(OpCodes.Ldstr, "Enter the 'x' value for point 1: ");
+            pmIL.EmitCall(OpCodes.Call, writeMI, null);
+            pmIL.EmitCall(OpCodes.Call, readLineMI, null);
+            pmIL.EmitCall(OpCodes.Call, convertInt32MI, null);
+            pmIL.Emit(OpCodes.Stloc, x1LB);
+
+            pmIL.Emit(OpCodes.Ldstr, "Enter the 'y' value for point 1: ");
+            pmIL.EmitCall(OpCodes.Call, writeMI, null);
+            pmIL.EmitCall(OpCodes.Call, readLineMI, null);
+            pmIL.EmitCall(OpCodes.Call, convertInt32MI, null);
+            pmIL.Emit(OpCodes.Stloc, y1LB);
+
+            pmIL.Emit(OpCodes.Ldstr, "Enter the 'x' value for point 2: ");
+            pmIL.EmitCall(OpCodes.Call, writeMI, null);
+            pmIL.EmitCall(OpCodes.Call, readLineMI, null);
+            pmIL.EmitCall(OpCodes.Call, convertInt32MI, null);
+            pmIL.Emit(OpCodes.Stloc, x2LB);
+
+            pmIL.Emit(OpCodes.Ldstr, "Enter the 'y' value for point 2: ");
+            pmIL.EmitCall(OpCodes.Call, writeMI, null);
+            pmIL.EmitCall(OpCodes.Call, readLineMI, null);
+            pmIL.EmitCall(OpCodes.Call, convertInt32MI, null);
+            pmIL.Emit(OpCodes.Stloc, y2LB);
+
+            pmIL.Emit(OpCodes.Ldloc, x1LB);
+            pmIL.Emit(OpCodes.Ldloc, y1LB);
+            pmIL.Emit(OpCodes.Newobj, pointCtor);
+            pmIL.Emit(OpCodes.Stloc, point1LB);
+
+            pmIL.Emit(OpCodes.Ldloc, x2LB);
+            pmIL.Emit(OpCodes.Ldloc, y2LB);
+            pmIL.Emit(OpCodes.Newobj, pointCtor);
+            pmIL.Emit(OpCodes.Stloc, point2LB);
+
+            pmIL.Emit(OpCodes.Ldstr, "({0}, {1}) . ({2}, {3}) = {4}.");
+            pmIL.Emit(OpCodes.Ldc_I4_5);
+            pmIL.Emit(OpCodes.Newarr, typeof(Object));
+            pmIL.Emit(OpCodes.Stloc, tempObjArrLB);
+
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.Emit(OpCodes.Ldc_I4_0);
+            pmIL.Emit(OpCodes.Ldloc, x1LB);
+            pmIL.Emit(OpCodes.Box, typeof(int));
+            pmIL.Emit(OpCodes.Stelem_Ref);
+
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.Emit(OpCodes.Ldc_I4_1);
+            pmIL.Emit(OpCodes.Ldloc, y1LB);
+            pmIL.Emit(OpCodes.Box, typeof(int));
+            pmIL.Emit(OpCodes.Stelem_Ref);
+
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.Emit(OpCodes.Ldc_I4_2);
+            pmIL.Emit(OpCodes.Ldloc, x2LB);
+            pmIL.Emit(OpCodes.Box, typeof(int));
+            pmIL.Emit(OpCodes.Stelem_Ref);
+
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.Emit(OpCodes.Ldc_I4_3);
+            pmIL.Emit(OpCodes.Ldloc, y2LB);
+            pmIL.Emit(OpCodes.Box, typeof(int));
+            pmIL.Emit(OpCodes.Stelem_Ref);
+
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.Emit(OpCodes.Ldc_I4_4);
+            pmIL.Emit(OpCodes.Ldloc, point1LB);
+            pmIL.Emit(OpCodes.Ldloc, point2LB);
+            pmIL.EmitCall(OpCodes.Callvirt, pointDPBldr, null);
+
+            pmIL.Emit(OpCodes.Box, typeof(int));
+            pmIL.Emit(OpCodes.Stelem_Ref);
+            pmIL.Emit(OpCodes.Ldloc, tempObjArrLB);
+            pmIL.EmitCall(OpCodes.Call, writeLineMI, null);
+
+            pmIL.Emit(OpCodes.Ret);
+
+            Console.WriteLine("PointMain (entry point) built.");
+
+            pointType = myTypeBldr.CreateType();
+
+            Console.WriteLine("Type completed.");
+
+            myAsmBldr.SetEntryPoint(pointMainBldr);
+
+            myAsmBldr.Save(asmFileName);
+            */
+
             var dynamicAssemblyName = new AssemblyName("TempAssm");
-            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
-            var moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm.dll", "TempAssm.dll");
-            ReflectionHelper.CreateAssembly(typeof(Person), new[] { "Id", "BirthDate" }, moduleBuilder);
-            assemblyBuilder.Save("TempAssm.dll");
+            var assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
+            var moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm", "TempAssm.exe");
+            // var anonType = ReflectionHelper.CreateAssembly(typeof(Person), new[] { "Id", "BirthDate" }, moduleBuilder);
+            // Create entry point
+            TypeBuilder typeBuilder = moduleBuilder.DefineType("Program", TypeAttributes.Class | TypeAttributes.Public);
+            MethodBuilder methodBuilder = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static,
+                            typeof(void), null);
+            methodBuilder.InitLocals = true;
+            ILGenerator gen = methodBuilder.GetILGenerator();
+            gen.Emit(OpCodes.Ret);
+            // gen.Emit(OpCodes.Nop);
+            // gen.Emit(OpCodes.Ldstr, "azeaze");
+            // gen.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Now"));
+            // gen.Emit(OpCodes.Newobj, anonType.GetConstructors().First());
+            // gen.Emit(OpCodes.Stloc_0);
+            // gen.Emit(OpCodes.Ldloc_0);
+            // gen.Emit(OpCodes.Callvirt, typeof(object).GetMethod("GetHashCode"));
+            // gen.Emit(OpCodes.Pop);
+            // gen.Emit(OpCodes.Ret);
+            typeBuilder.CreateType();
+            assemblyBuilder.SetEntryPoint(methodBuilder, PEFileKinds.ConsoleApplication);
+            // File.Delete("TempAssm.exe");
+            assemblyBuilder.Save("TempAssm.exe");
             string s = "";
         }
 
