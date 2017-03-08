@@ -105,6 +105,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var ilHashCode = getHashCodeMethod.GetILGenerator();
             constructorIl.Emit(OpCodes.Ldarg_0);
             constructorIl.Emit(OpCodes.Call, objCtor);
+            ilHashCode.Emit(OpCodes.Nop);
             int i = 0,
                 nbValueType = 1;
             // 2. Create the constructor & toString method.
@@ -131,7 +132,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 getPropertyIl.Emit(OpCodes.Ldfld, field);
                 getPropertyIl.Emit(OpCodes.Ret);
                 // 2.3 Build the get hash method
-                var hashMethod = property.Value.GetMethod("GetHashCode");
+                var hashMethod = typeof(object).GetMethod("GetHashCode");
                 ilHashCode.Emit(OpCodes.Ldarg_0);
                 ilHashCode.Emit(OpCodes.Call, getProperty);
                 OpCode call = OpCodes.Callvirt;
@@ -150,11 +151,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     ilHashCode.Emit(OpCodes.Ldloca_S, local);
                     if (property.Value != typeof(DateTime))
                     {
+                        hashMethod = property.Value.GetMethod("GetHashCode");
                         call = OpCodes.Call;
                     }
                     else
                     {
-                        hashMethod = typeof(object).GetMethod("GetHashCode");
                         ilHashCode.Emit(OpCodes.Constrained, property.Value);
                     }
 
@@ -195,7 +196,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             // var eq = typeof(object).GetMethods();
             // dynamicAnonymousType.DefineMethodOverride(equalsMethod, typeof(object).GetMethod("Equals"));
-            dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, objHashMethod);
+            // dynamicAnonymousType.DefineMethodOverride(getHashCodeMethod, objHashMethod);
             return dynamicAnonymousType.CreateTypeInfo();
         }
 

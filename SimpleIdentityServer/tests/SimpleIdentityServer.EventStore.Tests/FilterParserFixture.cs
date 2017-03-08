@@ -372,10 +372,11 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             // join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)
-            var interpreter = _parser.Parse("join$outer(Order|Other),inner(Order|Other)");
+            var interpreter = _parser.Parse("join$outer(Id),inner(Id) select$Id|BirthDate");
             //  where$(outer_BirthDate eq inner.BirthDate)
+            var i2 = (int)persons.First().BirthDate.Ticks;
             var result = interpreter.Execute(persons);
-            var i = result.Count();
+            var i = result.ToList();
             string s = "";
             // ASSERTS
             // Assert.NotNull(result);
@@ -388,7 +389,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             var dynamicAssemblyName = new AssemblyName("TempAssm");
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm.dll", "TempAssm.dll");
-            ReflectionHelper.CreateAssembly(typeof(Person), new[] { "BirthDate", "Id" }, moduleBuilder);
+            ReflectionHelper.CreateAssembly(typeof(Person), new[] { "Id", "BirthDate" }, moduleBuilder);
             assemblyBuilder.Save("TempAssm.dll");
             string s = "";
         }

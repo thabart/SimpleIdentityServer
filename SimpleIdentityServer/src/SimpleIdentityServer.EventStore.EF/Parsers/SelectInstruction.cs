@@ -19,6 +19,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using SimpleIdentityServer.EventStore.EF.Extensions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
@@ -28,10 +29,10 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            string[] fieldNames = null;
+            IEnumerable<string> fieldNames = null;
             if (!string.IsNullOrWhiteSpace(Parameter))
             {
-                fieldNames = Parameter.Split(',');
+                fieldNames = Parameter.GetParameters();
             }
             else
             {
@@ -69,8 +70,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var sourceProperties = fieldNames.ToDictionary(name => name, name => sourceType.GetProperty(name));
                 var anonType = ReflectionHelper.CreateNewAnonymousType(sourceType, fieldNames);
-                var bindings = anonType.GetFields().Select(p => Expression.Bind(p, Expression.Property(arg, sourceProperties[p.Name]))).OfType<MemberBinding>();
-                selector = Expression.Lambda(Expression.MemberInit(Expression.New(anonType.GetConstructor(Type.EmptyTypes)), bindings), arg);
+                var exprNew = ExpressionBuilder.BuildNew(fieldNames, sourceType, anonType, arg);
+                selector = Expression.Lambda(exprNew, new ParameterExpression[] { arg });
                 type = anonType.AsType();
             }
 

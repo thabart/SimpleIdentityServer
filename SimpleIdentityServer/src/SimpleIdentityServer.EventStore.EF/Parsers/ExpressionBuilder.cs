@@ -66,18 +66,28 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
         {
             var fieldNames = selector.GetParameters();
             var anonType = ReflectionHelper.CreateNewAnonymousType(type, fieldNames);
-            return BuildAnonymous(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
+            return BuildNew(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
         }
 
         public static NewExpression BuildNew(string selector, Type type, TypeInfo anonType, string parameterName)
         {
             var fieldNames = selector.GetParameters();
-            return BuildAnonymous(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
+            return BuildNew(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
         }
 
         public static NewExpression BuildNew(string selector, Type type, TypeInfo anonType, ParameterExpression arg)
         {
             var fieldNames = selector.GetParameters();
+            return BuildNew(fieldNames, type, anonType, arg);
+        }
+
+        public static NewExpression BuildNew(IEnumerable<string> fieldNames, Type type, TypeInfo anonType, string parameterName)
+        {
+            return BuildAnonymous(fieldNames, type, anonType, Expression.Parameter(type, parameterName));
+        }
+
+        public static NewExpression BuildNew(IEnumerable<string> fieldNames, Type type, TypeInfo anonType, ParameterExpression arg)
+        {
             return BuildAnonymous(fieldNames, type, anonType, arg);
         }
 
