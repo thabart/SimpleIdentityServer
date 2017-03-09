@@ -401,6 +401,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             var other = gen.DeclareLocal(typeof(int));
             var i = gen.DeclareLocal(anonType);
             var r2 = gen.DeclareLocal(typeof(int));
+            var r3 = gen.DeclareLocal(typeof(DateTime));
             gen.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Now")); // Call getNow
             gen.Emit(OpCodes.Stloc_0); // Load value into first variable
             gen.Emit(OpCodes.Ldstr, "azeaze"); // create str
@@ -416,6 +417,13 @@ namespace SimpleIdentityServer.EventStore.Tests
             gen.Emit(OpCodes.Newobj, anonType.GetConstructors().First()); // Create instance.
             gen.Emit(OpCodes.Stloc_S, i);
             gen.Emit(OpCodes.Ldloc_S, i);
+            /*
+            gen.Emit(OpCodes.Callvirt, anonType.GetMethod("get_BirthDate"));
+            gen.Emit(OpCodes.Stloc_S, r3);
+            gen.Emit(OpCodes.Ldloc_S, r3);
+            gen.Emit(OpCodes.Box, typeof(DateTime));
+            gen.Emit(OpCodes.Call, typeof(Console).GetMethod("Write", new Type[] { typeof(object) }));
+            */
             gen.Emit(OpCodes.Callvirt, typeof(object).GetMethod("GetHashCode"));
             gen.Emit(OpCodes.Stloc_S, r2);
             gen.Emit(OpCodes.Ldloc_S, r2);

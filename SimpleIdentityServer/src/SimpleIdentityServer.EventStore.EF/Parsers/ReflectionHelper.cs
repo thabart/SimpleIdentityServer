@@ -166,7 +166,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     var hashOpCode = OpCodes.Stloc_S;
                     if (!stLoc.IsEmpty())
                     {
-                        hashOpCode = kvp.Value;
+                        hashOpCode = stLoc.Value;
                     }
 
                     var local = ilHashCode.DeclareLocal(property.Value);
