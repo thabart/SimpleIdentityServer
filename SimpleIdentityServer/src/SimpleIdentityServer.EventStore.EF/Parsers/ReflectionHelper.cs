@@ -107,13 +107,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             constructorIl.Emit(OpCodes.Ldarg_0);
             constructorIl.Emit(OpCodes.Call, objCtor);
             ilHashCode.Emit(OpCodes.Nop);
+            var hashResult = ilHashCode.DeclareLocal(typeof(int));
             int i = 0,
                 nbValueType = 1;
             // 2. Create the constructor & toString method.
             var objHashMethod = typeof(object).GetMethod("GetHashCode");
             foreach (var property in dic)
             {
-                bool ignoreHashCall = false;
                 OpCode opCode = OpCodes.Ldarg_S;
                 var kvp = _mappingIndiceToOpCode.FirstOrDefault(m => m.Key == i);
                 if (!kvp.IsEmpty())
@@ -158,19 +158,13 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     }
                     else
                     {
-                        ignoreHashCall = true;
-                        ilHashCode.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Ticks"));
-                        ilHashCode.Emit(OpCodes.Conv_I4);
+                        ilHashCode.Emit(OpCodes.Constrained, typeof(DateTime));
                     }
 
                     // nbValueType++;
                 }
 
-                if (!ignoreHashCall)
-                {
-                    ilHashCode.Emit(call, hashMethod);
-                }
-
+                ilHashCode.Emit(call, hashMethod);
                 if (i > 0)
                 {
                     ilHashCode.Emit(OpCodes.Xor);
