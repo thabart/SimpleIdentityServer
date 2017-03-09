@@ -32,12 +32,20 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             { 2, OpCodes.Ldarg_3 }
         };
 
-        private static Dictionary<int, OpCode> _mapingStlocToOpCodes = new Dictionary<int, OpCode>
+        private static Dictionary<int, OpCode> _mappingStlocToOpCodes = new Dictionary<int, OpCode>
         {
             { 0, OpCodes.Stloc_0 },
             { 1, OpCodes.Stloc_1 },
             { 2, OpCodes.Stloc_2 },
             { 3, OpCodes.Stloc_3 }
+        };
+
+        private static Dictionary<int, OpCode> _mappingLdlocToOpCodes = new Dictionary<int, OpCode>
+        {
+            { 0, OpCodes.Ldloc_0 },
+            { 1, OpCodes.Ldloc_1 },
+            { 2, OpCodes.Ldloc_2 },
+            { 3, OpCodes.Ldloc_3 }
         };
 
         public static TypeInfo CreateNewAnonymousType<TSource>(IEnumerable<string> fieldNames)
@@ -106,10 +114,10 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var ilHashCode = getHashCodeMethod.GetILGenerator();
             constructorIl.Emit(OpCodes.Ldarg_0);
             constructorIl.Emit(OpCodes.Call, objCtor);
+            ilHashCode.DeclareLocal(typeof(int));
             ilHashCode.Emit(OpCodes.Nop);
-            var hashResult = ilHashCode.DeclareLocal(typeof(int));
-            int i = 0,
-                nbValueType = 1;
+            // var hashResult = ilHashCode.DeclareLocal(typeof(int));
+            int i = 0;
             // 2. Create the constructor & toString method.
             var objHashMethod = typeof(object).GetMethod("GetHashCode");
             foreach (var property in dic)
@@ -124,33 +132,59 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var field = dynamicAnonymousType.DefineField($"<{property.Key}>_BackingField", property.Value, FieldAttributes.Private);
                 var prop = dynamicAnonymousType.DefineProperty(property.Key, PropertyAttributes.None, property.Value, new[] { property.Value });
                 var getProperty = dynamicAnonymousType.DefineMethod($"get_{property.Key}", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.SpecialName, property.Value, null);
+                var setProperty = dynamicAnonymousType.DefineMethod($"set_{property.Key}", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.SpecialName, null, new[] { property.Value });
                 var getPropertyIl = getProperty.GetILGenerator();
+                var setPropertyIL = setProperty.GetILGenerator();
                 // 2.1 Build constructor
                 constructorIl.Emit(OpCodes.Ldarg_0);
-                constructorIl.Emit(opCode);
-                constructorIl.Emit(OpCodes.Stfld, field);
-                // 2.2. Build property
+                if (opCode == OpCodes.Ldarg_S)
+                {
+                    constructorIl.Emit(opCode, i);
+                }
+                else
+                {
+                    constructorIl.Emit(opCode);
+                }
+
+                constructorIl.Emit(OpCodes.Call, setProperty);
+                // 2.2. Build get property
                 getPropertyIl.Emit(OpCodes.Ldarg_0);
                 getPropertyIl.Emit(OpCodes.Ldfld, field);
                 getPropertyIl.Emit(OpCodes.Ret);
+                // 2.3 Build set property
+                setPropertyIL.Emit(OpCodes.Ldarg_0);
+                setPropertyIL.Emit(OpCodes.Ldarg_1);
+                setPropertyIL.Emit(OpCodes.Stfld, field);
+                setPropertyIL.Emit(OpCodes.Ret);
                 // 2.3 Build the get hash method
                 var hashMethod = typeof(object).GetMethod("GetHashCode");
                 ilHashCode.Emit(OpCodes.Ldarg_0);
                 ilHashCode.Emit(OpCodes.Call, getProperty);
+                if (i > 0)
+                {
+                    var stLoc = _mappingStlocToOpCodes.FirstOrDefault(m => m.Key == i);
+                    var hashOpCode = OpCodes.Stloc_S;
+                    if (!stLoc.IsEmpty())
+                    {
+                        hashOpCode = kvp.Value;
+                    }
+
+                    var local = ilHashCode.DeclareLocal(property.Value);
+                    if (hashOpCode == OpCodes.Stloc_S)
+                    {
+                        ilHashCode.Emit(OpCodes.Stloc_S, local);
+                    }
+                    else
+                    {
+                        ilHashCode.Emit(hashOpCode);
+                    }
+
+                    ilHashCode.Emit(OpCodes.Ldloc_S, local);
+                }
+
                 OpCode call = OpCodes.Callvirt;
                 if (property.Value.GetTypeInfo().IsValueType)
                 {
-                    OpCode stLoc = OpCodes.Stloc_1;
-                    /*
-                    kvp = _mapingStlocToOpCodes.FirstOrDefault(m => m.Key == nbValueType);
-                    if (!kvp.IsEmpty())
-                    {
-                        stLoc = kvp.Value;
-                    }
-                    */
-                    var local = ilHashCode.DeclareLocal(property.Value);
-                    ilHashCode.Emit(stLoc);
-                    ilHashCode.Emit(OpCodes.Ldloca_S, local);
                     if (property.Value != typeof(DateTime))
                     {
                         hashMethod = property.Value.GetMethod("GetHashCode");
@@ -160,8 +194,6 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                     {
                         ilHashCode.Emit(OpCodes.Constrained, typeof(DateTime));
                     }
-
-                    // nbValueType++;
                 }
 
                 ilHashCode.Emit(call, hashMethod);
@@ -172,11 +204,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
                 // 2.4 Add methods associated to the property.
                 prop.SetGetMethod(getProperty);
+                prop.SetSetMethod(setProperty);
                 i++;
             }
 
             constructorIl.Emit(OpCodes.Ret);
-            // ilHashCode.Emit(OpCodes.Ldc_I4_0);
             ilHashCode.Emit(OpCodes.Stloc_0);
             ilHashCode.Emit(OpCodes.Ldloc_0);
             ilHashCode.Emit(OpCodes.Ret);

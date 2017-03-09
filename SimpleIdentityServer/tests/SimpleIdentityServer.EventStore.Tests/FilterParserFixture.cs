@@ -386,7 +386,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             var dynamicAssemblyName = new AssemblyName("TempAssm");
             var assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.RunAndSave);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("TempAssm.exe", "TempAssm.exe");
-            var anonType = ReflectionHelper.CreateAssembly(typeof(Person), new[] { "Id", "BirthDate" }, moduleBuilder);
+            var anonType = ReflectionHelper.CreateAssembly(typeof(Person), new[] { "Id", "BirthDate", "Order", "Other" }, moduleBuilder);
             // Create entry point
             TypeBuilder typeBuilder = moduleBuilder.DefineType("Program", TypeAttributes.Class | TypeAttributes.Public);
             MethodBuilder methodBuilder = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static,
@@ -396,18 +396,29 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             var gen = methodBuilder.GetILGenerator();
             var dt = gen.DeclareLocal(typeof(DateTime));
+            var s = gen.DeclareLocal(typeof(string));
+            var order = gen.DeclareLocal(typeof(int));
+            var other = gen.DeclareLocal(typeof(int));
             var i = gen.DeclareLocal(anonType);
-            var r = gen.DeclareLocal(typeof(int));
-            gen.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Now"));
-            gen.Emit(OpCodes.Stloc_0);
-            gen.Emit(OpCodes.Ldstr, "azeaze");
-            gen.Emit(OpCodes.Ldloc_0);
-            gen.Emit(OpCodes.Newobj, anonType.GetConstructors().First());
-            gen.Emit(OpCodes.Stloc_1);
-            gen.Emit(OpCodes.Ldloc_1);
+            var r2 = gen.DeclareLocal(typeof(int));
+            gen.Emit(OpCodes.Call, typeof(DateTime).GetMethod("get_Now")); // Call getNow
+            gen.Emit(OpCodes.Stloc_0); // Load value into first variable
+            gen.Emit(OpCodes.Ldstr, "azeaze"); // create str
+            gen.Emit(OpCodes.Stloc_1); // Load value into second variable
+            gen.Emit(OpCodes.Ldc_I4_3); // Declare int 3
+            gen.Emit(OpCodes.Stloc_2);  // Load value into third variable.
+            gen.Emit(OpCodes.Ldc_I4_4); // Declare int 4
+            gen.Emit(OpCodes.Stloc_3); // Load value into fourth variable
+            gen.Emit(OpCodes.Ldloc_1); // Load string
+            gen.Emit(OpCodes.Ldloc_0); // Load datetime
+            gen.Emit(OpCodes.Ldloc_2); // Load int
+            gen.Emit(OpCodes.Ldloc_3); // Load int
+            gen.Emit(OpCodes.Newobj, anonType.GetConstructors().First()); // Create instance.
+            gen.Emit(OpCodes.Stloc_S, i);
+            gen.Emit(OpCodes.Ldloc_S, i);
             gen.Emit(OpCodes.Callvirt, typeof(object).GetMethod("GetHashCode"));
-            gen.Emit(OpCodes.Stloc_2);
-            gen.Emit(OpCodes.Ldloc_2);
+            gen.Emit(OpCodes.Stloc_S, r2);
+            gen.Emit(OpCodes.Ldloc_S, r2);
             gen.Emit(OpCodes.Call, typeof(Console).GetMethod("Write", new Type[] { typeof(int) }));
             gen.Emit(OpCodes.Ret);
 
@@ -415,7 +426,6 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             assemblyBuilder.SetEntryPoint(methodBuilder, PEFileKinds.ConsoleApplication);
             assemblyBuilder.Save("TempAssm.exe");
-            string s = "";
         }
 
         private void InitializeFakeObjects()
