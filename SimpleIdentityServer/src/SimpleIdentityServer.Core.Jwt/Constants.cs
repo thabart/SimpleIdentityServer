@@ -84,6 +84,15 @@ namespace SimpleIdentityServer.Core.Jwt
             public static string ScimLocation = "scim_location";
         }
 
+        public static class StandardAddressClaimNames
+        {
+            public const string StreetAddress = "street_address";
+            public const string Locality = "locality";
+            public const string Region = "region";
+            public const string PostalCode = "postal_code";
+            public const string Country = "country";
+        }
+
         public static List<string> AllStandardResourceOwnerClaimNames = new List<string>
         {
             StandardResourceOwnerClaimNames.Subject,
