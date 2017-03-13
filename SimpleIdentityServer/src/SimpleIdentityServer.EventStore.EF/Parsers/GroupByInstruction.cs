@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 enumerableType = typeof(Enumerable);
 
             // 1. Split the value & extract the field names or requests.
-            var splitted = Parameter.GetParameters();
+            var splitted = Parameter.Split(',');
             var instructions = splitted.Select(s =>
             {
                 return InstructionHelper.ExtractInstruction(s);
