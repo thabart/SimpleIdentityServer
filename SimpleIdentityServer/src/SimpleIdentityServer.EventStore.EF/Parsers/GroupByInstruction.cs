@@ -19,6 +19,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using SimpleIdentityServer.EventStore.EF.Extensions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
@@ -77,7 +78,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 enumerableType = typeof(Enumerable);
 
             // 1. Split the value & extract the field names or requests.
-            var splitted = Parameter.Split(',');
+            var splitted = Parameter.GetParameters();
             var instructions = splitted.Select(s =>
             {
                 return InstructionHelper.ExtractInstruction(s);

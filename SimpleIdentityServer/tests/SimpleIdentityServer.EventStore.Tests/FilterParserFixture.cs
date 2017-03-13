@@ -175,6 +175,41 @@ namespace SimpleIdentityServer.EventStore.Tests
         }
 
         [Fact]
+        public void When_Execute_OrderBy_Instruction_Then_Records_Are_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var firstInstruction = _parser.Parse("orderby$on(FirstName)");
+            var secondInstruction = _parser.Parse("orderby$on(FirstName),order(desc)");
+            var firstResult = firstInstruction.Execute(persons);
+            var secondResult = secondInstruction.Execute(persons);
+
+            // ASSERTS
+            Assert.NotNull(firstResult);
+            Assert.True(firstResult.Count() == 2);
+            Assert.True(firstResult.First().FirstName == "laetitia");
+            Assert.NotNull(secondResult);
+            Assert.True(secondResult.Count() == 2);
+            Assert.True(secondResult.First().FirstName == "thierry");
+        }
+
+        [Fact]
         public void When_Execute_Where_Instruction_And_Return_First_Name_Then_Str_Is_Returned()
         {
             var persons = (new List<Person>
@@ -226,7 +261,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("select$FirstName where$(LastName eq lastname) orderby$(FirstName)");
+            var instruction = _parser.Parse("select$FirstName where$(LastName eq lastname) orderby$on(FirstName)");
             var result = instruction.Execute(persons);
 
             // ASSERTS
