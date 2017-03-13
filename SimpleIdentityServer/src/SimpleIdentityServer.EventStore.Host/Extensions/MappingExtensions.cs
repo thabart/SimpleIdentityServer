@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
 
             var result = new JObject();
             result.Add(new JProperty(Constants.SearchResultResponseNames.TotalResult, search.TotalResults));
-            result.Add(new JProperty(Constants.SearchResultResponseNames.Content, JsonConvert.SerializeObject(search.Content)));
+            result.Add(new JProperty(Constants.SearchResultResponseNames.Content, JToken.Parse(JsonConvert.SerializeObject(search.Content))));
             result.Add(new JProperty(Constants.SearchResultResponseNames.ItemsPerPage, parameter.Count));
             result.Add(new JProperty(Constants.SearchResultResponseNames.StartIndex, parameter.StartIndex));
             return result;

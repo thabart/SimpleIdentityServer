@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Core.Parameters
         public SearchParameter()
         {
             Count = 100;
-            StartIndex = 1;
+            StartIndex = 0;
         }
 
         public int StartIndex { get; set; }
