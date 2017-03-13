@@ -359,19 +359,9 @@ namespace SimpleIdentityServer.EventStore.Tests
                     LastName = "2"
                 }
             }).AsQueryable();
-            var query = from p in persons
-                        join sub in (from subP in persons
-                                     group subP by subP.Id into g
-                                     select new
-                                     {
-                                         BirthDate = g.Min(x => x.BirthDate),
-                                         PersonKey = g.Key                                         
-                                     })
-                        on new { JoinProperty1 = p.Id, JoinProperty2 = p.BirthDate } equals new { JoinProperty1 = sub.PersonKey, JoinProperty2 = sub.BirthDate }
-                        select new { p.Id, p.BirthDate, p.LastName };
-
 
             // ACT
+            // Link : https://github.com/machine-legacy/machine.mta/blob/master/Source/Machine.Mta.MessageInterfaces/DefaultMessageInterfaceImplementationFactory.cs
             var interpreter = _parser.Parse("join$target(groupby$on(Id),aggregate(min with BirthDate)),outer(Id|BirthDate),inner(Id|BirthDate)");
             var result = interpreter.Execute(persons);
 

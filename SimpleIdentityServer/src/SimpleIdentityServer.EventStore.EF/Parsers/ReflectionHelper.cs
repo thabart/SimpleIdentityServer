@@ -118,6 +118,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             ilHashCode.Emit(OpCodes.Nop);
             // var hashResult = ilHashCode.DeclareLocal(typeof(int));
             int i = 0;
+            bool hasState = false;
             // 2. Create the constructor & toString method.
             var objHashMethod = typeof(object).GetMethod("GetHashCode");
             foreach (var property in dic)
@@ -139,7 +140,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 constructorIl.Emit(OpCodes.Ldarg_0);
                 if (opCode == OpCodes.Ldarg_S)
                 {
-                    constructorIl.Emit(opCode, i);
+                    constructorIl.Emit(opCode, i + 1);
                 }
                 else
                 {
@@ -157,51 +158,50 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 setPropertyIL.Emit(OpCodes.Stfld, field);
                 setPropertyIL.Emit(OpCodes.Ret);
                 // 2.3 Build the get hash method
-                var hashMethod = typeof(object).GetMethod("GetHashCode");
+                var hashMethod = property.Value.GetMethod("GetHashCode", new Type[0]);
+                if (hashMethod == null)
+                {
+                    hashMethod = typeof(object).GetMethod("GetHashCode", new Type[0]);
+                }
+
                 ilHashCode.Emit(OpCodes.Ldarg_0);
-                ilHashCode.Emit(OpCodes.Call, getProperty);
-                if (i > 0)
+                if (field.FieldType.GetTypeInfo().IsArray)
                 {
-                    var stLoc = _mappingStlocToOpCodes.FirstOrDefault(m => m.Key == i);
-                    var hashOpCode = OpCodes.Stloc_S;
-                    if (!stLoc.IsEmpty())
+                    ilHashCode.Emit(OpCodes.Ldfld, field);
+                    // TODO : Support this hash code.
+                }
+                if (field.FieldType.GetTypeInfo().IsValueType)
+                {
+                    if (field.FieldType.GetTypeInfo().IsEnum)
                     {
-                        hashOpCode = stLoc.Value;
-                    }
-
-                    var local = ilHashCode.DeclareLocal(property.Value);
-                    if (hashOpCode == OpCodes.Stloc_S)
-                    {
-                        ilHashCode.Emit(OpCodes.Stloc_S, local);
+                        ilHashCode.Emit(OpCodes.Ldfld, field);
+                        ilHashCode.Emit(OpCodes.Box, field.FieldType);
+                        ilHashCode.Emit(OpCodes.Callvirt, hashMethod);
                     }
                     else
                     {
-                        ilHashCode.Emit(hashOpCode);
+                        ilHashCode.Emit(OpCodes.Ldflda, field);
+                        ilHashCode.Emit(OpCodes.Call, hashMethod);
                     }
-
-                    ilHashCode.Emit(OpCodes.Ldloc_S, local);
                 }
-
-                OpCode call = OpCodes.Callvirt;
-                if (property.Value.GetTypeInfo().IsValueType)
+                else
                 {
-                    if (property.Value != typeof(DateTime))
-                    {
-                        hashMethod = property.Value.GetMethod("GetHashCode");
-                        call = OpCodes.Call;
-                    }
-                    else
-                    {
-                        ilHashCode.Emit(OpCodes.Constrained, typeof(DateTime));
-                    }
+                    ilHashCode.Emit(OpCodes.Ldfld, field);
+                    IfNull(ilHashCode, delegate () { ilHashCode.Emit(OpCodes.Ldc_I4_0); }, delegate () {
+                        ilHashCode.Emit(OpCodes.Ldarg_0);
+                        ilHashCode.Emit(OpCodes.Ldfld, field);
+                        ilHashCode.Emit(OpCodes.Callvirt, hashMethod);
+                    });
                 }
 
-                ilHashCode.Emit(call, hashMethod);
-                if (i > 0)
+                if (hasState)
                 {
-                    ilHashCode.Emit(OpCodes.Xor);
+                    ilHashCode.Emit(OpCodes.Ldc_I4, 29);
+                    ilHashCode.Emit(OpCodes.Mul);
+                    ilHashCode.Emit(OpCodes.Add);
                 }
 
+                hasState = true;
                 // 2.4 Add methods associated to the property.
                 prop.SetGetMethod(getProperty);
                 prop.SetSetMethod(setProperty);
@@ -209,8 +209,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             constructorIl.Emit(OpCodes.Ret);
-            ilHashCode.Emit(OpCodes.Stloc_0);
-            ilHashCode.Emit(OpCodes.Ldloc_0);
+            if (!hasState)
+            {
+                ilHashCode.Emit(OpCodes.Ldc_I4_0);
+            }
+
             ilHashCode.Emit(OpCodes.Ret);
             // Build equals method.
             var isNotNull = ilEquals.DefineLabel();
@@ -263,6 +266,22 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             return dic;
+        }
+
+        private static void IfNull(ILGenerator il, Action isTrue, Action isFalse)
+        {
+            var nope = il.DefineLabel();
+            var done = il.DefineLabel();
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ceq); // Has 1 if NULL
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ceq); // Has 1 if NOT NULL
+            il.Emit(OpCodes.Brtrue, nope);
+            isTrue();
+            il.Emit(OpCodes.Br, done);
+            il.MarkLabel(nope);
+            isFalse();
+            il.MarkLabel(done);
         }
     }
 }
