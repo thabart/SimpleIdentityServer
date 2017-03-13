@@ -47,7 +47,6 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
             var searchParameter = _searchParameterParser.ParseQuery(Request.Query);
             var result = await _repository.Search(searchParameter);
             var content = result.ToDto(searchParameter);
-            FillHalInformation(content, result);
             return new OkObjectResult(content);
         }
 
@@ -63,48 +62,6 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
             var content = result.ToDto();
             FillHalInformation(content, result.Id);
             return new OkObjectResult(content);
-        }
-
-        private void FillHalInformation(JObject search, SearchEventAggregatesResult result)
-        {
-            var links = _halLinkBuilder.AddSelfLink($"/{Constants.RouteNames.Events}/.search").Build();
-            search.Add(new JProperty(Constants.HalResponseNames.Links, links));
-            JArray evtArr = null;
-            if (result.IsGrouped)
-            {
-                if (result.GroupedEvents != null)
-                {
-                    var embeddedContent = new JObject();
-                    foreach(var groupedEvt in result.GroupedEvents)
-                    {
-                        evtArr = new JArray();
-                        foreach (var evt in groupedEvt.Events)
-                        {
-                            var dto = evt.ToDto();
-                            FillHalInformation(dto, evt.Id);
-                            evtArr.Add(dto);
-                        }
-                        embeddedContent.Add(new JProperty(groupedEvt.Key.ToString(), evtArr));
-                    }
-
-                    search.Add(new JProperty(Constants.HalResponseNames.Embedded, embeddedContent));
-                }
-
-                return;
-            }
-
-            if (result.Events != null)
-            {
-                evtArr = new JArray();
-                foreach (var evt in result.Events)
-                {
-                    var dto = evt.ToDto();
-                    FillHalInformation(dto, evt.Id);
-                    evtArr.Add(dto);
-                }
-
-                search.Add(new JProperty(Constants.HalResponseNames.Embedded, evtArr));
-            }
         }
 
         private void FillHalInformation(JObject evt, string id)

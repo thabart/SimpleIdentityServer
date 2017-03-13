@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Extensions;
+using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,12 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
     internal class EventAggregateRepository : IEventAggregateRepository
     {
         private readonly EventStoreContext _context;
+        private readonly IFilterParser _filterParser;
 
-        public EventAggregateRepository(EventStoreContext context)
+        public EventAggregateRepository(EventStoreContext context, IFilterParser filterParser)
         {
             _context = context;
+            _filterParser = filterParser;
         }
 
         public async Task<bool> Add(EventAggregate evtAggregate)
@@ -66,50 +69,24 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
             return record.ToDomain();
         }
 
-        public async Task<SearchEventAggregatesResult> Search(SearchParameter searchParameter)
+        public async Task<SearchResult> Search(SearchParameter searchParameter)
         {
             if (searchParameter == null)
             {
                 throw new ArgumentNullException(nameof(searchParameter));
             }
 
-
-            IQueryable<Models.EventAggregate> events = _context.Events;
-
-            if (!string.IsNullOrWhiteSpace(searchParameter.Filter))
+            var filter = searchParameter.Filter;
+            if (string.IsNullOrWhiteSpace(filter))
             {
-                events = events.Where(searchParameter.Filter);
+                filter = "select$*";
             }
-
-            if (!string.IsNullOrWhiteSpace(searchParameter.SortBy))
-            {
-                if (searchParameter.SortOrder == SortOrders.Ascending)
-                {
-                    events = events.OrderBy(searchParameter.SortBy);
-                }
-                else
-                {
-                    events = events.OrderByDescending(searchParameter.SortBy);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(searchParameter.GroupBy))
-            {
-                var grouped = events.GroupBy(searchParameter.GroupBy);
-                var totalResults = await grouped.CountAsync().ConfigureAwait(false);
-                var pagedGroupingResult = grouped.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
-                var groupedEvtAggregates = new List<GroupedEventAggregate>();
-                foreach (var kvp in pagedGroupingResult)
-                {
-                    // groupedEvtAggregates.Add(new GroupedEventAggregate(kvp.Key, kvp.Select(k => k.ToDomain())));
-                }
-
-                return new SearchEventAggregatesResult(totalResults, groupedEvtAggregates);
-            }
-
+            
+            var interpreter = _filterParser.Parse(filter);
+            var events = interpreter.Execute(_context.Events);
             int totalResult = await events.CountAsync().ConfigureAwait(false);
             var pagedResult = events.Skip(searchParameter.StartIndex).Take(searchParameter.Count);
-            return new SearchEventAggregatesResult(totalResult, await pagedResult.Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false));
+            return new SearchResult(totalResult, await pagedResult.ToListAsync().ConfigureAwait(false));
         }
     }
 }

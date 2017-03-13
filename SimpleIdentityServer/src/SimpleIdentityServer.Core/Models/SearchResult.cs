@@ -14,18 +14,19 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Core.Parameters
+using System.Collections.Generic;
+
+namespace SimpleIdentityServer.Core.Models
 {
-    public class SearchParameter
+    public class SearchResult
     {
-        public SearchParameter()
+        public SearchResult(int totalResults, IEnumerable<dynamic> content)
         {
-            Count = 100;
-            StartIndex = 1;
+            TotalResults = totalResults;
+            Content = content;
         }
 
-        public int StartIndex { get; set; }
-        public int Count { get; set; }
-        public string Filter { get; set; }
+        public int TotalResults { get; private set; }
+        public IEnumerable<dynamic> Content { get; private set; }
     }
 }

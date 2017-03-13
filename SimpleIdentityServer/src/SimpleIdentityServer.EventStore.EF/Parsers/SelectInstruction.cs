@@ -26,11 +26,12 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     public class SelectInstruction : BaseInstruction
     {
         public const string Name = "select";
+        private const string _starSelector = "*";
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
             IEnumerable<string> fieldNames = null;
-            if (!string.IsNullOrWhiteSpace(Parameter))
+            if (!string.IsNullOrWhiteSpace(Parameter) && Parameter != _starSelector)
             {
                 fieldNames = Parameter.GetParameters();
             }
@@ -76,20 +77,19 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             }
 
             var enumarableType = typeof(Queryable);
+            var selectMethod = enumarableType.GetMethods()
+                 .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
+                 .Where(m =>
+                 {
+                     var parameters = m.GetParameters().ToList();
+                     return parameters.Count == 2;
+                 }).First().MakeGenericMethod(targetType, type);
             if (SubInstruction != null)
             {
-                var selectMethod = enumarableType.GetMethods()
-                     .Where(m => m.Name == "Select" && m.IsGenericMethodDefinition)
-                     .Where(m =>
-                     {
-                         var parameters = m.GetParameters().ToList();
-                         return parameters.Count == 2;
-                     }).First().MakeGenericMethod(targetType, type);
-                Expression.Call(selectMethod, subExpr, selector);
                 return new KeyValuePair<string, Expression>(Name, Expression.Call(typeof(Queryable), "Select", new Type[] { targetType, type }, subExpr, selector));
             }
 
-            return null;
+            return new KeyValuePair<string, Expression>(Name, Expression.Call(typeof(Queryable), "Select", new Type[] { targetType, type }, Expression.Constant(source), selector));
         }
     }
 }

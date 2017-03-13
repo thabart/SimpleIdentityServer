@@ -112,6 +112,39 @@ namespace SimpleIdentityServer.EventStore.Tests
         }
 
         [Fact]
+        public void When_Execute_Select_Instruction_Then_Records_Are_Returned()
+        {
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    FirstName = "thierry",
+                    LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "laetitia",
+                    LastName = "lastname"
+                }
+            }).AsQueryable();
+
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var firstInstruction = _parser.Parse("select$FirstName|LastName");
+            var secondInstruction = _parser.Parse("select$*");
+            var firstResult = firstInstruction.Execute(persons);
+            var secondResult = secondInstruction.Execute(persons);
+
+            // ASSERTS
+            Assert.NotNull(firstResult);
+            Assert.True(firstResult.Count() == 2);
+            Assert.NotNull(secondResult);
+            Assert.True(secondResult.Count() == 2);
+        }
+
+        [Fact]
         public void When_Execute_Where_Instruction_Then_One_Record_Is_Returned()
         {
             var persons = (new List<Person>

@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.EventStore.EF.Parsers;
 using SimpleIdentityServer.EventStore.EF.Repositories;
 using System;
 
@@ -84,6 +85,7 @@ namespace SimpleIdentityServer.EventStore.EF
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IEventAggregateRepository, EventAggregateRepository>();
+            serviceCollection.AddTransient<IFilterParser, FilterParser>();
         }
     }
 }

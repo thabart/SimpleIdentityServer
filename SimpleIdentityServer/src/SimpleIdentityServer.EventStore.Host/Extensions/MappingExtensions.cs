@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
@@ -39,7 +40,7 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
             return result;
         }
 
-        public static JObject ToDto(this SearchEventAggregatesResult search, SearchParameter parameter)
+        public static JObject ToDto(this SearchResult search, SearchParameter parameter)
         {
             if (search == null)
             {
@@ -53,6 +54,7 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
 
             var result = new JObject();
             result.Add(new JProperty(Constants.SearchResultResponseNames.TotalResult, search.TotalResults));
+            result.Add(new JProperty(Constants.SearchResultResponseNames.Content, JsonConvert.SerializeObject(search.Content)));
             result.Add(new JProperty(Constants.SearchResultResponseNames.ItemsPerPage, parameter.Count));
             result.Add(new JProperty(Constants.SearchResultResponseNames.StartIndex, parameter.StartIndex));
             return result;

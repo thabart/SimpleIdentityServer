@@ -21,7 +21,12 @@ using System.Text;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
-    public class FilterParser
+    public interface IFilterParser
+    {
+        SqlInterpreter Parse(string path);
+    }
+
+    public class FilterParser : IFilterParser
     {
         private const char _instructionSeparator = '$';
         private const string _subInstructionKey = "target";

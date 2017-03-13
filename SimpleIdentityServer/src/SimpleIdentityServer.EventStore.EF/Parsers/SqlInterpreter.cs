@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
 {
@@ -30,7 +31,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             _instruction = instruction;
         }
 
-        public IEnumerable<dynamic> Execute<TSource>(IQueryable<TSource> records)
+        public IQueryable<dynamic> Execute<TSource>(IQueryable<TSource> records)
         {
             if (records == null)
             {
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             var finalSelectArg = Expression.Parameter(typeof(IQueryable<TSource>), "f");
             var expr = _instruction.GetExpression(typeof(TSource), finalSelectArg, records);
             var finalSelectRequestBody = Expression.Lambda(expr.Value.Value, new ParameterExpression[] { finalSelectArg });
-            return (IEnumerable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
+            return (IQueryable<dynamic>)finalSelectRequestBody.Compile().DynamicInvoke(records);
         }
 
         public BaseInstruction Instruction

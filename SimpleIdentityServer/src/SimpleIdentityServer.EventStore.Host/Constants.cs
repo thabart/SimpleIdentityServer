@@ -25,12 +25,9 @@ namespace SimpleIdentityServer.EventStore.Host
 
         public static class SearchParameterNames
         {
-            public const string SortBy = "sortBy";
-            public const string SortOrder = "sortOrder";
             public const string StartIndex = "startIndex";
             public const string Count = "count";
             public const string Filter = "filter";
-            public const string GroupBy = "groupby";
         }
 
         public static class SearchResultResponseNames
@@ -38,6 +35,7 @@ namespace SimpleIdentityServer.EventStore.Host
             public const string TotalResult = "totalResults";
             public const string ItemsPerPage = "itemsPerPage";
             public const string StartIndex = "startIndex";
+            public const string Content = "content";
         }
 
         public static class SortOrderNames

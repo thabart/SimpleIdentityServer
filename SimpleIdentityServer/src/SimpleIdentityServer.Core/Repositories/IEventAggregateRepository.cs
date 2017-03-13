@@ -24,6 +24,6 @@ namespace SimpleIdentityServer.Core.Repositories
     {
         Task<bool> Add(EventAggregate evtAggregate);
         Task<EventAggregate> Get(string id);
-        Task<SearchEventAggregatesResult> Search(SearchParameter searchParameter);
+        Task<SearchResult> Search(SearchParameter searchParameter);
     }
 }
