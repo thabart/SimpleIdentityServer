@@ -41,6 +41,7 @@
     }
   },
   "buildOptions": {
+    "emitEntryPoint": true,
     "copyToOutput": [
       "appsettings.json",
       "appsettings.azure.json",
