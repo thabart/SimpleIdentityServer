@@ -158,6 +158,11 @@ namespace SimpleIdentityServer.EventStore.Tests
                 {
                     FirstName = "laetitia",
                     LastName = "lastname"
+                },
+                new Person
+                {
+                    FirstName = "t a b c d",
+                    LastName = "lastname"
                 }
             }).AsQueryable();
 
@@ -165,13 +170,23 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("where$(FirstName eq thierry)");
-            var result = instruction.Execute(persons);
+            var firstInstruction = _parser.Parse("where$(FirstName eq thierry)");
+            var secondInstruction = _parser.Parse("where$(FirstName eq 't a b c d')");
+            var thirdInstruction = _parser.Parse("where$(FirstName co 't a')");
+            var firstResult = firstInstruction.Execute(persons);
+            var secondResult = secondInstruction.Execute(persons);
+            var thirdResult = thirdInstruction.Execute(persons);
 
             // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.Count() == 1);
-            Assert.True(result.First().FirstName == "thierry");
+            Assert.NotNull(firstResult);
+            Assert.True(firstResult.Count() == 1);
+            Assert.True(firstResult.First().FirstName == "thierry");
+            Assert.NotNull(secondResult);
+            Assert.True(secondResult.Count() == 1);
+            Assert.True(secondResult.First().FirstName == "t a b c d");
+            Assert.NotNull(thirdResult);
+            Assert.True(thirdResult.Count() == 1);
+            Assert.True(thirdResult.First().FirstName == "t a b c d");
         }
 
         [Fact]

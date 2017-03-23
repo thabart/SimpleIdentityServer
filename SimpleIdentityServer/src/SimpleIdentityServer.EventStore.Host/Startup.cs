@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.EventStore.Host
         {
             services.AddTransient<ISearchParameterParser, SearchParameterParser>();
             services.AddTransient<IHalLinkBuilder, HalLinkBuilder>();
-            services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;");
+            services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EvtStore;Integrated Security=True;");
         }
     }
 }

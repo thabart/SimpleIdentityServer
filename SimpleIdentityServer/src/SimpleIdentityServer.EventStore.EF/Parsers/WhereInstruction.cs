@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string expression = @"(\S* (eq|neq) \S*( and | or ){0,1})+";
+            const string expression = "(\\S* (eq|neq|co) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
@@ -51,10 +51,10 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             var conditions = Regex.Split(Parameter, " *(and|or) *");
             var arg = Expression.Parameter(sourceType, "x");
-            BinaryExpression binaryExpr = null;
+            Expression binaryExpr = null;
             if (conditions.Count() != 1)
             {
-                BinaryExpression rightOperand = null;
+                Expression rightOperand = null;
                 ExpressionType type = ExpressionType.AndAlso;
                 for (var i = conditions.Count() - 1; i >= 0; i--)
                 {
@@ -106,21 +106,29 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             return new KeyValuePair<string, Expression>(Name, Expression.Call(genericMethod, rootParameter, selector));
         }
 
-        private static BinaryExpression BuildCondition(string str, ParameterExpression arg)
+        private static Expression BuildCondition(string str, ParameterExpression arg)
         {
-            var p = Regex.Split(str, " *(eq|neq) *");
+            var p = Regex.Split(str, " *(eq|neq|co) *");
             if (p.Count() != 3)
             {
                 throw new InvalidOperationException($"the condition {str} is not correct");
             }
 
+            var prop = p.Last().TrimStart('\'', '"').TrimEnd('\'', '"');
             var property = Expression.Property(arg, p.First());
             if (p.ElementAt(1) == "neq")
             {
-                return Expression.NotEqual(property, Expression.Constant(p.Last()));
+                return Expression.NotEqual(property, Expression.Constant(prop));
             }
 
-            return Expression.Equal(property, Expression.Constant(p.Last()));
+            if (p.ElementAt(1) == "co")
+            {
+                var propInfo = (PropertyInfo)property.Member;
+                var methodInfo = propInfo.PropertyType.GetMethod("Contains", new[] { typeof(string) } );
+                return Expression.Call(property, methodInfo, Expression.Constant(prop));
+            }
+
+            return Expression.Equal(property, Expression.Constant(prop));
         }
     }
 }
