@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.EventStore.EF.Parsers
@@ -27,13 +28,20 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
     {
         public const string Name = "where";
 
+        private static IEnumerable<string> _valueSign = new string[]
+        {
+            "\"",
+            "'"
+        };
+
         public WhereInstruction()
         {
         }
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string expression = "(\\S* (eq|neq|co|sw|ew) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
+            const string condExpression = "\\w* (eq|neq|co|sw|ew) ('|\")(\\w| )*('|\")";
+            const string expression = "(\\w* (eq|neq|co|sw|ew) (('|\")(\\w| )*('|\")( and | or ){0,1}))+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
@@ -49,7 +57,23 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 sourceType = subExpression.Type.GetGenericArguments().First();
             }
 
-            var conditions = Regex.Split(Parameter, " *(and|or) *");
+            var conds = Regex.Matches(Parameter, condExpression);
+            var ops = Regex.Split(Regex.Replace(Parameter, condExpression, ""), " *(and|or) *").Where(s => !string.IsNullOrWhiteSpace(s));
+            var conditions = new List<string>();
+            int ind = 0;
+            foreach(Match cond in conds)
+            {
+
+                conditions.Add(cond.Value);
+                if (ops.Count() - 1 < ind)
+                {
+                    continue;
+                }
+
+                conditions.Add(ops.ElementAt(ind));
+                ind++;
+            }
+
             var arg = Expression.Parameter(sourceType, "x");
             Expression binaryExpr = null;
             if (conditions.Count() != 1)

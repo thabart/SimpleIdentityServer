@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             var secondInstruction = _parser.Parse("select$firstName,lastName").Instruction as SelectInstruction;
             var thirdInstruction = _parser.Parse("groupby$on(FirstName|LastName)").Instruction as GroupByInstruction;
             var fourthInstruction = _parser.Parse("select$target(select$firstParameter),secondParameter").Instruction as SelectInstruction;
-            var fifthInstruction = _parser.Parse("select$target(select$target(select$secondParameter)),firstParameter where$(FirstName eq thierry)").Instruction as SelectInstruction;
+            var fifthInstruction = _parser.Parse("select$target(select$target(select$secondParameter)),firstParameter where$(FirstName eq 'thierry')").Instruction as SelectInstruction;
 
             // ASSERTS
             Assert.NotNull(firstInstruction);
@@ -106,9 +106,10 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACTS & ASSERTS
             Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName)").Execute(persons));
-            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eqq thierry)").Execute(persons));
-            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq thierry tot)").Execute(persons));
-            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq thierry and LastName tot Habart)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq thierry)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eqq 'thierry')").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq 'thierry' tot)").Execute(persons));
+            Assert.Throws<InvalidOperationException>(() => _parser.Parse("select$FirstName where$(FirstName eq 'thierry' and LastName tot 'Habart')").Execute(persons));
         }
 
         [Fact]
@@ -170,16 +171,18 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var firstInstruction = _parser.Parse("where$(FirstName eq thierry)");
+            var firstInstruction = _parser.Parse("where$(FirstName eq 'thierry')");
             var secondInstruction = _parser.Parse("where$(FirstName eq 't a b c d')");
             var thirdInstruction = _parser.Parse("where$(FirstName co 't a')");
             var fourthInstruction = _parser.Parse("where$(FirstName sw 't a')");
             var fifthInstruction = _parser.Parse("where$(FirstName ew 'd')");
+            var sixInstruction = _parser.Parse("where$(FirstName co 't a' or FirstName sw 'lae')");
             var firstResult = firstInstruction.Execute(persons);
             var secondResult = secondInstruction.Execute(persons);
             var thirdResult = thirdInstruction.Execute(persons);
             var fourthResult = fourthInstruction.Execute(persons);
             var fifthResult = fifthInstruction.Execute(persons);
+            var sixResult = sixInstruction.Execute(persons);
 
             // ASSERTS
             Assert.NotNull(firstResult);
@@ -197,6 +200,8 @@ namespace SimpleIdentityServer.EventStore.Tests
             Assert.NotNull(fifthResult);
             Assert.True(fifthResult.Count() == 1);
             Assert.True(fifthResult.First().FirstName == "t a b c d");
+            Assert.NotNull(sixResult);
+            Assert.True(sixResult.Count() == 2);
         }
 
         [Fact]
@@ -257,7 +262,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("select$FirstName where$(FirstName eq thierry and LastName eq lastname and LastName eq lastname)");
+            var instruction = _parser.Parse("select$FirstName where$(FirstName eq 'thierry' and LastName eq 'lastname' and LastName eq 'lastname')");
             var result = instruction.Execute(persons);
 
             // ASSERTS
@@ -286,7 +291,7 @@ namespace SimpleIdentityServer.EventStore.Tests
             InitializeFakeObjects();
 
             // ACT
-            var instruction = _parser.Parse("select$FirstName where$(LastName eq lastname) orderby$on(FirstName)");
+            var instruction = _parser.Parse("select$FirstName where$(LastName eq 'lastname') orderby$on(FirstName)");
             var result = instruction.Execute(persons);
 
             // ASSERTS
@@ -408,8 +413,8 @@ namespace SimpleIdentityServer.EventStore.Tests
 
             // ACT
             var firstInstruction = _parser.Parse("join$outer(FirstName),inner(LastName)");
-            var secondInstruction = _parser.Parse("join$outer(FirstName),inner(LastName),select(outer$FirstName|inner) where$(outer_FirstName eq thierry)");
-            var thirdInstruction = _parser.Parse("join$outer(FirstName),inner(LastName),select(outer$FirstName|inner) where$(outer_FirstName eq thierry) select$outer_FirstName");
+            var secondInstruction = _parser.Parse("join$outer(FirstName),inner(LastName),select(outer$FirstName|inner) where$(outer_FirstName eq 'thierry')");
+            var thirdInstruction = _parser.Parse("join$outer(FirstName),inner(LastName),select(outer$FirstName|inner) where$(outer_FirstName eq 'thierry') select$outer_FirstName");
             var firstResult = firstInstruction.Execute(persons);
             var secondResult = secondInstruction.Execute(persons);
             var thirdResult = thirdInstruction.Execute(persons);
