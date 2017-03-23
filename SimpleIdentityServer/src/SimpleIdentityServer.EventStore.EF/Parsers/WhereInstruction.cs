@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string expression = "(\\S* (eq|neq|co) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
+            const string expression = "(\\S* (eq|neq|co|sw) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static Expression BuildCondition(string str, ParameterExpression arg)
         {
-            var p = Regex.Split(str, " *(eq|neq|co) *");
+            var p = Regex.Split(str, " *(eq|neq|co|sw) *");
             if (p.Count() != 3)
             {
                 throw new InvalidOperationException($"the condition {str} is not correct");
@@ -116,16 +116,26 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             var prop = p.Last().TrimStart('\'', '"').TrimEnd('\'', '"');
             var property = Expression.Property(arg, p.First());
+            // Not equal
             if (p.ElementAt(1) == "neq")
             {
                 return Expression.NotEqual(property, Expression.Constant(prop));
             }
 
+            // Contains
             if (p.ElementAt(1) == "co")
             {
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("Contains", new[] { typeof(string) } );
                 return Expression.Call(property, methodInfo, Expression.Constant(prop));
+            }
+
+            // Starts with
+            if (p.ElementAt(1) == "sw")
+            {
+                var propInfo = (PropertyInfo)property.Member;
+                var methodInfo = propInfo.PropertyType.GetMethod("StartsWith", new[] { typeof(string), typeof(StringComparison) });
+                return Expression.Call(property, methodInfo, Expression.Constant(prop), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
             }
 
             return Expression.Equal(property, Expression.Constant(prop));
