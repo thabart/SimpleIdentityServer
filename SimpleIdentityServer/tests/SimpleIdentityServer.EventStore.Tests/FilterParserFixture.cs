@@ -174,10 +174,12 @@ namespace SimpleIdentityServer.EventStore.Tests
             var secondInstruction = _parser.Parse("where$(FirstName eq 't a b c d')");
             var thirdInstruction = _parser.Parse("where$(FirstName co 't a')");
             var fourthInstruction = _parser.Parse("where$(FirstName sw 't a')");
+            var fifthInstruction = _parser.Parse("where$(FirstName ew 'd')");
             var firstResult = firstInstruction.Execute(persons);
             var secondResult = secondInstruction.Execute(persons);
             var thirdResult = thirdInstruction.Execute(persons);
             var fourthResult = fourthInstruction.Execute(persons);
+            var fifthResult = fifthInstruction.Execute(persons);
 
             // ASSERTS
             Assert.NotNull(firstResult);
@@ -192,6 +194,9 @@ namespace SimpleIdentityServer.EventStore.Tests
             Assert.NotNull(fourthResult);
             Assert.True(fourthResult.Count() == 1);
             Assert.True(fourthResult.First().FirstName == "t a b c d");
+            Assert.NotNull(fifthResult);
+            Assert.True(fifthResult.Count() == 1);
+            Assert.True(fifthResult.First().FirstName == "t a b c d");
         }
 
         [Fact]

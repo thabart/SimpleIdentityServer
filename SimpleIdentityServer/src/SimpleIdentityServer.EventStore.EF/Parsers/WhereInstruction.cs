@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string expression = "(\\S* (eq|neq|co|sw) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
+            const string expression = "(\\S* (eq|neq|co|sw|ew) (('|\")(\\S| )*('|\")|(\\S)*)( and | or ){0,1})+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static Expression BuildCondition(string str, ParameterExpression arg)
         {
-            var p = Regex.Split(str, " *(eq|neq|co|sw) *");
+            var p = Regex.Split(str, " *(eq|neq|co|sw|ew) *");
             if (p.Count() != 3)
             {
                 throw new InvalidOperationException($"the condition {str} is not correct");
@@ -135,6 +135,14 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("StartsWith", new[] { typeof(string), typeof(StringComparison) });
+                return Expression.Call(property, methodInfo, Expression.Constant(prop), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
+            }
+
+            // Ends with
+            if (p.ElementAt(1) == "ew")
+            {
+                var propInfo = (PropertyInfo)property.Member;
+                var methodInfo = propInfo.PropertyType.GetMethod("EndsWith", new[] { typeof(string), typeof(StringComparison) });
                 return Expression.Call(property, methodInfo, Expression.Constant(prop), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
             }
 
