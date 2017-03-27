@@ -112,6 +112,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
                 _simpleIdentityServerEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
                 return result;
             }
             catch(IdentityServerException ex)
@@ -142,6 +143,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
                 return result;
             }
             catch (IdentityServerException ex)
@@ -195,6 +197,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
                 return result;
             }
             catch (IdentityServerException ex)
@@ -220,6 +223,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _simpleIdentityServerEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue);
                 _simpleIdentityServerEventSource.EndRevokeToken(revokeTokenParameter.Token);
+                _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId));
                 return result;
             }
             catch (IdentityServerException ex)

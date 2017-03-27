@@ -118,6 +118,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         serializedParameters);
                 }
 
+                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, actionResult));
                 return actionResult;
             }
             catch(IdentityServerException ex)

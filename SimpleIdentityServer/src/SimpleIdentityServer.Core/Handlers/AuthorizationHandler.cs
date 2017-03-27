@@ -24,13 +24,32 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
-    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>
+    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>
     {
         private readonly IEventAggregateRepository _repository;
 
         public AuthorizationHandler(IEventAggregateRepository repository)
         {
             _repository = repository;
+        }
+
+        public async Task Handle(AuthorizationGranted message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+
+            var payload = JsonConvert.SerializeObject(message.Parameter);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Authorization granted",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload
+            });
         }
 
         public async Task Handle(AuthorizationRequestReceived message)

@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
@@ -34,7 +33,6 @@ using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Handlers;
 using SimpleIdentityServer.Core.Helpers;
@@ -165,10 +163,12 @@ namespace SimpleIdentityServer.Core
 
             services.AddTransient<AuthorizationHandler>();
             services.AddTransient<OpenIdErrorHandler>();
+            services.AddTransient<TokenHandler>();
             var provider = services.BuildServiceProvider();
             var evtHandlerStore = new EvtHandlerStore();
             evtHandlerStore.Register(provider.GetService<AuthorizationHandler>());
             evtHandlerStore.Register(provider.GetService<OpenIdErrorHandler>());
+            evtHandlerStore.Register(provider.GetService<TokenHandler>());
             if (handlers != null)
             {
                 foreach (var handler in handlers)

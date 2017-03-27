@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
-    public class TokenHandler : IHandle<GrantTokenViaAuthorizationCodeReceived>, IHandle<GrantTokenViaClientCredentialsReceived>, IHandle<GrantTokenViaRefreshTokenReceived>, IHandle<GrantTokenViaResourceOwnerCredentialsReceived>, IHandle<RevokeTokenReceived>
+    public class TokenHandler : IHandle<GrantTokenViaAuthorizationCodeReceived>, IHandle<GrantTokenViaClientCredentialsReceived>, IHandle<GrantTokenViaRefreshTokenReceived>, IHandle<GrantTokenViaResourceOwnerCredentialsReceived>, IHandle<RevokeTokenReceived>, IHandle<TokenGranted>, IHandle<TokenRevoked>
     {
         private readonly IEventAggregateRepository _repository;
 
@@ -83,7 +83,43 @@ namespace SimpleIdentityServer.Core.Handlers
             await Add(message.Id, message.ProcessId, message.Parameter, "Revoke token");
         }
 
-        private async Task Add<T>(string id, string processId, T content, string message)
+        public async Task Handle(TokenGranted message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            await Add(message.Id, message.ProcessId, message.Parameter, "Token granted");
+        }
+
+        public async Task Handle(TokenRevoked message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            await Add(message.Id, message.ProcessId, "Token revoked");
+        }
+
+        private Task Add<T>(string id, string processId, T content, string message)
+        {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            var payload = JsonConvert.SerializeObject(content);
+            return Add(id, processId, payload, message);
+        }
+
+        private Task Add(string id, string processId, string message)
+        {
+            return Add(id, processId, null, message);
+        }
+
+        private async Task Add(string id, string processId, string payload, string message)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -95,12 +131,6 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(processId));
             }
 
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-
-            var payload = JsonConvert.SerializeObject(content);
             await _repository.Add(new EventAggregate
             {
                 Id = id,
