@@ -14,40 +14,47 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Bus
 {
     public interface IEvtHandlerStore
     {
-        void Register(IHandler handler);
+        void Register(Type type);
         IEnumerable<IHandle<T>> Get<T>();
     }
 
     public class EvtHandlerStore : IEvtHandlerStore
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<Type, List<Func<Message, Task>>> _routes = new Dictionary<Type, List<Func<Message, Task>>>();
-        private readonly List<IHandler> _handlers = new List<IHandler>();
+        private readonly ICollection<Type> _types = new List<Type>();
 
-        public void Register(IHandler handler)
+        public EvtHandlerStore(IServiceProvider serviceProvider)
         {
-            _handlers.Add(handler);
+            _serviceProvider = serviceProvider;
+        }
+
+        public void Register(Type type)
+        {
+            _types.Add(type);
         }
 
         public IEnumerable<IHandle<T>> Get<T>()
         {
             var result = new List<IHandle<T>>();
-            foreach(var handler in _handlers)
+            foreach(var type in _types)
             {
-                var h = handler as IHandle<T>;
-                if (h == null)
+                var t = type.GetTypeInfo();
+                if (type.GetTypeInfo().GetInterfaces().Any(i => i == typeof(IHandle<T>)))
                 {
-                    continue;
+                    result.Add((IHandle<T>)_serviceProvider.GetService(type));
                 }
-
-                result.Add(h);
             }
 
             return result;

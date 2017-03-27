@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core
             return serviceCollection;
         }
 
-        public static IServiceCollection AddDefaultBus(this IServiceCollection services, IEnumerable<IHandler> handlers = null)
+        public static IServiceCollection AddDefaultBus(this IServiceCollection services, IEnumerable<Type> handlers = null)
         {
             if (services == null)
             {
@@ -166,13 +166,15 @@ namespace SimpleIdentityServer.Core
             services.AddTransient<TokenHandler>();
             services.AddTransient<UserInfoHandler>();
             services.AddTransient<IntrospectionHandler>();
+            services.AddTransient<RegistrationHandler>();
             var provider = services.BuildServiceProvider();
-            var evtHandlerStore = new EvtHandlerStore();
-            evtHandlerStore.Register(provider.GetService<AuthorizationHandler>());
-            evtHandlerStore.Register(provider.GetService<OpenIdErrorHandler>());
-            evtHandlerStore.Register(provider.GetService<TokenHandler>());
-            evtHandlerStore.Register(provider.GetService<UserInfoHandler>());
-            evtHandlerStore.Register(provider.GetService<IntrospectionHandler>());
+            var evtHandlerStore = new EvtHandlerStore(provider);
+            evtHandlerStore.Register(typeof(AuthorizationHandler));
+            evtHandlerStore.Register(typeof(OpenIdErrorHandler));
+            evtHandlerStore.Register(typeof(TokenHandler));
+            evtHandlerStore.Register(typeof(UserInfoHandler));
+            evtHandlerStore.Register(typeof(IntrospectionHandler));
+            evtHandlerStore.Register(typeof(RegistrationHandler));
             if (handlers != null)
             {
                 foreach (var handler in handlers)

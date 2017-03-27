@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Host
     public class EventOptions
     {
         public Type Publisher { get; set; }
-        public IEnumerable<IHandler> Handlers { get; set; }
+        public IEnumerable<Type> Handlers { get; set; }
     }
 
     public class IdentityServerOptions

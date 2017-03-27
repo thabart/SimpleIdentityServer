@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Extensions;
 using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,21 +39,16 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
 
         public async Task<bool> Add(EventAggregate evtAggregate)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            try
             {
-                try
-                {
-                    var record = evtAggregate.ToModel();
-                    _context.Events.Add(record);
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                    return true;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    return false;
-                }
+                var record = evtAggregate.ToModel();
+                _context.Events.Add(record);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 

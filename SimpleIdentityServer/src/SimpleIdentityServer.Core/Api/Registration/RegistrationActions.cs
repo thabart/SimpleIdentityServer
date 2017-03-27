@@ -15,7 +15,10 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Events;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Threading.Tasks;
@@ -30,10 +33,12 @@ namespace SimpleIdentityServer.Core.Api.Registration
     public class RegistrationActions : IRegistrationActions
     {
         private readonly IRegisterClientAction _registerClientAction;
+        private readonly IEventPublisher _eventPublisher;
 
-        public RegistrationActions(IRegisterClientAction registerClientAction)
+        public RegistrationActions(IRegisterClientAction registerClientAction, IEventPublisher eventPublisher)
         {
             _registerClientAction = registerClientAction;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter)
@@ -43,7 +48,19 @@ namespace SimpleIdentityServer.Core.Api.Registration
                 throw new ArgumentNullException(nameof(registrationParameter));
             }
 
-            return await _registerClientAction.Execute(registrationParameter);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, registrationParameter));
+                var result = await _registerClientAction.Execute(registrationParameter);
+                _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, result));
+                return result;
+            }
+            catch(IdentityServerException ex)
+            {
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                throw;
+            }
         }
     }
 }

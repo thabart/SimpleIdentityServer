@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "User information return");
+            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "User information returned");
         }
 
         private async Task AddEvent<T>(string id, string processId, T content, string message)
