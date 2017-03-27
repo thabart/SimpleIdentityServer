@@ -17,6 +17,7 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Net.Http.Headers;
@@ -67,7 +68,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
         private void InitializeFakeObjects()
         {
             _postIntrospectionActionStub = new Mock<IPostIntrospectionAction>();
-            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object);
+            var eventPublisherStub = new Mock<IEventPublisher>();
+            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object);
         }
     }
 }

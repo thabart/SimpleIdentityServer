@@ -15,6 +15,9 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
+using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core.Events;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using System;
@@ -33,20 +36,34 @@ namespace SimpleIdentityServer.Core.Api.Introspection
     public class IntrospectionActions : IIntrospectionActions
     {
         private readonly IPostIntrospectionAction _postIntrospectionAction;
+        private readonly IEventPublisher _eventPublisher;
 
-        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction)
+        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction, IEventPublisher eventPublisher)
         {
             _postIntrospectionAction = postIntrospectionAction;
+            _eventPublisher = eventPublisher;
         }
 
-        public Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (introspectionParameter == null)
             {
                 throw new ArgumentNullException(nameof(introspectionParameter));
             }
 
-            return _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, introspectionParameter));
+                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
+                _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, result));
+                return result;
+            }
+            catch (IdentityServerException ex)
+            {
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                throw;
+            }
         }
     }
 }

@@ -24,46 +24,47 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
-    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>
+    public class IntrospectionHandler : IHandle<IntrospectionRequestReceived>, IHandle<IntrospectionResultReturned>
     {
         private readonly IEventAggregateRepository _repository;
 
-        public AuthorizationHandler(IEventAggregateRepository repository)
+        public IntrospectionHandler(IEventAggregateRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task Handle(AuthorizationGranted message)
+        public async Task Handle(IntrospectionResultReturned message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
-
+            
             var payload = JsonConvert.SerializeObject(message.Parameter);
             await _repository.Add(new EventAggregate
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Authorization granted",
+                Description = "Start introspection",
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload
             });
         }
 
-        public async Task Handle(AuthorizationRequestReceived message)
+        public async Task Handle(IntrospectionRequestReceived message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
+
             var payload = JsonConvert.SerializeObject(message.Parameter);
             await _repository.Add(new EventAggregate
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Start authorization process",
+                Description = "Introspection result received",
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload
             });
