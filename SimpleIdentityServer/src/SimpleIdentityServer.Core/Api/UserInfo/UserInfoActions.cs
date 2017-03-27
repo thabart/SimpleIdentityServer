@@ -15,7 +15,11 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core.Events;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Results;
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.UserInfo
@@ -28,15 +32,29 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
     public class UserInfoActions : IUserInfoActions
     {
         private readonly IGetJwsPayload _getJwsPayload;
+        private readonly IEventPublisher _eventPublisher;
 
-        public UserInfoActions(IGetJwsPayload getJwsPayload)
+        public UserInfoActions(IGetJwsPayload getJwsPayload, IEventPublisher eventPublisher)
         {
             _getJwsPayload = getJwsPayload;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<UserInfoResult> GetUserInformation(string accessToken)
         {
-            return await _getJwsPayload.Execute(accessToken);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken));
+                var result = await _getJwsPayload.Execute(accessToken);
+                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result));
+                return result;
+            }
+            catch(IdentityServerException ex)
+            {
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                throw;
+            }
         }
     }
 }
