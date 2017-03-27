@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Core.Models
         public string AggregateId { get; set; }
         public string Payload { get; set; }
         public string Description { get; set; }
+        public int Order { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 }

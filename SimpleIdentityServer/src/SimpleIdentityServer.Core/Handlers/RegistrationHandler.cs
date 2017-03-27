@@ -45,9 +45,10 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Client registration success",
+                Description = "Finish client registration",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
 
@@ -65,7 +66,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = message.ProcessId,
                 Description = "Start client registration",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
     }

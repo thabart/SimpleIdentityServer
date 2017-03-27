@@ -45,14 +45,14 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken));
+                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken, 0));
                 var result = await _getJwsPayload.Execute(accessToken);
-                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result));
+                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

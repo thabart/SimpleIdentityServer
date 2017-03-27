@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20170117143129_Initialize")]
+    [Migration("20170327143147_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

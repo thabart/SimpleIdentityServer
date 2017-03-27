@@ -51,14 +51,14 @@ namespace SimpleIdentityServer.Core.Api.Registration
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, registrationParameter));
+                _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, registrationParameter, 0));
                 var result = await _registerClientAction.Execute(registrationParameter);
-                _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, result));
+                _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

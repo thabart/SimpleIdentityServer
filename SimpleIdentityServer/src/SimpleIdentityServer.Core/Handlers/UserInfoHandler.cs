@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "Get user information");
+            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "Start user information", parameter.Order);
         }
 
         public async Task Handle(UserInformationReturned parameter)
@@ -50,10 +50,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "User information returned");
+            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "Finish user information", parameter.Order);
         }
 
-        private async Task AddEvent<T>(string id, string processId, T content, string message)
+        private async Task AddEvent<T>(string id, string processId, T content, string message, int order)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -72,7 +72,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Description = message,
                 AggregateId = processId,
-                Payload = payload
+                Payload = payload,
+                Order = order
             });
         }
     }

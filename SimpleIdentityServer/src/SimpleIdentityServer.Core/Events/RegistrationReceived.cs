@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class RegistrationReceived : Event
     {
-        public RegistrationReceived(string id, string processId, RegistrationParameter parameter)
+        public RegistrationReceived(string id, string processId, RegistrationParameter parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public RegistrationParameter Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

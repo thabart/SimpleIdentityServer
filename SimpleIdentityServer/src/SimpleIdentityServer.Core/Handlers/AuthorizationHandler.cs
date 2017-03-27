@@ -45,9 +45,10 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Authorization granted",
+                Description = "Finish authorization",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
 
@@ -65,7 +66,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = message.ProcessId,
                 Description = "Start authorization process",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
     }

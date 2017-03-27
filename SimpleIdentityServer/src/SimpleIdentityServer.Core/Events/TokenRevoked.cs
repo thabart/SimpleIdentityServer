@@ -21,13 +21,15 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class TokenRevoked : Event
     {
-        public TokenRevoked(string id, string processId)
+        public TokenRevoked(string id, string processId, int order)
         {
             Id = id;
             ProcessId = processId;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
+        public int Order { get; private set; }
     }
 }

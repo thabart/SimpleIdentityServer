@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class IntrospectionResultReturned : Event
     {
-        public IntrospectionResultReturned(string id, string processId, IntrospectionResult parameter)
+        public IntrospectionResultReturned(string id, string processId, IntrospectionResult parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public IntrospectionResult Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

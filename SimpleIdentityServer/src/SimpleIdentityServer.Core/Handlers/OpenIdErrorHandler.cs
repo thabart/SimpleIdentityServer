@@ -60,7 +60,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = evt.ProcessId,
                 CreatedOn = DateTime.UtcNow,
                 Description = "An error occured",
-                Payload =  payload
+                Payload =  payload,
+                Order = evt.Order
             });
         }
     }

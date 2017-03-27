@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class RevokeTokenReceived : Event
     {
-        public RevokeTokenReceived(string id, string processId, RevokeTokenParameter parameter)
+        public RevokeTokenReceived(string id, string processId, RevokeTokenParameter parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public RevokeTokenParameter Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

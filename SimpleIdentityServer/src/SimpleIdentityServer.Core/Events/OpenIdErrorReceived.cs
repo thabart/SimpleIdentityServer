@@ -20,13 +20,14 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class OpenIdErrorReceived : Event
     {
-        public OpenIdErrorReceived(string id, string processId, string code, string message, string state = null)
+        public OpenIdErrorReceived(string id, string processId, string code, string message, int order, string state = null)
         {
             Id = id;
             ProcessId = processId;
             Code = code;
             Message = message;
             State = state;
+            Order = order;
         }
 
         public string Id { get; private set; }
@@ -34,5 +35,6 @@ namespace SimpleIdentityServer.Core.Events
         public string Code { get; private set; }
         public string Message { get; private set; }
         public string State { get; private set; }
+        public int Order { get; private set; }
     }
 }

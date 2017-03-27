@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
         {
             var processId = Guid.NewGuid().ToString();
-            _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  parameter));
+            _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  parameter, 0));
             try
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
@@ -118,12 +118,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                         serializedParameters);
                 }
 
-                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, actionResult));
+                _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, actionResult, 1));
                 return actionResult;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

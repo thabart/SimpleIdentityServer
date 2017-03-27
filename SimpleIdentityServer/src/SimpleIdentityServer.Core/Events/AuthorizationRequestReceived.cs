@@ -25,11 +25,12 @@ namespace SimpleIdentityServer.Core.Events
         private readonly string _processId;
         private readonly AuthorizationParameter _parameter;
 
-        public AuthorizationRequestReceived(string id, string processId, AuthorizationParameter parameter)
+        public AuthorizationRequestReceived(string id, string processId, AuthorizationParameter parameter, int order)
         {
             _id = id;
             _processId = processId;
             _parameter = parameter;
+            Order = order;
         }
 
         public string Id
@@ -46,5 +47,7 @@ namespace SimpleIdentityServer.Core.Events
         {
             get { return _parameter; }
         }
+
+        public int Order { get; private set; }
     }
 }

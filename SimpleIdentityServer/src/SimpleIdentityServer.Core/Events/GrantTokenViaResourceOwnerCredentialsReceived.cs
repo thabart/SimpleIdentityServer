@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class GrantTokenViaResourceOwnerCredentialsReceived : Event
     {
-        public GrantTokenViaResourceOwnerCredentialsReceived(string id, string processId, ResourceOwnerGrantTypeParameter parameter)
+        public GrantTokenViaResourceOwnerCredentialsReceived(string id, string processId, ResourceOwnerGrantTypeParameter parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public ResourceOwnerGrantTypeParameter Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

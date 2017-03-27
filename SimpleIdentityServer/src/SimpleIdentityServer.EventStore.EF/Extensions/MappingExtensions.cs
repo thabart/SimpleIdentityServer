@@ -33,6 +33,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
             {
                 Id = evtAggregate.Id,
                 AggregateId = evtAggregate.AggregateId,
+                Order = evtAggregate.Order,
                 CreatedOn = evtAggregate.CreatedOn,
                 Description = evtAggregate.Description,
                 Payload = evtAggregate.Payload
@@ -51,6 +52,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 Id = evtAggregate.Id,
                 AggregateId = evtAggregate.AggregateId,
                 CreatedOn = evtAggregate.CreatedOn,
+                Order = evtAggregate.Order,
                 Description = evtAggregate.Description,
                 Payload = evtAggregate.Payload
             };

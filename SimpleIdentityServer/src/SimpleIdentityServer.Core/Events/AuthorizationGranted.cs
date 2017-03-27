@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class AuthorizationGranted : Event
     {
-        public AuthorizationGranted(string id, string processId, ActionResult parameter)
+        public AuthorizationGranted(string id, string processId, ActionResult parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public ActionResult Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

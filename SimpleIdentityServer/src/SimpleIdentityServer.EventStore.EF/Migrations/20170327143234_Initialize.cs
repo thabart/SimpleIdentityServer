@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.EventStore.EF.Migrations
                     AggregateId = table.Column<string>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    Order = table.Column<int>(nullable: false),
                     Payload = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

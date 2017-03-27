@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, resourceOwnerGrantTypeParameter));
+                _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, resourceOwnerGrantTypeParameter, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password);
@@ -112,12 +112,12 @@ namespace SimpleIdentityServer.Core.Api.Token
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
                 _simpleIdentityServerEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, authorizationCodeGrantTypeParameter));
+                _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, authorizationCodeGrantTypeParameter, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
@@ -143,12 +143,12 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -163,16 +163,17 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, refreshTokenGrantTypeParameter));
+                _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, refreshTokenGrantTypeParameter, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
                 _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
                 var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
                 _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -190,19 +191,19 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, clientCredentialsGrantTypeParameter));
+                _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, clientCredentialsGrantTypeParameter, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
                 var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
                 _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);
-                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result));
+                _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -219,16 +220,16 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, revokeTokenParameter));
+                _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, revokeTokenParameter, 0));
                 _simpleIdentityServerEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue);
                 _simpleIdentityServerEventSource.EndRevokeToken(revokeTokenParameter.Token);
-                _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId));
+                _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message));
+                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

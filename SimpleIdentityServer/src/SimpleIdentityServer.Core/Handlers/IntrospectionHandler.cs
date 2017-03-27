@@ -47,7 +47,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = message.ProcessId,
                 Description = "Start introspection",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
 
@@ -64,9 +65,10 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Introspection result received",
+                Description = "Finish introspection",
                 CreatedOn = DateTime.UtcNow,
-                Payload = payload
+                Payload = payload,
+                Order = message.Order
             });
         }
     }

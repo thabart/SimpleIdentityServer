@@ -8,7 +8,7 @@ using SimpleIdentityServer.EventStore.EF;
 namespace SimpleIdentityServer.EventStore.EF.Migrations
 {
     [DbContext(typeof(EventStoreContext))]
-    [Migration("20170314183656_Initialize")]
+    [Migration("20170327143234_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,6 +26,8 @@ namespace SimpleIdentityServer.EventStore.EF.Migrations
                     b.Property<DateTime>("CreatedOn");
 
                     b.Property<string>("Description");
+
+                    b.Property<int>("Order");
 
                     b.Property<string>("Payload");
 

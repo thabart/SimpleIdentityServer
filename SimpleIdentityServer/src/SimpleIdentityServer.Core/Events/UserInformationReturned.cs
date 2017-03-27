@@ -21,15 +21,17 @@ namespace SimpleIdentityServer.Core.Events
 {
     public class UserInformationReturned : Event
     {
-        public UserInformationReturned(string id, string processId, UserInfoResult parameter)
+        public UserInformationReturned(string id, string processId, UserInfoResult parameter, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public UserInfoResult Parameter { get; private set; }
+        public int Order { get; private set; }
     }
 }

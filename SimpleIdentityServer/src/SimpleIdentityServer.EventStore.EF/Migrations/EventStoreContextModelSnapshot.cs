@@ -26,6 +26,8 @@ namespace SimpleIdentityServer.EventStore.EF.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<int>("Order");
+
                     b.Property<string>("Payload");
 
                     b.HasKey("Id");
