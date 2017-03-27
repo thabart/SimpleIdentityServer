@@ -10,6 +10,7 @@ using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
+using SimpleIdentityServer.Core.Bus;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -229,6 +230,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _refreshTokenGrantTypeParameterValidatorFake = new Mock<IRefreshTokenGrantTypeParameterValidator>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _getTokenByClientCredentialsGrantTypeActionStub = new Mock<IGetTokenByClientCredentialsGrantTypeAction>();
+            var eventPublisher = new Mock<IEventPublisher>();
             _revokeTokenActionStub = new Mock<IRevokeTokenAction>();
             _tokenActions = new TokenActions(_getTokenByResourceOwnerCredentialsGrantTypeActionFake.Object,
                 _getTokenByAuthorizationCodeGrantTypeActionFake.Object,
@@ -239,7 +241,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _getTokenByClientCredentialsGrantTypeActionStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
                 _simpleIdentityServerEventSourceFake.Object,
-                _revokeTokenActionStub.Object);
+                _revokeTokenActionStub.Object,
+                eventPublisher.Object);
         }
     }
 }
