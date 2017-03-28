@@ -45,6 +45,12 @@ namespace SimpleIdentityServer.Core.Handlers
         string GetPayload(RegistrationReceived parameter);
         string GetPayload(GetUserInformationReceived parameter);
         string GetPayload(UserInformationReturned parameter);
+        string GetPayload(GrantTokenViaAuthorizationCodeReceived parameter);
+        string GetPayload(GrantTokenViaClientCredentialsReceived parameter);
+        string GetPayload(GrantTokenViaRefreshTokenReceived parameter);
+        string GetPayload(GrantTokenViaResourceOwnerCredentialsReceived parameter);
+        string GetPayload(RevokeTokenReceived parameter);
+        string GetPayload(TokenGranted parameter);
         string GetPayload(Results.ActionResult parameter);
     }
 
@@ -233,6 +239,163 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Content = ((ObjectResult)parameter.Parameter.Content).Value
             };
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(GrantTokenViaAuthorizationCodeReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var clientId = GetClientId(parameter.AuthHeader);
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                clientId = param.ClientId;
+            }
+
+            var result = new Payload
+            {
+                ClientId = clientId,
+                Authorization = BuildAuthHeader(parameter.AuthHeader),
+                Content = param
+            };
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(GrantTokenViaClientCredentialsReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var clientId = GetClientId(parameter.AuthHeader);
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                clientId = param.ClientId;
+            }
+
+            var result = new Payload
+            {
+                ClientId = clientId,
+                Authorization = BuildAuthHeader(parameter.AuthHeader),
+                Content = param
+            };
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(GrantTokenViaRefreshTokenReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var result = new Payload
+            {
+                Content = param
+            };
+            
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(GrantTokenViaResourceOwnerCredentialsReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var clientId = GetClientId(parameter.AuthHeader);
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                clientId = param.ClientId;
+            }
+
+            var result = new Payload
+            {
+                ClientId = clientId,
+                Authorization = BuildAuthHeader(parameter.AuthHeader),
+                Content = param
+            };
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(RevokeTokenReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var clientId = GetClientId(parameter.AuthHeader);
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                clientId = param.ClientId;
+            }
+
+            var result = new Payload
+            {
+                ClientId = clientId,
+                Authorization = BuildAuthHeader(parameter.AuthHeader),
+                Content = param
+            };
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(TokenGranted parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+            
+            var result = new Payload
+            {
+                Content = parameter.Parameter
+            };
+
             return JsonConvert.SerializeObject(result);
         }
 

@@ -16,12 +16,13 @@
 
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
+using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Events
 {
     public class GrantTokenViaResourceOwnerCredentialsReceived : Event
     {
-        public GrantTokenViaResourceOwnerCredentialsReceived(string id, string processId, ResourceOwnerGrantTypeParameter parameter, int order)
+        public GrantTokenViaResourceOwnerCredentialsReceived(string id, string processId, ResourceOwnerGrantTypeParameter parameter, AuthenticationHeaderValue authHeader, int order)
         {
             Id = id;
             ProcessId = processId;
@@ -32,6 +33,7 @@ namespace SimpleIdentityServer.Core.Events
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public ResourceOwnerGrantTypeParameter Parameter { get; private set; }
+        public AuthenticationHeaderValue AuthHeader { get; private set; }
         public int Order { get; private set; }
     }
 }

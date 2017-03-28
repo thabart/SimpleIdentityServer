@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, resourceOwnerGrantTypeParameter, 0));
+                _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, resourceOwnerGrantTypeParameter, authenticationHeaderValue, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password);
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, authorizationCodeGrantTypeParameter, 0));
+                _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, authorizationCodeGrantTypeParameter, authenticationHeaderValue, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, clientCredentialsGrantTypeParameter, 0));
+                _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, clientCredentialsGrantTypeParameter, authenticationHeaderValue, 0));
                 _simpleIdentityServerEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
                 var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
@@ -220,7 +220,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, revokeTokenParameter, 0));
+                _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, revokeTokenParameter, authenticationHeaderValue, 0));
                 _simpleIdentityServerEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue);
                 _simpleIdentityServerEventSource.EndRevokeToken(revokeTokenParameter.Token);

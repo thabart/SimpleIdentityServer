@@ -16,22 +16,25 @@
 
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
+using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Events
 {
     public class GrantTokenViaClientCredentialsReceived : Event
     {
-        public GrantTokenViaClientCredentialsReceived(string id, string processId, ClientCredentialsGrantTypeParameter parameter, int order)
+        public GrantTokenViaClientCredentialsReceived(string id, string processId, ClientCredentialsGrantTypeParameter parameter, AuthenticationHeaderValue authHeader, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            AuthHeader = authHeader;
             Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public ClientCredentialsGrantTypeParameter Parameter { get; private set; }
+        public AuthenticationHeaderValue AuthHeader { get; private set; }
         public int Order { get; private set; }
     }
 }

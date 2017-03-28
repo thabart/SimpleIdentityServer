@@ -16,22 +16,25 @@
 
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
+using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Events
 {
     public class RevokeTokenReceived : Event
     {
-        public RevokeTokenReceived(string id, string processId, RevokeTokenParameter parameter, int order)
+        public RevokeTokenReceived(string id, string processId, RevokeTokenParameter parameter, AuthenticationHeaderValue authHeader, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
             Order = order;
+            AuthHeader = authHeader;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public RevokeTokenParameter Parameter { get; private set; }
         public int Order { get; private set; }
+        public AuthenticationHeaderValue AuthHeader { get; private set; }
     }
 }
