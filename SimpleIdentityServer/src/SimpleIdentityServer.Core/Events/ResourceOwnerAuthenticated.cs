@@ -14,18 +14,24 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core.Results;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Core.Events
 {
-    public interface IEventAggregateRepository
+    public class ResourceOwnerAuthenticated : Event
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<IEnumerable<EventAggregate>> GetByAggregate(string aggregateId);
-        Task<SearchResult> Search(SearchParameter searchParameter);
+        public ResourceOwnerAuthenticated(string id, string aggregateId, ActionResult parameter, int order)
+        {
+            Id = id;
+            AggregateId = aggregateId;
+            Parameter = parameter;
+            Order = order;
+        }
+
+        public string Id { get; private set; }
+        public string AggregateId { get; private set; }
+        public ActionResult Parameter { get; private set; }
+        public int Order { get; set; }
     }
 }

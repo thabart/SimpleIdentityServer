@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
@@ -28,19 +30,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
     public interface IAuthenticateActions
     {
-       Task<ActionResult> AuthenticateResourceOwnerOpenId(
-            AuthorizationParameter parameter,
-            ClaimsPrincipal claimsPrincipal,
-            string code);
+        Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code);
         Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
-        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(
-            LocalAuthenticationParameter localAuthenticationParameter,
-            AuthorizationParameter authorizationParameter,
-            string code);
-        Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(
-            List<Claim> claims,
-            AuthorizationParameter authorizationParameter,
-            string code);
+        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code);
+        Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(List<Claim> claims, AuthorizationParameter authorizationParameter, string code);
         Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal);
         Task<string> GenerateAndSendCode(string subject);
         Task<bool> ValidateCode(string code);
@@ -57,6 +50,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
+        private readonly IEventPublisher _eventPublisher;
+        private readonly IEventAggregateRepository _eventAggregateRepository;
 
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
@@ -78,19 +73,16 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             _removeConfirmationCodeAction = removeConfirmationCodeAction;
         }
 
-        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(
-            AuthorizationParameter parameter,
-            ClaimsPrincipal claimsPrincipal,
-            string code)
+        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code)
         {
             if (parameter == null)
             {
-                throw new ArgumentNullException("parameter");
+                throw new ArgumentNullException(nameof(parameter));
             }
 
             if (claimsPrincipal == null)
             {
-                throw new ArgumentNullException("claimsPrincipal");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 

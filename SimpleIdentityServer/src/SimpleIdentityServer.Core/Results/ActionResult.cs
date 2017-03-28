@@ -27,5 +27,6 @@ namespace SimpleIdentityServer.Core.Results
     {
         public TypeActionResult Type { get; set; }
         public RedirectInstruction RedirectInstruction { get; set; }
+        public string ProcessId { get; set; }
     }
 }

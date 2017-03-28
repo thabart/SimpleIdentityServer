@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Models;
@@ -24,32 +23,15 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
-    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>
+    public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>, IHandle<ResourceOwnerAuthenticated>, IHandle<ConsentAccepted>, IHandle<ConsentRejected>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly IPayloadSerializer _serializer;
 
-        public AuthorizationHandler(IEventAggregateRepository repository)
+        public AuthorizationHandler(IEventAggregateRepository repository, IPayloadSerializer serializer)
         {
             _repository = repository;
-        }
-
-        public async Task Handle(AuthorizationGranted message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            var payload = JsonConvert.SerializeObject(message.Parameter);
-            await _repository.Add(new EventAggregate
-            {
-                Id = message.Id,
-                AggregateId = message.ProcessId,
-                Description = "Finish authorization",
-                CreatedOn = DateTime.UtcNow,
-                Payload = payload,
-                Order = message.Order
-            });
+            _serializer = serializer;
         }
 
         public async Task Handle(AuthorizationRequestReceived message)
@@ -59,7 +41,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var payload = JsonConvert.SerializeObject(message.Parameter);
+            var payload = _serializer.GetPayload(message);
             await _repository.Add(new EventAggregate
             {
                 Id = message.Id,
@@ -67,6 +49,80 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Start authorization process",
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
+                Order = message.Order
+            });
+        }
+
+        public async Task Handle(AuthorizationGranted message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = _serializer.GetPayload(message);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Authorization granted",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload,
+                Order = message.Order
+            });
+        }
+
+        public async Task Handle(ResourceOwnerAuthenticated message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = _serializer.GetPayload(message);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.AggregateId,
+                Description = "Resource owner is authenticated",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload,
+                Order = message.Order
+            });
+        }
+
+        public async Task Handle(ConsentAccepted message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = _serializer.GetPayload(message);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Consent accepted",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload,
+                Order = message.Order
+            });
+        }
+
+        public async Task Handle(ConsentRejected message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Consent rejected",
+                CreatedOn = DateTime.UtcNow,
                 Order = message.Order
             });
         }

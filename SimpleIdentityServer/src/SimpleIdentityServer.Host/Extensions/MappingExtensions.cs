@@ -50,6 +50,11 @@ namespace SimpleIdentityServer.Host.Extensions
                 UiLocales = request.UiLocales
             };
 
+            if (!string.IsNullOrWhiteSpace(request.ProcessId))
+            {
+                result.ProcessId = request.ProcessId;
+            }
+
             if (!string.IsNullOrWhiteSpace(request.Claims))
             {
                 var claimsParameter = new ClaimsParameter();

@@ -161,6 +161,7 @@ namespace SimpleIdentityServer.Core
                 throw new ArgumentNullException(nameof(services));
             }
 
+            services.AddTransient<IPayloadSerializer, PayloadSerializer>();
             services.AddTransient<AuthorizationHandler>();
             services.AddTransient<OpenIdErrorHandler>();
             services.AddTransient<TokenHandler>();

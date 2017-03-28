@@ -23,6 +23,7 @@ using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EventStore.EF.Repositories
 {
@@ -61,6 +62,12 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
             }
 
             return record.ToDomain();
+        }
+
+        public async Task<IEnumerable<EventAggregate>> GetByAggregate(string aggregateId)
+        {
+            var records = await _context.Events.Where(e => e.AggregateId == aggregateId).Select(e => e.ToDomain()).ToListAsync().ConfigureAwait(false);
+            return records;
         }
 
         public async Task<SearchResult> Search(SearchParameter searchParameter)

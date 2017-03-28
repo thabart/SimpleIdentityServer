@@ -20,10 +20,14 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Host.Extensions;
@@ -49,6 +53,8 @@ namespace SimpleIdentityServer.Startup.Controllers
         private readonly ITranslationManager _translationManager;        
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;        
         private readonly IUrlHelper _urlHelper;
+        private readonly IEventAggregateRepository _eventAggregateRepository;
+        private readonly IEventPublisher _eventPublisher;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -57,7 +63,9 @@ namespace SimpleIdentityServer.Startup.Controllers
             ITranslationManager translationManager,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor)
+            IActionContextAccessor actionContextAccessor,
+            IEventAggregateRepository eventAggregateRepository,
+            IEventPublisher eventPublisher)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -65,6 +73,8 @@ namespace SimpleIdentityServer.Startup.Controllers
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _eventAggregateRepository = eventAggregateRepository;
+            _eventPublisher = eventPublisher;
         }
         
         #region Public methods
@@ -293,6 +303,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 request);
             if (result != null)
             {
+                await LogAuthenticateUser(actionResult, request.ProcessId);
                 return result;
             }
 
@@ -350,6 +361,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                     request);
                 if (result != null)
                 {
+                    await LogAuthenticateUser(actionResult.ActionResult, request.ProcessId);
                     return result;
                 }
             }
@@ -446,18 +458,46 @@ namespace SimpleIdentityServer.Startup.Controllers
                 var authenticationManager = this.GetAuthenticationManager();
                 await SetLocalCookie(authenticationManager, actionResult.Claims);
                 await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
+                await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
             }
 
             return RedirectToAction("OpenId", "Authenticate", new { code = code });
         }
-        
+
         #endregion
 
         #endregion
-        
+
         #region Private methods
+
+        private async Task LogAuthenticateUser(Core.Results.ActionResult act, string processId)
+        {
+            if (string.IsNullOrWhiteSpace(processId))
+            {
+                return;
+            }
+
+            var evtAggregate = await GetLastEventAggregate(processId);
+            if (evtAggregate == null)
+            {
+                return;
+            }
+
+            _eventPublisher.Publish(new ResourceOwnerAuthenticated(Guid.NewGuid().ToString(), processId, act, evtAggregate.Order + 1));
+        }
+
+        private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
+        {
+            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
+            if (events == null || !events.Any())
+            {
+                return null;
+            }
+
+            return events.First();
+        }
 
         private async Task TranslateView(string uiLocales)
         {

@@ -17,12 +17,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,15 +39,21 @@ namespace SimpleIdentityServer.Startup.Controllers
         private readonly IConsentActions _consentActions;
         private readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
+        private readonly IEventPublisher _eventPublisher;
+        private readonly IEventAggregateRepository _eventAggregateRepository;
 
         public ConsentController(
             IConsentActions consentActions,
             IDataProtectionProvider dataProtectionProvider,
-            ITranslationManager translationManager)
+            ITranslationManager translationManager,
+            IEventPublisher eventPublisher,
+            IEventAggregateRepository eventAggregateRepository)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
+            _eventPublisher = eventPublisher;
+            _eventAggregateRepository = eventAggregateRepository;
         }
         
         public async Task<ActionResult> Index(string code)
@@ -81,7 +91,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
-
+            await LogConsentAccepted(actionResult, parameter.ProcessId);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
         }
@@ -92,9 +102,10 @@ namespace SimpleIdentityServer.Startup.Controllers
         /// </summary>
         /// <param name="code">Encrypted & signed authorization request</param>
         /// <returns>Redirect to the callback url.</returns>
-        public ActionResult Cancel(string code)
+        public async Task<ActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
+            await LogConsentRejected(request.ProcessId);
             return Redirect(request.RedirectUri);
         }
 
@@ -112,6 +123,49 @@ namespace SimpleIdentityServer.Startup.Controllers
                 Core.Constants.StandardTranslationCodes.Tos
             });
             ViewBag.Translations = translations;
+        }
+
+        private async Task LogConsentAccepted(Core.Results.ActionResult act, string processId)
+        {
+            if (string.IsNullOrWhiteSpace(processId))
+            {
+                return;
+            }
+
+            var evtAggregate = await GetLastEventAggregate(processId);
+            if (evtAggregate == null)
+            {
+                return;
+            }
+
+            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, act, evtAggregate.Order + 1));
+        }
+
+        private async Task LogConsentRejected(string processId)
+        {
+            if (string.IsNullOrWhiteSpace(processId))
+            {
+                return;
+            }
+
+            var evtAggregate = await GetLastEventAggregate(processId);
+            if (evtAggregate == null)
+            {
+                return;
+            }
+
+            _eventPublisher.Publish(new ConsentRejected(Guid.NewGuid().ToString(), processId, evtAggregate.Order + 1));
+        }
+
+        private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
+        {
+            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
+            if (events == null || !events.Any())
+            {
+                return null;
+            }
+
+            return events.First();
         }
     }
 }

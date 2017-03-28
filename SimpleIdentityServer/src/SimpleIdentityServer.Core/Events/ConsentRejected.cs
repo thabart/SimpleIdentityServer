@@ -14,18 +14,21 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Bus;
 
-namespace SimpleIdentityServer.Core.Repositories
+namespace SimpleIdentityServer.Core.Events
 {
-    public interface IEventAggregateRepository
+    public class ConsentRejected : Event
     {
-        Task<bool> Add(EventAggregate evtAggregate);
-        Task<EventAggregate> Get(string id);
-        Task<IEnumerable<EventAggregate>> GetByAggregate(string aggregateId);
-        Task<SearchResult> Search(SearchParameter searchParameter);
+        public ConsentRejected(string id, string processId, int order)
+        {
+            Id = id;
+            ProcessId = processId;
+            Order = order;
+        }
+
+        public string Id { get; private set; }
+        public string ProcessId { get; private set; }
+        public int Order { get; private set; }
     }
 }

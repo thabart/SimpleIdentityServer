@@ -96,6 +96,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                         authorizationRequest.Prompt = Enum.GetName(typeof(PromptParameter), PromptParameter.login);
                     }
 
+                    // Set the process id into the request.
+                    if (!string.IsNullOrWhiteSpace(actionResult.ProcessId))
+                    {
+                        authorizationRequest.ProcessId = actionResult.ProcessId;
+                    }
+
                     // Add the encoded request into the query string
                     var encryptedRequest = _dataProtector.Protect(authorizationRequest);
                     actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,

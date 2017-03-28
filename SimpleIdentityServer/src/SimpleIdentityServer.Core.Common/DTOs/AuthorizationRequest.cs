@@ -163,7 +163,8 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public CodeChallengeMethods? CodeChallengeMethod { get; set; }
         [DataMember(Name = ClientAuthNames.ClientId)]
         public string ClientId { get; set; }
-
+        [DataMember(Name = EventResponseNames.AggregateId)]
+        public string ProcessId { get; set; }
         public string GetQueryString()
         {
             var serializer = new ParamSerializer();
