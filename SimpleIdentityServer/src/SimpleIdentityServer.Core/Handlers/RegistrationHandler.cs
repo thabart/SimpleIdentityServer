@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Repositories;
-using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Models;
 
 namespace SimpleIdentityServer.Core.Handlers
@@ -27,29 +26,12 @@ namespace SimpleIdentityServer.Core.Handlers
     public class RegistrationHandler : IHandle<RegistrationReceived>, IHandle<RegistrationResultReceived>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly IPayloadSerializer _serializer;
 
-        public RegistrationHandler(IEventAggregateRepository repository)
+        public RegistrationHandler(IEventAggregateRepository repository, IPayloadSerializer serializer)
         {
             _repository = repository;
-        }
-
-        public async Task Handle(RegistrationResultReceived message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            var payload = JsonConvert.SerializeObject(message.Parameter);
-            await _repository.Add(new EventAggregate
-            {
-                Id = message.Id,
-                AggregateId = message.ProcessId,
-                Description = "Finish client registration",
-                CreatedOn = DateTime.UtcNow,
-                Payload = payload,
-                Order = message.Order
-            });
+            _serializer = serializer;
         }
 
         public async Task Handle(RegistrationReceived message)
@@ -59,12 +41,31 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var payload = JsonConvert.SerializeObject(message.Parameter);
+            var payload = _serializer.GetPayload(message);
             await _repository.Add(new EventAggregate
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
                 Description = "Start client registration",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload,
+                Order = message.Order
+            });
+        }
+
+        public async Task Handle(RegistrationResultReceived message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = _serializer.GetPayload(message);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Client registered",
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order

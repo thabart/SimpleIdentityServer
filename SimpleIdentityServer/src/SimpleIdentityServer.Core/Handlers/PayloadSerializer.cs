@@ -40,6 +40,8 @@ namespace SimpleIdentityServer.Core.Handlers
         string GetPayload(ResourceOwnerAuthenticated parameter);
         string GetPayload(ConsentAccepted parameter);
         string GetPayload(IntrospectionRequestReceived parameter);
+        string GetPayload(RegistrationResultReceived parameter);
+        string GetPayload(RegistrationReceived parameter);
         string GetPayload(ActionResult parameter);
     }
 
@@ -180,6 +182,46 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Content = jsonObj
             };
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(RegistrationReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var result = new Payload
+            {
+                Content = parameter.Parameter
+            };
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(RegistrationResultReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var result = new Payload
+            {
+                ClientId = parameter.Parameter.ClientId,
+                Content = parameter.Parameter
+            };
+
             return JsonConvert.SerializeObject(result);
         }
 
