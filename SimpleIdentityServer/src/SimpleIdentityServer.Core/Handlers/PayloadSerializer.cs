@@ -20,12 +20,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Parameters;
+using System.Net.Http.Headers;
+using SimpleIdentityServer.Core.Common.Extensions;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
     public class Payload
     {
         public string ClientId { get; set; }
+        public object Authorization { get; set; }
         public object Content { get; set; }
     }
 
@@ -35,6 +39,7 @@ namespace SimpleIdentityServer.Core.Handlers
         string GetPayload(AuthorizationGranted parameter);
         string GetPayload(ResourceOwnerAuthenticated parameter);
         string GetPayload(ConsentAccepted parameter);
+        string GetPayload(IntrospectionRequestReceived parameter);
         string GetPayload(ActionResult parameter);
     }
 
@@ -91,6 +96,60 @@ namespace SimpleIdentityServer.Core.Handlers
             return GetPayload(parameter.Parameter);
         }
 
+        public string GetPayload(IntrospectionRequestReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var param = parameter.Parameter;
+            var jsonObj = new JObject();
+            jsonObj.Add("token", param.Token);
+            jsonObj.Add("token_type_hint", param.Token);
+            jsonObj.Add("client_id", param.ClientId);
+            jsonObj.Add("client_secret", param.ClientSecret);
+            jsonObj.Add("client_assertion", param.ClientAssertion);
+            jsonObj.Add("client_assertion_type", param.ClientAssertionType);
+            var clientId = GetClientId(parameter.AuthenticationHeader);
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                clientId = param.ClientId;
+            }
+
+            var result = new Payload
+            {
+                Authorization = BuildAuthHeader(parameter.AuthenticationHeader),
+                Content = jsonObj,
+                ClientId = clientId
+            };
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(IntrospectionResultReturned parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var result = new Payload
+            {
+                Content = parameter.Parameter
+            };
+            return JsonConvert.SerializeObject(result);
+        }
+
         public string GetPayload(ActionResult parameter)
         {
             if (parameter == null)
@@ -122,6 +181,43 @@ namespace SimpleIdentityServer.Core.Handlers
                 Content = jsonObj
             };
             return JsonConvert.SerializeObject(result);
+        }
+
+        private JObject BuildAuthHeader(AuthenticationHeaderValue auth)
+        {
+            if (auth == null)
+            {
+                return null;
+            }
+
+            var result = new JObject();
+            result.Add("scheme", auth.Scheme);
+            result.Add("value", auth.Parameter);
+            return result; 
+        }
+
+        private static string GetClientId(AuthenticationHeaderValue auth)
+        {
+            if (auth == null || string.IsNullOrWhiteSpace(auth.Parameter))
+            {
+                return null;
+            }
+
+            try
+            {
+                var decodedParameter = auth.Parameter.Base64Decode();
+                var splitted = decodedParameter.Split(':');
+                if (splitted == null || splitted.Count() != 2)
+                {
+                    return null;
+                }
+
+                return splitted.First();
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

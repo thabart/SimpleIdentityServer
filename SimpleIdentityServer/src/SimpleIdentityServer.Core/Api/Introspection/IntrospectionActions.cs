@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, introspectionParameter, 0));
+                _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, introspectionParameter, authenticationHeaderValue, 0));
                 var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
                 _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;

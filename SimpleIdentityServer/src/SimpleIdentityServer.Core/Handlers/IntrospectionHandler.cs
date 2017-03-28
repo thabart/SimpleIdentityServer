@@ -27,10 +27,31 @@ namespace SimpleIdentityServer.Core.Handlers
     public class IntrospectionHandler : IHandle<IntrospectionRequestReceived>, IHandle<IntrospectionResultReturned>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly IPayloadSerializer _payloadSerializer;
 
-        public IntrospectionHandler(IEventAggregateRepository repository)
+        public IntrospectionHandler(IEventAggregateRepository repository, IPayloadSerializer payloadSerializer)
         {
             _repository = repository;
+            _payloadSerializer = payloadSerializer;
+        }
+
+        public async Task Handle(IntrospectionRequestReceived message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var payload = _payloadSerializer.GetPayload(message);
+            await _repository.Add(new EventAggregate
+            {
+                Id = message.Id,
+                AggregateId = message.ProcessId,
+                Description = "Start introspection",
+                CreatedOn = DateTime.UtcNow,
+                Payload = payload,
+                Order = message.Order
+            });
         }
 
         public async Task Handle(IntrospectionResultReturned message)
@@ -45,27 +66,7 @@ namespace SimpleIdentityServer.Core.Handlers
             {
                 Id = message.Id,
                 AggregateId = message.ProcessId,
-                Description = "Start introspection",
-                CreatedOn = DateTime.UtcNow,
-                Payload = payload,
-                Order = message.Order
-            });
-        }
-
-        public async Task Handle(IntrospectionRequestReceived message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-
-            var payload = JsonConvert.SerializeObject(message.Parameter);
-            await _repository.Add(new EventAggregate
-            {
-                Id = message.Id,
-                AggregateId = message.ProcessId,
-                Description = "Finish introspection",
+                Description = "Introspection result",
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order

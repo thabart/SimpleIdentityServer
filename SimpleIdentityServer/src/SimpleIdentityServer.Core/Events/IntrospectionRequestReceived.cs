@@ -16,22 +16,25 @@
 
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
+using System.Net.Http.Headers;
 
 namespace SimpleIdentityServer.Core.Events
 {
     public class IntrospectionRequestReceived : Event
     {
-        public IntrospectionRequestReceived(string id, string processId, IntrospectionParameter parameter, int order)
+        public IntrospectionRequestReceived(string id, string processId, IntrospectionParameter parameter, AuthenticationHeaderValue authHeaderValue, int order)
         {
             Id = id;
             ProcessId = processId;
             Parameter = parameter;
+            AuthenticationHeader = authHeaderValue;
             Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
         public IntrospectionParameter Parameter { get; private set; }
+        public AuthenticationHeaderValue AuthenticationHeader { get; set; }
         public int Order { get; private set; }
     }
 }
