@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Parameters;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleIdentityServer.Core.Handlers
 {
@@ -42,7 +43,9 @@ namespace SimpleIdentityServer.Core.Handlers
         string GetPayload(IntrospectionRequestReceived parameter);
         string GetPayload(RegistrationResultReceived parameter);
         string GetPayload(RegistrationReceived parameter);
-        string GetPayload(ActionResult parameter);
+        string GetPayload(GetUserInformationReceived parameter);
+        string GetPayload(UserInformationReturned parameter);
+        string GetPayload(Results.ActionResult parameter);
     }
 
     public class PayloadSerializer : IPayloadSerializer
@@ -152,39 +155,6 @@ namespace SimpleIdentityServer.Core.Handlers
             return JsonConvert.SerializeObject(result);
         }
 
-        public string GetPayload(ActionResult parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            var jsonObj = new JObject();
-            jsonObj.Add("action_type", Enum.GetName(typeof(TypeActionResult), parameter.Type).ToLower());
-            if (parameter.RedirectInstruction != null)
-            {
-                var redirectInstr = parameter.RedirectInstruction;
-                jsonObj.Add("endpoint", Enum.GetName(typeof(IdentityServerEndPoints), redirectInstr.Action));
-                jsonObj.Add("response_mode", Enum.GetName(typeof(ResponseMode), redirectInstr.ResponseMode).ToLower());
-                var arr = new JArray();
-                if (redirectInstr.Parameters != null)
-                {
-                    foreach (var p in redirectInstr.Parameters)
-                    {
-                        arr.Add(new JObject(new JProperty(p.Name, p.Value)));
-                    }
-                }
-
-                jsonObj.Add("parameters", arr);
-            }
-
-            var result = new Payload
-            {
-                Content = jsonObj
-            };
-            return JsonConvert.SerializeObject(result);
-        }
-
         public string GetPayload(RegistrationReceived parameter)
         {
             if (parameter == null)
@@ -222,6 +192,80 @@ namespace SimpleIdentityServer.Core.Handlers
                 Content = parameter.Parameter
             };
 
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(GetUserInformationReceived parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (string.IsNullOrWhiteSpace(parameter.Parameter))
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var jObj = new JObject();
+            jObj.Add("access_token", parameter.Parameter);
+            var result = new Payload
+            {
+                Content = jObj
+            };
+
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(UserInformationReturned parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (parameter.Parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter.Parameter));
+            }
+
+            var result = new Payload
+            {
+                Content = ((ObjectResult)parameter.Parameter.Content).Value
+            };
+            return JsonConvert.SerializeObject(result);
+        }
+
+        public string GetPayload(Results.ActionResult parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var jsonObj = new JObject();
+            jsonObj.Add("action_type", Enum.GetName(typeof(TypeActionResult), parameter.Type).ToLower());
+            if (parameter.RedirectInstruction != null)
+            {
+                var redirectInstr = parameter.RedirectInstruction;
+                jsonObj.Add("endpoint", Enum.GetName(typeof(IdentityServerEndPoints), redirectInstr.Action));
+                jsonObj.Add("response_mode", Enum.GetName(typeof(ResponseMode), redirectInstr.ResponseMode).ToLower());
+                var arr = new JArray();
+                if (redirectInstr.Parameters != null)
+                {
+                    foreach (var p in redirectInstr.Parameters)
+                    {
+                        arr.Add(new JObject(new JProperty(p.Name, p.Value)));
+                    }
+                }
+
+                jsonObj.Add("parameters", arr);
+            }
+
+            var result = new Payload
+            {
+                Content = jsonObj
+            };
             return JsonConvert.SerializeObject(result);
         }
 

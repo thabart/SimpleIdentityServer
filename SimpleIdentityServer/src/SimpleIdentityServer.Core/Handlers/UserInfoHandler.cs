@@ -27,10 +27,12 @@ namespace SimpleIdentityServer.Core.Handlers
     public class UserInfoHandler : IHandle<GetUserInformationReceived>, IHandle<UserInformationReturned>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly IPayloadSerializer _serializer;
 
-        public UserInfoHandler(IEventAggregateRepository repository)
+        public UserInfoHandler(IEventAggregateRepository repository, IPayloadSerializer serializer)
         {
             _repository = repository;
+            _serializer = serializer;
         }
 
         public async Task Handle(GetUserInformationReceived parameter)
@@ -40,7 +42,8 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "Start user information", parameter.Order);
+            var payload = _serializer.GetPayload(parameter);
+            await AddEvent(parameter.Id, parameter.ProcessId, payload, "Start user information", parameter.Order);
         }
 
         public async Task Handle(UserInformationReturned parameter)
@@ -50,10 +53,11 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Parameter, "Finish user information", parameter.Order);
+            var payload = _serializer.GetPayload(parameter);
+            await AddEvent(parameter.Id, parameter.ProcessId, payload, "User information returned", parameter.Order);
         }
 
-        private async Task AddEvent<T>(string id, string processId, T content, string message, int order)
+        private async Task AddEvent(string id, string processId, string content, string message, int order)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -65,14 +69,13 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(processId));
             }
 
-            var payload = JsonConvert.SerializeObject(content);
             await _repository.Add(new EventAggregate
             {
                 Id = id,
                 CreatedOn = DateTime.UtcNow,
                 Description = message,
                 AggregateId = processId,
-                Payload = payload,
+                Payload = content,
                 Order = order
             });
         }
