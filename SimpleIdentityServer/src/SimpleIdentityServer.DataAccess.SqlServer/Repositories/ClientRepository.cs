@@ -233,6 +233,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         {
                             clientSecrets.Add(new ClientSecret
                             {
+                                Id = Guid.NewGuid().ToString(),
+                                ClientId = client.ClientId,
                                 Type = (SecretTypes)secret.Type,
                                 Value = secret.Value
                             });
@@ -273,7 +275,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         JsonWebKeys = jsonWebKeys,
                         GrantTypes = grantTypes,
                         ResponseTypes = responseTypes,
-                        ScimProfile = client.ScimProfile
+                        ScimProfile = client.ScimProfile,
+                        ClientSecrets = clientSecrets
                     };
 
                     _context.Clients.Add(newClient);
