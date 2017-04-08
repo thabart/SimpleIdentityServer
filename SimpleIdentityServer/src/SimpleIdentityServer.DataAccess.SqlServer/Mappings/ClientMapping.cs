@@ -42,6 +42,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
                 .WithOne(s => s.Client)
                 .HasForeignKey(s => s.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Models.Client>()
+                .HasMany(c => c.ClientSecrets)
+                .WithOne(s => s.Client)
+                .HasForeignKey(s => s.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

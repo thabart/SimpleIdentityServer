@@ -8,7 +8,7 @@ using SimpleIdentityServer.DataAccess.SqlServer;
 namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
 {
     [DbContext(typeof(SimpleIdentityServerContext))]
-    [Migration("20170327143147_Initialize")]
+    [Migration("20170408121112_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -378,7 +378,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("ClientSecrets")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>

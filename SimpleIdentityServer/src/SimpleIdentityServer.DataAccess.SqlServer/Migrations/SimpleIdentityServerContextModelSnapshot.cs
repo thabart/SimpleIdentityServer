@@ -377,7 +377,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Migrations
                 {
                     b.HasOne("SimpleIdentityServer.DataAccess.SqlServer.Models.Client", "Client")
                         .WithMany("ClientSecrets")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleIdentityServer.DataAccess.SqlServer.Models.Consent", b =>

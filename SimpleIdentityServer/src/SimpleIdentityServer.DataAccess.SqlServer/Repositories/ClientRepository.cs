@@ -303,6 +303,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     var connectedClient = await _context.Clients
                         .Include(c => c.ClientScopes)
                         .Include(c => c.JsonWebKeys)
+                        .Include(c => c.ClientSecrets)
                         .FirstOrDefaultAsync(c => c.ClientId == client.ClientId)
                         .ConfigureAwait(false);
                     if (connectedClient == null)

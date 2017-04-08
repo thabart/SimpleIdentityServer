@@ -26,10 +26,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Mappings
             modelBuilder.Entity<ClientSecret>()
                 .ToTable("ClientSecrets")
                 .HasKey(s => s.Id);
-            modelBuilder.Entity<ClientSecret>()
-                .HasOne(s => s.Client)
-                .WithMany(c => c.ClientSecrets)
-                .HasForeignKey(s => s.ClientId);
             return modelBuilder;
         }
     }

@@ -243,6 +243,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         {
             var responseTypes = new List<ResponseType>();
             var grantTypes = new List<GrantType>();
+            var secrets = new List<ClientSecret>();
             var redirectUris = clientResponse.RedirectUris == null
                 ? new List<string>()
                 : clientResponse.RedirectUris.ToList();
@@ -282,6 +283,17 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 }
             }
 
+            if (clientResponse.Secrets != null && clientResponse.Secrets.Any())
+            {
+                foreach(var secret in clientResponse.Secrets)
+                {
+                    var record = new ClientSecret();
+                    record.Type = (ClientSecretTypes)secret.Type;
+                    record.Value = secret.Value;
+                    secrets.Add(record);
+                }
+            }
+
             ApplicationTypes appTypeEnum;
             if (Enum.TryParse(clientResponse.ApplicationType, out appTypeEnum))
             {
@@ -303,6 +315,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ResponseTypes = responseTypes,
                 ClientId = clientResponse.ClientId,
                 ClientName = clientResponse.ClientName,
+                Secrets = secrets,
                 // ClientSecret = clientResponse.ClientSecret,
                 ClientUri = clientResponse.ClientUri,
                 Contacts = clientResponse.Contacts,
