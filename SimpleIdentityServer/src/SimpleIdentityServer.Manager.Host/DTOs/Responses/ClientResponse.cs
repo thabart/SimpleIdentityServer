@@ -14,14 +14,33 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
 {
+    [DataContract]
+    public enum ResponseClientSecretTypes
+    {
+        SharedSecret,
+        X509Thumbprint,
+        X509Name
+    }
+
+    [DataContract]
+    public class ResponseClientSecret
+    {
+        [DataMember(Name = Constants.ClientSecretNames.Type)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ResponseClientSecretTypes Type { get; set; }
+        [DataMember(Name = Constants.ClientSecretNames.Value)]
+        public string Value { get; set; }
+    }
+
     [DataContract]
     public class ClientResponse
     {
@@ -34,8 +53,8 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         /// <summary>
         /// Gets or sets the client secret.
         /// </summary>
-        [DataMember(Name = Constants.ClientNames.ClientSecret)]
-        public string ClientSecret { get; set; }
+        [DataMember(Name = Constants.ClientNames.Secrets)]
+        public IEnumerable<ResponseClientSecret> Secrets { get; set; }
 
         /// <summary>
         /// Gets or sets the client name

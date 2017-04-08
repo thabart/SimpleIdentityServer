@@ -100,10 +100,16 @@ namespace SimpleIdentityServer.Manager.Host
             public const string TwoFactorAuthentication = "two_factor_auth";
         }
 
+        public static class ClientSecretNames
+        {
+            public const string Type = "type";
+            public const string Value = "value";
+        }
+
         public static class ClientNames
         {
             public const string ClientId = "client_id";
-            public const string ClientSecret = "client_secret";
+            public const string Secrets = "secrets";
             public const string RedirectUris = "redirect_uris";
             public const string ResponseTypes = "response_types";
             public const string GrantTypes = "grant_types";

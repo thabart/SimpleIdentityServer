@@ -391,16 +391,26 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static ResponseClientSecret ToDto(this ClientSecret secret)
+        {
+            if (secret == null)
+            {
+                throw new ArgumentNullException(nameof(secret));
+            }
+
+            return new ResponseClientSecret
+            {
+                Type = (ResponseClientSecretTypes)secret.Type,
+                Value = secret.Value
+            };
+        }
+
         public static ClientResponse ToClientResponseDto(this SimpleIdentityServer.Core.Models.Client client)
         {
-            string secret = string.Empty;
+            IEnumerable<ResponseClientSecret> secrets = null;
             if (client.Secrets != null)
             {
-                var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
-                if (clientSecret != null)
-                {
-                    secret = clientSecret.Value;
-                }
+                secrets = client.Secrets.Select(s => s.ToDto());
             }
 
             return new ClientResponse
@@ -409,7 +419,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ApplicationType = Enum.GetName(typeof(ApplicationTypes), client.ApplicationType),
                 ClientId = client.ClientId,
                 ClientName = client.ClientName,
-                ClientSecret = secret,
+                Secrets = secrets,
                 ClientUri = client.ClientUri,
                 Contacts = client.Contacts,
                 DefaultAcrValues = client.DefaultAcrValues,
