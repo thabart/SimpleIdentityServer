@@ -15,6 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -29,5 +31,6 @@ namespace SimpleIdentityServer.Core.Repositories
         Task<bool> InsertAsync(ResourceOwner resourceOwner);
         Task<bool> UpdateAsync(ResourceOwner resourceOwner);
         Task<bool> DeleteAsync(string subject);
+        Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter);
     }
 }

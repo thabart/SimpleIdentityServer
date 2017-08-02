@@ -24,6 +24,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domains = SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 {
@@ -220,6 +222,54 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     transaction.Rollback();
                     return false;
                 }
+            }
+        }
+
+        public async Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            
+            try
+            {
+                var claimIdentifier = await _context.Claims.FirstOrDefaultAsync(c => c.IsIdentifier).ConfigureAwait(false);
+                if (claimIdentifier == null)
+                {
+                    throw new InvalidOperationException("no claim can be used to uniquely identified the resource owner");
+                }
+
+                IQueryable<Models.ResourceOwner> result = _context.ResourceOwners
+                    .Include(r => r.Claims);
+
+                if (parameter.Subjects != null)
+                {                    
+                    result = result.Where(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && parameter.Subjects.Contains(c.Value)));
+                }
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                var nbResult = await result.CountAsync().ConfigureAwait(false);
+                if (parameter.IsPagingEnabled)
+                {
+                    result = result.Skip(parameter.StartIndex).Take(parameter.Count);
+                }
+
+                return new SearchResourceOwnerResult
+                {
+                    Content = result.Select(r => r.ToDomain()),
+                    StartIndex = parameter.StartIndex,
+                    TotalResults = nbResult
+                };
+            }
+            catch (Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return null;
             }
         }
     }
