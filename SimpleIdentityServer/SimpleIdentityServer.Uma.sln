@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{A70EBAB2-FCB5-491F-822F-76AB632B4F0C}"
 EndProject
@@ -30,8 +30,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.EF", "src\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.csproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authentication.Common", "src\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.csproj", "{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Oauth2Instrospection.Authentication", "src\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.xproj", "{59687538-4A64-46DD-9E55-C312CC052C9A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core.IntegrationTests", "tests\SimpleIdentityServer.Uma.Core.IntegrationTests\SimpleIdentityServer.Uma.Core.IntegrationTests.csproj", "{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}"
 EndProject
@@ -67,6 +65,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Host.Tests", "tests\SimpleIdentityServer.Uma.Host.Tests\SimpleIdentityServer.Uma.Host.Tests.csproj", "{E0B49622-7082-4D45-978C-F0674BE22252}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Oauth2Instrospection.Authentication", "src\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.csproj", "{63B8BA6E-1786-4CBC-96AD-D54D745BA114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,10 +93,6 @@ Global
 		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}.Release|Any CPU.Build.0 = Release|Any CPU
-		{59687538-4A64-46DD-9E55-C312CC052C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59687538-4A64-46DD-9E55-C312CC052C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59687538-4A64-46DD-9E55-C312CC052C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59687538-4A64-46DD-9E55-C312CC052C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -165,6 +161,10 @@ Global
 		{E0B49622-7082-4D45-978C-F0674BE22252}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0B49622-7082-4D45-978C-F0674BE22252}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0B49622-7082-4D45-978C-F0674BE22252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63B8BA6E-1786-4CBC-96AD-D54D745BA114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B8BA6E-1786-4CBC-96AD-D54D745BA114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B8BA6E-1786-4CBC-96AD-D54D745BA114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B8BA6E-1786-4CBC-96AD-D54D745BA114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,7 +179,6 @@ Global
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85} = {363460AB-4201-4E2A-9DF8-8339143C90CA}
 		{86F685FB-24B6-4ADA-88A5-422733E7B031} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
-		{59687538-4A64-46DD-9E55-C312CC052C9A} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
 		{8562EA86-1ACB-4A83-9175-8BFCB133EB4D} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
@@ -197,6 +196,7 @@ Global
 		{A999228E-D51C-46EE-A620-79D385216430} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{E0B49622-7082-4D45-978C-F0674BE22252} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
+		{63B8BA6E-1786-4CBC-96AD-D54D745BA114} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C267BB78-A51A-4C90-8C7E-807BDE249284}

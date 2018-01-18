@@ -35,7 +35,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<IStartup>(startup);
-                }));
+                })
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
         }
 

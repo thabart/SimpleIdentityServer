@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Uma.Logging
 
         void RequestIsAuthorized(string request);
 
-        void AuthorizationPolicyFailed(string policyId);
+        void AuthorizationPoliciesFailed(string ticketId);
 
         #endregion
 
@@ -147,13 +147,13 @@ namespace SimpleIdentityServer.Uma.Logging
             LogInformation(evt);
         }
 
-        public void AuthorizationPolicyFailed(string policyId)
+        public void AuthorizationPoliciesFailed(string ticketId)
         {
             var evt = new Event
             {
                 Id = 3,
                 Task = Tasks.Authorization,
-                Message = $"Authorization policy {policyId} failed"
+                Message = $"The authorization policies failed for the ticket {ticketId}"
             };
 
             LogInformation(evt);

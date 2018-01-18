@@ -79,16 +79,16 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             foreach(var authorizationPolicy in resourceSet.Policies)
             {
                 var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
-                if (result.Type != AuthorizationPolicyResultEnum.Authorized)
+                if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
-                    _umaServerEventSource.AuthorizationPolicyFailed(authorizationPolicy.Id);
                     return result;
                 }
             }
 
+            _umaServerEventSource.AuthorizationPoliciesFailed(validTicket.Id);
             return new AuthorizationPolicyResult
             {
-                Type = AuthorizationPolicyResultEnum.Authorized
+                Type = AuthorizationPolicyResultEnum.NotAuthorized
             };            
         }
     }
