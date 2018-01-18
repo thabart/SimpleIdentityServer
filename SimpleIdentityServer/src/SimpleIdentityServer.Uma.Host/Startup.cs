@@ -98,7 +98,12 @@ namespace SimpleIdentityServer.Uma.Host
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                    simpleIdServerUmaContext.Database.EnsureCreated();
+                    try
+                    {
+                        simpleIdServerUmaContext.Database.EnsureCreated();
+                    }
+                    catch (Exception) { }
+
                     simpleIdServerUmaContext.EnsureSeedData();
                 }
             }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{E69071DD-4007-4333-950E-0988517E5426}"
 EndProject
@@ -9,29 +9,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Data Layer", "02. Data 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Hosting Layer", "03. Hosting Layer", "{2B491E49-D3B7-45EA-BA78-E35F0AE74188}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Startup", "src\SimpleIdentityServer.Scim.Startup\SimpleIdentityServer.Scim.Startup.xproj", "{FE57F5A5-433D-413E-9B97-D3FD169CC245}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Core", "src\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.xproj", "{E0C0193B-1244-4517-94FA-8086FD2960DD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Testing Layer", "05. Testing Layer", "{A2E898A8-D676-4552-A03A-03CC27C0ECDC}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Core.Tests", "tests\SimpleIdentityServer.Scim.Core.Tests\SimpleIdentityServer.Scim.Core.Tests.xproj", "{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Concurrency", "src\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.xproj", "{2C54595F-55DA-4970-AE42-FAE8864ABF06}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.xproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.InMemory", "src\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.xproj", "{A999228E-D51C-46EE-A620-79D385216430}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Db.EF", "src\SimpleIdentityServer.Scim.Db.EF\SimpleIdentityServer.Scim.Db.EF.xproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Client Layer", "04. Client Layer", "{4BC2BB6B-6D37-44D2-A541-122567A25876}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Client", "src\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.xproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Startup", "src\SimpleIdentityServer.Scim.Startup\SimpleIdentityServer.Scim.Startup.csproj", "{FE57F5A5-433D-413E-9B97-D3FD169CC245}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Common", "src\SimpleIdentityServer.Scim.Common\SimpleIdentityServer.Scim.Common.xproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Core", "src\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj", "{E0C0193B-1244-4517-94FA-8086FD2960DD}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Scim.Client.Tests", "tests\SimpleIdentityServer.Scim.Client.Tests\SimpleIdentityServer.Scim.Client.Tests.xproj", "{5BFB5BE7-382B-4D54-86EA-6424E7449A37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Concurrency", "src\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj", "{2C54595F-55DA-4970-AE42-FAE8864ABF06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage.InMemory", "src\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj", "{A999228E-D51C-46EE-A620-79D385216430}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Db.EF", "src\SimpleIdentityServer.Scim.Db.EF\SimpleIdentityServer.Scim.Db.EF.csproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client", "src\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Common", "src\SimpleIdentityServer.Scim.Common\SimpleIdentityServer.Scim.Common.csproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Tests", "tests\SimpleIdentityServer.Scim.Client.Tests\SimpleIdentityServer.Scim.Client.Tests.csproj", "{BACACEB8-3F49-4209-93B4-E09B37701327}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Core.Tests", "tests\SimpleIdentityServer.Scim.Core.Tests\SimpleIdentityServer.Scim.Core.Tests.csproj", "{D9A2BA64-8399-4D54-94FC-81A50F7F3C43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,6 @@ Global
 		{E0C0193B-1244-4517-94FA-8086FD2960DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0C0193B-1244-4517-94FA-8086FD2960DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0C0193B-1244-4517-94FA-8086FD2960DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C54595F-55DA-4970-AE42-FAE8864ABF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,10 +71,14 @@ Global
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BACACEB8-3F49-4209-93B4-E09B37701327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BACACEB8-3F49-4209-93B4-E09B37701327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BACACEB8-3F49-4209-93B4-E09B37701327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BACACEB8-3F49-4209-93B4-E09B37701327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A2BA64-8399-4D54-94FC-81A50F7F3C43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A2BA64-8399-4D54-94FC-81A50F7F3C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A2BA64-8399-4D54-94FC-81A50F7F3C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A2BA64-8399-4D54-94FC-81A50F7F3C43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,13 +86,16 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FE57F5A5-433D-413E-9B97-D3FD169CC245} = {2B491E49-D3B7-45EA-BA78-E35F0AE74188}
 		{E0C0193B-1244-4517-94FA-8086FD2960DD} = {E69071DD-4007-4333-950E-0988517E5426}
-		{FCB0F13A-B412-4340-B077-D3E7A60A9DD7} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
 		{2C54595F-55DA-4970-AE42-FAE8864ABF06} = {E69071DD-4007-4333-950E-0988517E5426}
 		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2} = {E69071DD-4007-4333-950E-0988517E5426}
 		{A999228E-D51C-46EE-A620-79D385216430} = {E69071DD-4007-4333-950E-0988517E5426}
 		{86F685FB-24B6-4ADA-88A5-422733E7B031} = {3F10F403-8B8F-4995-A41C-BDB3B2A14742}
 		{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE} = {4BC2BB6B-6D37-44D2-A541-122567A25876}
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55} = {E69071DD-4007-4333-950E-0988517E5426}
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+		{BACACEB8-3F49-4209-93B4-E09B37701327} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+		{D9A2BA64-8399-4D54-94FC-81A50F7F3C43} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
 	EndGlobalSection
 EndGlobal

@@ -24,6 +24,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.IdentityServer.EF.Repositories
 {
@@ -136,6 +138,12 @@ namespace SimpleIdentityServer.IdentityServer.EF.Repositories
                     return false;
                 }
             }
+        }
+
+        public Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter)
+        {
+            // TODO : Implement the search.
+            return Task.FromResult(new SearchResourceOwnerResult());
         }
 
         public async Task<bool> UpdateAsync(ResourceOwner resourceOwner)

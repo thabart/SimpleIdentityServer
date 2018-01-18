@@ -262,10 +262,28 @@ namespace SimpleIdentityServer.IdentityServer.EF
 
         public static Core.Models.Client ToDomain(this IdentityServer4.EntityFramework.Entities.Client client)
         {
+            var getType = new Func<string, ClientSecretTypes>((s) =>
+            {
+                if (s == "X509Thumbprint")
+                {
+                    return ClientSecretTypes.X509Thumbprint;
+                }
+
+                if (s == "X509Name")
+                {
+                    return ClientSecretTypes.X509Name;
+                }
+
+                return ClientSecretTypes.SharedSecret;
+            });
             var result = new Core.Models.Client
             {
                 ClientId = client.ClientId,
-                ClientSecret =  client.ClientSecrets == null || !client.ClientSecrets.Any() ? string.Empty : client.ClientSecrets.First().Value,
+                Secrets = client.ClientSecrets == null || !client.ClientSecrets.Any() ? new List<ClientSecret>() : client.ClientSecrets.Select(s => new ClientSecret
+                {
+                    Type = getType(s.Type),
+                    Value = s.Value
+                }).ToList(),
                 LogoUri = client.LogoUri,
                 ClientName = client.ClientName,
                 ClientUri = client.ClientUri,
@@ -349,14 +367,12 @@ namespace SimpleIdentityServer.IdentityServer.EF
                 {
                     RedirectUri = r
                 }).ToList(),
-                ClientSecrets = string.IsNullOrWhiteSpace(client.ClientSecret) ? new List<IdentityServer4.EntityFramework.Entities.ClientSecret>() : new List<IdentityServer4.EntityFramework.Entities.ClientSecret>
-                {
-                    new IdentityServer4.EntityFramework.Entities.ClientSecret
+                ClientSecrets = client.Secrets == null ? new List<IdentityServer4.EntityFramework.Entities.ClientSecret>() : client.Secrets.Select(s => new IdentityServer4.EntityFramework.Entities.ClientSecret
                     {
-                        Value = client.ClientSecret,
-                        Type = "SharedSecret"
+                        Value = s.Value,
+                        Type = "SharedSecret" // TODO : Replace the type by the correct one...
                     }
-                }
+                ).ToList()
             };
 
             var grantingMethod = new GrantingMethod

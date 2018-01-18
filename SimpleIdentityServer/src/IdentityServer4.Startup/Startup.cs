@@ -119,11 +119,15 @@ namespace IdentityServer4.Startup
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
                 var confContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 var userContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-                confContext.Database.Migrate();
-                userContext.Database.Migrate();
+                try
+                {
+                    scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                    confContext.Database.Migrate();
+                    userContext.Database.Migrate();
+                }
+                catch (Exception) { }
                 confContext.EnsureSeedData();
                 userContext.EnsureSeedData();
             }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{A70EBAB2-FCB5-491F-822F-76AB632B4F0C}"
 EndProject
@@ -9,63 +9,63 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Hosting Layer", "02. Ho
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Testing Layer", "05. Testing Layer", "{BF09DAC3-424A-4EAA-AD60-564DE7F16D31}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Host", "src\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.xproj", "{FE57F5A5-433D-413E-9B97-D3FD169CC245}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Core", "src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.xproj", "{5C6DBA6C-E45B-4F35-ADE5-568E1B17BAFF}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Core.UnitTests", "tests\SimpleIdentityServer.Uma.Core.UnitTests\SimpleIdentityServer.Uma.Core.UnitTests.xproj", "{0DC8E1D9-8B85-460A-B51C-67056446CA85}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.EF", "src\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.xproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Authentication.Common", "src\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.xproj", "{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Oauth2Instrospection.Authentication", "src\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.xproj", "{59687538-4A64-46DD-9E55-C312CC052C9A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Unit Tests", "01. Unit Tests", "{363460AB-4201-4E2A-9DF8-8339143C90CA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Integration Tests", "02. Integration Tests", "{EFE51CB2-A176-4724-8614-25C3E7DBCFA5}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Core.IntegrationTests", "tests\SimpleIdentityServer.Uma.Core.IntegrationTests\SimpleIdentityServer.Uma.Core.IntegrationTests.xproj", "{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.xproj", "{8562EA86-1ACB-4A83-9175-8BFCB133EB4D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.xproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client Layer", "03. Client Layer", "{417FC282-063E-42B9-92FB-72D45BCE68FF}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Client", "src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.xproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.UmaManager.Client", "src\SimpleIdentityServer.UmaManager.Client\SimpleIdentityServer.UmaManager.Client.xproj", "{AB921F61-E086-4541-9ED1-2EC9FEE5C7A6}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.UmaManager.Client.Unit.Tests", "tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests.xproj", "{7E806579-6619-4971-8083-F0C5DEC6B765}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.xproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Proxy Layer", "04. Proxy Layer", "{226A6DAA-44D7-40C3-A493-F0647631D94D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Proxy", "src\SimpleIdentityServer.Proxy\SimpleIdentityServer.Proxy.xproj", "{700C6BED-55C6-44CF-9E6A-433F432FCEE3}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.xproj", "{797FB01A-3748-4FDF-B031-D7A1F8498142}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Serilog.Sinks.ElasticSearch", "src\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.xproj", "{CEEC154A-1A13-4BCB-ABF5-5CED02E0C145}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Concurrency", "src\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.xproj", "{2C54595F-55DA-4970-AE42-FAE8864ABF06}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.xproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Serilog", "01. Serilog", "{338E4466-D247-492E-BEBD-6A911F23FFF8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. WebApiContrib", "02. WebApiContrib", "{E11EC7CF-2CAC-4A94-A082-0F06D822622E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.Redis", "src\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.xproj", "{8571D8F9-0847-46C8-A794-845B331982B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Host", "src\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.csproj", "{FE57F5A5-433D-413E-9B97-D3FD169CC245}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage.InMemory", "src\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.xproj", "{A999228E-D51C-46EE-A620-79D385216430}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core", "src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj", "{5C6DBA6C-E45B-4F35-ADE5-568E1B17BAFF}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Host.Tests", "tests\SimpleIdentityServer.Uma.Host.Tests\SimpleIdentityServer.Uma.Host.Tests.xproj", "{5BFB5BE7-382B-4D54-86EA-6424E7449A37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core.UnitTests", "tests\SimpleIdentityServer.Uma.Core.UnitTests\SimpleIdentityServer.Uma.Core.UnitTests.csproj", "{0DC8E1D9-8B85-460A-B51C-67056446CA85}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Uma.Common", "src\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.xproj", "{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.EF", "src\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.csproj", "{86F685FB-24B6-4ADA-88A5-422733E7B031}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authentication.Common", "src\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.csproj", "{6049147A-DB45-4A3F-AD9C-E67D5F1F8145}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Oauth2Instrospection.Authentication", "src\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.xproj", "{59687538-4A64-46DD-9E55-C312CC052C9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Core.IntegrationTests", "tests\SimpleIdentityServer.Uma.Core.IntegrationTests\SimpleIdentityServer.Uma.Core.IntegrationTests.csproj", "{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj", "{8562EA86-1ACB-4A83-9175-8BFCB133EB4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Client", "src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UmaManager.Client", "src\SimpleIdentityServer.UmaManager.Client\SimpleIdentityServer.UmaManager.Client.csproj", "{AB921F61-E086-4541-9ED1-2EC9FEE5C7A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UmaManager.Client.Unit.Tests", "tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests.csproj", "{7E806579-6619-4971-8083-F0C5DEC6B765}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Proxy", "src\SimpleIdentityServer.Proxy\SimpleIdentityServer.Proxy.csproj", "{700C6BED-55C6-44CF-9E6A-433F432FCEE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{797FB01A-3748-4FDF-B031-D7A1F8498142}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.ElasticSearch", "src\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj", "{CEEC154A-1A13-4BCB-ABF5-5CED02E0C145}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Concurrency", "src\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj", "{2C54595F-55DA-4970-AE42-FAE8864ABF06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage.Redis", "src\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj", "{8571D8F9-0847-46C8-A794-845B331982B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage.InMemory", "src\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj", "{A999228E-D51C-46EE-A620-79D385216430}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Common", "src\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.csproj", "{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Host.Tests", "tests\SimpleIdentityServer.Uma.Host.Tests\SimpleIdentityServer.Uma.Host.Tests.csproj", "{E0B49622-7082-4D45-978C-F0674BE22252}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,27 +157,29 @@ Global
 		{A999228E-D51C-46EE-A620-79D385216430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A999228E-D51C-46EE-A620-79D385216430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A999228E-D51C-46EE-A620-79D385216430}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0B49622-7082-4D45-978C-F0674BE22252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0B49622-7082-4D45-978C-F0674BE22252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0B49622-7082-4D45-978C-F0674BE22252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0B49622-7082-4D45-978C-F0674BE22252}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{363460AB-4201-4E2A-9DF8-8339143C90CA} = {BF09DAC3-424A-4EAA-AD60-564DE7F16D31}
+		{EFE51CB2-A176-4724-8614-25C3E7DBCFA5} = {BF09DAC3-424A-4EAA-AD60-564DE7F16D31}
+		{338E4466-D247-492E-BEBD-6A911F23FFF8} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
+		{E11EC7CF-2CAC-4A94-A082-0F06D822622E} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{FE57F5A5-433D-413E-9B97-D3FD169CC245} = {EE4204D4-7992-4554-A53B-5FD4DF1B21FB}
 		{5C6DBA6C-E45B-4F35-ADE5-568E1B17BAFF} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{0DC8E1D9-8B85-460A-B51C-67056446CA85} = {363460AB-4201-4E2A-9DF8-8339143C90CA}
 		{86F685FB-24B6-4ADA-88A5-422733E7B031} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{6049147A-DB45-4A3F-AD9C-E67D5F1F8145} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{59687538-4A64-46DD-9E55-C312CC052C9A} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
-		{363460AB-4201-4E2A-9DF8-8339143C90CA} = {BF09DAC3-424A-4EAA-AD60-564DE7F16D31}
-		{EFE51CB2-A176-4724-8614-25C3E7DBCFA5} = {BF09DAC3-424A-4EAA-AD60-564DE7F16D31}
 		{D9C65BC1-F1BC-4A74-8C7B-89E73C7E6A94} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
 		{8562EA86-1ACB-4A83-9175-8BFCB133EB4D} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{8EA9F43D-3B41-40A4-88D7-68AF33F90C55} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
@@ -191,11 +193,12 @@ Global
 		{CEEC154A-1A13-4BCB-ABF5-5CED02E0C145} = {338E4466-D247-492E-BEBD-6A911F23FFF8}
 		{2C54595F-55DA-4970-AE42-FAE8864ABF06} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
 		{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
-		{338E4466-D247-492E-BEBD-6A911F23FFF8} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
-		{E11EC7CF-2CAC-4A94-A082-0F06D822622E} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
 		{8571D8F9-0847-46C8-A794-845B331982B7} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
 		{A999228E-D51C-46EE-A620-79D385216430} = {E11EC7CF-2CAC-4A94-A082-0F06D822622E}
-		{5BFB5BE7-382B-4D54-86EA-6424E7449A37} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
 		{D9E87DC4-8616-4F4A-A731-5AEFA5B1E878} = {A70EBAB2-FCB5-491F-822F-76AB632B4F0C}
+		{E0B49622-7082-4D45-978C-F0674BE22252} = {EFE51CB2-A176-4724-8614-25C3E7DBCFA5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C267BB78-A51A-4C90-8C7E-807BDE249284}
 	EndGlobalSection
 EndGlobal

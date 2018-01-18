@@ -25,7 +25,6 @@ namespace SimpleIdentityServer.Uma.Host
         {
             // To launch the application : dotnet run --server.urls=http://*:5000
             var configuration = new ConfigurationBuilder()
-                .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
@@ -33,6 +32,7 @@ namespace SimpleIdentityServer.Uma.Host
                 {
                     options.UseHttps("SimpleIdServer.pfx");
                 })
+                .UseUrls(args)
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

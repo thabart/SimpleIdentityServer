@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.Uma.Core.IntegrationTests</Description>
+    <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.Uma.Core.IntegrationTests</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>SimpleIdentityServer.Uma.Core.IntegrationTests</PackageId>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SimpleIdentityServer.Uma.Client" Version="*" />
+    <PackageReference Include="SimpleIdentityServer.Client" Version="*" />
+    <PackageReference Include="SimpleIdentityServer.UmaManager.Client" Version="*" />
+    <PackageReference Include="SimpleIdentityServer.Proxy" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
