@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Events;
@@ -31,10 +32,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Bus
         {
             // ARRANGE
             InitializeFakeObjects();
-            var firstHandler = (new Mock<IHandle<AuthorizationRequestReceived>>()).Object;
-            var secondHandler = (new Mock<IHandle<AuthorizationRequestReceived>>()).Object;
-            _evtHandlerStore.Register(firstHandler);
-            _evtHandlerStore.Register(secondHandler);
+            _evtHandlerStore.Register(typeof(AuthorizationRequestReceived));
 
             // ACT
             var handlers = _evtHandlerStore.Get<AuthorizationRequestReceived>();
@@ -46,7 +44,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Bus
 
         private void InitializeFakeObjects()
         {
-            _evtHandlerStore = new EvtHandlerStore();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IHandle<AuthorizationRequestReceived>>((new Mock<IHandle<AuthorizationRequestReceived>>()).Object);
+            serviceCollection.AddSingleton<IHandle<AuthorizationRequestReceived>>((new Mock<IHandle<AuthorizationRequestReceived>>()).Object);
+            _evtHandlerStore = new EvtHandlerStore(serviceCollection.BuildServiceProvider());
         }
     }
 }

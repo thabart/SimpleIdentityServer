@@ -67,6 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             }));
         }
 
+        /*
         [Fact]
         public void When_ThumbPrint_Is_Not_Correct_Then_Null_Is_Returned()
         {
@@ -144,6 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             // ASSERTS
             Assert.NotNull(result);
         }
+        */
 
         private void InitializeFakeObjects()
         {

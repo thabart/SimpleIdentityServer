@@ -67,7 +67,11 @@ namespace SimpleIdentityServer.Configuration.Startup
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<IdServerConfigurationDbContext>();
-                    simpleIdentityServerContext.Database.EnsureCreated();
+                    try
+                    {
+                        simpleIdentityServerContext.Database.EnsureCreated();
+                    }
+                    catch (Exception) { }
                     simpleIdentityServerContext.EnsureSeedData();
                 }
             }
