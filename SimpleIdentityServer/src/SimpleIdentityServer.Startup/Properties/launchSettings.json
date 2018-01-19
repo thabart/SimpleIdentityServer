@@ -2,7 +2,7 @@
   "profiles": {
     "SimpleIdentityServer.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "--server.urls=https://*:5443;http://*:5000",
+      "commandLineArgs": "http://*:5000",
       "environmentVariables": {
         "DATA_MIGRATED": "true"
       }

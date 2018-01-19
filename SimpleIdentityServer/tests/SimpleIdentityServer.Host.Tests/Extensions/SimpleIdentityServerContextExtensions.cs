@@ -799,13 +799,13 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = SecretTypes.X509Thumbprint,
-                                Value = "470543E0FC19F3D4355457A8C22E78919EA9AA66"
+                                Value = "7DACAC8453ACEC8E9B6316DE52C0167D7C4F8BC7"
                             },
                             new ClientSecret
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = SecretTypes.X509Name,
-                                Value = "CN=localhost"
+                                Value = "CN={500509EC-2F54-4691-B299-45C859813BF5}"
                             }
                         },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.tls_client_auth,

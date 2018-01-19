@@ -37,7 +37,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<IStartup>(startup);
-                }));
+                })
+                .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
             SharedCtx.HttpClientFactory.Set(Server);
         }

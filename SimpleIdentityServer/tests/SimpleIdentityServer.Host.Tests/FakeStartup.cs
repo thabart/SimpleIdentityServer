@@ -25,7 +25,9 @@ using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
@@ -114,6 +116,8 @@ namespace SimpleIdentityServer.Host.Tests
                 context.EnsureSeedData(_context);
             }
 
+
+            var tttt = app.ApplicationServices.GetService<IEventAggregateRepository>();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
@@ -166,6 +170,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddIdServerLogging()
                 .AddLogging()
                 .AddSimpleIdentityServerInMemory()
+                .AddEventStoreInMemory()
                 .AddDefaultBus();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
