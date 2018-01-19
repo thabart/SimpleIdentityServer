@@ -1,49 +1,49 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Server", "src\SimpleIdentityServer.Rfid\SimpleIdentityServer.Rfid.Server.csproj", "{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Server", "01. Server", "{6B93599B-79D4-4EA2-9F64-52D53C95DF60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Website", "02. Website", "{710AABE2-9E7E-494B-8F83-B21FCB0583FB}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Rfid.Website", "src\SimpleIdentityServer.Rfid.Website\SimpleIdentityServer.Rfid.Website.xproj", "{C29236B5-EEAF-4832-8277-86147FE83524}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Serilog.Sinks.ElasticSearch", "src\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.xproj", "{CEEC154A-1A13-4BCB-ABF5-5CED02E0C145}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Authentication.Middleware", "src\SimpleIdentityServer.Authentication.Middleware\SimpleIdentityServer.Authentication.Middleware.xproj", "{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.xproj", "{8562EA86-1ACB-4A83-9175-8BFCB133EB4D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Configuration.Client", "src\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.xproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core", "src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.xproj", "{E0C0193B-1244-4517-94FA-8086FD2960DD}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.xproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.xproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.DataAccess.SqlServer", "src\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.xproj", "{B56B6AE1-E9AA-49CB-9943-CA0AFD69705F}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.xproj", "{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.xproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.xproj", "{797FB01A-3748-4FDF-B031-D7A1F8498142}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.RateLimitation", "src\SimpleIdentityServer.RateLimitation\SimpleIdentityServer.RateLimitation.xproj", "{DF0EED7B-81EB-47FF-92D0-B6223B2A1594}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.xproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WsFederation", "src\WsFederation\WsFederation.xproj", "{425AEB49-216C-4FE1-AC85-286DEBFAD63A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. Other", "00. Other", "{94097D5F-F9EC-4FC4-AF6D-172E6BF1FE31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client", "src\SimpleIdentityServer.Rfid.Client\SimpleIdentityServer.Rfid.Client.csproj", "{0823CE71-9419-4214-A841-2280926EACCC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Client", "03. Client", "{C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Server", "src\SimpleIdentityServer.Rfid\SimpleIdentityServer.Rfid.Server.csproj", "{D9CD4E2B-F9BA-4C26-B9A6-A871E0BB0460}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Rfid.Website", "src\SimpleIdentityServer.Rfid.Website\SimpleIdentityServer.Rfid.Website.csproj", "{C29236B5-EEAF-4832-8277-86147FE83524}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.ElasticSearch", "src\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj", "{CEEC154A-1A13-4BCB-ABF5-5CED02E0C145}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authentication.Middleware", "src\SimpleIdentityServer.Authentication.Middleware\SimpleIdentityServer.Authentication.Middleware.csproj", "{DFF4E756-7D4B-4F7F-A51A-0C1D288E4728}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Client", "src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj", "{8562EA86-1ACB-4A83-9175-8BFCB133EB4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Configuration.Client", "src\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj", "{65B6F282-0234-48F8-B6B8-0D3E02AEE0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core", "src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj", "{E0C0193B-1244-4517-94FA-8086FD2960DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj", "{8EA9F43D-3B41-40A4-88D7-68AF33F90C55}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.DataAccess.SqlServer", "src\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj", "{B56B6AE1-E9AA-49CB-9943-CA0AFD69705F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Host", "src\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj", "{6D8192C8-37CC-481E-83CA-6D2E3BCBEE09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{797FB01A-3748-4FDF-B031-D7A1F8498142}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.RateLimitation", "src\SimpleIdentityServer.RateLimitation\SimpleIdentityServer.RateLimitation.csproj", "{DF0EED7B-81EB-47FF-92D0-B6223B2A1594}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage", "src\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj", "{B69E21CE-5EE9-4166-9CC2-5E0B08BA5DD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WsFederation", "src\WsFederation\WsFederation.csproj", "{425AEB49-216C-4FE1-AC85-286DEBFAD63A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client", "src\SimpleIdentityServer.Rfid.Client\SimpleIdentityServer.Rfid.Client.csproj", "{0823CE71-9419-4214-A841-2280926EACCC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Home", "src\SimpleIdentityServer.Rfid.Home\SimpleIdentityServer.Rfid.Client.Home.csproj", "{9182253C-9ABA-4E00-B338-018B93288195}"
 EndProject
@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIdentityServer.Rfid.Client.Common", "src\SimpleIdentityServer.Rfid.Client.Common\SimpleIdentityServer.Rfid.Client.Common.csproj", "{7B4740AA-CEAC-4A15-AD04-87D4F066F261}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SimpleIdentityServer.EventStore.EF", "src\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.xproj", "{57EC2310-910A-4F76-8A61-C8600D66BD94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.EF", "src\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj", "{57EC2310-910A-4F76-8A61-C8600D66BD94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -169,5 +169,8 @@ Global
 		{846CE59D-C909-4FD6-81D4-7218ADEF6DF3} = {6B93599B-79D4-4EA2-9F64-52D53C95DF60}
 		{7B4740AA-CEAC-4A15-AD04-87D4F066F261} = {C5A13D99-8F1E-4942-9A60-07C5C7EDBF26}
 		{57EC2310-910A-4F76-8A61-C8600D66BD94} = {94097D5F-F9EC-4FC4-AF6D-172E6BF1FE31}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3992E8E-BE0A-498B-A056-027ABE327020}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.UmaIntrospection.Authentication Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.UmaIntrospection.Authentication</AssemblyName>
+    <PackageId>SimpleIdentityServer.UmaIntrospection.Authentication</PackageId>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Common\SimpleIdentityServer.Uma.Common.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.UmaManager.Client\SimpleIdentityServer.UmaManager.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Extensions.OptionsModel" Version="1.0.0-rc1-final" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System.Web" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+    <PackageReference Include="CurlSharp" Version="0.6.2" />
+  </ItemGroup>
+
+</Project>

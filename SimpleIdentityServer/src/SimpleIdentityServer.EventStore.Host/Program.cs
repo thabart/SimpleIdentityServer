@@ -26,13 +26,13 @@ namespace SimpleIdentityServer.EventStore.Host
         {
             // To launch the application : dotnet run --server.urls=http://*:5000
             var configuration = new ConfigurationBuilder()
-                .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
+                .UseUrls(args)
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

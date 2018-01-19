@@ -2,7 +2,7 @@
   "profiles": {
     "SimpleIdentityServer.Rfid.Website": {
       "commandName": "Project",
-      "commandLineArgs": "--server.urls=http://*:5301"
+      "commandLineArgs": "http://*:5301"
     }
   }
 }

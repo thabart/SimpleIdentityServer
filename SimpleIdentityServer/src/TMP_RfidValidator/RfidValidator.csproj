@@ -168,12 +168,6 @@
   <ItemGroup>
     <Folder Include="Messages\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt.UWP\SimpleIdentityServer.Core.Jwt.UWP.csproj">
-      <Project>{e0515202-d974-4081-b2fc-c28ba6d0eb92}</Project>
-      <Name>SimpleIdentityServer.Core.Jwt.UWP</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -41,8 +41,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Uma.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UmaManager.Client", "src\SimpleIdentityServer.UmaManager.Client\SimpleIdentityServer.UmaManager.Client.csproj", "{AB921F61-E086-4541-9ED1-2EC9FEE5C7A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UmaManager.Client.Unit.Tests", "tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests.csproj", "{7E806579-6619-4971-8083-F0C5DEC6B765}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Jwt", "src\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj", "{7709D106-0AA1-4FE2-BE16-9E997F483311}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj", "{4940E66D-CAF7-476E-BA8D-2F612C38F11F}"

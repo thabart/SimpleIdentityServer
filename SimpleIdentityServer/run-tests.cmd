@@ -1,5 +1,4 @@
 dotnet test tests\SimpleIdentityServer.Configuration.Core.Tests
-dotnet test tests\SimpleIdentityServer.Client.Unit.Tests
 dotnet test tests\SimpleIdentityServer.Core.Jwt.UnitTests
 dotnet test tests\SimpleIdentityServer.Core.UnitTests
 dotnet test tests\SimpleIdentityServer.Manager.Core.Tests
