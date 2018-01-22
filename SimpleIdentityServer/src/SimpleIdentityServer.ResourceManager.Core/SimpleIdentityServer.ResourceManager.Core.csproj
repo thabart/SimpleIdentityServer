@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.ResourceManager.Core Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.ResourceManager.Core</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>SimpleIdentityServer.DataAccess.SqlServer</PackageId>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+</Project>
