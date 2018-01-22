@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Client.Builders
         public RequestBuilder SetClientCredentials(string clientId, string clientSecret)
         {
             Content.Add(ClientAuthNames.ClientId, clientId);
-            Content.Add(ClientAuthNames.ClientSecret, clientId);
+            Content.Add(ClientAuthNames.ClientSecret, clientSecret);
             return this;
         }
 
