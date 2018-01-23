@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Client;
 
 namespace SimpleIdentityServer.ResourceManager.Host
 {
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.ResourceManager.Host
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; set; }
+        public IConfiguration Configuration { get; set; }
         
         public void ConfigureServices(IServiceCollection services)
         {
@@ -73,7 +74,8 @@ namespace SimpleIdentityServer.ResourceManager.Host
 
         private void RegisterServices(IServiceCollection services)
         {
-
+            services.AddSingleton(Configuration);
+            services.AddIdServerClient();
         }
     }
 }

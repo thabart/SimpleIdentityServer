@@ -794,18 +794,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
                     },
-                    // Website
+                    // Resource manager website.
                     new Models.Client
                     {
-                        ClientId = "website",
-                        ClientName = "Website",
+                        ClientId = "ResourceManagerClientId",
+                        ClientName = "Resource manager website",
                         ClientSecrets = new List<ClientSecret>
                         {
                             new ClientSecret
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = SecretTypes.SharedSecret,
-                                Value = "website"
+                                Value = "ResourceManagerClientId"
                             }
                         },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
