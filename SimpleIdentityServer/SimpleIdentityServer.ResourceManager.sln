@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.J
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Common", "src\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj", "{0AE332CC-E7E4-421C-8D6F-276D087F846C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.ResourceManager.API.Host", "src\SimpleIdentityServer.ResourceManager.API.Host\SimpleIdentityServer.ResourceManager.API.Host.csproj", "{4FCA85E5-1590-41CB-B636-EC943C38E577}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{0AE332CC-E7E4-421C-8D6F-276D087F846C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AE332CC-E7E4-421C-8D6F-276D087F846C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AE332CC-E7E4-421C-8D6F-276D087F846C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FCA85E5-1590-41CB-B636-EC943C38E577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FCA85E5-1590-41CB-B636-EC943C38E577}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FCA85E5-1590-41CB-B636-EC943C38E577}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FCA85E5-1590-41CB-B636-EC943C38E577}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{71F0D767-4306-4AA8-869E-39BF4382653D} = {4EC3C9B3-7417-4BF9-A9A0-3259BD6A0D5B}
 		{22AC0F08-9368-4B13-98A3-89CAE3395975} = {4EC3C9B3-7417-4BF9-A9A0-3259BD6A0D5B}
 		{0AE332CC-E7E4-421C-8D6F-276D087F846C} = {4EC3C9B3-7417-4BF9-A9A0-3259BD6A0D5B}
+		{4FCA85E5-1590-41CB-B636-EC943C38E577} = {442923F7-F406-476D-B7C2-52892078172C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4E1AD5C7-B8BE-4890-9985-F2BDCAD9425F}
