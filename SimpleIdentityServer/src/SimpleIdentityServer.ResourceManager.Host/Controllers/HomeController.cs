@@ -6,7 +6,6 @@ using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.ResourceManager.Host.DTOs;
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.ResourceManager.Host.Controllers
