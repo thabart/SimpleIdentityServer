@@ -1,0 +1,123 @@
+@import 'loading.css';
+@import 'purple-bootstrap.css';
+
+* {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5 {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    margin-bottom: 0;
+}
+
+html, body, .navbar-static-side {
+    height: 100%;
+}
+
+body {
+    font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+    line-height: 1.5;
+}
+
+.full-width {
+    width: 100% !important;
+}
+
+.center {
+    margin: 0 auto;
+}
+
+.block {
+    display: block;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.center-column {
+    float: none;
+    margin: 0 auto;
+}
+
+.margin-5 {
+    margin: 5px;
+}
+
+.margin-10 {
+    margin: 10px;
+}
+
+a.active {
+    background-color: rgb(238,238,238);
+}
+
+.box {
+    margin: 5px;
+}
+
+.list-item {
+    background-color: rgba(227, 101, 80, 0.51);
+    border-radius: 2px;
+    border: 1px solid rgb(227, 101, 80);
+    padding: 5px;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+#wrapper {
+    z-index: 100;
+}
+
+#wrapper, .navbar-static-side {
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+#body {
+    background-color: rgba(128, 128, 128, 0.12);
+    padding: 5px;
+}
+
+#body .cell {
+    background-color: white;
+    padding: 10px;
+}
+
+@media (min-width: 768px) {
+    #wrapper {
+        margin: 0 0 0 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    #wrapper {
+        margin: 0;
+    }
+
+    .navbar-static-side {
+        width: 0px !important;
+    }
+
+        .navbar-static-side li {
+            display: none;
+        }
+}
+
+.jwsarea {
+    height: 300px !important;
+}
+
+.jwearea {
+    height: 200px !important;
+}

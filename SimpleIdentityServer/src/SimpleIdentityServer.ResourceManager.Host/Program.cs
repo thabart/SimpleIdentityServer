@@ -16,6 +16,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace SimpleIdentityServer.ResourceManager.Host
 {
@@ -30,6 +31,7 @@ namespace SimpleIdentityServer.ResourceManager.Host
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseUrls(args)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

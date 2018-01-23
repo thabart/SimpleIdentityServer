@@ -1,42 +1,29 @@
-const path = require('path');
+﻿const path = require('path');
+const bundleOutputDir = './wwwroot/dist';
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-module.exports = (env) => {
-    const extractCSS = new ExtractTextPlugin('vendor.css');
+var config = (env) => {
     const isDevBuild = !(env && env.prod);
     return [{
-        stats: { modules: false },
-        resolve: {
-            extensions: [ '.js' ]
-        },
-        module: {
-            rules: [
-                { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' }// ,
-                // { test: /\.css(\?|$)/, use: extractCSS.extract([ isDevBuild ? 'css-loader' : 'css-loader?minimize' ]) }
-            ]
-        },
-        entry: {
-            vendor: ['react', 'react-dom', 'react-router-dom', 'jquery'],
-        },
+        entry: ["jquery", "bootstrap", "tether"],
         output: {
-            path: path.join(__dirname, 'wwwroot', 'dist'),
-            publicPath: 'dist/',
-            filename: '[name].js',
-            library: '[name]_[hash]',
+            path: path.join(__dirname, bundleOutputDir),
+            filename: "vendor.js",
+            publicPath: '/dist/'
         },
         plugins: [
-            // extractCSS,
-            new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
-            new webpack.DllPlugin({
-                path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
-                name: '[name]_[hash]'
+            new webpack.ProvidePlugin({
+                $: "jquery",
+                jQuery: "jquery",
+                "window.jQuery": "jquery"
             }),
-            new webpack.DefinePlugin({
-                'process.env.NODE_ENV': isDevBuild ? '"development"' : '"production"'
+            new webpack.ProvidePlugin({
+                tether: "tether",
+                Tether: "tether",
+                "window.Tether": "tether"
             })
-        ].concat(isDevBuild ? [] : [
-            new webpack.optimize.UglifyJsPlugin()
-        ])
+        ],
     }];
 };
+module.exports = config;

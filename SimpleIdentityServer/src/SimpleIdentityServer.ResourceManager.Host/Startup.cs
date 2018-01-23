@@ -59,11 +59,15 @@ namespace SimpleIdentityServer.ResourceManager.Host
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseStaticFiles();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Home", action = "Index" });
             });
         }
 
