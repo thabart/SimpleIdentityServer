@@ -8,7 +8,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
     {
         Open,
         Parents,
-        Mkdir
+        Mkdir,
+        Rm,
+        Rename
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -41,20 +43,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         {
             { Constants.ElFinderCommands.Open, ElFinderCommands.Open },
             { Constants.ElFinderCommands.Parents, ElFinderCommands.Parents },
-            { Constants.ElFinderCommands.Mkdir, ElFinderCommands.Mkdir }
+            { Constants.ElFinderCommands.Mkdir, ElFinderCommands.Mkdir },
+            { Constants.ElFinderCommands.Rm, ElFinderCommands.Rm },
+            { Constants.ElFinderCommands.Rename, ElFinderCommands.Rename }
         };
 
-        private ElFinderParameter(ElFinderCommands command, string target, int tree, bool init, string name)
+        private ElFinderParameter(ElFinderCommands command, IEnumerable<string> target, int tree, bool init, string name)
         {
             Command = command;
-            Target = target;
+            Targets = target;
             Tree = tree;
             Init = init;
             Name = name;
         }
 
         public ElFinderCommands Command { get; private set; }
-        public string Target { get; private set; }
+        public IEnumerable<string> Targets { get; private set; }
         public int Tree { get; private set; }
         public bool Init { get; private set; }
         public string Name { get; private set; }
@@ -73,9 +77,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             }
 
             JToken jtTarget;
+            JToken jtTargets = null;
             if (!json.TryGetValue(Constants.ElFinderDtoNames.Target, out jtTarget))
             {
-                return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound));
+                if (!json.TryGetValue(Constants.ElFinderDtoNames.Targets, out jtTargets))
+                {
+                    return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound));
+                }
             }
 
             JToken jtTree;
@@ -110,7 +118,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrUnknownCmd));
             }
 
-            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget.ToString(), tree, init, name));
+            var targets = new List<string>();
+            if (jtTarget != null)
+            {
+                targets.Add(jtTarget.ToString());
+            }
+            else
+            {
+                var jtTargetsArr = jtTargets as JArray;
+                foreach (var r in jtTargetsArr)
+                {
+                    targets.Add(r.ToString());
+                }
+
+            }
+
+            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], targets, tree, init, name));
         }
     }
 }

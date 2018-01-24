@@ -91,27 +91,69 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
 
             return result;
         }
-
-        public async Task<bool> Add(AssetAggregate asset)
+        
+        public async Task<IEnumerable<AssetAggregate>> GetAllChildren(string hash)
         {
+            if (string.IsNullOrWhiteSpace(hash))
+            {
+                throw new ArgumentNullException(nameof(hash));
+            }
+
+            var asset = await _context.Assets.Include(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+            if (asset == null)
+            {
+                return new List<AssetAggregate>();
+            }
+
+            var result = new List<AssetAggregate>();
+            var tasks = new List<Task<IEnumerable<AssetAggregate>>>();
+            if (asset.Children != null)
+            {
+                foreach(var child in asset.Children)
+                {
+                    result.Add(GetAsset(child));
+                    tasks.Add(GetAllChildren(child.Hash));
+                }
+            }
+
+            var lstAssets = await Task.WhenAll(tasks);
+            foreach(var rec in lstAssets)
+            {
+                result.AddRange(rec);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> Add(IEnumerable<AssetAggregate> assets)
+        {
+            if (assets == null)
+            {
+                throw new ArgumentNullException(nameof(assets));
+            }
+
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
-                    var record = new Asset
+                    foreach(var asset in assets)
                     {
-                        CanRead = asset.CanRead,
-                        CanWrite = asset.CanWrite,
-                        CreateDateTime = asset.CreatedAt,
-                        Hash = asset.Hash,
-                        IsDefaultWorkingDirectory = false,
-                        IsLocked = asset.IsLocked,
-                        Name = asset.Name,
-                        ResourceParentHash = asset.ResourceParentHash,
-                        Path = asset.Path
-                    };
+                        var record = new Asset
+                        {
+                            CanRead = asset.CanRead,
+                            CanWrite = asset.CanWrite,
+                            CreateDateTime = asset.CreatedAt,
+                            Hash = asset.Hash,
+                            IsDefaultWorkingDirectory = false,
+                            IsLocked = asset.IsLocked,
+                            Name = asset.Name,
+                            ResourceParentHash = asset.ResourceParentHash,
+                            Path = asset.Path
+                        };
 
-                    _context.Assets.Add(record);
+                        _context.Assets.Add(record);
+                    }
+
                     await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                     return true;
@@ -140,6 +182,63 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,
                 Children = asset.Children == null ? new List<AssetAggregate>() : asset.Children.Select(a => GetAsset(a))
             };
+        }
+
+        public async Task<bool> Remove(IEnumerable<string> hashLst)
+        {
+            if (hashLst == null)
+            {
+                throw new ArgumentNullException(nameof(hashLst));
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var assets = _context.Assets.Where(a => hashLst.Contains(a.Hash));
+                    _context.Assets.RemoveRange(assets);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            }
+
+            return false;
+        }
+
+        public async Task<bool> Update(AssetAggregate asset)
+        {
+            if (asset == null)
+            {
+                throw new ArgumentNullException(nameof(asset));
+            }
+
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var record = _context.Assets.FirstOrDefault(a => a.Hash == asset.Hash);
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    record.Name = asset.Name;
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            }
+
+            return false;
         }
     }
 }

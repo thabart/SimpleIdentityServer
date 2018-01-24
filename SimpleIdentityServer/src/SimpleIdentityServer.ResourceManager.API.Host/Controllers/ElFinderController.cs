@@ -44,6 +44,10 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteParents(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Mkdir:
                     return new OkObjectResult(await ExecuteMkdir(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Rm:
+                    return new OkObjectResult(await ExecuteRm(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Rename:
+                    return new OkObjectResult(await ExecuteRename(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -56,19 +60,20 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteOpen(ElFinderParameter elFinderParameter)
         {
+            var target = elFinderParameter.Targets.First();
             AssetAggregate rootAsset = null;  // 1. Search the assets.
             IEnumerable<AssetAggregate> targetAsset = null;
-            if (!string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            if (!string.IsNullOrWhiteSpace(target))
             {
                 var searchTargetParameter = new SearchAssetsParameter
                 {
                     AssetLevelType = AssetLevelTypes.ALL,
-                    HashLst = new[] { elFinderParameter.Target }
+                    HashLst = new[] { target }
                 };
                 targetAsset = await _assetRepository.Search(searchTargetParameter);
                 if (targetAsset == null || !targetAsset.Any())
                 {
-                    return new ErrorResponse(Constants.ElFinderErrors.ErrOpen).GetJson();
+                    return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
                 }
 
                 rootAsset = targetAsset.First();
@@ -77,7 +82,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var searchRootParameter = new SearchAssetsParameter
             {
                 AssetLevelType = AssetLevelTypes.ROOT,
-                ExcludedHashLst = string.IsNullOrWhiteSpace(elFinderParameter.Target) ? null : new[] { elFinderParameter.Target }
+                ExcludedHashLst = string.IsNullOrWhiteSpace(target) ? null : new[] { target }
             };
             var rootAssets = await _assetRepository.Search(searchRootParameter);
             if (rootAsset == null)
@@ -107,7 +112,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var opts = new JObject();
             opts.Add(Constants.ElFinderOptionNames.Path, rootAsset.Path);
             opts.Add(Constants.ElFinderOptionNames.Disabled, new JArray(new[] { "chmod" }));
-            opts.Add(Constants.ElFinderOptionNames.Separator, "/");
+            opts.Add(Constants.ElFinderOptionNames.Separator, Constants.PathSeparator);
             result.Add(Constants.ElFinderResponseNames.UplMaxSize, "0");
             result.Add(Constants.ElFinderResponseNames.Cwd, rootJson);
             result.Add(Constants.ElFinderResponseNames.Files, files);
@@ -122,13 +127,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteParents(ElFinderParameter elFinderParameter)
         {
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            var target = elFinderParameter.Targets.First();
+            var asset = await _assetRepository.Get(target);
             if (asset == null)
             {
-                return new ErrorResponse(Constants.ElFinderErrors.ErrOpen).GetJson();
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            var parents = await _assetRepository.GetAllParents(elFinderParameter.Target);
+            var parents = await _assetRepository.GetAllParents(target);
             var files = new JArray();
             foreach (var parent in parents)
             {
@@ -147,10 +153,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteMkdir(ElFinderParameter elFinderParameter)
         {
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            var target = elFinderParameter.Targets.First();
+            var asset = await _assetRepository.Get(target);
             if (asset == null)
             {
-                return new ErrorResponse(Constants.ElFinderErrors.ErrOpen).GetJson();
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
             var recordPath = asset.Path + "/" + elFinderParameter.Name;
@@ -166,7 +173,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 Hash = HashHelper.GetHash(recordPath)
             };
 
-            if (!(await _assetRepository.Add(record)))
+            if (!(await _assetRepository.Add(new[] { record })))
             {
                 return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
             }
@@ -174,6 +181,97 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var files = new JArray(GetFile(record));
             var result = new JObject();
             result.Add(Constants.ElFinderResponseNames.Added, files);
+            return result;
+        }
+
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#rm
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteRm(ElFinderParameter elFinderParameter)
+        {
+            var targets = elFinderParameter.Targets;
+            var assets = await _assetRepository.Search(new SearchAssetsParameter
+            {
+                HashLst = targets
+            });
+
+            if (assets.Count() != targets.Count())
+            {
+                return new ErrorResponse(Constants.Errors.ErrTargetsNotFound).GetJson();
+            }
+
+            if (!await _assetRepository.Remove(targets))
+            {
+                return new ErrorResponse(Constants.Errors.ErrRemoveAssets).GetJson();
+            }
+
+            var removed = new JArray(targets);
+            var result = new JObject();
+            result.Add(Constants.ElFinderResponseNames.Removed, removed);
+            return result;
+        }
+
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#rename
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteRename(ElFinderParameter elFinderParameter)
+        {
+            var target = elFinderParameter.Targets.First();
+            var asset = await _assetRepository.Get(target); // 1. Check the asset exists.
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var children = await _assetRepository.GetAllChildren(target); // 2. Get all the children & remove the assets.
+            var assetIds = new List<string> { asset.Hash };
+            assetIds.AddRange(children.Select(c => c.Hash));
+            if (!await _assetRepository.Remove(assetIds))
+            {
+                return new ErrorResponse(Constants.Errors.ErrRemoveAssets).GetJson();
+            }
+
+            var previousPath = asset.Path; // 3. Update the path + hash.
+            var splittedPath = asset.Path.Split(Constants.PathSeparator);
+            int rootIndex = splittedPath.Count() - 1;
+            splittedPath.SetValue(elFinderParameter.Name, rootIndex);
+            var newPath = string.Join(Constants.PathSeparator.ToString(), splittedPath);
+            asset.Name = elFinderParameter.Name;
+            asset.Path = newPath;
+            asset.Hash = HashHelper.GetHash(newPath);
+            foreach(var child in children)
+            {
+                splittedPath = child.Path.Split(Constants.PathSeparator);
+                splittedPath.SetValue(elFinderParameter.Name, rootIndex);
+                var parentSplittedPath = splittedPath.Take(splittedPath.Count() - 1);
+                newPath = string.Join(Constants.PathSeparator.ToString(), splittedPath);
+                var parentPath = string.Join(Constants.PathSeparator.ToString(), parentSplittedPath);
+                child.Path = newPath;
+                child.Hash = HashHelper.GetHash(newPath);
+                child.ResourceParentHash = HashHelper.GetHash(parentPath);
+            }
+
+            var newAssets = new List<AssetAggregate> { asset };
+            newAssets.AddRange(children);
+            if (!await _assetRepository.Add(newAssets))
+            {
+                return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
+            }
+
+            var removed = new JArray(assetIds);
+            var added = new JArray();
+            foreach(var newAsset in newAssets)
+            {
+                added.Add(GetFile(newAsset));
+            }
+
+            var result = new JObject();
+            result.Add(Constants.ElFinderResponseNames.Removed, removed);
+            result.Add(Constants.ElFinderResponseNames.Added, added);
             return result;
         }
 

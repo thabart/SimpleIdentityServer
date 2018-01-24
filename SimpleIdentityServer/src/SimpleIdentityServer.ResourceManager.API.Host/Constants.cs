@@ -3,6 +3,7 @@
     internal static class Constants
     {
         public const string VolumeId = "rm";
+        public const char PathSeparator = '/';
         public static class RouteNames
         {
             public const string ElFinterController = "elfinder";
@@ -17,6 +18,7 @@
         {
             public const string Cmd = "cmd";
             public const string Target = "target";
+            public const string Targets = "targets";
             public const string Tree = "tree";
             public const string Init = "init";
             public const string Name = "name";
@@ -32,6 +34,7 @@
             public const string Options = "options";
             public const string Tree = "tree";
             public const string Added = "added";
+            public const string Removed = "removed";
         }
 
         public static class ElFinderOptionNames
@@ -80,7 +83,10 @@
         {
             public const string ErrParamNotValidInt = "the parameter {0} is not a valid integer";
             public const string ErrParamNotSpecified = "the parameter {0} is not specified";
-            public const string ErrInsertAsset = "an error occured while trying to insert the asset";
+            public const string ErrInsertAsset = "an error occured while trying to insert the asset(s)";
+            public const string ErrUpdateAsset = "an error occured while trying to update the asset";
+            public const string ErrRemoveAssets = "an error occured while trying to remove the asset(s)";
+            public const string ErrTargetsNotFound = "some targets don't exist";
         }
 
         public static class ElFinderCommands
@@ -88,6 +94,8 @@
             public const string Open = "open";
             public const string Parents = "parents";
             public const string Mkdir = "mkdir";
+            public const string Rm = "rm";
+            public const string Rename = "rename";
         }
     }
 }

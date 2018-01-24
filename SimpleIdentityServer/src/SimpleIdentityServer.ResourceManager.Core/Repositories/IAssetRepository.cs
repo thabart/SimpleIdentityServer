@@ -9,7 +9,10 @@ namespace SimpleIdentityServer.ResourceManager.Core.Repositories
     {
         Task<IEnumerable<AssetAggregate>> Search(SearchAssetsParameter parameter);
         Task<IEnumerable<AssetAggregate>> GetAllParents(string hash);
+        Task<IEnumerable<AssetAggregate>> GetAllChildren(string hash);
         Task<AssetAggregate> Get(string hash);
-        Task<bool> Add(AssetAggregate asset);
+        Task<bool> Add(IEnumerable<AssetAggregate> asset);
+        Task<bool> Remove(IEnumerable<string> hashLst);
+        Task<bool> Update(AssetAggregate asset);
     }
 }
