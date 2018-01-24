@@ -39,11 +39,15 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
             services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors("AllowAll");
             loggerFactory.AddConsole();
             app.UseStatusCodePages();
             app.UseMvc(routes =>
