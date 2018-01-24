@@ -7,7 +7,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
     internal enum ElFinderCommands
     {
         Open,
-        Parents
+        Parents,
+        Mkdir
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -39,21 +40,24 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         private static Dictionary<string, ElFinderCommands> _mappingStrToEnumCmd = new Dictionary<string, ElFinderCommands>
         {
             { Constants.ElFinderCommands.Open, ElFinderCommands.Open },
-            { Constants.ElFinderCommands.Parents, ElFinderCommands.Parents }
+            { Constants.ElFinderCommands.Parents, ElFinderCommands.Parents },
+            { Constants.ElFinderCommands.Mkdir, ElFinderCommands.Mkdir }
         };
 
-        private ElFinderParameter(ElFinderCommands command, string target, int tree, bool init)
+        private ElFinderParameter(ElFinderCommands command, string target, int tree, bool init, string name)
         {
             Command = command;
             Target = target;
             Tree = tree;
             Init = init;
+            Name = name;
         }
 
         public ElFinderCommands Command { get; private set; }
         public string Target { get; private set; }
         public int Tree { get; private set; }
         public bool Init { get; private set; }
+        public string Name { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
         {
@@ -86,6 +90,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 }
             }
 
+            JToken jtName;
+            string name = null;
+            if (json.TryGetValue(Constants.ElFinderDtoNames.Name, out jtName))
+            {
+                name = jtName.ToString();
+            }
+
             bool init = false;
             JToken jtInit;
             if (json.TryGetValue(Constants.ElFinderDtoNames.Init, out jtInit))
@@ -99,7 +110,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrUnknownCmd));
             }
 
-            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget.ToString(), tree, init));
+            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget.ToString(), tree, init, name));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.ResourceManager.EF;
+﻿using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
+using SimpleIdentityServer.ResourceManager.EF;
 using SimpleIdentityServer.ResourceManager.EF.Models;
 using System;
 using System.Linq;
@@ -27,48 +28,48 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                 {
                    new Asset
                    {
-                       Hash = GetHash("Root"),
+                       Hash = HashHelper.GetHash("Root"),
                        Name = "Root",
                        Path = "Root",
+                       IsLocked = false,
+                       CanRead = true,
+                       CanWrite = true,
+                       CreateDateTime = DateTime.UtcNow,
                        IsDefaultWorkingDirectory = true
                    },
                    new Asset
                    {
-                       Hash = GetHash("Second root"),
+                       Hash =HashHelper.GetHash("Second root"),
                        Name = "Second root",
-                       Path = "Second root"
+                       Path = "Second root",
+                       IsLocked = true,
+                       CanRead = true,
+                       CanWrite = false,
+                       CreateDateTime = DateTime.UtcNow,
                    },
                    new Asset
                    {
-                       Hash = GetHash("Root/Sub"),
-                       ResourceParentHash = GetHash("Root"),
+                       Hash = HashHelper.GetHash("Root/Sub"),
+                       ResourceParentHash = HashHelper.GetHash("Root"),
                        Name = "Sub",
-                       Path = "Root/Sub"
+                       Path = "Root/Sub",
+                       IsLocked = false,
+                       CanRead = true,
+                       CanWrite = true,
+                       CreateDateTime = DateTime.UtcNow,
                    },
                    new Asset
                    {
-                       Hash = GetHash("Root/another directory"),
-                       ResourceParentHash = GetHash("Root"),
+                       Hash = HashHelper.GetHash("Root/another directory"),
+                       ResourceParentHash = HashHelper.GetHash("Root"),
                        Name = "another directory",
-                       Path = "Root/another directory"
+                       Path = "Root/another directory",
+                       IsLocked = false,
+                       CanRead = true,
+                       CanWrite = true,
+                       CreateDateTime = DateTime.UtcNow,
                    }
                 });
-            }
-        }
-
-        private static string GetHash(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-
-            using (var mySHA256 = SHA256.Create())
-            {
-                var hash = mySHA256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(path));
-                var h = hash.ToHexString();
-                return string.Format("{0}_{1}", Constants.VolumeId, h);
             }
         }
     }

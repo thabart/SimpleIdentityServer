@@ -92,6 +92,39 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             return result;
         }
 
+        public async Task<bool> Add(AssetAggregate asset)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                try
+                {
+                    var record = new Asset
+                    {
+                        CanRead = asset.CanRead,
+                        CanWrite = asset.CanWrite,
+                        CreateDateTime = asset.CreatedAt,
+                        Hash = asset.Hash,
+                        IsDefaultWorkingDirectory = false,
+                        IsLocked = asset.IsLocked,
+                        Name = asset.Name,
+                        ResourceParentHash = asset.ResourceParentHash,
+                        Path = asset.Path
+                    };
+
+                    _context.Assets.Add(record);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            }
+
+            return false;
+        }
+
         private static AssetAggregate GetAsset(Asset asset)
         {
             return new AssetAggregate
@@ -101,6 +134,9 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 CreatedAt = asset.CreateDateTime,
                 Path = asset.Path,
                 Name = asset.Name,
+                CanRead = asset.CanRead,
+                CanWrite = asset.CanWrite,
+                IsLocked = asset.IsLocked,
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,
                 Children = asset.Children == null ? new List<AssetAggregate>() : asset.Children.Select(a => GetAsset(a))
             };

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.ResourceManager.API.Host.DTOs;
+using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
@@ -41,6 +42,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteOpen(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Parents:
                     return new OkObjectResult(await ExecuteParents(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Mkdir:
+                    return new OkObjectResult(await ExecuteMkdir(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -137,6 +140,43 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return result;
         }
 
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#mkdir
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteMkdir(ElFinderParameter elFinderParameter)
+        {
+            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrOpen).GetJson();
+            }
+
+            var recordPath = asset.Path + "/" + elFinderParameter.Name;
+            var record = new AssetAggregate
+            {
+                CanRead = true,
+                CanWrite = true,
+                IsLocked = false,
+                Name = elFinderParameter.Name,
+                CreatedAt = DateTime.UtcNow,
+                ResourceParentHash = asset.Hash,
+                Path = recordPath,
+                Hash = HashHelper.GetHash(recordPath)
+            };
+
+            if (!(await _assetRepository.Add(record)))
+            {
+                return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
+            }
+
+            var files = new JArray(GetFile(record));
+            var result = new JObject();
+            result.Add(Constants.ElFinderResponseNames.Added, files);
+            return result;
+        }
+
         private static JObject GetFile(AssetAggregate asset)
         {
             if (asset == null)
@@ -144,7 +184,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(asset));
             }
 
-            return AssetResponse.CreateDirectory(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash, new AssetSecurity(true, false, false)).GetJson();
+            return AssetResponse.CreateDirectory(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash,
+                new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked)).GetJson();
         }
     }
 }

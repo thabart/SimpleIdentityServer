@@ -19,6 +19,7 @@
             public const string Target = "target";
             public const string Tree = "tree";
             public const string Init = "init";
+            public const string Name = "name";
         }
 
         public static class ElFinderResponseNames
@@ -30,6 +31,7 @@
             public const string UplMaxSize = "uplMaxSize";
             public const string Options = "options";
             public const string Tree = "tree";
+            public const string Added = "added";
         }
 
         public static class ElFinderOptionNames
@@ -78,12 +80,14 @@
         {
             public const string ErrParamNotValidInt = "the parameter {0} is not a valid integer";
             public const string ErrParamNotSpecified = "the parameter {0} is not specified";
+            public const string ErrInsertAsset = "an error occured while trying to insert the asset";
         }
 
         public static class ElFinderCommands
         {
             public const string Open = "open";
             public const string Parents = "parents";
+            public const string Mkdir = "mkdir";
         }
     }
 }
