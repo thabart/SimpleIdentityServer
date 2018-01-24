@@ -2,9 +2,15 @@
 {
     internal static class Constants
     {
+        public const string VolumeId = "rm";
         public static class RouteNames
         {
             public const string ElFinterController = "elfinder";
+        }
+
+        public static class MimeNames
+        {
+            public const string Directory = "directory";
         }
 
         public static class ElFinderDtoNames
@@ -23,6 +29,15 @@
             public const string NetDrivers = "netDrivers";
             public const string UplMaxSize = "uplMaxSize";
             public const string Options = "options";
+            public const string Tree = "tree";
+        }
+
+        public static class ElFinderOptionNames
+        {
+            public const string Path = "path";
+            public const string Url = "url";
+            public const string Separator = "separator";
+            public const string Disabled = "disabled";
         }
 
         public static class ElFinderCwdResponseNames
@@ -56,6 +71,7 @@
             public const string ErrUnknown = "errUnknown";
             public const string ErrUnknownCmd = "errUnknownCmd";
             public const string ErrTrgFolderNotFound = "errTrgFolderNotFound";
+            public const string ErrOpen = "errOpen";
         }
 
         public static class Errors
@@ -67,6 +83,7 @@
         public static class ElFinderCommands
         {
             public const string Open = "open";
+            public const string Parents = "parents";
         }
     }
 }

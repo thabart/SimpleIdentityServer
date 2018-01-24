@@ -6,7 +6,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
 {
     internal enum ElFinderCommands
     {
-        Open
+        Open,
+        Parents
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -37,7 +38,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
     {
         private static Dictionary<string, ElFinderCommands> _mappingStrToEnumCmd = new Dictionary<string, ElFinderCommands>
         {
-            { Constants.ElFinderCommands.Open, ElFinderCommands.Open }
+            { Constants.ElFinderCommands.Open, ElFinderCommands.Open },
+            { Constants.ElFinderCommands.Parents, ElFinderCommands.Parents }
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, int tree, bool init)
@@ -73,9 +75,15 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             }
 
             JToken jtTree;
-            if (!json.TryGetValue(Constants.ElFinderDtoNames.Tree, out jtTree))
+            int tree = 0;
+            if (json.TryGetValue(Constants.ElFinderDtoNames.Tree, out jtTree))
             {
-                return new DeserializedElFinderParameter(new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Tree)));
+
+                var treeStr = jtTree.ToString();
+                if (!int.TryParse(treeStr, out tree))
+                {
+                    return new DeserializedElFinderParameter(new ErrorResponse(string.Format(Constants.Errors.ErrParamNotValidInt, Constants.ElFinderDtoNames.Tree)));
+                }
             }
 
             bool init = false;
@@ -89,13 +97,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             if (!_mappingStrToEnumCmd.ContainsKey(cmdStr))
             {
                 return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrUnknownCmd));
-            }
-            
-            var treeStr = jtTree.ToString();
-            int tree;
-            if (!int.TryParse(treeStr, out tree))
-            {
-                return new DeserializedElFinderParameter(new ErrorResponse(string.Format(Constants.Errors.ErrParamNotValidInt, Constants.ElFinderDtoNames.Tree)));
             }
 
             return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget.ToString(), tree, init));

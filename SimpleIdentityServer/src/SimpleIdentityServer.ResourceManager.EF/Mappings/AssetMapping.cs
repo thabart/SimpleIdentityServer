@@ -1,0 +1,20 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.ResourceManager.EF.Models;
+
+namespace SimpleIdentityServer.ResourceManager.EF.Mappings
+{
+    internal static class AssetMapping
+    {
+        public static ModelBuilder AddAssetMapping(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Asset>()
+                .ToTable("assets")
+                .HasKey(s => s.Hash);
+            modelBuilder.Entity<Asset>()
+                .HasMany(s => s.Children)
+                .WithOne(s => s.Parent)
+                .HasForeignKey(s => s.ResourceParentHash);
+            return modelBuilder;
+        }
+    }
+}

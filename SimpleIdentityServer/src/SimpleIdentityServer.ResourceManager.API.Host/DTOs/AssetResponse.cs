@@ -3,36 +3,64 @@ using System;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
 {
-    internal sealed class FileDirectoryResponse // https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#information-about-filedirectory
+    internal sealed class AssetSecurity
     {
-        private FileDirectoryResponse(string name, string hash)
+        public AssetSecurity(bool read, bool write, bool locked)
+        {
+            Read = read;
+            Write = write;
+            Locked = locked;
+        }
+
+        public bool Read { get; private set; }
+        public bool Write { get; private set; }
+        public bool Locked { get; private set; }
+    }
+
+    internal sealed class AssetResponse // https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#information-about-filedirectory
+    {
+        private AssetResponse(string name, string hash)
         {
             Name = name;
             Hash = hash;
         }
 
-        public static FileDirectoryResponse CreateRootFolder(string name, string hash, string volumeId)
+        public static AssetResponse CreateDirectory(string name, string hash, string volumeId, bool containsChildren, string pHash, AssetSecurity assetSecurity)
         {
-            var result = new FileDirectoryResponse(name, hash);
-            result.Dirs = 1;
-            result.Read = 1;
-            result.Write = 0;
-            result.Write = 1;
-            result.Locked = 1;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(hash))
+            {
+                throw new ArgumentNullException(nameof(hash));
+            }
+
+            if (string.IsNullOrWhiteSpace(volumeId))
+            {
+                throw new ArgumentNullException(nameof(volumeId));
+            }
+
+            if (assetSecurity == null)
+            {
+                throw new ArgumentNullException(nameof(assetSecurity));
+            }
+
+            var result = new AssetResponse(name, hash);
+            result.Dirs = (containsChildren) ? 1: 0;
+            result.Read = (assetSecurity.Read) ? 1 : 0;
+            result.Write = (assetSecurity.Write) ? 1 : 0;
+            result.Locked = (assetSecurity.Locked) ? 1 : 0;
             result.VolumeId = volumeId;
-            result.Mime = "directory";
+            result.Phash = pHash;
+            result.Mime = Constants.MimeNames.Directory;
             return result;
         }
 
-        public static FileDirectoryResponse CreateFolder(string name, string hash, string pHash)
+        public static AssetResponse CreateFile()
         {
-            var result = new FileDirectoryResponse(name, hash);
-            result.Dirs = 0;
-            result.Read = 1;
-            result.Write = 1;
-            result.Write = 1;
-            result.Phash = pHash;
-            return result;
+            return null;
         }
 
         /// <summary>

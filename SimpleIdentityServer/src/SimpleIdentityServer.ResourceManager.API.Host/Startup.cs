@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
+using SimpleIdentityServer.ResourceManager.EF;
+using System;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host
 {
@@ -30,7 +33,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -43,6 +45,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
             services.AddMvc();
+            services.AddResourceManagerInMemory();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -56,6 +59,17 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var resourceManagerContext = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>();
+                try
+                {
+                    resourceManagerContext.Database.EnsureCreated();
+                }
+                catch (Exception) { }
+                resourceManagerContext.EnsureSeedData();
+            }
         }
     }
 }
