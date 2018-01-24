@@ -12,6 +12,7 @@
         public static class MimeNames
         {
             public const string Directory = "directory";
+            public const string TextPlain = "text/plain";
         }
 
         public static class ElFinderDtoNames
@@ -96,6 +97,7 @@
             public const string Mkdir = "mkdir";
             public const string Rm = "rm";
             public const string Rename = "rename";
+            public const string Mkfile = "mkfile";
         }
     }
 }

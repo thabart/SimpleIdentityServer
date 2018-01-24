@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Hash = hash;
         }
 
-        public static AssetResponse CreateDirectory(string name, string hash, string volumeId, bool containsChildren, string pHash, AssetSecurity assetSecurity)
+        public static AssetResponse Create(string name, string hash, string volumeId, bool containsChildren, string pHash, string mimeType, AssetSecurity assetSecurity)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -42,6 +42,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 throw new ArgumentNullException(nameof(volumeId));
             }
 
+            if (string.IsNullOrWhiteSpace(mimeType))
+            {
+                throw new ArgumentNullException(nameof(mimeType));
+            }
+
             if (assetSecurity == null)
             {
                 throw new ArgumentNullException(nameof(assetSecurity));
@@ -54,7 +59,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             result.Locked = (assetSecurity.Locked) ? 1 : 0;
             result.VolumeId = volumeId;
             result.Phash = pHash;
-            result.Mime = Constants.MimeNames.Directory;
+            result.Mime = mimeType;
             return result;
         }
 

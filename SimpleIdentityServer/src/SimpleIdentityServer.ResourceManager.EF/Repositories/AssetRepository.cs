@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
@@ -12,11 +13,11 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
 {
     internal class AssetRepository : IAssetRepository
     {
-        private readonly ResourceManagerDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AssetRepository(ResourceManagerDbContext context)
+        public AssetRepository(IServiceProvider serviceProvider)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<IEnumerable<AssetAggregate>> Search(SearchAssetsParameter parameter)
@@ -26,31 +27,37 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            IQueryable<Asset> assets = _context.Assets.Include(a => a.Parent).Include(a => a.Children);
-            if (parameter.HashLst != null && parameter.HashLst.Any())
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                assets = assets.Where(a => parameter.HashLst.Contains(a.Hash));
-            }
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    IQueryable<Asset> assets = context.Assets.Include(a => a.Parent).Include(a => a.Children);
+                    if (parameter.HashLst != null && parameter.HashLst.Any())
+                    {
+                        assets = assets.Where(a => parameter.HashLst.Contains(a.Hash));
+                    }
 
-            if (parameter.ExcludedHashLst != null && parameter.ExcludedHashLst.Any())
-            {
-                assets = assets.Where(a => !parameter.ExcludedHashLst.Contains(a.Hash));
-            }
+                    if (parameter.ExcludedHashLst != null && parameter.ExcludedHashLst.Any())
+                    {
+                        assets = assets.Where(a => !parameter.ExcludedHashLst.Contains(a.Hash));
+                    }
 
-            switch (parameter.AssetLevelType)
-            {
-                case AssetLevelTypes.ROOT:
-                    assets = assets.Where(a => a.Parent == null);
-                    break;
-            }
+                    switch (parameter.AssetLevelType)
+                    {
+                        case AssetLevelTypes.ROOT:
+                            assets = assets.Where(a => a.Parent == null);
+                            break;
+                    }
 
-            if (parameter.IsDefaultWorkingDirectory != null)
-            {
-                assets = assets.Where(a => a.IsDefaultWorkingDirectory == parameter.IsDefaultWorkingDirectory.Value);
-            }
+                    if (parameter.IsDefaultWorkingDirectory != null)
+                    {
+                        assets = assets.Where(a => a.IsDefaultWorkingDirectory == parameter.IsDefaultWorkingDirectory.Value);
+                    }
 
-            var result = await assets.ToListAsync().ConfigureAwait(false);
-            return result.Select(a => GetAsset(a));
+                    var result = await assets.ToListAsync().ConfigureAwait(false);
+                    return result.Select(a => GetAsset(a));
+                }
+            }
         }
 
         public async Task<AssetAggregate> Get(string hash)
@@ -60,13 +67,19 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 throw new ArgumentNullException(nameof(hash));
             }
 
-            var asset = await _context.Assets.Include(a => a.Parent).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
-            if (asset == null)
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                return null;
-            }
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    if (asset == null)
+                    {
+                        return null;
+                    }
 
-            return GetAsset(asset);
+                    return GetAsset(asset);
+                }
+            }
         }
 
         public async Task<IEnumerable<AssetAggregate>> GetAllParents(string hash)
@@ -76,20 +89,26 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 throw new ArgumentNullException(nameof(hash));
             }
 
-            var asset = await _context.Assets.Include(a => a.Parent).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
-            if (asset == null)
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                return new List<AssetAggregate>();
-            }
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    var asset = await context.Assets.Include(a => a.Parent).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    if (asset == null)
+                    {
+                        return new List<AssetAggregate>();
+                    }
 
-            var result = new List<AssetAggregate>();
-            if (asset.Parent != null)
-            {
-                result.Add(GetAsset(asset.Parent));
-                result.AddRange(await GetAllParents(asset.Parent.Hash));
-            }
+                    var result = new List<AssetAggregate>();
+                    if (asset.Parent != null)
+                    {
+                        result.Add(GetAsset(asset.Parent));
+                        result.AddRange(await GetAllParents(asset.Parent.Hash));
+                    }
 
-            return result;
+                    return result;
+                }
+            }
         }
         
         public async Task<IEnumerable<AssetAggregate>> GetAllChildren(string hash)
@@ -99,30 +118,36 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 throw new ArgumentNullException(nameof(hash));
             }
 
-            var asset = await _context.Assets.Include(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
-            if (asset == null)
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                return new List<AssetAggregate>();
-            }
-
-            var result = new List<AssetAggregate>();
-            var tasks = new List<Task<IEnumerable<AssetAggregate>>>();
-            if (asset.Children != null)
-            {
-                foreach(var child in asset.Children)
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    result.Add(GetAsset(child));
-                    tasks.Add(GetAllChildren(child.Hash));
+                    var asset = await context.Assets.Include(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    if (asset == null)
+                    {
+                        return new List<AssetAggregate>();
+                    }
+
+                    var result = new List<AssetAggregate>();
+                    var tasks = new List<Task<IEnumerable<AssetAggregate>>>();
+                    if (asset.Children != null)
+                    {
+                        foreach (var child in asset.Children)
+                        {
+                            result.Add(GetAsset(child));
+                            tasks.Add(GetAllChildren(child.Hash));
+                        }
+                    }
+
+                    var lstAssets = await Task.WhenAll(tasks);
+                    foreach (var rec in lstAssets)
+                    {
+                        result.AddRange(rec);
+                    }
+
+                    return result;
                 }
             }
-
-            var lstAssets = await Task.WhenAll(tasks);
-            foreach(var rec in lstAssets)
-            {
-                result.AddRange(rec);
-            }
-
-            return result;
         }
 
         public async Task<bool> Add(IEnumerable<AssetAggregate> assets)
@@ -132,39 +157,115 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 throw new ArgumentNullException(nameof(assets));
             }
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                try
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    foreach(var asset in assets)
+                    using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
                     {
-                        var record = new Asset
+                        try
                         {
-                            CanRead = asset.CanRead,
-                            CanWrite = asset.CanWrite,
-                            CreateDateTime = asset.CreatedAt,
-                            Hash = asset.Hash,
-                            IsDefaultWorkingDirectory = false,
-                            IsLocked = asset.IsLocked,
-                            Name = asset.Name,
-                            ResourceParentHash = asset.ResourceParentHash,
-                            Path = asset.Path
-                        };
+                            foreach (var asset in assets)
+                            {
+                                var record = new Asset
+                                {
+                                    CanRead = asset.CanRead,
+                                    CanWrite = asset.CanWrite,
+                                    CreateDateTime = asset.CreatedAt,
+                                    Hash = asset.Hash,
+                                    IsDefaultWorkingDirectory = false,
+                                    IsLocked = asset.IsLocked,
+                                    Name = asset.Name,
+                                    ResourceParentHash = asset.ResourceParentHash,
+                                    Path = asset.Path,
+                                    MimeType = asset.MimeType
+                                };
 
-                        _context.Assets.Add(record);
+                                context.Assets.Add(record);
+                            }
+
+                            await context.SaveChangesAsync().ConfigureAwait(false);
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
                     }
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                    return true;
-                }
-                catch
-                {
-                    transaction.Rollback();
+                    return false;
                 }
             }
+        }
 
-            return false;
+        public async Task<bool> Remove(IEnumerable<string> hashLst)
+        {
+            if (hashLst == null)
+            {
+                throw new ArgumentNullException(nameof(hashLst));
+            }
+
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
+                    {
+                        try
+                        {
+                            var assets = context.Assets.Where(a => hashLst.Contains(a.Hash));
+                            context.Assets.RemoveRange(assets);
+                            await context.SaveChangesAsync().ConfigureAwait(false);
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        public async Task<bool> Update(AssetAggregate asset)
+        {
+            if (asset == null)
+            {
+                throw new ArgumentNullException(nameof(asset));
+            }
+
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
+                    {
+                        try
+                        {
+                            var record = context.Assets.FirstOrDefault(a => a.Hash == asset.Hash);
+                            if (record == null)
+                            {
+                                return false;
+                            }
+
+                            record.Name = asset.Name;
+                            await context.SaveChangesAsync().ConfigureAwait(false);
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                    }
+
+                    return false;
+                }
+            }
         }
 
         private static AssetAggregate GetAsset(Asset asset)
@@ -179,66 +280,10 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 CanRead = asset.CanRead,
                 CanWrite = asset.CanWrite,
                 IsLocked = asset.IsLocked,
+                MimeType=  asset.MimeType,
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,
                 Children = asset.Children == null ? new List<AssetAggregate>() : asset.Children.Select(a => GetAsset(a))
             };
-        }
-
-        public async Task<bool> Remove(IEnumerable<string> hashLst)
-        {
-            if (hashLst == null)
-            {
-                throw new ArgumentNullException(nameof(hashLst));
-            }
-
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
-            {
-                try
-                {
-                    var assets = _context.Assets.Where(a => hashLst.Contains(a.Hash));
-                    _context.Assets.RemoveRange(assets);
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                    return true;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                }
-            }
-
-            return false;
-        }
-
-        public async Task<bool> Update(AssetAggregate asset)
-        {
-            if (asset == null)
-            {
-                throw new ArgumentNullException(nameof(asset));
-            }
-
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
-            {
-                try
-                {
-                    var record = _context.Assets.FirstOrDefault(a => a.Hash == asset.Hash);
-                    if (record == null)
-                    {
-                        return false;
-                    }
-
-                    record.Name = asset.Name;
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                    return true;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                }
-            }
-
-            return false;
         }
     }
 }

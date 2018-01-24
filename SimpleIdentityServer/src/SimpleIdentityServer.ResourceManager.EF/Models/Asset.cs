@@ -10,6 +10,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Models
         public string ResourceId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
+        public string MimeType { get; set; }
         public bool IsDefaultWorkingDirectory { get; set; }
         public bool IsLocked { get; set; }
         public bool CanWrite { get; set; }

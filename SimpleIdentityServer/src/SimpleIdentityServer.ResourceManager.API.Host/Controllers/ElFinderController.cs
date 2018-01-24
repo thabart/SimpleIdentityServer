@@ -48,6 +48,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteRm(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Rename:
                     return new OkObjectResult(await ExecuteRename(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Mkfile:
+                    return new OkObjectResult(await ExecuteMkfile(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -62,51 +64,56 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         {
             var target = elFinderParameter.Targets.First();
             AssetAggregate rootAsset = null;  // 1. Search the assets.
-            IEnumerable<AssetAggregate> targetAsset = null;
+            List<AssetAggregate> assets = new List<AssetAggregate>();
             if (!string.IsNullOrWhiteSpace(target))
             {
-                var searchTargetParameter = new SearchAssetsParameter
-                {
-                    AssetLevelType = AssetLevelTypes.ALL,
-                    HashLst = new[] { target }
-                };
-                targetAsset = await _assetRepository.Search(searchTargetParameter);
-                if (targetAsset == null || !targetAsset.Any())
+                rootAsset = await _assetRepository.Get(target);
+                if (rootAsset == null)
                 {
                     return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
                 }
 
-                rootAsset = targetAsset.First();
+                assets.AddRange(await _assetRepository.GetAllParents(target));
             }
-
-            var searchRootParameter = new SearchAssetsParameter
+            else
             {
-                AssetLevelType = AssetLevelTypes.ROOT,
-                ExcludedHashLst = string.IsNullOrWhiteSpace(target) ? null : new[] { target }
-            };
-            var rootAssets = await _assetRepository.Search(searchRootParameter);
-            if (rootAsset == null)
-            {
-                rootAsset = rootAssets.First(f => f.IsDefaultWorkingDirectory);
+                var searchRootParameter = new SearchAssetsParameter
+                {
+                    AssetLevelType = AssetLevelTypes.ROOT
+                };
+                assets.AddRange(await _assetRepository.Search(searchRootParameter));
             }
-
+            
             var result = new JObject(); // 3. Return the result.
             if (elFinderParameter.Init)
             {
                 result.Add(Constants.ElFinderResponseNames.Api, "2.1");
             }
 
-            var rootJson = GetFile(rootAsset);
             var files = new JArray();
-            foreach (var record in rootAssets)
+            if (rootAsset == null)
             {
-                files.Add(GetFile(record));
+                rootAsset = assets.First(f => f.IsDefaultWorkingDirectory);
             }
 
-            files.Add(GetFile(rootAsset));
-            foreach (var record in rootAsset.Children)
+            // TODO : REMOVE THE ROOT ASSET FROM THE LIST.
+
+            var assetsToInsert = new List<AssetAggregate> { rootAsset };
+            assetsToInsert.AddRange(rootAsset.Children);
+            foreach (var record in assets)
             {
-                files.Add(GetFile(record));
+                if (assetsToInsert.Any(a => a.Hash == record.Hash)) { continue; }
+                assetsToInsert.Add(record);
+                foreach (var child in record.Children)
+                {
+                    if (assetsToInsert.Any(a => a.Hash == child.Hash)) { continue; }
+                    assetsToInsert.Add(child);
+                }
+            }
+
+            foreach(var asset in assetsToInsert)
+            {
+                files.Add(GetFile(asset));
             }
 
             var opts = new JObject();
@@ -114,7 +121,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             opts.Add(Constants.ElFinderOptionNames.Disabled, new JArray(new[] { "chmod" }));
             opts.Add(Constants.ElFinderOptionNames.Separator, Constants.PathSeparator);
             result.Add(Constants.ElFinderResponseNames.UplMaxSize, "0");
-            result.Add(Constants.ElFinderResponseNames.Cwd, rootJson);
+            result.Add(Constants.ElFinderResponseNames.Cwd, GetFile(rootAsset));
             result.Add(Constants.ElFinderResponseNames.Files, files);
             result.Add(Constants.ElFinderResponseNames.Options, opts);
             return result;
@@ -170,7 +177,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 CreatedAt = DateTime.UtcNow,
                 ResourceParentHash = asset.Hash,
                 Path = recordPath,
-                Hash = HashHelper.GetHash(recordPath)
+                Hash = HashHelper.GetHash(recordPath),
+                MimeType=  Constants.MimeNames.Directory
             };
 
             if (!(await _assetRepository.Add(new[] { record })))
@@ -275,6 +283,45 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return result;
         }
 
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#mkfile
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteMkfile(ElFinderParameter elFinderParameter)
+        {
+            var target = elFinderParameter.Targets.First();
+            var asset = await _assetRepository.Get(target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var recordPath = asset.Path + "/" + elFinderParameter.Name;
+            var record = new AssetAggregate
+            {
+                CanRead = true,
+                CanWrite = true,
+                IsLocked = false,
+                Name = elFinderParameter.Name,
+                CreatedAt = DateTime.UtcNow,
+                ResourceParentHash = asset.Hash,
+                Path = recordPath,
+                Hash = HashHelper.GetHash(recordPath),
+                MimeType = Constants.MimeNames.TextPlain
+            };
+
+            if (!(await _assetRepository.Add(new[] { record })))
+            {
+                return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
+            }
+
+            var files = new JArray(GetFile(record));
+            var result = new JObject();
+            result.Add(Constants.ElFinderResponseNames.Added, files);
+            return result;
+        }
+
         private static JObject GetFile(AssetAggregate asset)
         {
             if (asset == null)
@@ -282,8 +329,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(asset));
             }
 
-            return AssetResponse.CreateDirectory(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash,
-                new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked)).GetJson();
+            return AssetResponse.Create(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash,
+                asset.MimeType, new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked)).GetJson();
         }
     }
 }

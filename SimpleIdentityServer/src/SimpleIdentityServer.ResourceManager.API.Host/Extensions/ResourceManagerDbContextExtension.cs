@@ -35,17 +35,19 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanRead = true,
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
-                       IsDefaultWorkingDirectory = true
+                       IsDefaultWorkingDirectory = true,
+                       MimeType = Constants.MimeNames.Directory
                    },
                    new Asset
                    {
-                       Hash =HashHelper.GetHash("Second root"),
+                       Hash = HashHelper.GetHash("Second root"),
                        Name = "Second root",
                        Path = "Second root",
                        IsLocked = true,
                        CanRead = true,
                        CanWrite = false,
                        CreateDateTime = DateTime.UtcNow,
+                       MimeType = Constants.MimeNames.Directory
                    },
                    new Asset
                    {
@@ -57,6 +59,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanRead = true,
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
+                       MimeType = Constants.MimeNames.Directory
                    },
                    new Asset
                    {
@@ -68,6 +71,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanRead = true,
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
+                       MimeType = Constants.MimeNames.Directory
                    }
                 });
             }

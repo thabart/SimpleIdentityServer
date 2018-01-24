@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Models
         public string Name { get; set; }
         public string AuthorizationPolicyId { get; set; }
         public string Path { get; set; }
+        public string MimeType { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsDefaultWorkingDirectory { get; set; }
         public bool IsLocked { get; set; }

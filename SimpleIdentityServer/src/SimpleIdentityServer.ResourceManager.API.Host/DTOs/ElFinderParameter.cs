@@ -10,7 +10,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Parents,
         Mkdir,
         Rm,
-        Rename
+        Rename,
+        Mkfile
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -45,7 +46,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Parents, ElFinderCommands.Parents },
             { Constants.ElFinderCommands.Mkdir, ElFinderCommands.Mkdir },
             { Constants.ElFinderCommands.Rm, ElFinderCommands.Rm },
-            { Constants.ElFinderCommands.Rename, ElFinderCommands.Rename }
+            { Constants.ElFinderCommands.Rename, ElFinderCommands.Rename },
+            { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile }
         };
 
         private ElFinderParameter(ElFinderCommands command, IEnumerable<string> target, int tree, bool init, string name)
