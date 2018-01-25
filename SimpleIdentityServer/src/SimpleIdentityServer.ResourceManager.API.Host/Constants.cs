@@ -92,6 +92,8 @@
             public const string ErrInsertAsset = "an error occured while trying to insert the asset(s)";
             public const string ErrDuplicateAsset = "an error occured while trying to duplicate the asset(s)";
             public const string ErrUpdateAsset = "an error occured while trying to update the asset";
+            public const string ErrPasteAsset = "an error occured while trying to paste the asset(s)";
+            public const string ErrCutAsset = "an error occured while trying to cut the asset(s)";
             public const string ErrRemoveAssets = "an error occured while trying to remove the asset(s)";
             public const string ErrTargetsNotFound = "some targets don't exist";
         }

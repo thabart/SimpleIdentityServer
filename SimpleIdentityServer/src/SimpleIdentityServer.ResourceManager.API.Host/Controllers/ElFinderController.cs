@@ -492,7 +492,93 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            return null;
+
+            var assets = await _assetRepository.Search(new SearchAssetsParameter
+            {
+                HashLst = elFinderParameter.Targets
+            });
+            if (assets.Count() != elFinderParameter.Targets.Count())
+            {
+                return new ErrorResponse(Constants.Errors.ErrTargetsNotFound).GetJson();
+            }
+
+            var tasks = new List<Task<PasteOperation>>();
+            foreach(var asset in assets)
+            {
+                tasks.Add(Copy(asset, sourceAsset, destinationAsset, elFinderParameter.Cut));
+            }
+
+            var tasksResult = await Task.WhenAll(tasks);
+            if (tasksResult.Any(t => t.IsError))
+            {
+                if (elFinderParameter.Cut)
+                {
+                    return new ErrorResponse(Constants.Errors.ErrCutAsset).GetJson();
+                }
+                else
+                {
+                    return new ErrorResponse(Constants.Errors.ErrPasteAsset).GetJson();
+                }
+            }
+
+            var added = new JArray();
+            var removed = new JArray();
+            foreach (var kvp in tasksResult)
+            {
+                foreach(var r in kvp.Removed)
+                {
+                    removed.Add(r);
+                }
+
+                foreach (var a in kvp.Added)
+                {
+                    added.Add(GetFile(a));
+                }
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ElFinderResponseNames.Added, added);
+            jObj.Add(Constants.ElFinderResponseNames.Removed, removed);
+            return jObj;
+        }
+
+        private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
+        {
+            var children = await _assetRepository.GetAllChildren(asset.Hash);
+            var hashLst = new List<string> { asset.Hash };
+            hashLst.AddRange(children.Select(c => c.Hash));
+            var previousPath = target.Path;
+            var newPath = target.Path + Constants.PathSeparator + asset.Name;
+            asset.Path = newPath;
+            asset.Hash = HashHelper.GetHash(asset.Path);
+            asset.ResourceParentHash = target.Hash;
+
+            foreach (var child in children)
+            {
+                var childPath = child.Path.Replace(source.Path, target.Path);
+                var splittedPath = childPath.Split(Constants.PathSeparator);
+                var parentPath = string.Join(Constants.PathSeparator.ToString(), splittedPath.Take(splittedPath.Count() - 1));
+                child.Path = childPath;
+                child.Hash = HashHelper.GetHash(childPath);
+                child.ResourceParentHash = HashHelper.GetHash(parentPath);
+            }
+
+            var newAssets = new List<AssetAggregate> { asset };
+            newAssets.AddRange(children);
+            if (!await _assetRepository.Add(newAssets))
+            {
+                return new PasteOperation(true);
+            }
+
+            if (isCut)
+            {
+                if (!await _assetRepository.Remove(hashLst))
+                {
+                    return new PasteOperation(true);
+                }
+            }
+
+            return new PasteOperation(!isCut ? new List<string>() : hashLst, newAssets);
         }
 
         private async Task<KeyValuePair<bool, IEnumerable<AssetAggregate>>> Duplicate(AssetAggregate asset)
@@ -530,6 +616,24 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 child.Hash = HashHelper.GetHash(newPath);
                 child.ResourceParentHash = HashHelper.GetHash(parentPath);
             }
+        }
+
+        private class PasteOperation
+        {
+            public PasteOperation(bool isError)
+            {
+                IsError = isError;
+            }
+
+            public PasteOperation(IEnumerable<string> removed, IEnumerable<AssetAggregate> added)
+            {
+                Removed = removed;
+                Added = added;
+            }
+
+            public IEnumerable<string> Removed;
+            public IEnumerable<AssetAggregate> Added;
+            public bool IsError;
         }
 
         private static JObject GetFile(AssetAggregate asset)
