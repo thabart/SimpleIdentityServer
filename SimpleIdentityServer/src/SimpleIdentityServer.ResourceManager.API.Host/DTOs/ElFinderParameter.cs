@@ -13,7 +13,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Rename,
         Mkfile,
         Tree,
-        Duplicate
+        Duplicate,
+        Paste
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -51,10 +52,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Rename, ElFinderCommands.Rename },
             { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile },
             { Constants.ElFinderCommands.Tree, ElFinderCommands.Tree },
-            { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate }
+            { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate },
+            { Constants.ElFinderCommands.Paste, ElFinderCommands.Paste }
         };
 
-        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name, string current)
+        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name, string current, string source, string destination, bool cut)
         {
             Command = command;
             Target = target;
@@ -62,11 +64,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Tree = tree;
             Init = init;
             Name = name;
-        }
-
-        public ElFinderParameter(string target)
-        {
-            Target = target;
+            Source = source;
+            Destination = destination;
+            Cut = cut;
         }
 
         public ElFinderCommands Command { get; private set; }
@@ -76,6 +76,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         public bool Init { get; private set; }
         public string Name { get; private set; }
         public string Current { get; private set; }
+        public string Source { get; private set; }
+        public string Destination { get; private set; }
+        public bool Cut { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
         {
@@ -125,6 +128,20 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 }
             }
 
+            JToken jtSource;
+            json.TryGetValue(Constants.ElFinderDtoNames.Source, out jtSource);
+            JToken jtDestination;
+            json.TryGetValue(Constants.ElFinderDtoNames.Destination, out jtDestination);
+            int cut = 0;
+            JToken jtCut;
+            if (json.TryGetValue(Constants.ElFinderDtoNames.Cut, out jtCut))
+            {
+                if (!int.TryParse(jtCut.ToString(), out cut))
+                {
+                    return new DeserializedElFinderParameter(new ErrorResponse(string.Format(Constants.Errors.ErrParamNotValidInt, Constants.ElFinderDtoNames.Cut)));
+                }
+            }
+
             JToken jtCurrent;
             json.TryGetValue(Constants.ElFinderDtoNames.Current, out jtCurrent);
 
@@ -144,7 +161,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 }
             }
 
-            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString()));
+            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, 
+                tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString(), jtSource == null ? null : jtSource.ToString(), jtDestination == null ? null : jtDestination.ToString(),
+                cut == 1));
         }
     }
 }

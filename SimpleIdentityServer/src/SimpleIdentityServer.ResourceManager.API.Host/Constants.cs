@@ -24,6 +24,9 @@
             public const string Init = "init";
             public const string Name = "name";
             public const string Current = "current";
+            public const string Source = "src";
+            public const string Destination = "dst";
+            public const string Cut = "cut";
         }
 
         public static class ElFinderResponseNames
@@ -103,6 +106,7 @@
             public const string Mkfile = "mkfile";
             public const string Tree = "tree";
             public const string Duplicate = "duplicate";
+            public const string Paste = "paste";
         }
     }
 }

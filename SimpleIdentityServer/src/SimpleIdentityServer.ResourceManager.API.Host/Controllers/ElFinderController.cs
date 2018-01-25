@@ -7,6 +7,7 @@ using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -54,6 +55,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteTree(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Duplicate:
                     return new OkObjectResult(await ExecuteDuplicate(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Paste:
+                    return new OkObjectResult(await ExecutePaste(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -455,10 +458,47 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return resp;
         }
 
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#paste
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecutePaste(ElFinderParameter elFinderParameter)
+        {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Source))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Source)).GetJson();
+            }
+
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Destination))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Destination)).GetJson();
+            }
+
+            if (elFinderParameter.Targets == null)
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Targets)).GetJson();
+            }
+
+            var sourceAsset = await _assetRepository.Get(elFinderParameter.Source);
+            if (sourceAsset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var destinationAsset = await _assetRepository.Get(elFinderParameter.Destination);
+            if (destinationAsset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            return null;
+        }
+
         private async Task<KeyValuePair<bool, IEnumerable<AssetAggregate>>> Duplicate(AssetAggregate asset)
         {
             var children = await _assetRepository.GetAllChildren(asset.Hash);
-            Rename(asset, asset.Name.Split('_').First() + "_" + DateTime.UtcNow.ToString(), children);
+            Rename(asset, asset.Name.Split('_').First() + "_" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), children);
             var newAssets = new List<AssetAggregate> { asset };
             newAssets.AddRange(children);
             if (!await _assetRepository.Add(newAssets))
