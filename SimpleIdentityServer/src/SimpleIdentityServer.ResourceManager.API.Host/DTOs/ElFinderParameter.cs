@@ -50,18 +50,20 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile }
         };
 
-        private ElFinderParameter(ElFinderCommands command, IEnumerable<string> target, int tree, bool init, string name)
+        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name)
         {
             Command = command;
-            Targets = target;
+            Target = target;
+            Targets = targets;
             Tree = tree;
             Init = init;
             Name = name;
         }
 
         public ElFinderCommands Command { get; private set; }
+        public string Target { get; private set; }
         public IEnumerable<string> Targets { get; private set; }
-        public int Tree { get; private set; }
+        public bool Tree { get; private set; }
         public bool Init { get; private set; }
         public string Name { get; private set; }
 
@@ -79,14 +81,10 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             }
 
             JToken jtTarget;
+            json.TryGetValue(Constants.ElFinderDtoNames.Target, out jtTarget);
+
             JToken jtTargets = null;
-            if (!json.TryGetValue(Constants.ElFinderDtoNames.Target, out jtTarget))
-            {
-                if (!json.TryGetValue(Constants.ElFinderDtoNames.Targets, out jtTargets))
-                {
-                    return new DeserializedElFinderParameter(new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound));
-                }
-            }
+            json.TryGetValue(Constants.ElFinderDtoNames.Targets, out jtTargets);
 
             JToken jtTree;
             int tree = 0;
@@ -107,11 +105,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 name = jtName.ToString();
             }
 
-            bool init = false;
+            int init = 0;
             JToken jtInit;
             if (json.TryGetValue(Constants.ElFinderDtoNames.Init, out jtInit))
             {
-                bool.TryParse(jtInit.ToString(), out init);
+                if (!int.TryParse(jtInit.ToString(), out init))
+                {
+                    return new DeserializedElFinderParameter(new ErrorResponse(string.Format(Constants.Errors.ErrParamNotValidInt, Constants.ElFinderDtoNames.Init)));
+                }
             }
 
             var cmdStr = jtCmd.ToString();
@@ -121,21 +122,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             }
 
             var targets = new List<string>();
-            if (jtTarget != null)
+            var jtTargetsArr = jtTargets as JArray;
+            if (jtTargetsArr != null)
             {
-                targets.Add(jtTarget.ToString());
-            }
-            else
-            {
-                var jtTargetsArr = jtTargets as JArray;
                 foreach (var r in jtTargetsArr)
                 {
                     targets.Add(r.ToString());
                 }
-
             }
 
-            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], targets, tree, init, name));
+            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, tree == 1, init == 1, name));
         }
     }
 }
