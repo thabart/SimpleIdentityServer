@@ -574,10 +574,27 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Q)).GetJson();
             }
 
-            var assets = await _assetRepository.Search(new SearchAssetsParameter
+            var target = elFinderParameter.Target;
+            IEnumerable<AssetAggregate> assets;
+            if (!string.IsNullOrWhiteSpace(target))
             {
-                Names = new [] { elFinderParameter.Q }
-            });
+                var targetAsset = await _assetRepository.Get(target);
+                if (targetAsset == null)
+                {
+                    return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+                }
+
+                var children = await _assetRepository.GetAllChildren(target);
+                assets = children.Where(c => c.Name.Contains(elFinderParameter.Q));
+            }
+            else
+            {
+                assets = await _assetRepository.Search(new SearchAssetsParameter
+                {
+                    Names = new[] { elFinderParameter.Q }
+                });
+            }
+
             var files = new JArray();
             foreach(var asset in assets)
             {

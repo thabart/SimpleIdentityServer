@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.ResourceManager.EF.Models;
 
 namespace SimpleIdentityServer.ResourceManager.EF.Mappings
@@ -13,7 +14,8 @@ namespace SimpleIdentityServer.ResourceManager.EF.Mappings
             modelBuilder.Entity<Asset>()
                 .HasMany(s => s.Children)
                 .WithOne(s => s.Parent)
-                .HasForeignKey(s => s.ResourceParentHash);
+                .HasForeignKey(s => s.ResourceParentHash)
+                .OnDelete(DeleteBehavior.Cascade);
             return modelBuilder;
         }
     }

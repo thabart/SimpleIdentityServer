@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
 
                     if (parameter.Names != null && parameter.Names.Any())
                     {
-                        assets = assets.Where(a => parameter.Names.Any(n => n.Contains(a.Name)));
+                        assets = assets.Where(a => parameter.Names.Any(n => a.Name.Contains(n)));
                     }
 
                     var result = await assets.ToListAsync().ConfigureAwait(false);
