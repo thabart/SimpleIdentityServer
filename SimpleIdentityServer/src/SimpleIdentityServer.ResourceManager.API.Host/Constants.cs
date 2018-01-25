@@ -27,6 +27,7 @@
             public const string Source = "src";
             public const string Destination = "dst";
             public const string Cut = "cut";
+            public const string Q = "q";
         }
 
         public static class ElFinderResponseNames
@@ -41,6 +42,7 @@
             public const string Added = "added";
             public const string Removed = "removed";
             public const string Select = "select";
+            public const string List = "list";
         }
 
         public static class ElFinderOptionNames
@@ -110,6 +112,7 @@
             public const string Duplicate = "duplicate";
             public const string Paste = "paste";
             public const string Ls = "ls";
+            public const string Search = "search";
         }
     }
 }

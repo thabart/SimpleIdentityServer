@@ -54,6 +54,11 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                         assets = assets.Where(a => a.IsDefaultWorkingDirectory == parameter.IsDefaultWorkingDirectory.Value);
                     }
 
+                    if (parameter.Names != null && parameter.Names.Any())
+                    {
+                        assets = assets.Where(a => parameter.Names.Any(n => n.Contains(a.Name)));
+                    }
+
                     var result = await assets.ToListAsync().ConfigureAwait(false);
                     return result.Select(a => GetAsset(a));
                 }

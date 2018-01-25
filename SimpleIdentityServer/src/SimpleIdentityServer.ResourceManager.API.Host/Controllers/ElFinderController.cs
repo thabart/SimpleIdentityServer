@@ -59,6 +59,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecutePaste(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Ls:
                     return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Search:
+                    return new OkObjectResult(await ExecuteSearch(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -78,26 +80,19 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             
             var assets = new List<AssetAggregate>();
             AssetAggregate rootDirectory = null;
-            if (elFinderParameter.Init)
-            {
-                if (string.IsNullOrWhiteSpace(elFinderParameter.Target)) // Returns the default root directory of the default volume.
-                {
-                    var searchRootParameter = new SearchAssetsParameter
-                    {
-                        AssetLevelType = AssetLevelTypes.ROOT,
-                        IsDefaultWorkingDirectory = true
-                    };
-                    rootDirectory = (await _assetRepository.Search(searchRootParameter)).First();
-                }
-            }
-
             if (!string.IsNullOrWhiteSpace(elFinderParameter.Target)) // Search the target.
             {
                 rootDirectory = await _assetRepository.Get(elFinderParameter.Target);
-                if (rootDirectory == null)
+            }
+
+            if (elFinderParameter.Init || rootDirectory == null) // Returns the default root directory of the default volume.
+            {
+                var searchRootParameter = new SearchAssetsParameter
                 {
-                    return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
-                }
+                    AssetLevelType = AssetLevelTypes.ROOT,
+                    IsDefaultWorkingDirectory = true
+                };
+                rootDirectory = (await _assetRepository.Search(searchRootParameter)).First();
             }
 
             assets.Add(rootDirectory);
@@ -551,9 +546,49 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteLs(ElFinderParameter elFinderParameter)
         {
-            return null;
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
+            }
+
+            var targetAsset = await _assetRepository.Get(elFinderParameter.Target);
+            if (targetAsset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ElFinderResponseNames.List, new JArray(targetAsset.Children.Select(c => c.Name)));    
+            return jObj;
         }
 
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#search
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteSearch(ElFinderParameter elFinderParameter)
+        {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Q))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Q)).GetJson();
+            }
+
+            var assets = await _assetRepository.Search(new SearchAssetsParameter
+            {
+                Names = new [] { elFinderParameter.Q }
+            });
+            var files = new JArray();
+            foreach(var asset in assets)
+            {
+                files.Add(GetFile(asset));
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ElFinderResponseNames.Files, files);
+            return jObj;
+        }
+        
         private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
         {
             var children = await _assetRepository.GetAllChildren(asset.Hash);

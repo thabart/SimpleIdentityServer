@@ -15,7 +15,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Tree,
         Duplicate,
         Paste,
-        Ls
+        Ls,
+        Search
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -55,10 +56,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Tree, ElFinderCommands.Tree },
             { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate },
             { Constants.ElFinderCommands.Paste, ElFinderCommands.Paste },
-            { Constants.ElFinderCommands.Ls, ElFinderCommands.Ls }
+            { Constants.ElFinderCommands.Ls, ElFinderCommands.Ls },
+            { Constants.ElFinderCommands.Search, ElFinderCommands.Search }
         };
 
-        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name, string current, string source, string destination, bool cut)
+        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, 
+            bool init, string name, string current, string source, string destination, bool cut, string q)
         {
             Command = command;
             Target = target;
@@ -69,6 +72,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Source = source;
             Destination = destination;
             Cut = cut;
+            Q = q;
         }
 
         public ElFinderCommands Command { get; private set; }
@@ -81,6 +85,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         public string Source { get; private set; }
         public string Destination { get; private set; }
         public bool Cut { get; private set; }
+        public string Q { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
         {
@@ -147,6 +152,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             JToken jtCurrent;
             json.TryGetValue(Constants.ElFinderDtoNames.Current, out jtCurrent);
 
+            JToken jtQ;
+            json.TryGetValue(Constants.ElFinderDtoNames.Q, out jtQ);
+
             var cmdStr = jtCmd.ToString();
             if (!_mappingStrToEnumCmd.ContainsKey(cmdStr))
             {
@@ -165,7 +173,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
 
             return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, 
                 tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString(), jtSource == null ? null : jtSource.ToString(), jtDestination == null ? null : jtDestination.ToString(),
-                cut == 1));
+                cut == 1, jtQ == null ? null : jtQ.ToString()));
         }
     }
 }
