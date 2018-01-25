@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    IQueryable<Asset> assets = context.Assets.Include(a => a.Parent).Include(a => a.Children);
+                    IQueryable<Asset> assets = context.Assets.Include(a => a.Parent).Include(a => a.Children).ThenInclude(a => a.Children);
                     if (parameter.HashLst != null && parameter.HashLst.Any())
                     {
                         assets = assets.Where(a => parameter.HashLst.Contains(a.Hash));
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.Children).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
                     if (asset == null)
                     {
                         return null;
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    var asset = await context.Assets.Include(a => a.Parent).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    var asset = await context.Assets.Include(a => a.Parent).ThenInclude(a => a.Children).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
                     if (asset == null)
                     {
                         return new List<AssetAggregate>();

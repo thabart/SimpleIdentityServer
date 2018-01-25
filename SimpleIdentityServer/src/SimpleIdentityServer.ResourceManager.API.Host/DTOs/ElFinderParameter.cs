@@ -11,7 +11,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Mkdir,
         Rm,
         Rename,
-        Mkfile
+        Mkfile,
+        Tree,
+        Duplicate
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -47,10 +49,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Mkdir, ElFinderCommands.Mkdir },
             { Constants.ElFinderCommands.Rm, ElFinderCommands.Rm },
             { Constants.ElFinderCommands.Rename, ElFinderCommands.Rename },
-            { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile }
+            { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile },
+            { Constants.ElFinderCommands.Tree, ElFinderCommands.Tree },
+            { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate }
         };
 
-        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name)
+        private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name, string current)
         {
             Command = command;
             Target = target;
@@ -60,12 +64,18 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Name = name;
         }
 
+        public ElFinderParameter(string target)
+        {
+            Target = target;
+        }
+
         public ElFinderCommands Command { get; private set; }
         public string Target { get; private set; }
         public IEnumerable<string> Targets { get; private set; }
         public bool Tree { get; private set; }
         public bool Init { get; private set; }
         public string Name { get; private set; }
+        public string Current { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
         {
@@ -115,6 +125,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 }
             }
 
+            JToken jtCurrent;
+            json.TryGetValue(Constants.ElFinderDtoNames.Current, out jtCurrent);
+
             var cmdStr = jtCmd.ToString();
             if (!_mappingStrToEnumCmd.ContainsKey(cmdStr))
             {
@@ -131,7 +144,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
                 }
             }
 
-            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, tree == 1, init == 1, name));
+            return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets, tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString()));
         }
     }
 }

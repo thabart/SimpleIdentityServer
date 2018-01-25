@@ -23,6 +23,7 @@
             public const string Tree = "tree";
             public const string Init = "init";
             public const string Name = "name";
+            public const string Current = "current";
         }
 
         public static class ElFinderResponseNames
@@ -36,6 +37,7 @@
             public const string Tree = "tree";
             public const string Added = "added";
             public const string Removed = "removed";
+            public const string Select = "select";
         }
 
         public static class ElFinderOptionNames
@@ -85,6 +87,7 @@
             public const string ErrParamNotValidInt = "the parameter {0} is not a valid integer";
             public const string ErrParamNotSpecified = "the parameter {0} is not specified";
             public const string ErrInsertAsset = "an error occured while trying to insert the asset(s)";
+            public const string ErrDuplicateAsset = "an error occured while trying to duplicate the asset(s)";
             public const string ErrUpdateAsset = "an error occured while trying to update the asset";
             public const string ErrRemoveAssets = "an error occured while trying to remove the asset(s)";
             public const string ErrTargetsNotFound = "some targets don't exist";
@@ -98,6 +101,8 @@
             public const string Rm = "rm";
             public const string Rename = "rename";
             public const string Mkfile = "mkfile";
+            public const string Tree = "tree";
+            public const string Duplicate = "duplicate";
         }
     }
 }
