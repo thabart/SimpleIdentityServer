@@ -14,7 +14,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Mkfile,
         Tree,
         Duplicate,
-        Paste
+        Paste,
+        Ls
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -53,7 +54,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Mkfile, ElFinderCommands.Mkfile },
             { Constants.ElFinderCommands.Tree, ElFinderCommands.Tree },
             { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate },
-            { Constants.ElFinderCommands.Paste, ElFinderCommands.Paste }
+            { Constants.ElFinderCommands.Paste, ElFinderCommands.Paste },
+            { Constants.ElFinderCommands.Ls, ElFinderCommands.Ls }
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, bool init, string name, string current, string source, string destination, bool cut)

@@ -109,6 +109,7 @@
             public const string Tree = "tree";
             public const string Duplicate = "duplicate";
             public const string Paste = "paste";
+            public const string Ls = "ls";
         }
     }
 }

@@ -57,6 +57,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteDuplicate(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Paste:
                     return new OkObjectResult(await ExecutePaste(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Ls:
+                    return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -540,6 +542,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             jObj.Add(Constants.ElFinderResponseNames.Added, added);
             jObj.Add(Constants.ElFinderResponseNames.Removed, removed);
             return jObj;
+        }
+
+        /// <summary>
+        /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#ls
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteLs(ElFinderParameter elFinderParameter)
+        {
+            return null;
         }
 
         private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
