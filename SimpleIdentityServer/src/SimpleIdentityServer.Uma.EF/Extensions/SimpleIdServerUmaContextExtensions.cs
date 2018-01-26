@@ -14,18 +14,26 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.EF.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace SimpleIdentityServer.Uma.EF.Extensions
 {
     public static class SimpleIdServerUmaContextExtensions
     {
+        private static string _firstPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a";
+
         #region Public static methods
 
         public static void EnsureSeedData(this SimpleIdServerUmaContext context)
         {
             InsertResources(context);
+            InsertPolicies(context);
+            InsertPolicyRules(context);
             context.SaveChanges();
         }
 
@@ -48,6 +56,45 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                     {
                         Id = "67c50eac-23ef-41f0-899c-dffc03add961",
                         Name = "Apis"
+                    },
+                    new ResourceSet
+                    {
+                        Id = "80596bfa-e2bb-4001-bb89-b95e413757ea",
+                        Name = "Sub"
+                    }
+                });
+            }
+        }
+
+        private static void InsertPolicies(SimpleIdServerUmaContext context)
+        {
+            if (!context.Policies.Any())
+            {
+                context.Policies.AddRange(new[]
+                {
+                    new Policy
+                    {
+                        Id = _firstPolicyId
+                    }
+                });
+            }
+        }
+
+        private static void InsertPolicyRules(SimpleIdServerUmaContext context)
+        {
+            if (!context.Policies.Any())
+            {
+                var claims = new List<Core.Models.Claim>();
+                claims.Add(new Core.Models.Claim { Type = "name", Value = "thabart" });
+                context.PolicyRules.AddRange(new[]
+                {
+                    new PolicyRule
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        PolicyId = _firstPolicyId,
+                        IsResourceOwnerConsentNeeded = false,
+                        Scopes = "read,write,execute",
+                        Claims = JsonConvert.SerializeObject(claims)
                     }
                 });
             }

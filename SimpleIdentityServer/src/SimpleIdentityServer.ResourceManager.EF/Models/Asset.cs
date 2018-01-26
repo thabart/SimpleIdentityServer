@@ -8,6 +8,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Models
         public string Hash { get; set; }
         public string ResourceParentHash { get; set; }
         public string ResourceId { get; set; }
+        public string AuthorizationPolicyId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public string MimeType { get; set; }

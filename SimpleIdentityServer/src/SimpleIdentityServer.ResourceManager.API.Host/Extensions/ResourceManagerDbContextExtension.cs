@@ -59,7 +59,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanRead = true,
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
-                       MimeType = Constants.MimeNames.Directory
+                       MimeType = Constants.MimeNames.Directory,
+                       ResourceId = "80596bfa-e2bb-4001-bb89-b95e413757ea",
+                       AuthorizationPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a"
                    },
                    new Asset
                    {

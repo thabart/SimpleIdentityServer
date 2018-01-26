@@ -9,6 +9,7 @@ using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,23 +26,26 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         private readonly IConfiguration _configuration;
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
+        private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
         private readonly IStorageHelper _storageHelper;
         private const string _umaWellKnownConfigurationName = "Uma:WellKnownConfiguration";
         private const string _openIdManagerWellKnownConfigurationName = "OpenIdManager:WellKnownConfiguration";
         private const string _openIdWellKnownConfigurationName = "OpenId:WellKnownConfiguration";
         private const string _clientIdConfigurationName = "OpenId:ClientId";
         private const string _clientSecretConfigurationName = "OpenId:ClientSecret";
-        private const string _getAllClientsKey = "getAllClientsAccessToken";
-        private const string _openIdManagerScope = "openid_manager";
+        private const string _resourceManagerAccessToken = "resourceManagerAccessToken";
+        private static IEnumerable<string> _scopes = new[] { "openid_manager", "uma_authorization", "uma_protection", "uma" };
 
         public ElFinderController(IAssetRepository assetRepository, IConfiguration configuration, IStorageHelper storageHelper,
-            IOpenIdManagerClientFactory openIdManagerClientFactory, IIdentityServerClientFactory identityServerClientFactory)
+            IOpenIdManagerClientFactory openIdManagerClientFactory, IIdentityServerClientFactory identityServerClientFactory,
+            IIdentityServerUmaClientFactory identityServerUmaClientFactory)
         {
             _assetRepository = assetRepository;
             _configuration = configuration;
             _storageHelper = storageHelper;
             _openIdManagerClientFactory = openIdManagerClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
+            _identityServerUmaClientFactory = identityServerUmaClientFactory;
         }
 
         [HttpPost]
@@ -88,10 +92,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.MkPerm:
                     return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter));
-                case ElFinderCommands.OpenIdClients:
-                    return new OkObjectResult(await ExecuteOpenIdClients(deserializedParameter.ElFinderParameter));
-                case ElFinderCommands.OpenIdScopes:
-                    return new OkObjectResult(await ExecuteOpenIdClients(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -684,10 +684,81 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            var authorizationPolicy = asset.AuthorizationPolicyId;
+            var openIdWellKnownConfigurationUrl = GetWellKnownOpenIdConfigurationUrl();
+            var umaWellKnownConfigurationUrl = GetWellKnownUmaConfigurationUrl();
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
+            Func<Task<KeyValuePair<string, JArray>>> getDiscoveryInformation = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
+            {
+                var openIdConfiguration = await _identityServerClientFactory.CreateDiscoveryClient().GetDiscoveryInformationAsync(openIdWellKnownConfigurationUrl);
+                return new KeyValuePair<string, JArray>(Constants.ElFinderResponseNames.OpenIdClaims, new JArray(openIdConfiguration.ClaimsSupported));
+            });
+            Func<Task<KeyValuePair<string, JArray>>> getOpenIdClients = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
+            {
+                var jArr = new JArray();
+                var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
+                foreach (var openIdClient in openIdClients)
+                {
+                    var record = new JObject();
+                    record.Add(Constants.ElFinderOpenIdClientResponseNames.ClientId, openIdClient.ClientId);
+                    record.Add(Constants.ElFinderOpenIdClientResponseNames.ClientName, openIdClient.ClientName);
+                    record.Add(Constants.ElFinderOpenIdClientResponseNames.LogoUri, openIdClient.LogoUri);
+                    jArr.Add(record);
+                }
 
-            var jObj = new JObject();
-            return jObj;
+                return new KeyValuePair<string, JArray>(Constants.ElFinderResponseNames.OpenIdClients, jArr);
+            });
+            Func<Task<KeyValuePair<string, JArray>>> getAuthPolicyRules = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
+            {
+                PolicyResponse policyResponse = null;
+                if (!string.IsNullOrWhiteSpace(asset.AuthorizationPolicyId))
+                {
+                    var authorizationPolicy = asset.AuthorizationPolicyId;
+                    policyResponse = await _identityServerUmaClientFactory.GetPolicyClient().GetByResolution(authorizationPolicy, umaWellKnownConfigurationUrl, grantedToken.AccessToken); // Retrieve the authorization policy.
+                }
+
+                var jArrPolicyRules = new JArray();
+                if (policyResponse != null)
+                {
+                    foreach (var policyRule in policyResponse.Rules)
+                    {
+                        var record = new JObject();
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.ClientIdsAllowed, new JArray(policyRule.ClientIdsAllowed));
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.Id, policyRule.Id);
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.IsResourceOwnerConsentNeeded, policyRule.IsResourceOwnerConsentNeeded);
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.Scopes, new JArray(policyRule.Scopes));
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.Script, policyRule.Script);
+                        var claims = new JArray();
+                        foreach (var cl in policyRule.Claims)
+                        {
+                            var claim = new JObject();
+                            claim.Add(Constants.ElFinderClaimNames.Type, cl.Type);
+                            claim.Add(Constants.ElFinderClaimNames.Value, cl.Value);
+                            claims.Add(claim);
+                        }
+
+                        record.Add(Constants.ElFinderUmaAuthorizationPolicyRuleNames.Claims, claims);
+                        jArrPolicyRules.Add(record);
+                    }
+                }
+
+                return new KeyValuePair<string, JArray>(Constants.ElFinderResponseNames.AuthRules, jArrPolicyRules);
+            });
+            var tasks = new List<Task<KeyValuePair<string, JArray>>>
+            {
+                getDiscoveryInformation(),
+                getOpenIdClients(),
+                getAuthPolicyRules()
+            };
+            var tasksResult = await Task.WhenAll(tasks);
+            var result = new JObject();
+            var permissions = new JArray(new List<string> { "read", "write", "execute" });
+            foreach(var kvp in tasksResult)
+            {
+                result.Add(kvp.Key, kvp.Value);
+            }
+
+            result.Add(Constants.ElFinderResponseNames.Permissions, permissions);
+            return result;
         }
 
         /// <summary>
@@ -712,7 +783,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteOpenIdClients(ElFinderParameter elFinderParameter)
         {
-            var grantedToken = await GetToken(_getAllClientsKey, new[] { _openIdManagerScope });
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
             var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
             var jArr = new JArray();
             foreach(var openIdClient in openIdClients)

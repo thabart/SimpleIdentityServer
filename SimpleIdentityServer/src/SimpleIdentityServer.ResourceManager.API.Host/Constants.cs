@@ -44,8 +44,10 @@
             public const string Select = "select";
             public const string List = "list";
             public const string Url = "url";
+            public const string AuthRules = "authrules";
             public const string OpenIdClients = "openidclients";
-            public const string OpenIdScopes = "openidscopes";
+            public const string OpenIdClaims = "openidclaims";
+            public const string Permissions = "permissions";
         }
 
         public static class ElFinderOptionNames
@@ -76,6 +78,21 @@
             public const string VolumeId = "volumeid";
         }
 
+        public static class ElFinderUmaAuthorizationPolicyRuleNames
+        {
+            public const string Id = "id";
+            public const string ClientIdsAllowed = "clients";
+            public const string IsResourceOwnerConsentNeeded = "consent_needed";
+            public const string Scopes = "scopes";
+            public const string Script = "script";
+            public const string Claims = "claims";
+        }
+
+        public static class ElFinderClaimNames
+        {
+            public const string Type = "type";
+            public const string Value = "value";
+        }
 
         public static class ElFinderOpenIdClientResponseNames
         {

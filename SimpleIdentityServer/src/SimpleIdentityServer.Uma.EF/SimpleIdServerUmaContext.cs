@@ -33,15 +33,10 @@ namespace SimpleIdentityServer.Uma.EF
         #region Properties
 
         public virtual DbSet<ResourceSet> ResourceSets { get; set; }
-
         public virtual DbSet<Scope> Scopes { get; set; }
-
         public virtual DbSet<Ticket> Tickets { get; set; }
-
         public virtual DbSet<Rpt> Rpts { get; set; }
-
         public virtual DbSet<Policy> Policies { get; set; }
-
         public virtual DbSet<PolicyRule> PolicyRules { get; set; }
 
         #endregion

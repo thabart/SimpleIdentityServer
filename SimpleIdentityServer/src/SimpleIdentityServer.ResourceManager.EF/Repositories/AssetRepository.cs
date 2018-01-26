@@ -183,6 +183,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                     Name = asset.Name,
                                     ResourceParentHash = asset.ResourceParentHash,
                                     Path = asset.Path,
+                                    AuthorizationPolicyId = asset.AuthorizationPolicyId,
                                     MimeType = asset.MimeType
                                 };
 
@@ -284,6 +285,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 Name = asset.Name,
                 CanRead = asset.CanRead,
                 CanWrite = asset.CanWrite,
+                AuthorizationPolicyId = asset.AuthorizationPolicyId,
                 IsLocked = asset.IsLocked,
                 MimeType=  asset.MimeType,
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,
