@@ -784,6 +784,85 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
+            var authPolRules = new List<AddAuthRuleParameter>();
+            foreach (JObject rule in elFinderParameter.Rules)
+            {
+                var record = new AddAuthRuleParameter();
+                JToken jtRuleId;
+                if (rule.TryGetValue(Constants.ElFinderAuthPolRuleNames.Id, out jtRuleId))
+                {
+                    record.RuleId = jtRuleId.ToString();
+                }
+
+                JToken jtScopes;
+                if (rule.TryGetValue(Constants.ElFinderAuthPolRuleNames.Scopes, out jtScopes))
+                {
+                    var jtScopesArr = jtScopes as JArray;
+                    if (jtScopesArr != null)
+                    {
+                        record.OpenIdScopes = jtScopesArr.ToObject<List<string>>();
+                    }
+                }
+
+                JToken jtOpenIdClients;
+                if (rule.TryGetValue(Constants.ElFinderAuthPolRuleNames.OpenIdClients, out jtOpenIdClients))
+                {
+                    var jtOpenIdClientsArr = jtOpenIdClients as JArray;
+                    if (jtOpenIdClientsArr != null)
+                    {
+                        record.OpenIdClients = jtOpenIdClientsArr.ToObject<List<string>>();
+                    }
+                }
+
+                JToken jtClaims;
+                if (rule.TryGetValue(Constants.ElFinderAuthPolRuleNames.Claims, out jtClaims))
+                {
+                    var jtClaimsArr = jtClaims as JArray;
+                    var claims = new List<AddAuthRuleClaimParameter>();
+                    foreach(JObject jtClaim in jtClaims)
+                    {
+                        var rec = new AddAuthRuleClaimParameter
+                        {
+                            Type = jtClaim.GetValue(Constants.ElFinderClaimNames.Type).ToString(),
+                            Value = jtClaim.GetValue(Constants.ElFinderClaimNames.Value).ToString()
+                        };
+                    }
+
+                    record.Claims = claims;
+                }
+
+                authPolRules.Add(record);
+            }
+
+            var openIdWellKnownConfigurationUrl = GetWellKnownOpenIdConfigurationUrl();
+            var umaWellKnownConfigurationUrl = GetWellKnownUmaConfigurationUrl();
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
+            if (string.IsNullOrWhiteSpace(asset.ResourceId)) // CREATE AN UMA RESOURCE.
+            {
+                var addedResource = await _identityServerUmaClientFactory.GetResourceSetClient().AddByResolution(new PostResourceSet
+                {
+                    Name = asset.Name,
+                    Scopes = new List<string> { "read", "write", "execute" }
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+                asset.ResourceId = addedResource.Id;
+                if (!await _assetRepository.Update(asset))
+                {
+                    // TODO : RETURNS AN ERROR.
+                }
+            }
+
+            if (asset.AuthorizationPolicies == null || !asset.AuthorizationPolicies.Any(ap => ap.IsOwner)) // ADD AN AUTHORIZATION POLICY TO THE RESOURCE.
+            {
+                // TODO  : ADD THE POLICY
+                // _identityServerUmaClientFactory.GetPolicyClient().Add();
+            }
+
+            /*
+            _identityServerUmaClientFactory.GetPolicyClient().UpdateByResolution(new PutPolicy
+            {
+                
+            })
+            */
             // TODO : Deserialize the rules & do the necessary to insert the permissions.
 
             var jObj = new JObject();

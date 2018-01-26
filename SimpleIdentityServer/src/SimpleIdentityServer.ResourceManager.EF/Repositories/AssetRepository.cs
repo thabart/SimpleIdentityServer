@@ -183,7 +183,8 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                     Name = asset.Name,
                                     ResourceParentHash = asset.ResourceParentHash,
                                     Path = asset.Path,
-                                    MimeType = asset.MimeType
+                                    MimeType = asset.MimeType,
+                                    ResourceId = asset.ResourceId
                                 };
 
                                 context.Assets.Add(record);
@@ -258,6 +259,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                             }
 
                             record.Name = asset.Name;
+                            record.ResourceId = asset.ResourceId;
                             await context.SaveChangesAsync().ConfigureAwait(false);
                             transaction.Commit();
                             return true;
@@ -278,6 +280,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             return new AssetAggregate
             {
                 Hash = asset.Hash,
+                ResourceId = asset.ResourceId,
                 ResourceParentHash = asset.ResourceParentHash,
                 CreatedAt = asset.CreateDateTime,
                 Path = asset.Path,

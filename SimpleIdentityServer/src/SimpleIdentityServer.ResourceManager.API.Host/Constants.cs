@@ -15,6 +15,14 @@
             public const string TextPlain = "text/plain";
         }
 
+        public static class ElFinderAuthPolRuleNames
+        {
+            public const string Claims = "claims";
+            public const string Id = "id";
+            public const string OpenIdClients = "openidclients";
+            public const string Scopes = "scopes";
+        }
+
         public static class ElFinderDtoNames
         {
             public const string Cmd = "cmd";

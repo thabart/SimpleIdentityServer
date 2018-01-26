@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, 
-            bool init, string name, string current, string source, string destination, bool cut, string q, JObject rules)
+            bool init, string name, string current, string source, string destination, bool cut, string q, JArray rules)
         {
             Command = command;
             Target = target;
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         public string Destination { get; private set; }
         public bool Cut { get; private set; }
         public string Q { get; private set; }
-        public JObject Rules { get; private set; }
+        public JArray Rules { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
         {
@@ -185,7 +185,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
 
             return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets,
                 tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString(), jtSource == null ? null : jtSource.ToString(), jtDestination == null ? null : jtDestination.ToString(),
-                cut == 1, jtQ == null ? null : jtQ.ToString(), jtRules == null ? null : jtRules as JObject));
+                cut == 1, jtQ == null ? null : jtQ.ToString(), jtRules == null ? null : jtRules as JArray));
         }
     }
 }
