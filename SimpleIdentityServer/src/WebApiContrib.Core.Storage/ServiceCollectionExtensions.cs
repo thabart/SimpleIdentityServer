@@ -5,9 +5,7 @@ namespace WebApiContrib.Core.Storage
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddStorage(
-            this IServiceCollection serviceCollection,
-            Action<StorageOptionsBuilder> callback)
+        public static IServiceCollection AddStorage(this IServiceCollection serviceCollection, Action<StorageOptionsBuilder> callback)
         {
             if (serviceCollection == null)
             {

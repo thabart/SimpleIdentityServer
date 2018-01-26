@@ -44,6 +44,8 @@
             public const string Select = "select";
             public const string List = "list";
             public const string Url = "url";
+            public const string OpenIdClients = "openidclients";
+            public const string OpenIdScopes = "openidscopes";
         }
 
         public static class ElFinderOptionNames
@@ -72,6 +74,14 @@
             public const string Thash = "thash";
             public const string Dim = "dim";
             public const string VolumeId = "volumeid";
+        }
+
+
+        public static class ElFinderOpenIdClientResponseNames
+        {
+            public const string ClientId = "client_id";
+            public const string LogoUri = "logo_uri";
+            public const string ClientName = "client_name";
         }
 
         public static class ErrorDtoNames

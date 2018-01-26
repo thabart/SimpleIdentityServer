@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 
             var httpResult = await httpClient.SendAsync(request);
             httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync();
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var jArr = JArray.Parse(content);
             var result = new List<OpenIdClientResponse>();
             foreach(JObject rec in jArr)

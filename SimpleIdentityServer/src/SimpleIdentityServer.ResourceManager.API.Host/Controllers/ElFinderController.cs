@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Manager.Client;
 using SimpleIdentityServer.ResourceManager.API.Host.DTOs;
 using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApiContrib.Core.Storage;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 {
@@ -23,17 +25,21 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         private readonly IConfiguration _configuration;
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
+        private readonly IStorageHelper _storageHelper;
         private const string _umaWellKnownConfigurationName = "Uma:WellKnownConfiguration";
         private const string _openIdManagerWellKnownConfigurationName = "OpenIdManager:WellKnownConfiguration";
         private const string _openIdWellKnownConfigurationName = "OpenId:WellKnownConfiguration";
         private const string _clientIdConfigurationName = "OpenId:ClientId";
         private const string _clientSecretConfigurationName = "OpenId:ClientSecret";
+        private const string _getAllClientsKey = "getAllClientsAccessToken";
+        private const string _openIdManagerScope = "openid_manager";
 
-        public ElFinderController(IAssetRepository assetRepository, IConfiguration configuration, 
+        public ElFinderController(IAssetRepository assetRepository, IConfiguration configuration, IStorageHelper storageHelper,
             IOpenIdManagerClientFactory openIdManagerClientFactory, IIdentityServerClientFactory identityServerClientFactory)
         {
             _assetRepository = assetRepository;
             _configuration = configuration;
+            _storageHelper = storageHelper;
             _openIdManagerClientFactory = openIdManagerClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
         }
@@ -83,6 +89,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 case ElFinderCommands.MkPerm:
                     return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.OpenIdClients:
+                    return new OkObjectResult(await ExecuteOpenIdClients(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.OpenIdScopes:
                     return new OkObjectResult(await ExecuteOpenIdClients(deserializedParameter.ElFinderParameter));
             }
 
@@ -704,17 +712,21 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteOpenIdClients(ElFinderParameter elFinderParameter)
         {
-            var clientId = GetClientId();
-            var clientSecret = GetClientSecret();
-            var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
-                .UseClientSecretPostAuth(clientId, clientSecret)
-                .UseClientCredentials("openid_manager")
-                .ResolveAsync(GetWellKnownOpenIdConfigurationUrl());
+            var grantedToken = await GetToken(_getAllClientsKey, new[] { _openIdManagerScope });
+            var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
+            var jArr = new JArray();
+            foreach(var openIdClient in openIdClients)
+            {
+                var jObj = new JObject();
+                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.ClientId, openIdClient.ClientId);
+                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.ClientName, openIdClient.ClientName);
+                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.LogoUri, openIdClient.LogoUri);
+                jArr.Add(jObj);
+            }
 
-            var openIdManagerClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()));
-
-            var jObj = new JObject();
-            return jObj;
+            var result = new JObject();
+            result.Add(Constants.ElFinderResponseNames.OpenIdClients, jArr);
+            return result;
         }
 
         #endregion
@@ -756,6 +768,51 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             return new PasteOperation(!isCut ? new List<string>() : hashLst, newAssets);
+        }
+
+        private async Task<GrantedToken> GetToken(string key, IEnumerable<string> scopes)
+        {
+            GrantedToken grantedToken = null;
+            var clientId = GetClientId();
+            var clientSecret = GetClientSecret();
+            var wellKnownConfiguration = GetWellKnownOpenIdConfigurationUrl();
+            var storageRecord = await _storageHelper.GetAsync<GrantedToken>(key);
+            var clientSelector = _identityServerClientFactory.CreateAuthSelector()
+                .UseClientSecretPostAuth(clientId, clientSecret);
+            if (storageRecord != null && storageRecord.Obj != null)
+            {
+                var currentDate = DateTime.UtcNow;
+                var expirationDate = DateTime.UtcNow.AddSeconds(storageRecord.Obj.ExpiresIn);
+                if (currentDate >= expirationDate) // Check expiration.
+                {
+                    var refreshToken = storageRecord.Obj.RefreshToken;
+                    await _storageHelper.SetAsync<GrantedToken>(key, null);
+                    if (!string.IsNullOrWhiteSpace(storageRecord.Obj.RefreshToken)) // Get an access token by using the refresh token.
+                    {
+                        try
+                        {
+                            grantedToken = await clientSelector.UseRefreshToken(storageRecord.Obj.RefreshToken).ResolveAsync(wellKnownConfiguration);
+                        }
+                        catch (Exception) { }
+                    }
+                }
+                else
+                {
+                    grantedToken = storageRecord.Obj;
+                }
+            }
+
+            if (grantedToken != null)
+            {
+                return grantedToken;
+            }
+            
+            grantedToken = await _identityServerClientFactory.CreateAuthSelector()
+                .UseClientSecretPostAuth(clientId, clientSecret)
+                .UseClientCredentials(scopes.ToArray())
+                .ResolveAsync(wellKnownConfiguration);
+            await _storageHelper.SetAsync(key, grantedToken);
+            return grantedToken;
         }
 
         private async Task<KeyValuePair<bool, IEnumerable<AssetAggregate>>> Duplicate(AssetAggregate asset)

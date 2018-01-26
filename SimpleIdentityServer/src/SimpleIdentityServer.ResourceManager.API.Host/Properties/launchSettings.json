@@ -2,11 +2,7 @@
   "profiles": {
     "SimpleIdentityServer.ResourceManager.API.Host": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:5004/"
+      "commandLineArgs": "http://*:5004"
     }
   }
 }
