@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace SimpleIdentityServer.ResourceManager.Core.Models
 {
+    public class AssetAggregateAuthPolicy
+    {
+        public string AuthPolicyId { get; set; }
+        public bool IsOwner { get; set; }
+    }
+
     public class AssetAggregate
     {
         public AssetAggregate()
@@ -13,7 +19,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Models
         public string Hash { get; set; }
         public string ResourceParentHash { get; set; }
         public string Name { get; set; }
-        public string AuthorizationPolicyId { get; set; }
+        public IEnumerable<AssetAggregateAuthPolicy> AuthorizationPolicies { get; set; }
         public string Path { get; set; }
         public string MimeType { get; set; }
         public DateTime CreatedAt { get; set; }

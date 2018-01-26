@@ -28,6 +28,7 @@
             public const string Destination = "dst";
             public const string Cut = "cut";
             public const string Q = "q";
+            public const string Rules = "rules";
         }
 
         public static class ElFinderResponseNames

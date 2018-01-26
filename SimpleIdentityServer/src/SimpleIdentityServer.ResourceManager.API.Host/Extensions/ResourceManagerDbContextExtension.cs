@@ -17,6 +17,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
             }
 
             AddAssets(resourceManagerContext);
+            AddAssetAuthPolicies(resourceManagerContext);
             resourceManagerContext.SaveChanges();
         }
 
@@ -61,7 +62,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CreateDateTime = DateTime.UtcNow,
                        MimeType = Constants.MimeNames.Directory,
                        ResourceId = "80596bfa-e2bb-4001-bb89-b95e413757ea",
-                       AuthorizationPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a"
                    },
                    new Asset
                    {
@@ -74,6 +74,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
                        MimeType = Constants.MimeNames.Directory
+                   }
+                });
+            }
+        }
+
+        private static void AddAssetAuthPolicies(ResourceManagerDbContext context)
+        {
+            if (!context.Assets.Any())
+            {
+                context.AssetAuthPolicies.AddRange(new[]
+                {
+                   new AssetAuthPolicy
+                   {
+                       AssetHash = HashHelper.GetHash("Root/Sub"),
+                       AuthPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a",
+                       IsOwner = true
                    }
                 });
             }

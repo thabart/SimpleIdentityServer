@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    IQueryable<Asset> assets = context.Assets.Include(a => a.Parent).Include(a => a.Children).ThenInclude(a => a.Children);
+                    IQueryable<Asset> assets = context.Assets.Include(a => a.Parent).Include(a => a.AuthPolicies).Include(a => a.Children).ThenInclude(a => a.Children);
                     if (parameter.HashLst != null && parameter.HashLst.Any())
                     {
                         assets = assets.Where(a => parameter.HashLst.Contains(a.Hash));
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.Children).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.AuthPolicies).Include(a => a.Children).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
                     if (asset == null)
                     {
                         return null;
@@ -183,7 +183,6 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                     Name = asset.Name,
                                     ResourceParentHash = asset.ResourceParentHash,
                                     Path = asset.Path,
-                                    AuthorizationPolicyId = asset.AuthorizationPolicyId,
                                     MimeType = asset.MimeType
                                 };
 
@@ -285,7 +284,11 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 Name = asset.Name,
                 CanRead = asset.CanRead,
                 CanWrite = asset.CanWrite,
-                AuthorizationPolicyId = asset.AuthorizationPolicyId,
+                AuthorizationPolicies = asset.AuthPolicies == null ? new List<AssetAggregateAuthPolicy>() : asset.AuthPolicies.Select(ap => new AssetAggregateAuthPolicy
+                {
+                    AuthPolicyId = ap.AuthPolicyId,
+                    IsOwner = ap.IsOwner
+                }),
                 IsLocked = asset.IsLocked,
                 MimeType=  asset.MimeType,
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,

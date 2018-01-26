@@ -710,9 +710,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             Func<Task<KeyValuePair<string, JArray>>> getAuthPolicyRules = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
             {
                 PolicyResponse policyResponse = null;
-                if (!string.IsNullOrWhiteSpace(asset.AuthorizationPolicyId))
+                if (asset.AuthorizationPolicies != null && asset.AuthorizationPolicies.Any(a => a.IsOwner))
                 {
-                    var authorizationPolicy = asset.AuthorizationPolicyId;
+                    var authorizationPolicy = asset.AuthorizationPolicies.First(a => a.IsOwner).AuthPolicyId;
                     policyResponse = await _identityServerUmaClientFactory.GetPolicyClient().GetByResolution(authorizationPolicy, umaWellKnownConfigurationUrl, grantedToken.AccessToken); // Retrieve the authorization policy.
                 }
 
@@ -768,6 +768,24 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteMkPerm(ElFinderParameter elFinderParameter)
         {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
+            }
+
+            if (elFinderParameter.Rules == null)
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Rules)).GetJson();
+            }
+
+            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            // TODO : Deserialize the rules & do the necessary to insert the permissions.
+
             var jObj = new JObject();
             return jObj;
         }
