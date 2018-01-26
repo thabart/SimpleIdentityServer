@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Manager.Client;
 using SimpleIdentityServer.ResourceManager.API.Host.DTOs;
 using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Models;
@@ -17,10 +20,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
     public class ElFinderController : Controller
     {
         private readonly IAssetRepository _assetRepository;
+        private readonly IConfiguration _configuration;
+        private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
+        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+        private const string _umaWellKnownConfigurationName = "Uma:WellKnownConfiguration";
+        private const string _openIdManagerWellKnownConfigurationName = "OpenIdManager:WellKnownConfiguration";
+        private const string _openIdWellKnownConfigurationName = "OpenId:WellKnownConfiguration";
+        private const string _clientIdConfigurationName = "OpenId:ClientId";
+        private const string _clientSecretConfigurationName = "OpenId:ClientSecret";
 
-        public ElFinderController(IAssetRepository assetRepository)
+        public ElFinderController(IAssetRepository assetRepository, IConfiguration configuration, 
+            IOpenIdManagerClientFactory openIdManagerClientFactory, IIdentityServerClientFactory identityServerClientFactory)
         {
             _assetRepository = assetRepository;
+            _configuration = configuration;
+            _openIdManagerClientFactory = openIdManagerClientFactory;
+            _identityServerClientFactory = identityServerClientFactory;
         }
 
         [HttpPost]
@@ -61,10 +76,20 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Search:
                     return new OkObjectResult(await ExecuteSearch(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Access:
+                    return new OkObjectResult(await ExecuteAccess(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.Perms:
+                    return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.MkPerm:
+                    return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.OpenIdClients:
+                    return new OkObjectResult(await ExecuteOpenIdClients(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
         }
+
+        #region ELFINDER commands
 
         /// <summary>
         /// https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#open
@@ -605,7 +630,95 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             jObj.Add(Constants.ElFinderResponseNames.Files, files);
             return jObj;
         }
-        
+
+        #endregion
+
+        #region UMA commands
+
+        /// <summary>
+        /// Returns information on how to access to the resource.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteAccess(ElFinderParameter elFinderParameter)
+        {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
+            }
+
+            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ElFinderResponseNames.Url, "http://localhost"); // TODO : Replace the url by the correct value.
+            return jObj;
+        }
+
+        /// <summary>
+        /// Get the permissions of the target / UMA resource.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecutePerms(ElFinderParameter elFinderParameter)
+        {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
+            }
+
+            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var authorizationPolicy = asset.AuthorizationPolicyId;
+
+            var jObj = new JObject();
+            return jObj;
+        }
+
+        /// <summary>
+        /// Create a permission.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteMkPerm(ElFinderParameter elFinderParameter)
+        {
+            var jObj = new JObject();
+            return jObj;
+        }
+
+        #endregion
+
+        #region OPENID manager commands
+
+        /// <summary>
+        /// Get all the openid clients.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteOpenIdClients(ElFinderParameter elFinderParameter)
+        {
+            var clientId = GetClientId();
+            var clientSecret = GetClientSecret();
+            var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
+                .UseClientSecretPostAuth(clientId, clientSecret)
+                .UseClientCredentials("openid_manager")
+                .ResolveAsync(GetWellKnownOpenIdConfigurationUrl());
+
+            var openIdManagerClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()));
+
+            var jObj = new JObject();
+            return jObj;
+        }
+
+        #endregion
+
         private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
         {
             var children = await _assetRepository.GetAllChildren(asset.Hash);
@@ -709,6 +822,32 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
             return AssetResponse.Create(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash,
                 asset.MimeType, new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked)).GetJson();
+        }
+
+        private string GetWellKnownUmaConfigurationUrl()
+        {
+            return _configuration[_umaWellKnownConfigurationName];
+        }
+
+        private string GetWellKnownOpenIdManagerUrl()
+        {
+            return _configuration[_openIdManagerWellKnownConfigurationName];
+        }
+
+        private string GetWellKnownOpenIdConfigurationUrl()
+        {
+            return _configuration[_openIdWellKnownConfigurationName];
+        }
+
+        private string GetClientId()
+        {
+            return _configuration[_clientIdConfigurationName];
+        }
+
+        private string GetClientSecret()
+        {
+
+            return _configuration[_clientSecretConfigurationName];
         }
     }
 }

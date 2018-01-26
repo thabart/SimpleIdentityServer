@@ -16,7 +16,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Duplicate,
         Paste,
         Ls,
-        Search
+        Search,
+        Access,
+        Perms,
+        MkPerm,
+        OpenIdClients
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -57,7 +61,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Duplicate, ElFinderCommands.Duplicate },
             { Constants.ElFinderCommands.Paste, ElFinderCommands.Paste },
             { Constants.ElFinderCommands.Ls, ElFinderCommands.Ls },
-            { Constants.ElFinderCommands.Search, ElFinderCommands.Search }
+            { Constants.ElFinderCommands.Search, ElFinderCommands.Search },
+            { Constants.ElFinderCommands.Access, ElFinderCommands.Access },
+            { Constants.ElFinderCommands.Perms, ElFinderCommands.Perms },
+            { Constants.ElFinderCommands.MkPerm, ElFinderCommands.MkPerm },
+            { Constants.ElFinderCommands.OpenIdClients, ElFinderCommands.OpenIdClients }
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, 

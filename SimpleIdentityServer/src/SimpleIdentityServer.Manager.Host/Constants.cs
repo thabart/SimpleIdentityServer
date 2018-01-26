@@ -27,6 +27,17 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Scopes = RootPath + "/scopes";
             public const string ResourceOwners = RootPath + "/resource_owners";
             public const string Manage = RootPath + "/manage";
+            public const string Configuration = ".well-known/openidmanager-configuration";
+        }
+
+        public static class ConfigurationNames
+        {
+            public const string JwsEndpoint = "jws_endpoint";
+            public const string JweEndpoint = "jwe_endpoint";
+            public const string ClientsEndpoint = "clients_endpoint";
+            public const string ScopesEndpoint = "scopes_endpoint";
+            public const string ResourceOwnersEndpoint = "resourceowners_endpoint";
+            public const string ManageEndpoint = "manage_endpoint";
         }
 
         public static class GetJwsRequestNames

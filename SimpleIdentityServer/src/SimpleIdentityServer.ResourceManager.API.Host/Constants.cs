@@ -43,6 +43,7 @@
             public const string Removed = "removed";
             public const string Select = "select";
             public const string List = "list";
+            public const string Url = "url";
         }
 
         public static class ElFinderOptionNames
@@ -113,6 +114,10 @@
             public const string Paste = "paste";
             public const string Ls = "ls";
             public const string Search = "search";
+            public const string Access = "access";
+            public const string Perms = "perms";
+            public const string MkPerm = "mkperm";
+            public const string OpenIdClients = "openidclients";
         }
     }
 }

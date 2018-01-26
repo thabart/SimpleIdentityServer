@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.EF;
 using System;
@@ -46,6 +48,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
                 .AllowAnyHeader()));
             services.AddMvc();
             services.AddResourceManagerInMemory();
+            RegisterServices(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -70,6 +73,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
                 catch (Exception) { }
                 resourceManagerContext.EnsureSeedData();
             }
+        }
+
+        private void RegisterServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddOpenIdManagerClient();
+            serviceCollection.AddIdServerClient();
+            serviceCollection.AddSingleton<IConfiguration>(Configuration);
         }
     }
 }
