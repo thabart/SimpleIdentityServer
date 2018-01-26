@@ -785,7 +785,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             var authPolRules = new List<AddAuthRuleParameter>();
-            foreach (JObject rule in elFinderParameter.Rules)
+            foreach (JObject rule in elFinderParameter.Rules) // Extract the rules.
             {
                 var record = new AddAuthRuleParameter();
                 JToken jtRuleId;
@@ -845,26 +845,79 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     Scopes = new List<string> { "read", "write", "execute" }
                 }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
                 asset.ResourceId = addedResource.Id;
-                if (!await _assetRepository.Update(asset))
+                if (!await _assetRepository.Update(new[] { asset }))
                 {
                     // TODO : RETURNS AN ERROR.
                 }
             }
 
-            if (asset.AuthorizationPolicies == null || !asset.AuthorizationPolicies.Any(ap => ap.IsOwner)) // ADD AN AUTHORIZATION POLICY TO THE RESOURCE.
+            if (asset.AuthorizationPolicies == null || !asset.AuthorizationPolicies.Any(ap => ap.IsOwner)) // Add an authorization policy.
             {
-                // TODO  : ADD THE POLICY
-                // _identityServerUmaClientFactory.GetPolicyClient().Add();
+                AddPolicyResponse addPolicyResponse = await _identityServerUmaClientFactory.GetPolicyClient().AddByResolution(new PostPolicy
+                {
+                    ResourceSetIds = new List<string> { asset.ResourceId },
+                    Rules = authPolRules.Select(apr =>
+                        new PostPolicyRule
+                        {
+                            ClientIdsAllowed = apr.OpenIdClients.ToList(),
+                            Scopes = apr.OpenIdScopes.ToList(),
+                            Claims = apr.Claims == null ? null : apr.Claims.Select(c => new PostClaim
+                            {
+                                Type = c.Type,
+                                Value = c.Value
+                            }).ToList(),
+                            Script = string.Empty,
+                            IsResourceOwnerConsentNeeded = false
+                        }
+                    ).ToList()
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+                asset.AuthorizationPolicies.Add(new AssetAggregateAuthPolicy
+                {
+                    IsOwner = true,
+                    AuthPolicyId = addPolicyResponse.PolicyId
+                });
+                var lstAssets = new List<AssetAggregate> { asset };
+                var children = await _assetRepository.GetAllChildren(asset.Hash);
+                foreach(var child in children)
+                {
+                    child.AuthorizationPolicies.Add(new AssetAggregateAuthPolicy
+                    {
+                        IsOwner = false,
+                        AuthPolicyId = addPolicyResponse.PolicyId
+                    });
+                }
+
+                lstAssets.AddRange(children);
+                if (!await _assetRepository.Update(lstAssets))
+                {
+                    // TODO : Returns an error.
+                }
             }
-
-            /*
-            _identityServerUmaClientFactory.GetPolicyClient().UpdateByResolution(new PutPolicy
+            else // Update the authorization policy.
             {
-                
-            })
-            */
+                var authPolicy = asset.AuthorizationPolicies.First(ap => ap.IsOwner);
+                await _identityServerUmaClientFactory.GetPolicyClient().UpdateByResolution(new PutPolicy
+                {
+                    PolicyId = authPolicy.AuthPolicyId,
+                    Rules = authPolRules.Select(apr => 
+                        new PutPolicyRule
+                        {
+                            Id = apr.RuleId,
+                            ClientIdsAllowed = apr.OpenIdClients.ToList(),
+                            Scopes = apr.OpenIdScopes.ToList(),
+                            Claims = apr.Claims == null ? null : apr.Claims.Select(c => new PostClaim
+                            {
+                                Type = c.Type,
+                                Value = c.Value
+                            }).ToList(),
+                            Script = string.Empty,
+                            IsResourceOwnerConsentNeeded = false
+                        }
+                    ).ToList()
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+            }
+            
             // TODO : Deserialize the rules & do the necessary to insert the permissions.
-
             var jObj = new JObject();
             return jObj;
         }

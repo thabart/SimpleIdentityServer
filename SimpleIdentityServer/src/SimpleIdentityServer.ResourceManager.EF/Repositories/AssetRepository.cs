@@ -237,11 +237,11 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             }
         }
 
-        public async Task<bool> Update(AssetAggregate asset)
+        public async Task<bool> Update(IEnumerable<AssetAggregate> assets)
         {
-            if (asset == null)
+            if (assets == null)
             {
-                throw new ArgumentNullException(nameof(asset));
+                throw new ArgumentNullException(nameof(assets));
             }
 
             using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -252,14 +252,35 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                     {
                         try
                         {
-                            var record = context.Assets.FirstOrDefault(a => a.Hash == asset.Hash);
-                            if (record == null)
+                            foreach(var asset in assets)
                             {
-                                return false;
+                                var record = context.Assets.FirstOrDefault(a => a.Hash == asset.Hash);
+                                if (record == null)
+                                {
+                                    return false;
+                                }
+
+                                record.Name = asset.Name;
+                                record.ResourceId = asset.ResourceId;
+                                record.CanRead = asset.CanRead;
+                                record.CanWrite = asset.CanWrite;
+                                record.IsLocked = asset.IsLocked;
+                                record.AuthPolicies.Clear();
+                                if (asset.AuthorizationPolicies != null)
+                                {
+                                    foreach (var authPolicy in asset.AuthorizationPolicies)
+                                    {
+                                        record.AuthPolicies.Add(new AssetAuthPolicy
+                                        {
+                                            AssetHash = record.Hash,
+                                            IsOwner = authPolicy.IsOwner,
+                                            AuthPolicyId = authPolicy.AuthPolicyId
+                                        });
+                                    }
+                                }
+
                             }
 
-                            record.Name = asset.Name;
-                            record.ResourceId = asset.ResourceId;
                             await context.SaveChangesAsync().ConfigureAwait(false);
                             transaction.Commit();
                             return true;
@@ -291,11 +312,11 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 {
                     AuthPolicyId = ap.AuthPolicyId,
                     IsOwner = ap.IsOwner
-                }),
+                }).ToList(),
                 IsLocked = asset.IsLocked,
                 MimeType=  asset.MimeType,
                 IsDefaultWorkingDirectory = asset.IsDefaultWorkingDirectory,
-                Children = asset.Children == null ? new List<AssetAggregate>() : asset.Children.Select(a => GetAsset(a))
+                Children = asset.Children == null ? new List<AssetAggregate>() : asset.Children.Select(a => GetAsset(a)).ToList()
             };
         }
     }

@@ -13,6 +13,6 @@ namespace SimpleIdentityServer.ResourceManager.Core.Repositories
         Task<AssetAggregate> Get(string hash);
         Task<bool> Add(IEnumerable<AssetAggregate> asset);
         Task<bool> Remove(IEnumerable<string> hashLst);
-        Task<bool> Update(AssetAggregate asset);
+        Task<bool> Update(IEnumerable<AssetAggregate> assets);
     }
 }
