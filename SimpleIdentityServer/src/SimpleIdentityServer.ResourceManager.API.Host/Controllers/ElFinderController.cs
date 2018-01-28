@@ -826,6 +826,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                             Type = jtClaim.GetValue(Constants.ElFinderClaimNames.Type).ToString(),
                             Value = jtClaim.GetValue(Constants.ElFinderClaimNames.Value).ToString()
                         };
+
+                        claims.Add(rec);
                     }
 
                     record.Claims = claims;

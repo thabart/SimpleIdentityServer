@@ -81,6 +81,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Destination = destination;
             Cut = cut;
             Q = q;
+            Rules = rules;
         }
 
         public ElFinderCommands Command { get; private set; }

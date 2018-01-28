@@ -265,7 +265,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                 record.CanRead = asset.CanRead;
                                 record.CanWrite = asset.CanWrite;
                                 record.IsLocked = asset.IsLocked;
-                                record.AuthPolicies.Clear();
+                                record.AuthPolicies = new List<AssetAuthPolicy>();
                                 if (asset.AuthorizationPolicies != null)
                                 {
                                     foreach (var authPolicy in asset.AuthorizationPolicies)
