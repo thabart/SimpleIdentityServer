@@ -895,7 +895,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://websiteapi/callback"
-                    }/*,
+                    },/*
                     // Visual studio extension
                     new Models.Client
                     {
@@ -925,7 +925,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ResponseTypes = "1",
                         ApplicationType = ApplicationTypes.native
 
-                    },
+                    },*/
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
                     new Models.Client
                     {
@@ -955,7 +955,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://simpleidserver/callback"
-                    },
+                    }/*,
                     // Manager website 
                     new Models.Client
                     {

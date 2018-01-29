@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Startup
                 })
                 .UseUrls(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseConfiguration(configuration)
+                // .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

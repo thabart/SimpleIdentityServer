@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseUrls(args)
-                .UseConfiguration(configuration)
+                // .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

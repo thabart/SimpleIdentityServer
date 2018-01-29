@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{736DB7E1-6AA9-466A-8470-EFC582B219FA}"
 EndProject
@@ -104,6 +104,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Algorithms.Extensions", "src\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj", "{8DDD102E-A63B-4BDF-B329-4E851CAB4C2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authentication.Common", "src\SimpleIdentityServer.Authentication.Common\SimpleIdentityServer.Authentication.Common.csproj", "{4E599E8B-0768-4357-8942-591689DB93EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.EF", "src\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj", "{7AE51EF8-DD98-4777-B71A-203C2A3FB82E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -263,6 +265,10 @@ Global
 		{4E599E8B-0768-4357-8942-591689DB93EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E599E8B-0768-4357-8942-591689DB93EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E599E8B-0768-4357-8942-591689DB93EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE51EF8-DD98-4777-B71A-203C2A3FB82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE51EF8-DD98-4777-B71A-203C2A3FB82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE51EF8-DD98-4777-B71A-203C2A3FB82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE51EF8-DD98-4777-B71A-203C2A3FB82E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -314,6 +320,7 @@ Global
 		{0F3B4FB9-1CD1-405D-A849-3F20A62BC6E4} = {4EC3C9B3-7417-4BF9-A9A0-3259BD6A0D5B}
 		{8DDD102E-A63B-4BDF-B329-4E851CAB4C2B} = {0F3B4FB9-1CD1-405D-A849-3F20A62BC6E4}
 		{4E599E8B-0768-4357-8942-591689DB93EA} = {454E693F-333D-471A-8B8B-A5DEC41749E2}
+		{7AE51EF8-DD98-4777-B71A-203C2A3FB82E} = {454E693F-333D-471A-8B8B-A5DEC41749E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4E1AD5C7-B8BE-4890-9985-F2BDCAD9425F}
