@@ -32,8 +32,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
         public static void EnsureSeedData(this SimpleIdServerUmaContext context)
         {
             InsertResources(context);
-            InsertPolicies(context);
-            InsertPolicyRules(context);
+            // InsertPolicies(context);
+            // InsertPolicyRules(context);
             context.SaveChanges();
         }
 
@@ -56,11 +56,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                     {
                         Id = "67c50eac-23ef-41f0-899c-dffc03add961",
                         Name = "Apis"
-                    },
-                    new ResourceSet
-                    {
-                        Id = "80596bfa-e2bb-4001-bb89-b95e413757ea",
-                        Name = "Sub"
                     }
                 });
             }

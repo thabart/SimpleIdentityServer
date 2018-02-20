@@ -400,7 +400,7 @@ namespace SimpleIdentityServer.Configuration.EF.Extensions
                     new Setting
                     {
                         Key = Constants.SettingNames.TwilioFromNumber,
-                        Value = "+32460206628"
+                        Value = "+32460200186"
                     },
                     new Setting
                     {

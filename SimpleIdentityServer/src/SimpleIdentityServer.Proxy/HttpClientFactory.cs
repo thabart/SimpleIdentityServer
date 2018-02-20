@@ -18,6 +18,7 @@
 using System.Net;
 #endif
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Proxy
 {

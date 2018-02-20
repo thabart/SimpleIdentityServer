@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
@@ -116,6 +117,18 @@ namespace SimpleIdentityServer.Manager.Host.Startup
         {
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
+
+            var databaseType = Configuration["Caching:Type"];
+            if (databaseType != "SQLITE" && databaseType != "POSTGRE" && databaseType != "SQLSERVER") // 1. Populate some fake data.
+            {
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                    simpleIdentityServerContext.Database.EnsureCreated();
+                    simpleIdentityServerContext.EnsureSeedData();
+                }
+            }
+
             app.UseSimpleIdentityServerManager(loggerFactory, _options);
         }
     }

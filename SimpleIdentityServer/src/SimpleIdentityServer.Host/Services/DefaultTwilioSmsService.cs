@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Host.Services
 {
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
-        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
+        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages";
         private const string TwilioAccountSid = "TwilioAccountSid";
         private const string TwilioAuthToken = "TwilioAuthToken";
         private const string TwilioFromNumber = "TwilioFromNumber";
@@ -139,6 +139,12 @@ namespace SimpleIdentityServer.Host.Services
                 credentials.AccountSid, 
                 credentials.AuthToken);
 
+            // https://api.twilio.com/2010-04-01/Accounts/{0}/Messages
+            // /2010-04-01/Accounts/{AccountSid}/Messages
+            // To
+            // From
+            // Body
+
             var keyValues = new List<KeyValuePair<string, string>>();
             keyValues.Add(new KeyValuePair<string, string>("To", toPhoneNumber));
             keyValues.Add(new KeyValuePair<string, string>("From", credentials.FromNumber));
@@ -154,7 +160,7 @@ namespace SimpleIdentityServer.Host.Services
             var response = await client.PostAsync(
                 postUrl, 
                 content).ConfigureAwait(false);
-
+            var xxx = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
                 return true;

@@ -166,7 +166,6 @@ namespace SimpleIdentityServer.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             var cachingDatabase = Configuration["Caching:Database"];
-            var cachingConnectionPath = Configuration["Caching:ConnectionPath"];
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
                 cachingDatabase = "INMEMORY";
@@ -177,8 +176,8 @@ namespace SimpleIdentityServer.Startup
             {
                 services.AddStorage(opt => opt.UseRedis(o =>
                 {
-                    o.Configuration = Configuration[cachingConnectionPath + ":ConnectionString"];
-                    o.InstanceName = Configuration[cachingConnectionPath + ":InstanceName"];
+                    o.Configuration = Configuration["Caching:ConnectionString"];
+                    o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
             else if (string.Equals(cachingDatabase, "INMEMORY", System.StringComparison.CurrentCultureIgnoreCase))

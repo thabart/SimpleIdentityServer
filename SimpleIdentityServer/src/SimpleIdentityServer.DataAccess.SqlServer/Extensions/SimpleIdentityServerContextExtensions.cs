@@ -794,18 +794,18 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
                     },
-                    // Resource manager website.
+                    // Website
                     new Models.Client
                     {
-                        ClientId = "ResourceManagerClientId",
-                        ClientName = "Resource manager website",
+                        ClientId = "website",
+                        ClientName = "Website",
                         ClientSecrets = new List<ClientSecret>
                         {
                             new ClientSecret
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = SecretTypes.SharedSecret,
-                                Value = "ResourceManagerClientId"
+                                Value = "website"
                             }
                         },
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
@@ -895,7 +895,50 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://websiteapi/callback"
-                    },/*
+                    },
+                    // Resource manager website.
+                    new Models.Client
+                    {
+                        ClientId = "ResourceManagerClientId",
+                        ClientName = "Resource manager website",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ResourceManagerClientId"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "website_api"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://website/callback"
+                    },
                     // Visual studio extension
                     new Models.Client
                     {
@@ -925,7 +968,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ResponseTypes = "1",
                         ApplicationType = ApplicationTypes.native
 
-                    },*/
+                    },
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
                     new Models.Client
                     {
@@ -955,7 +998,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://simpleidserver/callback"
-                    }/*,
+                    },
                     // Manager website 
                     new Models.Client
                     {
@@ -1033,7 +1076,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:5443/User/Callback"
-                    }*/
+                    }
                 });
             }
         }

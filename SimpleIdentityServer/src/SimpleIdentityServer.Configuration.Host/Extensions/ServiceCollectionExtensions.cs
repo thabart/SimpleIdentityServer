@@ -32,8 +32,14 @@ namespace SimpleIdentityServer.Configuration.Host.Extensions
             // 2. Add authorization policies.
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("display", policy => policy.RequireClaim("scope", "display_configuration"));
-                options.AddPolicy("manage", policy => policy.RequireClaim("scope", "manage_configuration"));
+                options.AddPolicy("display", policy =>
+                {
+                    policy.RequireClaim("scope", "display_configuration");
+                });
+                options.AddPolicy("manage", policy =>
+                {
+                    policy.RequireClaim("scope", "manage_configuration");
+                });
             });
             Assembly assembly = null;
 #if NET
