@@ -20,6 +20,8 @@ using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,6 +35,51 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         {
             _context = context;
         }
+
+#if NET46
+        public async Task<bool> BulkAdd(IEnumerable<ResourceSet> parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+            }
+
+            using (var bulkCopy = new SqlBulkCopy((connection) as SqlConnection, SqlBulkCopyOptions.Default, null))
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("Id", typeof(string));
+                dataTable.Columns.Add("IconUri", typeof(string));
+                dataTable.Columns.Add("Name", typeof(string));
+                dataTable.Columns.Add("Scopes", typeof(string));
+                dataTable.Columns.Add("Type", typeof(string));
+                dataTable.Columns.Add("Uri", typeof(string));
+                foreach (var record in parameter)
+                {
+                    var model = record.ToModel();
+                    var row = dataTable.NewRow();
+                    row["Id"] = model.Id;
+                    row["IconUri"] = model.IconUri;
+                    row["Name"] = model.Name;
+                    row["Scopes"] = model.Scopes;
+                    row["Type"] = model.Type;
+                    row["Uri"] = model.Uri;
+                    dataTable.Rows.Add(row);
+                }
+
+                bulkCopy.DestinationTableName = "[dbo].[ResourceSets]";
+                await bulkCopy.WriteToServerAsync(dataTable).ConfigureAwait(false);
+                connection.Close();
+            }
+
+            return true;
+        }
+#endif
 
         public async Task<bool> Insert(ResourceSet resourceSet)
         {

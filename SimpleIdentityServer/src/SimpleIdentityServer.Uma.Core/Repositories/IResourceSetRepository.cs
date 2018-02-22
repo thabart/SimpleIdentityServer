@@ -22,6 +22,9 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IResourceSetRepository
     {
+#if NET46
+        Task<bool> BulkAdd(IEnumerable<ResourceSet> parameter);
+#endif
         Task<bool> Insert(ResourceSet resourceSet);
         Task<ResourceSet> Get(string id);
         Task<bool> Update(ResourceSet resourceSet);

@@ -22,6 +22,9 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IPolicyRepository
     {
+#if NET46
+        Task<bool> BulkAdd(IEnumerable<Policy> parameter);
+#endif
         Task<ICollection<Policy>> GetAll();
         Task<Policy> Get(string id);
         Task<bool> Add(Policy policy);
