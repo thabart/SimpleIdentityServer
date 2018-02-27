@@ -108,7 +108,6 @@ namespace IdentityServer4.Startup
                     }
                 }
             });
-
             app.UseCors("AllowAll");
             app.UseIdentityServer();
             app.UseStaticFiles();
