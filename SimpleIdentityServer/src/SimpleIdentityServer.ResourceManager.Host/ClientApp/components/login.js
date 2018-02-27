@@ -3,6 +3,7 @@ import AppDispatcher from '../appDispatcher';
 import Constants from '../constants';
 import { WebsiteService, SessionService } from '../services';
 import { withRouter } from 'react-router-dom';
+import { translate } from 'react-i18next';
 import CubeLoading from './cubeLoading';
 
 class Login extends Component {
@@ -52,18 +53,19 @@ class Login extends Component {
         });
     }
     render() {
+        const { t } = this.props;
         return (<div>
-            <h4>Authenticate</h4>
+            <h4>{t('loginTitle')}</h4>
             {(this.state.isLoading ? (<CubeLoading />): (
                 <div>
                     <form onSubmit={this.authenticate}>
                         <div className="form-group">
-                            <input placeholder="Login" type="text" className="form-control" name="login" onChange={this.handleInputChange} />
+                            <input placeholder={t('login')} type="text" className="form-control" name="login" onChange={this.handleInputChange} />
                         </div>
                         <div className="form-group">
-                            <input placeholder="Password" type="password" className="form-control" name="password" onChange={this.handleInputChange} />
+                            <input placeholder={t('password')} type="password" className="form-control" name="password" onChange={this.handleInputChange} />
                         </div>
-                        <button type="submit" className="btn btn-purple full-width">Login</button>
+                        <button type="submit" className="btn btn-purple full-width">{t('connect')}</button>
                     </form>
                     {(this.state.errorMessage !== null && (
                         <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
@@ -76,4 +78,4 @@ class Login extends Component {
     }
 }
 
-export default withRouter(Login);
+export default translate('common', { wait: process && !process.release })(withRouter(Login));

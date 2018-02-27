@@ -1,0 +1,9 @@
+﻿.navbar.left {
+    margin-bottom: 0px;
+    padding: 0;
+}
+
+.navbar-static-side {
+    position: fixed;
+    width: 220px;
+}

@@ -1,5 +1,7 @@
 @import 'loading.css';
-@import 'purple-bootstrap.css';
+@import 'navbar.css';
+@import 'palette.css';
+@import 'connections.css';
 
 * {
     margin: 0;

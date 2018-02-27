@@ -2,6 +2,7 @@
 import { NavLink } from "react-router-dom";
 import { SessionService } from './services';
 import { withRouter } from 'react-router-dom';
+import { translate } from 'react-i18next';
 import AppDispatcher from './appDispatcher';
 import Constants from './constants';
 
@@ -30,41 +31,42 @@ class Layout extends Component {
         this.props.history.push('/');
     }
     render() {
-        return (<div>
-            <nav className="navbar-purple navbar-static-side">
+        const { t } = this.props;
+        return (<div className="default">
+            <nav className="navbar-static-side navbar left">
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
-                        <li className="nav-item"><NavLink to="/about" className="nav-link">About</NavLink></li>
+                        <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
                         {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/resources" className="nav-link">Resources</NavLink></li>
+                            <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
                         ))}
                         {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/connections" className="nav-link">Connections</NavLink></li>
+                            <li className="nav-item"><NavLink to="/connections" className="nav-link">{t('connectionsMenuItem')}</NavLink></li>
                         ))}
-                        <li className="nav-item"><NavLink to="/tools" className="nav-link">Tools</NavLink></li>
+                        <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
                         {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/logs" className="nav-link">Logs</NavLink></li>
-                        ))}
-                        {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/settings" className="nav-link">Settings</NavLink></li>
+                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
                         ))}
                         {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/cache" className="nav-link">Cache</NavLink></li>
+                            <li className="nav-item"><NavLink to="/settings" className="nav-link">{t('settingsMenuItem')}</NavLink></li>
                         ))}
                         {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/manage" className="nav-link">Manage</NavLink></li>
+                            <li className="nav-item"><NavLink to="/cache" className="nav-link">{t('cacheMenuItem')}</NavLink></li>
+                        ))}
+                        {(this.state.isLoggedIn && (
+                            <li className="nav-item"><NavLink to="/manage" className="nav-link">{t('manageMenuItem')}</NavLink></li>
                         ))}
                         {(this.state.isLoggedIn ? (
-                            <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> Disconnect</a></li>
+                            <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> {t('disconnect')}</a></li>
                         ) : (
-                            <li className="nav-item"><NavLink to="/login" className="nav-link"><span className="glyphicon glyphicon-user"></span> Connect</NavLink></li>
+                                <li className="nav-item"><NavLink to="/login" className="nav-link"><span className="glyphicon glyphicon-user"></span> {t('connect')}</NavLink></li>
                         ))}
                     </ul>
                 </div>
             </nav>
             <section id="wrapper">
                 { /* Navigation */ }
-                <nav className="navbar navbar-toggleable-md navbar-light bg-light">
+                <nav className="navbar navbar-toggleable-md navbar-light">
                     <a className="navbar-brand" href="#" id="uma-title">Uma</a>
                     <button type="button" className="navbar-toggler" data-toggle="collapse" data-target="#collapseNavBar">
                         <span className="navbar-toggler-icon"></span>
@@ -128,4 +130,4 @@ class Layout extends Component {
     }
 }
 
-export default withRouter(Layout);
+export default translate('common', { wait: process && !process.release })(withRouter(Layout));

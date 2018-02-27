@@ -31,7 +31,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\locales\en\common.json" />
+    <Content Remove="wwwroot\locales\fr\common.json" />
+    <Content Remove="wwwroot\locales\nl\common.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\locales\en\common.json">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\locales\fr\common.json">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\locales\nl\common.json">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\dist\" />
+    <Folder Include="wwwroot\imgs\" />
   </ItemGroup>
 
   <ItemGroup>

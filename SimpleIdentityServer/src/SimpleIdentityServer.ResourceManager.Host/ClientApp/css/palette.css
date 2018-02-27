@@ -1,0 +1,16 @@
+﻿.default .identity-providers-selector .active {
+    border-color: #E36550;
+}
+
+.default .navbar.left li a:hover,
+.default .navbar.left li a.active {
+    background-color: #DE472E;
+}
+
+.default .navbar.left a {
+    color: white;
+}
+
+.default .navbar.left {
+    background-color: #E36550;
+}
