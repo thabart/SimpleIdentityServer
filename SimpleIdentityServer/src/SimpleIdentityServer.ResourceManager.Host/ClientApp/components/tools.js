@@ -1,9 +1,9 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import { KibanaTab, OpenIdTab, UmaTab } from './logsTabs';
 import { withRouter } from 'react-router-dom';
+import { JsonWebEncryptionTab, JsonWebSignatureTab } from './toolsTabs';
 
-class Logs extends Component {
+class Tools extends Component {
     constructor(props) {
         super(props);
         this.navigate = this.navigate.bind(this);
@@ -17,7 +17,7 @@ class Logs extends Component {
         this.setState({
             tabName: tabName
         });
-        this.props.history.push('/logs/' + tabName);
+        this.props.history.push('/tools/' + tabName);
     }
 
     render() {
@@ -26,19 +26,15 @@ class Logs extends Component {
         return (<div>
             <ul className="nav nav-tabs">
                 <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "openid")}>{t('openid')}</a>
+                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "jws")}>{t('Jws')}</a>
                 </li>
                 <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "uma")}>{t('uma')}</a>
-                </li>
-                <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "kibana")}>{t('kibana')}</a>
+                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "jwe")}>{t('Jwe')}</a>
                 </li>
             </ul>
             <div className="tab-content">
-                {self.state.tabName === 'openid' && (<OpenIdTab />) }
-                {self.state.tabName === 'uma' && (<UmaTab />) }
-                {self.state.tabName === 'kibana' && (<KibanaTab />) }
+                {self.state.tabName === 'jws' && (<JsonWebSignatureTab />)}
+                {self.state.tabName === 'jwe' && (<JsonWebEncryptionTab />)}
             </div>
         </div>);
     }
@@ -46,8 +42,8 @@ class Logs extends Component {
     componentDidMount() {
         var self = this;
         var action = self.props.match.params.action;
-        if (!action || (action !== 'openid' && action !== 'uma' && action !== 'kibana')) {
-            action = 'openid';
+        if (!action || (action !== 'jwe' && action !== 'jws')) {
+            action = 'jws';
         }
 
         self.setState({
@@ -56,4 +52,4 @@ class Logs extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(withRouter(Logs));
+export default translate('common', { wait: process && !process.release })(withRouter(Tools));

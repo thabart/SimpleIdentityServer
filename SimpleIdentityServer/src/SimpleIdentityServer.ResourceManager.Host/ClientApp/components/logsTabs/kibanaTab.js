@@ -1,7 +1,7 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
 
-class Cache extends Component {
+class KibanaTab extends Component {
     constructor(props) {
         super(props);
     }
@@ -10,10 +10,9 @@ class Cache extends Component {
         var self = this;
         const { t } = self.props;
         return (<div>
-            <h4>{t('cacheTitle')}</h4>
-            <button className="btn btn-default">{t('clean')}</button>
+            <h4>{t('kibanaLogsTitle')}</h4>
         </div>);
     }
 }
 
-export default translate('common', { wait: process && !process.release })(Cache);
+export default translate('common', { wait: process && !process.release })(KibanaTab);
