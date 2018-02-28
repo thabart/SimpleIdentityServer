@@ -41,6 +41,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtGenerator
     {
+        Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
@@ -124,6 +125,30 @@ namespace SimpleIdentityServer.Core.JwtToken
         }
 
         #region Public methods
+
+        public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            if (scopes == null)
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            var timeKeyValuePair = await GetExpirationAndIssuedTime();
+            var expirationInSeconds = timeKeyValuePair.Key;
+            var issuedAtTime = timeKeyValuePair.Value;
+
+            var jwsPayload = new JwsPayload();
+            jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
+            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
+            jwsPayload.Add(Jwt.Constants.StandardClaimNames.ClientId, client.ClientId);
+            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Scopes, scopes);
+            return jwsPayload;
+        }
 
         public async Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter)
         {

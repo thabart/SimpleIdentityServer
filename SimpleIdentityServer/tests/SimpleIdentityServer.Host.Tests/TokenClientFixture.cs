@@ -50,6 +50,24 @@ namespace SimpleIdentityServer.Host.Tests
         #region GrantTypes
 
         [Fact]
+        public async Task When_Using_ClientCredentials_Grant_Type_Then_StatelessAccessToken_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
+                .UseClientCredentials("openid")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.AccessToken);
+        }
+
+        [Fact]
         public async Task When_Using_Password_Grant_Type_Then_Access_Token_Is_Returned()
         {
             // ARRANGE

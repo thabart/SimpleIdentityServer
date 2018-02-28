@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
@@ -46,6 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+        private Mock<IJwtGenerator> _jwtGeneratorStub;
         private IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -249,6 +251,67 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             Assert.True(result.ClientId == clientId);
         }
 
+        [Fact]
+        public async Task When_Access_Is_Granted_Then_Stateless_Token_Is_Returned()
+        {
+            // ARRANGE
+            const string scope = "valid_scope";
+            const string clientId = "client_id";
+            const string accessToken = "access_token";
+            var jwsPayload = new JwsPayload();
+            var scopes = new List<string> { scope };
+            InitializeFakeObjects();
+            var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
+            {
+                Scope = scope
+            };
+            var client = new AuthenticationResult(new Models.Client
+            {
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.client_credentials
+                },
+                ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.token
+                },
+                ClientId = clientId,
+                AccessTokenState = AccessTokenStates.Stateless
+            }, null);
+            var grantedToken = new GrantedToken
+            {
+                AccessToken = accessToken,
+                ClientId = clientId
+            };
+            var authenticateInstruction = new AuthenticateInstruction();
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(authenticateInstruction);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(Task.FromResult(client));
+            _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+                .Returns(() => new ScopeValidationResult(true)
+                {
+                    Scopes = scopes
+                });
+            _jwtGeneratorStub.Setup(g => g.GenerateAccessToken(It.IsAny<Client>(),
+                It.IsAny<IEnumerable<string>>()))
+                .Returns(Task.FromResult(jwsPayload));
+            _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Client>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(Task.FromResult(accessToken));
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateToken(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>())).Returns(Task.FromResult(grantedToken));
+
+            // ACT
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);
+
+            // ASSERTS
+            _simpleIdentityServerEventSourceStub.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
+            Assert.NotNull(result);
+            Assert.True(result.ClientId == clientId);
+        }
+
         #endregion
 
         private void InitializeFakeObjects()
@@ -263,6 +326,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _clientHelperStub = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
+            _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByClientCredentialsGrantTypeAction = new GetTokenByClientCredentialsGrantTypeAction(
                 _authenticateInstructionGeneratorStub.Object,
                 _authenticateClientStub.Object,
@@ -273,7 +337,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _simpleIdentityServerEventSourceStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
                 _clientHelperStub.Object,
-                _grantedTokenHelperStub.Object);
+                _grantedTokenHelperStub.Object,
+                _jwtGeneratorStub.Object);
         }
     }
 }

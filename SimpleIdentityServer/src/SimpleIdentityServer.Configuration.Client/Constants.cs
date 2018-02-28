@@ -30,6 +30,15 @@ namespace SimpleIdentityServer.Configuration.Client
             public const string Namespace = "namespace";
         }
 
+        public static class RepresentationResponseNames
+        {
+            public const string Key = "key";
+            public const string AbsoluteExpiration = "abs_exp";
+            public const string SlidingExpiration = "sliding_exp";
+            public const string Etag = "etag";
+            public const string DateTime = "datetime";
+        }
+
         public static class OptionResponseNames
         {
             public const string Id = "_id";

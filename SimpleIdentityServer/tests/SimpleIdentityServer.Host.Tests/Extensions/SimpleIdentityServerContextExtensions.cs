@@ -821,6 +821,35 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ResponseTypes = "1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.native
+                    },
+                    // Client credentials + stateless access token.
+                    new DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "stateless_client",
+                        ClientName = "Stateless client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "stateless_client"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.native,
+                        AccessTokenState = AccessTokenStates.Stateless
                     }
                 });
             }

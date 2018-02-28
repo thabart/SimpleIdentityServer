@@ -19,6 +19,7 @@ using SimpleIdentityServer.Configuration.Client.AuthProvider;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Configuration.Client.Factory;
 using SimpleIdentityServer.Configuration.Client.Setting;
+using SimpleIdentityServer.Configuration.Client.Representation;
 
 namespace SimpleIdentityServer.Configuration.Client
 {
@@ -26,6 +27,7 @@ namespace SimpleIdentityServer.Configuration.Client
     {
         IAuthProviderClient GetAuthProviderClient();
         ISettingClient GetSettingClient();
+        IRepresentationClient GetRepresentationClient();
     }
 
     public class SimpleIdServerConfigurationClientFactory : ISimpleIdServerConfigurationClientFactory
@@ -63,6 +65,12 @@ namespace SimpleIdentityServer.Configuration.Client
             return settingClient;
         }
 
+        public IRepresentationClient GetRepresentationClient()
+        {
+            var representationClient = (IRepresentationClient)_serviceProvider.GetService(typeof(IRepresentationClient));
+            return representationClient;
+        }
+
         #endregion
 
         #region Private static methods
@@ -72,6 +80,7 @@ namespace SimpleIdentityServer.Configuration.Client
             // Register clients
             serviceCollection.AddTransient<IAuthProviderClient, AuthProviderClient>();
             serviceCollection.AddTransient<ISettingClient, SettingClient>();
+            serviceCollection.AddTransient<IRepresentationClient, RepresentationClient>();
             
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -86,6 +95,8 @@ namespace SimpleIdentityServer.Configuration.Client
             serviceCollection.AddTransient<IGetSettingOperation, GetSettingOperation>();
             serviceCollection.AddTransient<IGetSettingsOperation, GetSettingsOperation>();
             serviceCollection.AddTransient<IUpdateSettingOperation, UpdateSettingOperation>();
+            serviceCollection.AddTransient<IDeleteRepresentationsOperation, DeleteRepresentationsOperation>();
+            serviceCollection.AddTransient<IGetRepresentationsOperation, GetRepresentationsOperation>();
         }
 
         #endregion

@@ -49,7 +49,44 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
         private Mock<IClientRepository> _clientRepositoryStub;                
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
         private Mock<IScopeRepository> _scopeRepositoryStub;
-                        
+
+        #region GenerateAccessToken
+
+        [Fact]
+        public async Task When_Passing_Null_Parameters_To_GenerateAccessToken_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeMockObjects();
+
+            // ACT & ASSERT
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(new Client(), null));
+        }
+
+        [Fact]
+        public async Task When_Generate_AccessToken()
+        {
+            // ARRANGE
+            const string clientId = "client_id";
+            var scopes = new List<string> { "openid", "role" };
+            InitializeMockObjects();
+            var client = new Client
+            {
+                ClientId = clientId
+            };
+            _simpleIdentityServerConfigurator.Setup(g => g.GetTokenValidityPeriodInSecondsAsync()).Returns(Task.FromResult((double)3600));
+
+            // ACT
+            var result = await _jwtGenerator.GenerateAccessToken(client, scopes);
+
+            // ASSERTS.
+            Assert.NotNull(result);
+            Assert.True(result[Jwt.Constants.StandardClaimNames.ClientId].ToString() == clientId);
+        }
+
+
+        #endregion
+
         #region GeneratedIdTokenPayloadForScopes
 
         [Fact]

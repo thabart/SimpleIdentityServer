@@ -55,6 +55,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj" />
   </ItemGroup>
   
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

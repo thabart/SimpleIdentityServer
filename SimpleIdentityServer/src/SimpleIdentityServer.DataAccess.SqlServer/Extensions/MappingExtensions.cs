@@ -221,7 +221,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 ResponseTypes = responseTypes,
                 ScimProfile = client.ScimProfile,
                 Secrets = clientSecrets,
-                RequirePkce = client.RequirePkce
+                RequirePkce = client.RequirePkce,
+                AccessTokenState = (Domain.AccessTokenStates)client.AccessTokenState 
             };
         }
 

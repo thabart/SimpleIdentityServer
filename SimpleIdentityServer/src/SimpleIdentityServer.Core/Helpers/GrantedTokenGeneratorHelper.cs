@@ -26,6 +26,7 @@ namespace SimpleIdentityServer.Core.Helpers
     public interface IGrantedTokenGeneratorHelper
     {
         Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
+        Task<GrantedToken> GenerateToken(string clientId, string accessToken, string scope);
     }
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
@@ -63,6 +64,30 @@ namespace SimpleIdentityServer.Core.Helpers
                 Scope = scope,
                 UserInfoPayLoad = userInformationPayload,
                 IdTokenPayLoad = idTokenPayload,
+                ClientId = clientId
+            };
+        }
+
+        public async Task<GrantedToken> GenerateToken(string clientId, string accessToken, string scope)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var expiresIn = (int)await _configurationService.GetTokenValidityPeriodInSecondsAsync();
+            return new GrantedToken
+            {
+                AccessToken = accessToken,
+                ExpiresIn = expiresIn,
+                TokenType = Constants.StandardTokenTypes.Bearer,
+                CreateDateTime = DateTime.UtcNow,
+                Scope = scope,
                 ClientId = clientId
             };
         }

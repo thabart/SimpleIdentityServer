@@ -59,6 +59,12 @@ namespace SimpleIdentityServer.Core.Models
         X509Name
     }
 
+    public enum AccessTokenStates
+    {
+        Stateful, // Store the access token into the DB.
+        Stateless // Access token is a JWT.
+    }
+
     public class ClientSecret
     {
         public ClientSecretTypes Type { get; set; }
@@ -242,5 +248,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Client require PKCE.
         /// </summary>
         public bool RequirePkce { get; set; }
+
+        /// <summary>
+        /// State of the access token (stateful or stateless).
+        /// </summary>
+        public AccessTokenStates AccessTokenState { get; set; }
     }
 }

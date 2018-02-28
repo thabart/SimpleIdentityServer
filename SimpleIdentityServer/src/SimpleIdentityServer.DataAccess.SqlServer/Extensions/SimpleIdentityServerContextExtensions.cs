@@ -1400,6 +1400,41 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:5443/User/Callback"
+                    },
+                    new Models.Client // Resource manager API.
+                    {
+                        ClientId = "ResourceManagerApi",
+                        ClientName = "ResourceManagerApi",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ResourceManagerApi"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "display_configuration"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "manage_configuration"
+                            }
+                        },
+                        GrantTypes = "1", // Client credentials.
+                        ResponseTypes = "2", // id_token.
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.native
                     }
                 });
             }

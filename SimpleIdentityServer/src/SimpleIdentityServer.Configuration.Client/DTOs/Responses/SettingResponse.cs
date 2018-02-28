@@ -24,7 +24,6 @@ namespace SimpleIdentityServer.Configuration.Client.DTOs.Responses
         [DataMember(Name = Constants.SettingResponseNames.Key)]
         public string Key { get; set; }
 
-
         [DataMember(Name = Constants.SettingResponseNames.Value)]
         public string Value { get; set; }
     }

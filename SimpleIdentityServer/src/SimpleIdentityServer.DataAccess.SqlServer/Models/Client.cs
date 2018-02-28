@@ -34,6 +34,12 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         web
     }
 
+    public enum AccessTokenStates
+    {
+        Stateful, // Store the access token into the DB.
+        Stateless // Access token is a JWT.
+    }
+
     public class Client
     {
         /// <summary>
@@ -196,6 +202,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Client requires PKCE.
         /// </summary>
         public bool RequirePkce { get; set; }
+
+        /// <summary>
+        /// Get or sets the access token state (stateless or stateful).
+        /// </summary>
+        public AccessTokenStates AccessTokenState { get; set; }
 
         /// <summary>
         /// Gets or sets a list of OAUTH2.0 grant_types.
