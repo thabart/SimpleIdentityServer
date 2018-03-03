@@ -32,16 +32,17 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Stores;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
     public sealed  class GenerateAuthorizationResponseFixture
     {
-        private Mock<IAuthorizationCodeRepository> _authorizationCodeRepositoryFake;
+        private Mock<IAuthorizationCodeStore> _authorizationCodeRepositoryFake;
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
+        private Mock<ITokenStore> _grantedTokenRepositoryFake;
         private Mock<IConsentHelper> _consentHelperFake;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;                
@@ -195,7 +196,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
-            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
+            _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
             _simpleIdentityServerEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
         }
 
@@ -293,7 +294,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
-            _authorizationCodeRepositoryFake.Verify(a => a.AddAsync(It.IsAny<AuthorizationCode>()));
+            _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
             _simpleIdentityServerEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
 
@@ -401,11 +402,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
 
         private void InitializeFakeObjects()
         {
-            _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeRepository>();
+            _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeStore>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
-            _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
+            _grantedTokenRepositoryFake = new Mock<ITokenStore>();
             _consentHelperFake = new Mock<IConsentHelper>();
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
@@ -413,10 +414,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _generateAuthorizationResponse = new GenerateAuthorizationResponse(
                 _authorizationCodeRepositoryFake.Object,
+                _grantedTokenRepositoryFake.Object,
                 _parameterParserHelperFake.Object,
                 _jwtGeneratorFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
-                _grantedTokenRepositoryFake.Object,
                 _consentHelperFake.Object,
                 _simpleIdentityServerEventSource.Object,
                 _authorizationFlowHelperFake.Object,

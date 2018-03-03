@@ -123,7 +123,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
                     connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
                     connectedClient.ScimProfile = client.ScimProfile;
-                    connectedClient.AccessTokenState = (AccessTokenStates)client.AccessTokenState;
                     var scopesNotToBeDeleted = new List<string>();
                     if (client.AllowedScopes != null)
                     {
@@ -277,8 +276,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         GrantTypes = grantTypes,
                         ResponseTypes = responseTypes,
                         ScimProfile = client.ScimProfile,
-                        ClientSecrets = clientSecrets,
-                        AccessTokenState = (Models.AccessTokenStates)client.AccessTokenState
+                        ClientSecrets = clientSecrets
                     };
 
                     _context.Clients.Add(newClient);

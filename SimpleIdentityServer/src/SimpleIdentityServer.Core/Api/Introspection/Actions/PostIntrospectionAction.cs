@@ -18,10 +18,13 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -41,18 +44,21 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
+        private readonly ITokenStore _refreshTokenStore;
+        private readonly IClientHelper _clientHelper;
 
         public PostIntrospectionAction(
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthenticateClient authenticateClient,
             IIntrospectionParameterValidator introspectionParameterValidator,
-            IGrantedTokenRepository grantedTokenRepository)
+            ITokenStore refreshTokenStore,
+            IClientHelper clientHelper)
         {
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authenticateClient = authenticateClient;
             _introspectionParameterValidator = introspectionParameterValidator;
-            _grantedTokenRepository = grantedTokenRepository;
+            _refreshTokenStore = refreshTokenStore;
+            _clientHelper = clientHelper;
         }
 
         public async Task<IntrospectionResult> Execute(
@@ -82,22 +88,32 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 tokenTypeHint = introspectionParameter.TokenTypeHint;
             }
 
+            // 1. CHECK THE REVOCATION.
+
             // 4. Trying to fetch the information about the access_token  || refresh_token
             GrantedToken grantedToken = null;
             if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
             {
-                grantedToken = await _grantedTokenRepository.GetTokenAsync(introspectionParameter.Token);
-                if (grantedToken == null)
+                var tokenPayload = await _clientHelper.GetPayload(authResult.Client, introspectionParameter.Token);
+                if (tokenPayload == null)
                 {
-                    grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(introspectionParameter.Token);
+                    grantedToken = await _refreshTokenStore.GetRefreshToken(introspectionParameter.Token);
+                }
+                else
+                {
+                    grantedToken = GetGrantedToken(tokenPayload);
                 }
             }
             else
             {
-                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(introspectionParameter.Token);
+                grantedToken = await _refreshTokenStore.GetRefreshToken(introspectionParameter.Token);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _grantedTokenRepository.GetTokenAsync(introspectionParameter.Token);
+                    var tokenPayload = await _clientHelper.GetPayload(authResult.Client, introspectionParameter.Token);
+                    if (tokenPayload != null)
+                    {
+                        grantedToken = GetGrantedToken(tokenPayload);
+                    }
                 }
             }
 
@@ -150,6 +166,31 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             else
             {
                 result.Active = true;
+            }
+
+            return result;
+        }
+
+        private static GrantedToken GetGrantedToken(JwsPayload jwsPayload)
+        {
+            if (jwsPayload == null)
+            {
+                throw new ArgumentNullException(nameof(jwsPayload));
+            }
+
+            var result = new GrantedToken
+            {
+                Scope = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.Scopes),
+                ClientId = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.ClientId),
+                ExpiresIn = (int)jwsPayload.ExpirationTime,
+                TokenType = Constants.StandardTokenTypes.Bearer,
+                IdTokenPayLoad = jwsPayload
+            };
+            
+            var issuedAt = jwsPayload.GetDoubleClaim(Jwt.Constants.StandardClaimNames.Iat);
+            if (issuedAt != default(double))
+            {
+                result.CreateDateTime = issuedAt.UnixTimeStampToDateTime();
             }
 
             return result;

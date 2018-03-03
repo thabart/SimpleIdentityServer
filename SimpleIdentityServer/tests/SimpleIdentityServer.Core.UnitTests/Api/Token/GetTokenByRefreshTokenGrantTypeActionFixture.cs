@@ -28,15 +28,16 @@ using Xunit;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Stores;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
         private Mock<IClientHelper> _clientHelperFake;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
+        private Mock<ITokenStore> _tokenStoreStub;
         private IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
         #region Exceptions
@@ -57,7 +58,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ARRANGE
             InitializeFakeObjects();
             var parameter = new RefreshTokenGrantTypeParameter();
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERT
@@ -80,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 IdTokenPayLoad = new JwsPayload()
             };
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(
                 It.IsAny<string>(),
@@ -92,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
              await _getTokenByRefreshTokenGrantTypeAction.Execute(parameter);
 
             // ASSERT
-            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(It.IsAny<GrantedToken>()));
+            _tokenStoreStub.Verify(g => g.AddToken(It.IsAny<GrantedToken>()));
         }
 
         #endregion
@@ -101,15 +102,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private void InitializeFakeObjects()
         {
-            _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _clientHelperFake = new Mock<IClientHelper>();
             _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
+            _tokenStoreStub = new Mock<ITokenStore>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
-                _grantedTokenRepositoryFake.Object,
                 _clientHelperFake.Object,
                 _simpleIdentityServerEventSourceStub.Object,
-                _grantedTokenGeneratorHelperStub.Object);
+                _grantedTokenGeneratorHelperStub.Object,
+                _tokenStoreStub.Object);
         }
 
         #endregion

@@ -40,6 +40,7 @@ using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Core.WebSite.Account;
@@ -58,6 +59,18 @@ namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
+        public static IServiceCollection AddInMemoryStores(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
+            serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
+            return serviceCollection;
+        }
+
         public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, IHttpClientFactory factory = null)
         {
             if (serviceCollection == null)
@@ -145,7 +158,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IUpdateUserOperation, UpdateUserOperation>();
             serviceCollection.AddTransient<IAccountActions, AccountActions>();
             serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
-            serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
             serviceCollection.AddTransient<IConfirmUserOperation, ConfirmUserOperation>();
             serviceCollection.AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>();
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();

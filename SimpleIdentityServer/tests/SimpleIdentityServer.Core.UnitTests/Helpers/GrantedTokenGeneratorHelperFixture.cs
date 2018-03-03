@@ -16,6 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
@@ -26,6 +28,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
     public class GrantedTokenGeneratorHelperFixture
     {
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
+        private Mock<IJwtGenerator> _jwtGeneratorStub;
+        private Mock<IClientHelper> _clientHelperStub;
+        private Mock<IClientRepository> _clientRepositoryStub;
         private IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         
         [Fact]
@@ -35,7 +40,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(null, null));
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null));
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("clientid", null));
         }
@@ -59,7 +63,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         private void InitializeFakeObjects()
         {
             _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
-            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(_simpleIdentityServerConfiguratorStub.Object);
+            _jwtGeneratorStub = new Mock<IJwtGenerator>();
+            _clientHelperStub = new Mock<IClientHelper>();
+            _clientRepositoryStub = new Mock<IClientRepository>();
+            _grantedTokenGeneratorHelper = new GrantedTokenGeneratorHelper(
+                _simpleIdentityServerConfiguratorStub.Object,
+                _jwtGeneratorStub.Object,
+                _clientHelperStub.Object,
+                _clientRepositoryStub.Object);
         }
     }
 }

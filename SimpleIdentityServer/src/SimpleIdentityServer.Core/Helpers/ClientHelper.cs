@@ -28,17 +28,21 @@ namespace SimpleIdentityServer.Core.Helpers
     {
         Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload);
         Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload);
+        Task<JwsPayload> GetPayload(string clientId, string jwsToken);
+        Task<JwsPayload> GetPayload(Client client, string jwsToken);
     }
 
     public sealed class ClientHelper : IClientHelper
     {
         private readonly IClientRepository _clientRepository;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly IJwtParser _jwtParser;
 
-        public ClientHelper(IClientRepository clientRepository, IJwtGenerator jwtGenerator)
+        public ClientHelper(IClientRepository clientRepository, IJwtGenerator jwtGenerator, IJwtParser jwtParser)
         {
             _clientRepository = clientRepository;
             _jwtGenerator = jwtGenerator;
+            _jwtParser = jwtParser;
         }
 
         public async Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload)
@@ -94,6 +98,50 @@ namespace SimpleIdentityServer.Core.Helpers
             }
 
             return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value);
+        }
+
+        public async Task<JwsPayload> GetPayload(string clientId, string jwsToken)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(jwsToken))
+            {
+                throw new ArgumentNullException(nameof(jwsToken));
+            }
+
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return null;
+            }
+
+            return await GetPayload(client, jwsToken);
+        }
+
+        public async Task<JwsPayload> GetPayload(Client client, string jwsToken)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            if (string.IsNullOrWhiteSpace(jwsToken))
+            {
+                throw new ArgumentNullException(nameof(jwsToken));
+            }
+
+
+            var signedResponseAlg = client.GetIdTokenSignedResponseAlg();
+            var encryptResponseAlg = client.GetIdTokenEncryptedResponseAlg();
+            if (encryptResponseAlg != null) // Decrypt the token.
+            {
+                jwsToken = await _jwtParser.DecryptAsync(jwsToken, client.ClientId);
+            }
+
+            return await _jwtParser.UnSignAsync(jwsToken, client.ClientId);
         }
     }
 }

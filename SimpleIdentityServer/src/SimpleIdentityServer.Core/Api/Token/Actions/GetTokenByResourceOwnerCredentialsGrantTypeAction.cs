@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -40,7 +41,6 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
     public class GetTokenByResourceOwnerCredentialsGrantTypeAction : IGetTokenByResourceOwnerCredentialsGrantTypeAction
     {
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IScopeValidator _scopeValidator;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
@@ -50,10 +50,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IClientRepository _clientRepository;
         private readonly IClientHelper _clientHelper;
+        private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
-            IGrantedTokenRepository grantedTokenRepository,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService,
@@ -63,9 +63,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IClientRepository clientRepository,
             IClientHelper clientHelper,
+            ITokenStore tokenStore,
             IGrantedTokenHelper grantedTokenHelper)
         {
-            _grantedTokenRepository = grantedTokenRepository;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = scopeValidator;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
@@ -75,6 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _clientRepository = clientRepository;
             _clientHelper = clientHelper;
+            _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
         }
 
@@ -131,15 +132,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var generatedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId, payload, payload);
             if (generatedToken == null)
             {
-                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes, payload, payload);
-                await _grantedTokenRepository.InsertAsync(generatedToken);
-                // Fill-in the id-token
-                if (generatedToken.IdTokenPayLoad != null)
-                {
-                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
-                }
-
+                generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, payload, payload);
+                await _tokenStore.AddToken(generatedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
+            }
+
+            if (generatedToken.IdTokenPayLoad != null)
+            {
+                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
             }
 
             return generatedToken;

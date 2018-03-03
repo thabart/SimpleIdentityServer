@@ -118,23 +118,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             };
         }
 
-        public static Domain.GrantedToken ToDomain(this Model.GrantedToken grantedToken)
-        {
-            return new Domain.GrantedToken
-            {
-                Id = grantedToken.Id,
-                AccessToken = grantedToken.AccessToken,
-                ClientId = grantedToken.ClientId,
-                CreateDateTime = grantedToken.CreateDateTime,
-                ExpiresIn = grantedToken.ExpiresIn,
-                RefreshToken = grantedToken.RefreshToken,
-                Scope = grantedToken.Scope,
-                ParentTokenId = grantedToken.ParentTokenId,
-                IdTokenPayLoad = string.IsNullOrWhiteSpace(grantedToken.IdTokenPayLoad) ? null : grantedToken.IdTokenPayLoad.DeserializeWithJavascript<JwsPayload>(),
-                UserInfoPayLoad = string.IsNullOrWhiteSpace(grantedToken.UserInfoPayLoad) ? null : grantedToken.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>()
-            };
-        }
-
         public static Domain.ClientSecret ToDomain(this Model.ClientSecret secret)
         {
             return new Domain.ClientSecret
@@ -221,8 +204,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 ResponseTypes = responseTypes,
                 ScimProfile = client.ScimProfile,
                 Secrets = clientSecrets,
-                RequirePkce = client.RequirePkce,
-                AccessTokenState = (Domain.AccessTokenStates)client.AccessTokenState 
+                RequirePkce = client.RequirePkce
             };
         }
 
@@ -235,22 +217,6 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 Claims = consent.ConsentClaims == null ? null : consent.ConsentClaims.Select(c => c.ClaimCode).ToList(),
                 ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.ToDomain(),
                 GrantedScopes = consent.ConsentScopes == null ? null : consent.ConsentScopes.Select(consentScope => consentScope.Scope.ToDomain()).ToList()
-            };
-        }
-
-        public static Domain.AuthorizationCode ToDomain(this Model.AuthorizationCode authorizationCode)
-        {
-            return new Domain.AuthorizationCode
-            {
-                Code = authorizationCode.Code,
-                ClientId = authorizationCode.ClientId,
-                CreateDateTime = authorizationCode.CreateDateTime,
-                RedirectUri = authorizationCode.RedirectUri,
-                Scopes = authorizationCode.Scopes,
-                UserInfoPayLoad = string.IsNullOrWhiteSpace(authorizationCode.UserInfoPayLoad) ? null : authorizationCode.UserInfoPayLoad.DeserializeWithJavascript<JwsPayload>(),
-                IdTokenPayload = string.IsNullOrWhiteSpace(authorizationCode.IdTokenPayload) ? null : authorizationCode.IdTokenPayload.DeserializeWithJavascript<JwsPayload>(),
-                CodeChallenge = authorizationCode.CodeChallenge,
-                CodeChallengeMethod = authorizationCode.CodeChallengeMethod == null ? null : (Core.Parameters.CodeChallengeMethods?)authorizationCode.CodeChallengeMethod
             };
         }
 

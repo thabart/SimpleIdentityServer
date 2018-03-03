@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     {
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
         private Mock<IAuthenticateClient> _authenticateClientStub;
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
+        private Mock<ITokenStore> _grantedTokenRepositoryStub;
         private Mock<IClientRepository> _clientRepositoryStub;
         private IRevokeTokenAction _revokeTokenAction;
 
@@ -90,9 +91,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Client(), null)));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
@@ -124,18 +125,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Models.Client(), null)));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(parent));
-            _grantedTokenRepositoryStub.Setup(g => g.DeleteAsync(It.IsAny<GrantedToken>()))
+            _grantedTokenRepositoryStub.Setup(g => g.RemoveAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
 
             // ACT
             await _revokeTokenAction.Execute(parameter, null);
 
             // ASSERTS
-            _grantedTokenRepositoryStub.Verify(g => g.DeleteAsync(parent));
+            _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(parent.AccessToken));
         }
 
         [Fact]
@@ -155,18 +156,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(new AuthenticationResult(new Models.Client(), null)));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(g => g.DeleteAsync(It.IsAny<GrantedToken>()))
+            _grantedTokenRepositoryStub.Setup(g => g.RemoveAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
 
             // ACT
             await _revokeTokenAction.Execute(parameter, null);
 
             // ASSERTS
-            _grantedTokenRepositoryStub.Verify(g => g.DeleteAsync(grantedToken));
+            _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(grantedToken.AccessToken));
         }
 
         #endregion
@@ -177,7 +178,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         {
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
-            _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
+            _grantedTokenRepositoryStub = new Mock<ITokenStore>();
             _clientRepositoryStub = new Mock<IClientRepository>();
             _revokeTokenAction = new RevokeTokenAction(
                 _authenticateInstructionGeneratorStub.Object,

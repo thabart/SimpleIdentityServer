@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
@@ -30,12 +31,12 @@ namespace SimpleIdentityServer.Core.Helpers
 
     internal class GrantedTokenHelper : IGrantedTokenHelper
     {
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
+        private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenValidator _grantedTokenValidator;
         
-        public GrantedTokenHelper(IGrantedTokenRepository grantedTokenRepository, IGrantedTokenValidator grantedTokenValidator)
+        public GrantedTokenHelper(ITokenStore tokenStore, IGrantedTokenValidator grantedTokenValidator)
         {
-            _grantedTokenRepository = grantedTokenRepository;
+            _tokenStore = tokenStore;
             _grantedTokenValidator = grantedTokenValidator;
         }
 
@@ -51,7 +52,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = await _grantedTokenRepository.GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
+            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
             if (token == null)
             {
                 return null;

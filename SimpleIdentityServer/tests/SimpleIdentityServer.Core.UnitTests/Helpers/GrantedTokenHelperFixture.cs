@@ -18,7 +18,7 @@ using Moq;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
     public class GrantedTokenHelperFixture
     {
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
+        private Mock<ITokenStore> _grantedTokenRepositoryStub;
         private Mock<IGrantedTokenValidator> _grantedTokenValidatorStub;
         private IGrantedTokenHelper _grantedTokenHelper;
 
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
 
             // ACT
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
 
             _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<JwsPayload>(), It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _grantedTokenValidatorStub.Setup(g => g.CheckGrantedToken(It.IsAny<GrantedToken>()))
                 .Returns(new GrantedTokenValidationResult
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
         private void InitializeFakeObjects()
         {
-            _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
+            _grantedTokenRepositoryStub = new Mock<ITokenStore>();
             _grantedTokenValidatorStub = new Mock<IGrantedTokenValidator>();
             _grantedTokenHelper = new GrantedTokenHelper(
                 _grantedTokenRepositoryStub.Object,

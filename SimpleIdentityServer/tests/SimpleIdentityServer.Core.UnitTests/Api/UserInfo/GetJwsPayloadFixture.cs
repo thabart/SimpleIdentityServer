@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
     public sealed class GetJwsPayloadFixture
     {
         private Mock<IGrantedTokenValidator> _grantedTokenValidatorFake;
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
+        private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<IClientRepository> _clientRepositoryFake;
         private IGetJwsPayload _getJwsPayload;
@@ -67,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Client)null));
@@ -94,7 +95,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
@@ -121,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
@@ -150,7 +151,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             };
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
-            _grantedTokenRepositoryFake.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
@@ -176,14 +177,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         private void InitializeFakeObjects()
         {
             _grantedTokenValidatorFake = new Mock<IGrantedTokenValidator>();
-            _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
+            _tokenStoreFake = new Mock<ITokenStore>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _clientRepositoryFake = new Mock<IClientRepository>();
             _getJwsPayload = new GetJwsPayload(
                 _grantedTokenValidatorFake.Object,
-                _grantedTokenRepositoryFake.Object,
                 _jwtGeneratorFake.Object,
-                _clientRepositoryFake.Object);
+                _clientRepositoryFake.Object,
+                _tokenStoreFake.Object);
         }
     }
 }

@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Stores;
 
 namespace SimpleIdentityServer.Core.Validators
 {
@@ -38,11 +39,11 @@ namespace SimpleIdentityServer.Core.Validators
 
     public class GrantedTokenValidator : IGrantedTokenValidator
     {
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
+        private readonly ITokenStore _tokenStore;
 
-        public GrantedTokenValidator(IGrantedTokenRepository grantedTokenRepository)
+        public GrantedTokenValidator(ITokenStore tokenStore)
         {
-            _grantedTokenRepository = grantedTokenRepository;
+            _tokenStore = tokenStore;
         }
 
         public async Task<GrantedTokenValidationResult> CheckAccessTokenAsync(string accessToken)
@@ -52,7 +53,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
+            var grantedToken = await _tokenStore.GetAccessToken(accessToken);
             return CheckGrantedToken(grantedToken);
         }
 
@@ -63,7 +64,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshToken);
+            var grantedToken = await _tokenStore.GetRefreshToken(refreshToken);
             return CheckGrantedToken(grantedToken);
         }
 

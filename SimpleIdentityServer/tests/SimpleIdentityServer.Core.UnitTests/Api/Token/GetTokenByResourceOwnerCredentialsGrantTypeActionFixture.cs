@@ -34,12 +34,12 @@ using Xunit;
 using System.Net.Http.Headers;
 using SimpleIdentityServer.Core.Services;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Stores;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
     public sealed class GetTokenByResourceOwnerCredentialsGrantTypeActionFixture
     {
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<IScopeValidator> _scopeValidatorFake;
         private Mock<IAuthenticateResourceOwnerService> _resourceOwnerValidatorFake;
@@ -50,6 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+        private Mock<ITokenStore> _tokenStoreStub;
         private IGetTokenByResourceOwnerCredentialsGrantTypeAction _getTokenByResourceOwnerCredentialsGrantTypeAction;
 
         #region Exceptions
@@ -226,7 +227,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null);
 
             // ASSERT
-            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
+            _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
             _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
         }
@@ -235,7 +236,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
         private void InitializeFakeObjects()
         {
-            _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _scopeValidatorFake = new Mock<IScopeValidator>();
             _resourceOwnerValidatorFake = new Mock<IAuthenticateResourceOwnerService>();
@@ -246,9 +246,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientRepositoryStub = new Mock<IClientRepository>();
             _clientHelperStub = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
+            _tokenStoreStub = new Mock<ITokenStore>();
 
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
-                _grantedTokenRepositoryFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
                 _scopeValidatorFake.Object,
                 _resourceOwnerValidatorFake.Object,
@@ -258,6 +258,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _authenticateInstructionGeneratorStub.Object,
                 _clientRepositoryStub.Object,
                 _clientHelperStub.Object,
+                _tokenStoreStub.Object,
                 _grantedTokenHelperStub.Object);
         }
     }

@@ -25,6 +25,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Buffers;
@@ -41,20 +42,20 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
     public class GetJwsPayload : IGetJwsPayload
     {
         private readonly IGrantedTokenValidator _grantedTokenValidator;
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IClientRepository _clientRepository;
+        private readonly ITokenStore _tokenStore;
 
         public GetJwsPayload(
             IGrantedTokenValidator grantedTokenValidator,
-            IGrantedTokenRepository grantedTokenRepository,
             IJwtGenerator jwtGenerator,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            ITokenStore tokenStore)
         {
             _grantedTokenValidator = grantedTokenValidator;
-            _grantedTokenRepository = grantedTokenRepository;
             _jwtGenerator = jwtGenerator;
             _clientRepository = clientRepository;
+            _tokenStore = tokenStore;
         }
 
         public async Task<UserInfoResult> Execute(string accessToken)
@@ -71,7 +72,10 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
+            // TODO : TH : Check the access token is correct
+            // TH : RETRIEVE THE GRANTED_TOKEN FROM THE CACHE AND RETURNS THE PAYLOAD INFORMATION.
+
+            var grantedToken = await _tokenStore.GetAccessToken(accessToken);
             var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
             if (client == null)
             {

@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
     {
         private Mock<IClientRepository> _clientRepositoryStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
+        private Mock<IJwtParser> _jwtParserStub;
         private IClientHelper _clientHelper;
 
         [Fact]
@@ -105,9 +106,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             _clientRepositoryStub = new Mock<IClientRepository>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
+            _jwtParserStub = new Mock<IJwtParser>();
             _clientHelper = new ClientHelper(
                 _clientRepositoryStub.Object,
-                _jwtGeneratorStub.Object);
+                _jwtGeneratorStub.Object,
+                _jwtParserStub.Object);
         }
     }
 }

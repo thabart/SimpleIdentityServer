@@ -18,6 +18,7 @@ using Moq;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
     public class GrantedTokenValidatorFixture
     {
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
+        private Mock<ITokenStore> _grantedTokenRepositoryStub;
         private IGrantedTokenValidator _grantedTokenValidator;
 
         #region CheckAccessToken
@@ -49,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
@@ -71,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 200
             };
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -97,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 200000
             };
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -130,7 +131,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeFakeObjects();
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
@@ -152,7 +153,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 200
             };
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -178,7 +179,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 200000
             };
-            _grantedTokenRepositoryStub.Setup(g => g.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -194,7 +195,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
         private void InitializeFakeObjects()
         {
-            _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
+            _grantedTokenRepositoryStub = new Mock<ITokenStore>();
             _grantedTokenValidator = new GrantedTokenValidator(_grantedTokenRepositoryStub.Object);
         }
     }

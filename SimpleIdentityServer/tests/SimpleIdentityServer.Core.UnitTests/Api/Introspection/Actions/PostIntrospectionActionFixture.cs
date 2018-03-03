@@ -20,9 +20,11 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -37,7 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryStub;
+        private Mock<ITokenStore> _tokenStoreStub;
+        private Mock<IClientHelper> _clientHelperStub;
         private IPostIntrospectionAction _postIntrospectionAction;
 
         #region Exceptions
@@ -79,9 +82,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             var client = new AuthenticationResult(new Models.Client(), null);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERTS
@@ -135,9 +138,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             };
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
@@ -191,9 +194,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             };
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenByRefreshTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
-            _grantedTokenRepositoryStub.Setup(a => a.GetTokenAsync(It.IsAny<string>()))
+            _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
@@ -213,12 +216,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
-            _grantedTokenRepositoryStub = new Mock<IGrantedTokenRepository>();
+            _tokenStoreStub = new Mock<ITokenStore>();
+            _clientHelperStub = new Mock<IClientHelper>();
             _postIntrospectionAction = new PostIntrospectionAction(
                 _simpleIdentityServerEventSourceStub.Object,
                 _authenticateClientStub.Object,
                 _introspectionParameterValidatorStub.Object,
-                _grantedTokenRepositoryStub.Object);
+                _tokenStoreStub.Object,
+                _clientHelperStub.Object);
         }
     }
 }

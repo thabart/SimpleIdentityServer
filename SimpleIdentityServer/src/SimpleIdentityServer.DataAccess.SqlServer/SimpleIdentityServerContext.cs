@@ -35,10 +35,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
         public virtual DbSet<Claim> Claims { get; set; }
         public virtual DbSet<ResourceOwner> ResourceOwners { get; set; }
         public virtual DbSet<JsonWebKey> JsonWebKeys { get; set; } 
-        public virtual DbSet<GrantedToken> GrantedTokens { get; set; }
         public virtual DbSet<Models.Client> Clients { get; set; } 
         public virtual DbSet<Consent> Consents { get; set; }
-        public virtual DbSet<AuthorizationCode> AuthorizationCodes { get; set; } 
         public virtual DbSet<ClientScope> ClientScopes { get; set; }        
         public virtual DbSet<ConsentClaim> ConsentClaims { get; set; }
         public virtual DbSet<ConsentScope> ConsentScopes { get; set; }
@@ -48,13 +46,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddAuthorizationCodeMapping();
             modelBuilder.AddClaimMapping();
             modelBuilder.AddClientMapping();
             modelBuilder.AddConsentClaimMapping();
             modelBuilder.AddConsentMapping();
             modelBuilder.AddConsentScopeMapping();
-            modelBuilder.AddGrantedTokenMapping();
             modelBuilder.AddJsonWebKeyMapping();
             modelBuilder.AddResourceOwnerMapping();
             modelBuilder.AddScopeClaimMapping();

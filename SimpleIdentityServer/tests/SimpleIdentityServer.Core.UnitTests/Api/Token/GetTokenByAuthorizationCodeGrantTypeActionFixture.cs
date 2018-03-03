@@ -23,12 +23,11 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
@@ -38,10 +37,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public sealed class GetTokenByAuthorizationCodeGrantTypeActionFixture
     {
         private Mock<IClientValidator> _clientValidatorFake;
-        private Mock<IAuthorizationCodeRepository> _authorizationCodeRepositoryFake;
+        private Mock<IAuthorizationCodeStore> _authorizationCodeStoreFake;
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorFake;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
-        private Mock<IGrantedTokenRepository> _grantedTokenRepositoryFake;
+        private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IClientHelper> _clientHelper;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
@@ -103,7 +102,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((AuthorizationCode)null));
 
             // ACT & ASSERTS
@@ -135,7 +134,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
             _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(false);
@@ -172,7 +171,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(authorizationCode));
 
             // ACT & ASSERTS
@@ -211,7 +210,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
 
             // ACT & ASSERTS
@@ -248,7 +247,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)2));
@@ -283,12 +282,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             _clientValidatorFake.Setup(c => c.CheckPkce(It.IsAny<Client>(), It.IsAny<string>(), It.IsAny<AuthorizationCode>()))
                 .Returns(true);
-            _authorizationCodeRepositoryFake.Setup(a => a.RemoveAsync(It.IsAny<string>())).Returns(Task.FromResult(true));
+            _authorizationCodeStoreFake.Setup(a => a.RemoveAuthorizationCode(It.IsAny<string>())).Returns(Task.FromResult(true));
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
@@ -349,17 +348,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(result));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
-            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<JwsPayload>(),
-                It.IsAny<JwsPayload>()))
-                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
@@ -406,17 +400,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(authResult));
-            _authorizationCodeRepositoryFake.Setup(a => a.GetAsync(It.IsAny<string>()))
+            _authorizationCodeStoreFake.Setup(a => a.GetAuthorizationCode(It.IsAny<string>()))
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
-            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<JwsPayload>(),
-                It.IsAny<JwsPayload>()))
-                .Returns(() => Task.FromResult((GrantedToken)null));
             _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
@@ -427,7 +416,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
 
             // ASSERTS
-            _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));
+            _tokenStoreFake.Verify(g => g.AddToken(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(
                 clientId,
                 accessToken,
@@ -440,9 +429,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private void InitializeFakeObjects()
         {
             _clientValidatorFake = new Mock<IClientValidator>();
-            _authorizationCodeRepositoryFake = new Mock<IAuthorizationCodeRepository>();
+            _authorizationCodeStoreFake = new Mock<IAuthorizationCodeStore>();
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
-            _grantedTokenRepositoryFake = new Mock<IGrantedTokenRepository>();
+            _tokenStoreFake = new Mock<ITokenStore>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _clientHelper = new Mock<IClientHelper>();
             _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
@@ -451,14 +440,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _clientValidatorFake.Object,
-                _authorizationCodeRepositoryFake.Object,
+                _authorizationCodeStoreFake.Object,
                 _simpleIdentityServerConfiguratorFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
-                _grantedTokenRepositoryFake.Object,
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
                 _simpleIdentityServerEventSourceFake.Object,
                 _authenticateInstructionGeneratorStub.Object,
+                _tokenStoreFake.Object,
                 _grantedTokenHelperStub.Object); 
         }
     }

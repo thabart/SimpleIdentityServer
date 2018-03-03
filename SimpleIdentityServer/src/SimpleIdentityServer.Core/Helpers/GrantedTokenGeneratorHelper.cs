@@ -14,11 +14,15 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
-using System.Text;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Helpers
@@ -26,16 +30,23 @@ namespace SimpleIdentityServer.Core.Helpers
     public interface IGrantedTokenGeneratorHelper
     {
         Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
-        Task<GrantedToken> GenerateToken(string clientId, string accessToken, string scope);
+        Task<GrantedToken> GenerateTokenAsync(Client clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null);
     }
 
     public class GrantedTokenGeneratorHelper : IGrantedTokenGeneratorHelper
     {
         private readonly IConfigurationService _configurationService;
+        private readonly IJwtGenerator _jwtGenerator;
+        private readonly IClientHelper _clientHelper;
+        private readonly IClientRepository _clientRepository;
 
-        public GrantedTokenGeneratorHelper(IConfigurationService configurationService)
+        public GrantedTokenGeneratorHelper(IConfigurationService configurationService,
+            IJwtGenerator jwtGenerator, IClientHelper clientHelper, IClientRepository clientRepository)
         {
             _configurationService = configurationService;
+            _jwtGenerator = jwtGenerator;
+            _clientHelper = clientHelper;
+            _clientRepository = clientRepository;
         }
 
         public async Task<GrantedToken> GenerateTokenAsync(string clientId, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
@@ -45,17 +56,34 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
+            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
+            }
+
+            return await GenerateTokenAsync(client, scope, userInformationPayload, idTokenPayload);
+        }
+
+        public async Task<GrantedToken> GenerateTokenAsync(Client client, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
             if (string.IsNullOrWhiteSpace(scope))
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync();
-            var accessTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
-            var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
+            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync(); // 1. Retrieve the expiration time of the granted token.
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')); // 2. Construct the JWT token (client).
+            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload);
+            var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken
             {
-                AccessToken = Convert.ToBase64String(accessTokenId),
+                AccessToken = accessToken,
                 RefreshToken = Convert.ToBase64String(refreshTokenId),
                 ExpiresIn = expiresIn,
                 TokenType = Constants.StandardTokenTypes.Bearer,
@@ -64,31 +92,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 Scope = scope,
                 UserInfoPayLoad = userInformationPayload,
                 IdTokenPayLoad = idTokenPayload,
-                ClientId = clientId
-            };
-        }
-
-        public async Task<GrantedToken> GenerateToken(string clientId, string accessToken, string scope)
-        {
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new ArgumentNullException(nameof(clientId));
-            }
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-
-            var expiresIn = (int)await _configurationService.GetTokenValidityPeriodInSecondsAsync();
-            return new GrantedToken
-            {
-                AccessToken = accessToken,
-                ExpiresIn = expiresIn,
-                TokenType = Constants.StandardTokenTypes.Bearer,
-                CreateDateTime = DateTime.UtcNow,
-                Scope = scope,
-                ClientId = clientId
+                ClientId = client.ClientId
             };
         }
     }

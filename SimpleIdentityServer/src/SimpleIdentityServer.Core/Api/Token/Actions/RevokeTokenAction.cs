@@ -20,6 +20,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -36,7 +37,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     {
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
+        private readonly ITokenStore _tokenStore;
         private readonly IClientRepository _clientRepository;
 
         #region Constructor
@@ -44,12 +45,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         public RevokeTokenAction(
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient,
-            IGrantedTokenRepository grantedTokenRepository,
+            ITokenStore tokenStore,
             IClientRepository clientRepository)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
-            _grantedTokenRepository = grantedTokenRepository;
+            _tokenStore = tokenStore;
             _clientRepository = clientRepository;
         }
 
@@ -86,10 +87,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Retrieve the granted token & check if it exists
-            GrantedToken grantedToken = await _grantedTokenRepository.GetTokenAsync(revokeTokenParameter.Token);
+            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token);
+            bool isAccessToken = true;
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(revokeTokenParameter.Token);
+                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token);
+                isAccessToken = false;
             }
 
             if (grantedToken == null)
@@ -104,7 +107,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Invalid the granted token
-            return await _grantedTokenRepository.DeleteAsync(grantedToken);
+            if (isAccessToken)
+            {
+                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken);
+            }
+
+            return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken);
         }
 
         #endregion

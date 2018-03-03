@@ -21,7 +21,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using System;
@@ -44,12 +44,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IClientValidator _clientValidator;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IScopeValidator _scopeValidator;
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IClientHelper _clientHelper;
-        private readonly IGrantedTokenHelper _grantedTokenHelper;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly ITokenStore _tokenStore;
+        private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         #region Constructor
 
@@ -59,24 +59,24 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IClientValidator clientValidator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
-            IGrantedTokenRepository grantedTokenRepository,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IClientHelper clientHelper,
-            IGrantedTokenHelper grantedTokenHelper,
-            IJwtGenerator jwtGenerator)
+            IJwtGenerator jwtGenerator,
+            ITokenStore tokenStore,
+            IGrantedTokenHelper grantedTokenHelper)
         {
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
             _clientValidator = clientValidator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = scopeValidator;
-            _grantedTokenRepository = grantedTokenRepository;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _clientHelper = clientHelper;
-            _grantedTokenHelper = grantedTokenHelper;
             _jwtGenerator = jwtGenerator;
+            _tokenStore = tokenStore;
+            _grantedTokenHelper = grantedTokenHelper;
         }
 
         #endregion
@@ -134,26 +134,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
             }
 
-            GrantedToken grantedToken = null;
-            // 4. If the access token is stateless then returns a JWT token.
-            if (client.AccessTokenState == AccessTokenStates.Stateless)
+            // 4. Generate the JWT access token on the fly.
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
+            if (grantedToken == null)
             {
-                var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, allowedTokenScopes.Split(' '));
-                var idToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload);
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateToken(client.ClientId, idToken, allowedTokenScopes);
-            }
-            else
-            {
-                // 5. If the access token is stateful then generate a new one and persist it into the DB.
-                grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
-                if (grantedToken == null)
-                {
-                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes);
-                    await _grantedTokenRepository.InsertAsync(grantedToken);
-                }
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes);
+                await _tokenStore.AddToken(grantedToken);
+                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 
-            _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             return grantedToken;
         }
 

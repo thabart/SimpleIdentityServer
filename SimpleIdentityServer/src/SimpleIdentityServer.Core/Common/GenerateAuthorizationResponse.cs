@@ -23,12 +23,12 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Stores;
 
 namespace SimpleIdentityServer.Core.Common
 {
@@ -39,11 +39,11 @@ namespace SimpleIdentityServer.Core.Common
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
     {
-        private readonly IAuthorizationCodeRepository _authorizationCodeRepository;
+        private readonly IAuthorizationCodeStore _authorizationCodeStore;
+        private readonly ITokenStore _tokenStore;
         private readonly IParameterParserHelper _parameterParserHelper;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
-        private readonly IGrantedTokenRepository _grantedTokenRepository;
         private readonly IConsentHelper _consentHelper;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
@@ -51,22 +51,22 @@ namespace SimpleIdentityServer.Core.Common
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
         public GenerateAuthorizationResponse(
-            IAuthorizationCodeRepository authorizationCodeRepository,
+            IAuthorizationCodeStore authorizationCodeStore,
+            ITokenStore tokenStore,
             IParameterParserHelper parameterParserHelper,
             IJwtGenerator jwtGenerator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            IGrantedTokenRepository grantedTokenRepository,
             IConsentHelper consentHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IClientHelper clientHelper,
             IGrantedTokenHelper grantedTokenHelper)
         {
-            _authorizationCodeRepository = authorizationCodeRepository;
+            _authorizationCodeStore = authorizationCodeStore;
+            _tokenStore = tokenStore;
             _parameterParserHelper = parameterParserHelper;
             _jwtGenerator = jwtGenerator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
-            _grantedTokenRepository = grantedTokenRepository;
             _consentHelper = consentHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
@@ -106,37 +106,27 @@ namespace SimpleIdentityServer.Core.Common
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
             var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
-            if (responses.Contains(ResponseType.token))
+            if (responses.Contains(ResponseType.token)) // 1. Generate an access token.
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
                 {
                     allowedTokenScopes = string.Join(" ", _parameterParserHelper.ParseScopes(authorizationParameter.Scope));
                 }
 
-                // Check if an access token has already been generated and can be reused for that :
-                // We assumed that an access token is unique for a specific client id, user information 
-                // & id token payload & for certain scopes
-                grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
-                    allowedTokenScopes,
-                    authorizationParameter.ClientId,
-                    idTokenPayload,
-                    userInformationPayload);
+                
+                grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId,
+                    userInformationPayload, idTokenPayload);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
-                        authorizationParameter.ClientId,
-                        allowedTokenScopes,
-                        userInformationPayload,
-                        idTokenPayload);
-
+                    grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes,
+                        userInformationPayload, idTokenPayload);
                     newAccessTokenGranted = true;
+                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
+                        grantedToken.AccessToken);
                 }
-
-                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
-                    grantedToken.AccessToken);
             }
 
-            if (responses.Contains(ResponseType.code))
+            if (responses.Contains(ResponseType.code)) // 2. Generate an authorization code.
             {
                 var subject = claimsPrincipal == null ? string.Empty : claimsPrincipal.GetSubject();
                 var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
@@ -165,16 +155,16 @@ namespace SimpleIdentityServer.Core.Common
                 authorizationCode == null ? string.Empty : authorizationCode.Code,
                 grantedToken == null ? string.Empty : grantedToken.AccessToken,
                 authorizationParameter, client);
-
-            if (newAccessTokenGranted)
+            
+            if (newAccessTokenGranted) // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
-                await _grantedTokenRepository.InsertAsync(grantedToken);
+                await _tokenStore.AddToken(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
                     grantedToken.AccessToken,
                     allowedTokenScopes);
             }
 
-            if (newAuthorizationCodeGranted)
+            if (newAuthorizationCodeGranted) // 4. Insert the authorization code into the caching.
             {
                 if (client.RequirePkce)
                 {
@@ -182,7 +172,7 @@ namespace SimpleIdentityServer.Core.Common
                     authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod;
                 }
 
-                await _authorizationCodeRepository.AddAsync(authorizationCode);
+                await _authorizationCodeStore.AddAuthorizationCode(authorizationCode);
                 _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
                     authorizationCode.Code,
                     authorizationParameter.Scope);
