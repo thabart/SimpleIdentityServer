@@ -17,7 +17,7 @@ namespace SimpleIdentityServer.Core.Stores
         Task<bool> RemoveAccessToken(string accessToken);
     }
 
-    internal sealed class InMemoryTokenStore : ITokenStore
+    public sealed class InMemoryTokenStore : ITokenStore
     {
         private Dictionary<string, GrantedToken> _tokens;
         private Dictionary<string, string> _mappingStrToRefreshTokens;
@@ -34,32 +34,43 @@ namespace SimpleIdentityServer.Core.Stores
         {
             if (_tokens == null || !_tokens.Any())
             {
-                return null;
+                return Task.FromResult((GrantedToken)null);
+            }
+            
+            var grantedTokens = _tokens.Values
+                .Where(g => g.Scope == scopes && g.ClientId == clientId)
+                .OrderByDescending(g => g.CreateDateTime);
+            if (grantedTokens == null || !_tokens.Any())
+            {
+                return Task.FromResult((GrantedToken)null);
             }
 
-            foreach (var kvp in _tokens)
+            foreach (var grantedToken in grantedTokens)
             {
-                var grantedToken = kvp.Value;
-                var grantedTokenIdTokenJwsPayload = grantedToken.IdTokenPayLoad;
-                if (grantedTokenIdTokenJwsPayload == null)
+                if (grantedToken.IdTokenPayLoad != null || idTokenJwsPayload != null)
                 {
-                    continue;
+                    if (grantedToken.IdTokenPayLoad == null || idTokenJwsPayload == null)
+                    {
+                        continue;
+                    }
+                    
+                    if (!CompareJwsPayload(idTokenJwsPayload, grantedToken.IdTokenPayLoad))
+                    {
+                        continue;
+                    }
                 }
 
-                if (!CompareJwsPayload(idTokenJwsPayload, grantedTokenIdTokenJwsPayload))
+                if (grantedToken.UserInfoPayLoad != null || userInfoJwsPayload != null)
                 {
-                    continue;
-                }
-
-                var grantedTokenUserInfoJwsPayload = grantedToken.UserInfoPayLoad;
-                if (grantedTokenUserInfoJwsPayload == null)
-                {
-                    continue;
-                }
-
-                if (!CompareJwsPayload(userInfoJwsPayload, grantedTokenUserInfoJwsPayload))
-                {
-                    continue;
+                    if (grantedToken.UserInfoPayLoad == null || userInfoJwsPayload == null)
+                    {
+                        continue;
+                    }
+                    
+                    if (!CompareJwsPayload(userInfoJwsPayload, grantedToken.UserInfoPayLoad))
+                    {
+                        continue;
+                    }
                 }
 
                 return Task.FromResult(grantedToken);

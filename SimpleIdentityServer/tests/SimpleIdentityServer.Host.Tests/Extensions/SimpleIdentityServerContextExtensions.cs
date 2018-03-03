@@ -848,8 +848,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.native,
-                        AccessTokenState = AccessTokenStates.Stateless
+                        ApplicationType = ApplicationTypes.native
                     }
                 });
             }

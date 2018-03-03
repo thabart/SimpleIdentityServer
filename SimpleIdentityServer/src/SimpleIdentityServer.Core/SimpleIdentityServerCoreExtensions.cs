@@ -134,6 +134,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGetTokenByRefreshTokenGrantTypeAction, GetTokenByRefreshTokenGrantTypeAction>();
             serviceCollection.AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
+            serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
             if (factory != null)
             {
                 serviceCollection.AddSingleton(factory);

@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
@@ -70,10 +71,10 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<ITranslationRepository, TranslationRepository>();
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
-            serviceCollection.AddTransient<IAuthorizationCodeRepository, AuthorizationCodeRepository>();
+            serviceCollection.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
             serviceCollection.AddTransient<IClientRepository, ClientRepository>();
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
-            serviceCollection.AddTransient<IGrantedTokenRepository, GrantedTokenRepository>();
+            serviceCollection.AddTransient<ITokenStore, InMemoryTokenStore>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
             serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
             serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();
