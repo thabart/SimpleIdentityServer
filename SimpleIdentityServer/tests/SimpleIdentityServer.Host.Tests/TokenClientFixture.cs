@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Host.Tests
         #region GrantTypes
 
         [Fact]
-        public async Task When_Using_ClientCredentials_Grant_Type_Then_StatelessAccessToken_Is_Returned()
+        public async Task When_Using_ClientCredentials_Grant_Type_Then_AccessToken_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            var certificate = new X509Certificate2("testCert.pfx", "testPassword");
+            var certificate = new X509Certificate2("testCert.pfx");
 
             // ACT
             var result = await _clientAuthSelector.UseClientCertificate("certificate_client", certificate)

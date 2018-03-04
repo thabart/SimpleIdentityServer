@@ -23,7 +23,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
@@ -40,7 +39,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
         private Mock<ITokenStore> _tokenStoreStub;
-        private Mock<IClientHelper> _clientHelperStub;
         private IPostIntrospectionAction _postIntrospectionAction;
 
         #region Exceptions
@@ -217,13 +215,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
             _tokenStoreStub = new Mock<ITokenStore>();
-            _clientHelperStub = new Mock<IClientHelper>();
             _postIntrospectionAction = new PostIntrospectionAction(
                 _simpleIdentityServerEventSourceStub.Object,
                 _authenticateClientStub.Object,
                 _introspectionParameterValidatorStub.Object,
-                _tokenStoreStub.Object,
-                _clientHelperStub.Object);
+                _tokenStoreStub.Object);
         }
     }
 }

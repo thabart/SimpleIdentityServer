@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Core.Stores
 
             if (!_mappingStrToRefreshTokens.ContainsKey(refreshToken))
             {
-                return null;
+                return Task.FromResult((GrantedToken)null);
             }
 
             return Task.FromResult(_tokens[_mappingStrToRefreshTokens[refreshToken]]);
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.Stores
 
             if (!_mappingStrToAccessTokens.ContainsKey(accessToken))
             {
-                return null;
+                return Task.FromResult((GrantedToken)null);
             }
 
             return Task.FromResult(_tokens[_mappingStrToAccessTokens[accessToken]]);
@@ -116,8 +116,8 @@ namespace SimpleIdentityServer.Core.Stores
                 throw new ArgumentNullException(nameof(grantedToken));
             }
 
-            if (!_mappingStrToRefreshTokens.ContainsKey(grantedToken.RefreshToken) 
-                || !_mappingStrToAccessTokens.ContainsKey(grantedToken.AccessToken))
+            if (_mappingStrToRefreshTokens.ContainsKey(grantedToken.RefreshToken) 
+                || _mappingStrToAccessTokens.ContainsKey(grantedToken.AccessToken))
             {
                 return Task.FromResult(false);
             }

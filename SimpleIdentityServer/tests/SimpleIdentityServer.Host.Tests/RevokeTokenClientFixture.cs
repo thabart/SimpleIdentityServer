@@ -58,14 +58,14 @@ namespace SimpleIdentityServer.Host.Tests
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.AccessToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
-            var newEx = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+            var newAccessToken = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(newResult.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
             Assert.True(revoke);
             Assert.NotNull(ex);
-            Assert.NotNull(newEx);
+            Assert.NotNull(newAccessToken);
         }
 
         [Fact]

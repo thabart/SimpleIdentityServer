@@ -44,21 +44,18 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
-        private readonly ITokenStore _refreshTokenStore;
-        private readonly IClientHelper _clientHelper;
+        private readonly ITokenStore _tokenStore;
 
         public PostIntrospectionAction(
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthenticateClient authenticateClient,
             IIntrospectionParameterValidator introspectionParameterValidator,
-            ITokenStore refreshTokenStore,
-            IClientHelper clientHelper)
+            ITokenStore tokenStore)
         {
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _authenticateClient = authenticateClient;
             _introspectionParameterValidator = introspectionParameterValidator;
-            _refreshTokenStore = refreshTokenStore;
-            _clientHelper = clientHelper;
+            _tokenStore = tokenStore;
         }
 
         public async Task<IntrospectionResult> Execute(
@@ -94,26 +91,18 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             GrantedToken grantedToken = null;
             if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
             {
-                var tokenPayload = await _clientHelper.GetPayload(authResult.Client, introspectionParameter.Token);
-                if (tokenPayload == null)
+                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token);
+                if (grantedToken == null)
                 {
-                    grantedToken = await _refreshTokenStore.GetRefreshToken(introspectionParameter.Token);
-                }
-                else
-                {
-                    grantedToken = GetGrantedToken(tokenPayload);
+                    grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token);
                 }
             }
             else
             {
-                grantedToken = await _refreshTokenStore.GetRefreshToken(introspectionParameter.Token);
+                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token);
                 if (grantedToken == null)
                 {
-                    var tokenPayload = await _clientHelper.GetPayload(authResult.Client, introspectionParameter.Token);
-                    if (tokenPayload != null)
-                    {
-                        grantedToken = GetGrantedToken(tokenPayload);
-                    }
+                    grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token);
                 }
             }
 

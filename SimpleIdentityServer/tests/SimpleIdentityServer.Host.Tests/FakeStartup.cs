@@ -171,7 +171,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddLogging()
                 .AddSimpleIdentityServerInMemory()
                 .AddEventStoreInMemory()
-                .AddDefaultBus();
+                .AddDefaultBus()
+                .AddInMemoryStores();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 
