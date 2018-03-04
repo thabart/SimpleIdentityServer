@@ -25,58 +25,34 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using Xunit;
 using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
-
+using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
-    /*
-    public sealed class ProcessAuthorizationRequestFixture : BaseFixture
+    public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
-
-        private Mock<ISimpleIdentityServerConfigurator> _simpleIdentityServerConfiguratorStub;
-
+        private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
-
         private JwtGenerator _jwtGenerator;
 
         #region TEST FAILURES
 
         [Fact]
-        public void When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
+        public async Task When_Passing_NullAuthorization_To_Function_Then_ArgumentNullException_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _processAuthorizationRequest.Process(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null));
         }
-
+        
         [Fact]
-        public void When_Passing_NoneExisting_ClientId_To_AuthorizationParameter_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeMockingObjects();
-            const string state = "state";
-            const string clientId = "fake_client";
-            var authorizationParameter = new AuthorizationParameter
-            {
-                ClientId = "fake_client",
-                Prompt = "login",
-                State = state
-            };
-
-            // ACT & ASSERTS
-            var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
-            Assert.True(exception.Code.Equals(ErrorCodes.InvalidClient));
-            Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.ClientIsNotValid, clientId)));
-            Assert.True(exception.State.Equals(state));
-        }
-
-        [Fact]
-        public void When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
+        public async Task When_Passing_NotValidRedirectUrl_To_AuthorizationParameter_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeMockingObjects();
@@ -92,14 +68,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERTS
-            var exception =
-                Assert.Throws<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.Process(authorizationParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
+                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Models.Client()));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));
         }
 
+        /*
         [Fact]
         public void When_Passing_AuthorizationParameterWithoutOpenIdScope_Then_Exception_Is_Thrown()
         {
@@ -434,9 +410,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.ThePromptParameterIsNotSupported, "select_account")));
             Assert.True(exception.State.Equals(state));
         }
-
+        */
         #endregion
-
+        /*
         #region TEST VALID SCENARIOS
 
         [Fact]
@@ -651,20 +627,20 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         }
 
         #endregion
-
+        */
         private void InitializeMockingObjects()
         {
-            _simpleIdentityServerConfiguratorStub = new Mock<ISimpleIdentityServerConfigurator>();
+            var clientValidator = new ClientValidator();
+            _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
             _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
-            var scopeRepository = FakeFactories.GetScopeRepository();
-            var clientRepository = FakeFactories.GetClientRepository();
-            var consentRepository = FakeFactories.GetConsentRepository();
-            var jsonWebKeyRepository = FakeFactories.GetJsonWebKeyRepository();
-            var parameterParserHelper = new ParameterParserHelper(scopeRepository);
-            var clientValidator = new ClientValidator(clientRepository);
+            var scopeRepository = new Mock<IScopeRepository>();
+            var clientRepository = new Mock<IClientRepository>();
+            var consentRepository = new Mock<IConsentRepository>();
+            var jsonWebKeyRepository = new Mock<IJsonWebKeyRepository>();
+            var parameterParserHelper = new ParameterParserHelper(scopeRepository.Object);
             var scopeValidator = new ScopeValidator(parameterParserHelper);
             var actionResultFactory = new ActionResultFactory();
-            var consentHelper = new ConsentHelper(consentRepository, parameterParserHelper);
+            var consentHelper = new ConsentHelper(consentRepository.Object, parameterParserHelper);
             var aesEncryptionHelper = new AesEncryptionHelper();
             var jweHelper = new JweHelper(aesEncryptionHelper);
             var jweParser = new JweParser(jweHelper);
@@ -675,10 +651,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jwtParser = new JwtParser(
                 jweParser, 
                 jwsParser, 
-                httpClientFactory, 
-                clientValidator, 
+                httpClientFactory,
+                clientRepository.Object,
                 jsonWebKeyConverter,
-                jsonWebKeyRepository);
+                jsonWebKeyRepository.Object);
             var claimsMapping = new ClaimsMapping();
             var jwsGenerator = new JwsGenerator(createJwsSignature);
             var jweGenerator = new JweGenerator(jweHelper);
@@ -693,15 +669,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 _simpleIdentityServerConfiguratorStub.Object,
                 _simpleIdentityServerEventSource.Object);
             _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfiguratorStub.Object,
-                clientRepository,
+                clientRepository.Object,
                 clientValidator,
-                jsonWebKeyRepository,
-                scopeRepository,
+                jsonWebKeyRepository.Object,
+                scopeRepository.Object,
                 claimsMapping,
                 parameterParserHelper,
                 jwsGenerator,
                 jweGenerator);
         }
     }
-    */
 }

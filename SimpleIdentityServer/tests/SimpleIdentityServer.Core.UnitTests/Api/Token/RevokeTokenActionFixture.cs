@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _revokeTokenAction.Execute(parameter, null);
 
             // ASSERTS
-            _grantedTokenRepositoryStub.Verify(g => g.RemoveAccessToken(parent.AccessToken));
+            _grantedTokenRepositoryStub.Verify(g => g.RemoveRefreshToken(parent.RefreshToken));
         }
 
         [Fact]

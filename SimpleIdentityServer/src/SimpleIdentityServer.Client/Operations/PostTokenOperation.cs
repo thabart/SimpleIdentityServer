@@ -20,6 +20,7 @@ using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Factories;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 #if NET
 using System.Net;
@@ -90,7 +91,7 @@ namespace SimpleIdentityServer.Client.Operations
 
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
             var result = await httpClient.SendAsync(request);
-            result.EnsureSuccessStatusCode();
+            // result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
             var jObj = JObject.Parse(content);
             JToken accessToken = jObj[Constants.GrantedTokenNames.AccessToken],

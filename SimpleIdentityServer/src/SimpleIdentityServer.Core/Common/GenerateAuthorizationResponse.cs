@@ -121,9 +121,10 @@ namespace SimpleIdentityServer.Core.Common
                     grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes,
                         userInformationPayload, idTokenPayload);
                     newAccessTokenGranted = true;
-                    actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
-                        grantedToken.AccessToken);
                 }
+
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.AccessTokenName,
+                    grantedToken.AccessToken);
             }
 
             if (responses.Contains(ResponseType.code)) // 2. Generate an authorization code.

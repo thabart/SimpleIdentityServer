@@ -15,8 +15,11 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
@@ -41,14 +44,32 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("clientid", null));
+        }
+
+        [Fact]
+        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
+
+            // ACTS & ASSERTS
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null));
+            Assert.True(ex.Code == ErrorCodes.InvalidClient);
+            Assert.True(ex.Message == ErrorDescriptions.TheClientIdDoesntExist);
         }
 
         [Fact]
         public async Task When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
         {
+            var client = new Client
+            {
+                ClientId = "client_id"
+            };
             // ARRANGE
             InitializeFakeObjects();
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
             _simpleIdentityServerConfiguratorStub.Setup(c => c.GetTokenValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3700));
 

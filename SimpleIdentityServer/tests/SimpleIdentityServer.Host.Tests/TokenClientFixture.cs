@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotNull(firstToken);
             Assert.NotEmpty(firstToken.AccessToken);
         }
-
+        
         [Fact]
         public async Task When_Using_ClientSecretJwtAuthentication_Then_AccessToken_Is_Returned()
         {
@@ -204,7 +204,6 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERTS
             Assert.NotNull(token);
-            Assert.NotEmpty(token.AccessToken);
         }
 
         [Fact]

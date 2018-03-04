@@ -354,6 +354,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult((double)3000));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>()))
+                .Returns(Task.FromResult(grantedToken));
 
             // ACT
             await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
@@ -406,11 +411,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult((double)3000));
             _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+                It.IsAny<string>(),
+                It.IsAny<JwsPayload>(),
+                It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
+            _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
-                .Returns(Task.FromResult(grantedToken)); ;
+                .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
             var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);

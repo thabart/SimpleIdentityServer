@@ -197,7 +197,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             const string scope = "valid_scope";
             const string clientId = "client_id";
             const string accessToken = "access_token";
-            var messageDescription = "message_description";
             var scopes = new List<string> { scope };
             InitializeFakeObjects();
             var clientCredentialsGrantTypeParameter = new ClientCredentialsGrantTypeParameter
@@ -232,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 {
                     Scopes = scopes
                 });
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -294,7 +293,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Client>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(accessToken));
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<string>(),
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
@@ -321,6 +320,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _clientHelperStub = new Mock<IClientHelper>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
+            _tokenStoreStub = new Mock<ITokenStore>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _getTokenByClientCredentialsGrantTypeAction = new GetTokenByClientCredentialsGrantTypeAction(
                 _authenticateInstructionGeneratorStub.Object,
