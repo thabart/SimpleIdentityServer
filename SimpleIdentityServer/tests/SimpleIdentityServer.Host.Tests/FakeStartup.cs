@@ -39,6 +39,8 @@ using System.Reflection;
 using System.Text;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
+using SimpleIdentityServer.Store.Redis;
+using Microsoft.Extensions.Caching.Redis;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -164,6 +166,11 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
+            var opts = new RedisCacheOptions
+            {
+                InstanceName = "SimpleIdServerInstance",
+                Configuration = "localhost"
+            };
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()
@@ -172,7 +179,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSimpleIdentityServerInMemory()
                 .AddEventStoreInMemory()
                 .AddDefaultBus()
-                .AddInMemoryStores();
+                .AddRedisStores(opts);
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 

@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Core.Stores
         Task<bool> RemoveAuthorizationCode(string code);
     }
 
-    public sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
+    internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {
         private static Dictionary<string, AuthorizationCode> _mappingStringToAuthCodes;
 

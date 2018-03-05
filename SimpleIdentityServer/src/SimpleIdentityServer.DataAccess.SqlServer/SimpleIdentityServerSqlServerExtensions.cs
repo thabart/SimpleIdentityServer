@@ -71,10 +71,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             serviceCollection.AddTransient<ITranslationRepository, TranslationRepository>();
             serviceCollection.AddTransient<IResourceOwnerRepository, ResourceOwnerRepository>();
             serviceCollection.AddTransient<IScopeRepository, ScopeRepository>();
-            serviceCollection.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
             serviceCollection.AddTransient<IClientRepository, ClientRepository>();
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
-            serviceCollection.AddTransient<ITokenStore, InMemoryTokenStore>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
             serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
             serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();

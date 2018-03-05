@@ -60,6 +60,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
             if (!_grantedTokenValidator.CheckGrantedToken(token).IsValid)
             {
+                await _tokenStore.RemoveAccessToken(token.AccessToken);
                 return null;
             }
 

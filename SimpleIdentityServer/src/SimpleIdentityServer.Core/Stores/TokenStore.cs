@@ -9,6 +9,14 @@ namespace SimpleIdentityServer.Core.Stores
 {
     public interface ITokenStore
     {
+        /// <summary>
+        /// Try to get a valid access token.
+        /// </summary>
+        /// <param name="scopes"></param>
+        /// <param name="clientId"></param>
+        /// <param name="idTokenJwsPayload"></param>
+        /// <param name="userInfoJwsPayload"></param>
+        /// <returns></returns>
         Task<GrantedToken> GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload);
         Task<GrantedToken> GetRefreshToken(string GetRefreshToken);
         Task<GrantedToken> GetAccessToken(string accessToken);
@@ -17,7 +25,7 @@ namespace SimpleIdentityServer.Core.Stores
         Task<bool> RemoveAccessToken(string accessToken);
     }
 
-    public sealed class InMemoryTokenStore : ITokenStore
+    internal sealed class InMemoryTokenStore : ITokenStore
     {
         private Dictionary<string, GrantedToken> _tokens;
         private Dictionary<string, string> _mappingStrToRefreshTokens;
@@ -157,9 +165,7 @@ namespace SimpleIdentityServer.Core.Stores
                 return Task.FromResult(false);
             }
 
-            var grantedToken = _tokens[_mappingStrToAccessTokens[accessToken]];
             _mappingStrToAccessTokens.Remove(accessToken);
-            _mappingStrToRefreshTokens.Remove(grantedToken.RefreshToken);
             return Task.FromResult(true);
         }
 

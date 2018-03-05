@@ -89,6 +89,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.DataAccess.SqlServer", "src\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj", "{E7FAA3C4-2A99-4B98-9CF3-EC5BFC447DA6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Store.Redis", "src\SimpleIdentityServer.Store.Redis\SimpleIdentityServer.Store.Redis.csproj", "{165019C8-A98D-4045-94B0-CF100A76F678}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -294,6 +296,12 @@ Global
 		{E7FAA3C4-2A99-4B98-9CF3-EC5BFC447DA6}.Fake|Any CPU.Build.0 = Release|Any CPU
 		{E7FAA3C4-2A99-4B98-9CF3-EC5BFC447DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7FAA3C4-2A99-4B98-9CF3-EC5BFC447DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Fake|Any CPU.ActiveCfg = Release|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Fake|Any CPU.Build.0 = Release|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{165019C8-A98D-4045-94B0-CF100A76F678}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -336,6 +344,7 @@ Global
 		{E36BB344-4C7B-4E8F-B085-CC76E138E8C2} = {4E5FA21D-715A-41BB-B215-8A7972362739}
 		{AE0FBA7C-35DD-48C3-97BB-BD85BB786F9A} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
 		{E7FAA3C4-2A99-4B98-9CF3-EC5BFC447DA6} = {8F0F8AAE-AE43-4823-AD6A-2D573DDB9EBE}
+		{165019C8-A98D-4045-94B0-CF100A76F678} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
