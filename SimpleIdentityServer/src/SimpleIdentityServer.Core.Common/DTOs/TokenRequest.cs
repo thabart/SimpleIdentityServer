@@ -25,7 +25,8 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         client_credentials,
         authorization_code,
         validate_bearer,
-        refresh_token
+        refresh_token,
+        uma_ticket
     }
 
     [DataContract]

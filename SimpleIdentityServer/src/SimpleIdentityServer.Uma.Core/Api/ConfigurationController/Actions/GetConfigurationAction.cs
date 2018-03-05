@@ -29,40 +29,20 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
     
     public class GetConfigurationAction : IGetConfigurationAction
     {
-        private readonly List<string> _patsupportedProfiles = new List<string>
-        {
-            "bearer"
-        };
-        private readonly List<string> _aatsupportedProfiles = new List<string>
-        {
-            "bearer"
-        };
-        private readonly List<string> _bearerRptProfiles = new List<string>
-        {
-            "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
-        };
-
-        private readonly List<string> _patGrantTypesSupported = new List<string>
-        {
-            "authorization_code"
-        };
-        private readonly List<string> _aatGrantTypesSupported = new List<string>
-        {
-            "authorization_code"
-        };
         private readonly List<string> _umaProfilesSupported = new List<string>
         {
             "https://docs.kantarainitiative.org/uma/profiles/uma-token-bearer-1.0"
-        };        
-        private const string RegisterApi = "/connect/register";
-        private const string TokenApi = "/token";
-        private const string AuthorizeApi = "/authorize";
+        };
         private const string ResourceSetApi = "/rs/resource_set";
         private const string PermissionApi = "/perm";
-        private const string RptApi = "/rpt";
+        // OAUTH2.0
+        private const string AuthorizationApi = "/authorization";
+        private const string TokenApi = "/token";
+        private const string JwksApi = "/jwks";
+        private const string RegistrationApi = "/registration";
+        private const string IntrospectionApi = "/introspect";
         private const string PolicyApi = "/policies";
-        private const string IntrospectionApi = "/status";
-        private const string ScopeApi = "/scopes";
+        private const string RevocationApi = "/token/revoke";
         private readonly IHostingProvider _hostingProvider;
         private readonly IConfigurationService _configurationService;
 
@@ -72,33 +52,26 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
             _configurationService = configurationService;
         }
         
-        public async Task<ConfigurationResponse> Execute()
+        public Task<ConfigurationResponse> Execute()
         {
             var absoluteUriWithVirtualPath = _hostingProvider.GetAbsoluteUriWithVirtualPath();
             var result = new ConfigurationResponse
             {
-                Version = "1.0",
-                Issuer = absoluteUriWithVirtualPath,
-                PatProfilesSupported = _patsupportedProfiles,
-                AatProfilesSupported = _aatsupportedProfiles,
-                RptProfilesSupported = _bearerRptProfiles,
-                PatGrantTypesSupported = _patGrantTypesSupported,
-                AatGrantTypesSupported = _aatGrantTypesSupported,
                 ClaimTokenProfilesSupported = new List<string>(),
                 UmaProfilesSupported = _umaProfilesSupported,
-                DynamicClientEndPoint = await _configurationService.GetRegisterOperation(),
-                TokenEndPoint = await _configurationService.GetTokenOperation(),
-                AuthorizationEndPoint = await _configurationService.GetAuthorizationOperation(),
-                RequestingPartyClaimsEndPoint = string.Empty,
-                IntrospectionEndPoint = absoluteUriWithVirtualPath + IntrospectionApi,
-                ResourceSetRegistrationEndPoint = absoluteUriWithVirtualPath + ResourceSetApi,
-                PermissionRegistrationEndPoint = absoluteUriWithVirtualPath + PermissionApi,
-                RptEndPoint = absoluteUriWithVirtualPath + RptApi,
-                PolicyEndPoint = absoluteUriWithVirtualPath + PolicyApi,
-                ScopeEndPoint = absoluteUriWithVirtualPath + ScopeApi
+                ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + ResourceSetApi,
+                PermissionEndpoint = absoluteUriWithVirtualPath + PermissionApi,
+                // OAUTH2.0
+                Issuer = absoluteUriWithVirtualPath,
+                AuthorizationEndpoint = absoluteUriWithVirtualPath + AuthorizationApi,
+                TokenEndpoint = absoluteUriWithVirtualPath + TokenApi,
+                JwksUri = absoluteUriWithVirtualPath + JwksApi,
+                RegistrationEndpoint = absoluteUriWithVirtualPath + RegistrationApi,
+                IntrospectionEndpoint = absoluteUriWithVirtualPath + IntrospectionApi,
+                RevocationEndpoint = absoluteUriWithVirtualPath + RevocationApi
             };
             
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

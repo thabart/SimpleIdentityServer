@@ -20,7 +20,8 @@ namespace SimpleIdentityServer.Uma.Host
     {
         public static class RouteValues
         {
-            public const string Configuration = ".well-known/uma-configuration";
+            public const string Configuration = ".well-known/uma2-configuration ";
+            public const string DiscoveryAction = ".well-known/openid-configuration";
             public const string ResourceSet = "rs/resource_set";
             public const string Scope = "scopes";
             public const string Permission = "/perm";
@@ -28,6 +29,7 @@ namespace SimpleIdentityServer.Uma.Host
             public const string Policies = "/policies";
             public const string Introspection = "/status";
             public const string CodeSample = "/codesamples";
+            public const string Token = "/token";
         }
 
         public static class ClaimNames
@@ -39,25 +41,20 @@ namespace SimpleIdentityServer.Uma.Host
         public static class ErrorResponseNames
         {
             public const string Error = "error";
-
             public const string ErrorDescription = "error_description";
-
             public const string ErrorDetails = "error_details";
         }
 
         public static class ErrorCodes
         {
             public const string NotFound = "not_found";
-
             public const string UnSupportedMethodType = "unsupported_method_type";
         }
 
         public static class ErrorDescriptions
         {
             public const string ResourceSetNotFound = "resource cannot be found";
-
             public const string ScopeNotFound = "scope cannot be found";
-
             public const string PolicyNotFound = "authorization policy cannot be found";
         }
 

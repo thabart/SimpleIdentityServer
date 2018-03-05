@@ -19,7 +19,7 @@ using System;
 
 namespace SimpleIdentityServer.Uma.Host.Middlewares
 {
-    internal static class ExceptionHandlerExtension
+    internal static class UmaHostOptions
     {
         public static IApplicationBuilder UseUmaExceptionHandler(
             this IApplicationBuilder applicationBuilder,

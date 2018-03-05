@@ -20,24 +20,23 @@ namespace SimpleIdentityServer.Uma.Core.Responses
 {
     public sealed class ConfigurationResponse
     {
-        public string Version { get; set; }        
-        public List<string> AatGrantTypesSupported { get; set; }
-        public List<string> AatProfilesSupported { get; set; }
-        public string AuthorizationEndPoint { get; set; }
-        public List<string> ClaimTokenProfilesSupported { get; set; }
-        public string DynamicClientEndPoint { get; set; }
-        public string IntrospectionEndPoint { get; set; }
         public string Issuer { get; set; }
-        public List<string> PatGrantTypesSupported { get; set; }
-        public List<string> PatProfilesSupported { get; set; }
-        public string PermissionRegistrationEndPoint { get; set; }
-        public string RequestingPartyClaimsEndPoint { get; set; }
-        public string ResourceSetRegistrationEndPoint { get; set; }
-        public string RptEndPoint { get; set; }
-        public List<string> RptProfilesSupported { get; set; }
-        public string TokenEndPoint { get; set; }
+        public string RegistrationEndpoint { get; set; }
+        public string TokenEndpoint { get; set; }
+        public string JwksUri { get; set; }
+        public string AuthorizationEndpoint { get; set; }
+        public string ClaimsInteractionEndpoint { get; set; }
+        public string IntrospectionEndpoint { get; set; }
+        public string ResourceRegistrationEndpoint { get; set; }
+        public string PermissionEndpoint { get; set; }
+        public string RevocationEndpoint { get; set; }
+        public List<string> ClaimTokenProfilesSupported { get; set; }
         public List<string> UmaProfilesSupported { get; set; }
-        public string PolicyEndPoint { get; set; }
-        public string ScopeEndPoint { get; set; }
+        public List<string> ScopesSupported { get; set; }
+        public List<string> ResponseTypesSupported { get; set; }
+        public List<string> GrantTypesSupported { get; set; }
+        public List<string> TokenEndpointAuthMethodsSupported { get; set; }
+        public List<string> TokenEndpointAuthSigningAlgValuesSupported { get; set; }
+        public List<string> UiLocalesSupported { get; set; }
     }
 }

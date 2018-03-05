@@ -44,16 +44,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             };
         }
 
-        public static Domain.Scope ToDomain(this Model.Scope scope)
-        {
-            return new Domain.Scope
-            {
-                Id = scope.Id,
-                Name = scope.Name,
-                IconUri = scope.IconUri
-            };
-        }
-
         public static Domain.Ticket ToDomain(this Model.Ticket ticket)
         {
             return new Domain.Ticket
@@ -142,16 +132,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri,
                 PolicyResources = policyIds
-            };
-        }
-
-        public static Model.Scope ToModel(this Domain.Scope scope)
-        {
-            return new Model.Scope
-            {
-                Id = scope.Id,
-                Name = scope.Name,
-                IconUri = scope.IconUri
             };
         }
 

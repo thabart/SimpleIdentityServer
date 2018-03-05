@@ -14,9 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
+using SimpleIdentityServer.Uma.Host.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DomainResponse = SimpleIdentityServer.Uma.Core.Responses;
@@ -25,6 +30,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     internal static class MappingExtensions
     {
+        #region UMA
+
         public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
         {
             return new AddResouceSetParameter
@@ -178,15 +185,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
-        public static ScopeResponse ToResponse(this Scope scope)
-        {
-            return new ScopeResponse
-            {
-                IconUri = scope.IconUri,
-                Name = scope.Name
-            };
-        }
-
         public static PolicyResponse ToResponse(this Policy policy)
         {
             var rules = policy.Rules == null ? new List<PolicyRuleResponse>()
@@ -227,26 +225,123 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         {
             return new ConfigurationResponse
             {
-                AatGrantTypesSupported = configuration.AatGrantTypesSupported,
-                AatProfilesSupported = configuration.AatProfilesSupported,
-                AuthorizationEndPoint = configuration.AuthorizationEndPoint,
                 ClaimTokenProfilesSupported = configuration.ClaimTokenProfilesSupported,
-                DynamicClientEndPoint = configuration.DynamicClientEndPoint,
-                IntrospectionEndPoint = configuration.IntrospectionEndPoint,
+                IntrospectionEndpoint = configuration.IntrospectionEndpoint,
                 Issuer = configuration.Issuer,
-                PatGrantTypesSupported = configuration.PatGrantTypesSupported,
-                PatProfilesSupported = configuration.PatProfilesSupported,
-                PermissionRegistrationEndPoint = configuration.PermissionRegistrationEndPoint,
-                PolicyEndPoint = configuration.PolicyEndPoint,
-                RequestingPartyClaimsEndPoint = configuration.RequestingPartyClaimsEndPoint,
-                ResourceSetRegistrationEndPoint = configuration.ResourceSetRegistrationEndPoint,
-                RptEndPoint = configuration.RptEndPoint,
-                RptProfilesSupported = configuration.RptProfilesSupported,
-                TokenEndPoint = configuration.TokenEndPoint,
-                UmaProfilesSupported = configuration.UmaProfilesSupported,
-                Version = configuration.Version,
-                ScopeEndPoint = configuration.ScopeEndPoint
+                PermissionEndpoint = configuration.PermissionEndpoint,
+                AuthorizationEndpoint = configuration.AuthorizationEndpoint,
+                ClaimsInteractionEndpoint = configuration.ClaimsInteractionEndpoint,
+                GrantTypesSupported = configuration.GrantTypesSupported,
+                JwksUri = configuration.JwksUri,
+                RegistrationEndpoint = configuration.RegistrationEndpoint,
+                ResourceRegistrationEndpoint = configuration.ResourceRegistrationEndpoint,
+                ResponseTypesSupported = configuration.ResponseTypesSupported,
+                RevocationEndpoint = configuration.RevocationEndpoint,
+                ScopesSupported = configuration.ScopesSupported,
+                TokenEndpoint = configuration.TokenEndpoint,
+                TokenEndpointAuthMethodsSupported = configuration.TokenEndpointAuthMethodsSupported,
+                TokenEndpointAuthSigningAlgValuesSupported = configuration.TokenEndpointAuthSigningAlgValuesSupported,
+                UiLocalesSupported = configuration.UiLocalesSupported,
+                UmaProfilesSupported = configuration.UmaProfilesSupported
             };
         }
+
+        #endregion
+
+        #region OAUTH2.0
+        
+        public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
+        {
+            return new ResourceOwnerGrantTypeParameter
+            {
+                UserName = request.Username,
+                Password = request.Password,
+                Scope = request.Scope,
+                ClientId = request.ClientId,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientSecret = request.ClientSecret
+            };
+        }
+
+        public static AuthorizationCodeGrantTypeParameter ToAuthorizationCodeGrantTypeParameter(this TokenRequest request)
+        {
+            return new AuthorizationCodeGrantTypeParameter
+            {
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret,
+                Code = request.Code,
+                RedirectUri = request.RedirectUri,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                CodeVerifier = request.CodeVerifier
+            };
+        }
+
+        public static RefreshTokenGrantTypeParameter ToRefreshTokenGrantTypeParameter(this TokenRequest request)
+        {
+            return new RefreshTokenGrantTypeParameter
+            {
+                RefreshToken = request.RefreshToken
+            };
+        }
+
+        public static ClientCredentialsGrantTypeParameter ToClientCredentialsGrantTypeParameter(this TokenRequest request)
+        {
+            return new ClientCredentialsGrantTypeParameter
+            {
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret,
+                Scope = request.Scope
+            };
+        }
+
+        public static TokenResponse ToDto(this GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            return new TokenResponse
+            {
+                AccessToken = grantedToken.AccessToken,
+                IdToken = grantedToken.IdToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                TokenType = grantedToken.TokenType,
+                Scope = grantedToken.Scope.Split(' ').ToList()
+            };
+        }
+        
+        public static IntrospectionParameter ToParameter(this IntrospectionRequest viewModel)
+        {
+            return new IntrospectionParameter
+            {
+                ClientAssertion = viewModel.ClientAssertion,
+                ClientAssertionType = viewModel.ClientAssertionType,
+                ClientId = viewModel.ClientId,
+                ClientSecret = viewModel.ClientSecret,
+                Token = viewModel.Token,
+                TokenTypeHint = viewModel.TokenTypeHint
+            };
+        }
+
+        public static RevokeTokenParameter ToParameter(this RevocationRequest revocationRequest)
+        {
+            return new RevokeTokenParameter
+            {
+                ClientAssertion = revocationRequest.ClientAssertion,
+                ClientAssertionType = revocationRequest.ClientAssertionType,
+                ClientId = revocationRequest.ClientId,
+                ClientSecret = revocationRequest.ClientSecret,
+                Token = revocationRequest.Token,
+                TokenTypeHint = revocationRequest.TokenTypeHint
+            };
+        }
+
+        #endregion
     }
 }

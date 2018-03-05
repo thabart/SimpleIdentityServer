@@ -133,25 +133,24 @@ namespace SimpleIdentityServer.Uma.Common
 
     public static class ConfigurationResponseNames
     {
-        public const string Version = "version";
         public const string Issuer = "issuer";
-        public const string PatProfilesSupported = "pat_profiles_supported";
-        public const string AatProfilesSupported = "aat_profiles_supported";
-        public const string RptProfilesSupported = "rpt_profiles_supported";
-        public const string PatGrantTypesSupported = "pat_grant_types_supported";
-        public const string AatGrantTypesSupported = "aat_grant_types_supported";
+        public const string RegistrationEndpoint = "registration_endpoint";
+        public const string TokenEndpoint = "token_endpoint";
+        public const string JwksUri = "jwks_uri";
+        public const string AuthorizationEndpoint = "authorization_endpoint";
+        public const string ClaimsInteractionEndpoint = "claims_interaction_endpoint";
+        public const string IntrospectionEndpoint = "introspection_endpoint";
+        public const string ResourceRegistrationEndpoint = "resource_registration_endpoint";
         public const string ClaimTokenProfilesSupported = "claim_token_profiles_supported";
         public const string UmaProfilesSupported = "uma_profiles_supported";
-        public const string DynamicClientEndPoint = "dynamic_client_endpoint";
-        public const string TokenEndPoint = "token_endpoint";
-        public const string AuthorizationEndPoint = "authorization_endpoint";
-        public const string RequestingPartyClaimsEndPoint = "requesting_party_claims_endpoint";
-        public const string IntrospectionEndPoint = "introspection_endpoint";
-        public const string ResourceSetRegistrationEndPoint = "resource_set_registration_endpoint";
-        public const string PermissionRegistrationEndPoint = "permission_registration_endpoint";
-        public const string RptEndPoint = "rpt_endpoint";
-        public const string PolicyEndPoint = "policy_endpoint";
-        public const string ScopeEndPoint = "scope_endpoint";
+        public const string PermissionEndpoint = "permission_endpoint";
+        public const string RevocationEndpoint = "revocation_endpoint";
+        public const string ScopesSupported = "scopes_supported";
+        public const string ResponseTypesSupported = "response_types_supported";
+        public const string GrantTypesSupported = "grant_types_supported";
+        public const string TokenEndpointAuthMethodsSupported = "token_endpoint_auth_methods_supported";
+        public const string TokenEndpointAuthSigningAlgValuesSupported = "token_endpoint_auth_signing_alg_values_supported";
+        public const string UiLocalesSupported = "ui_locales_supported";
     }
 
     public static class ScopeResponseNames

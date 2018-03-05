@@ -1,12 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Uma.Host Class Library</Description>
-    <Authors>thabart</Authors>
     <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Uma.Host</AssemblyName>
-    <PackageId>SimpleIdentityServer.Uma.Host</PackageId>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+    <AssemblyName>SimpleIdentityServer.Uma.Startup</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>SimpleIdentityServer.Uma.Startup</PackageId>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net451+win8</PackageTargetFallback>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -18,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="SimpleIdServer.pfx">
+    <None Update="Uma.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
@@ -68,4 +67,11 @@
     <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

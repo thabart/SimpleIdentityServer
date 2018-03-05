@@ -22,60 +22,41 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
     [DataContract]
     public class ConfigurationResponse
     {
-        [DataMember(Name = ConfigurationResponseNames.AatGrantTypesSupported)]
-        public List<string> AatGrantTypesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.AatProfilesSupported)]
-        public List<string> AatProfilesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.AuthorizationEndPoint)]
-        public string AuthorizationEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.ClaimTokenProfilesSupported)]
-        public List<string> ClaimTokenProfilesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.DynamicClientEndPoint)]
-        public string DynamicClientEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.IntrospectionEndPoint)]
-        public string IntrospectionEndPoint { get; set; }
-
         [DataMember(Name = ConfigurationResponseNames.Issuer)]
         public string Issuer { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.PatGrantTypesSupported)]
-        public List<string> PatGrantTypesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.PatProfilesSupported)]
-        public List<string> PatProfilesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.PermissionRegistrationEndPoint)]
-        public string PermissionRegistrationEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.RequestingPartyClaimsEndPoint)]
-        public string RequestingPartyClaimsEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.ResourceSetRegistrationEndPoint)]
-        public string ResourceSetRegistrationEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.RptEndPoint)]
-        public string RptEndPoint { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.RptProfilesSupported)]
-        public List<string> RptProfilesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.TokenEndPoint)]
-        public string TokenEndPoint { get; set; }
-
+        [DataMember(Name = ConfigurationResponseNames.RegistrationEndpoint)]
+        public string RegistrationEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.TokenEndpoint)]
+        public string TokenEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.JwksUri)]
+        public string JwksUri { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.AuthorizationEndpoint)]
+        public string AuthorizationEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ClaimsInteractionEndpoint)]
+        public string ClaimsInteractionEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.IntrospectionEndpoint)]
+        public string IntrospectionEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ResourceRegistrationEndpoint)]
+        public string ResourceRegistrationEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.PermissionEndpoint)]
+        public string PermissionEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.RevocationEndpoint)]
+        public string RevocationEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ClaimTokenProfilesSupported)]
+        public List<string> ClaimTokenProfilesSupported { get; set; }
         [DataMember(Name = ConfigurationResponseNames.UmaProfilesSupported)]
         public List<string> UmaProfilesSupported { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.Version)]
-        public string Version { get; set; }
-
-        [DataMember(Name = ConfigurationResponseNames.PolicyEndPoint)]
-        public string PolicyEndPoint { get; set; }
-        [DataMember(Name = ConfigurationResponseNames.ScopeEndPoint)]
-        public string ScopeEndPoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ScopesSupported)]
+        public List<string> ScopesSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.ResponseTypesSupported)]
+        public List<string> ResponseTypesSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.GrantTypesSupported)]
+        public List<string> GrantTypesSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.TokenEndpointAuthMethodsSupported)]
+        public List<string> TokenEndpointAuthMethodsSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.TokenEndpointAuthSigningAlgValuesSupported)]
+        public List<string> TokenEndpointAuthSigningAlgValuesSupported { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.UiLocalesSupported)]
+        public List<string> UiLocalesSupported { get; set; }
     }
 }

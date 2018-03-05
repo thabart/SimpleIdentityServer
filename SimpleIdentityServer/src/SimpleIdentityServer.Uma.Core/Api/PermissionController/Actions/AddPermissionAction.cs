@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Services;
+using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
@@ -39,20 +40,20 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
     internal class AddPermissionAction : IAddPermissionAction
     {
         private readonly IResourceSetRepository _resourceSetRepository;
-        private readonly ITicketRepository _ticketRepository;
+        private readonly ITicketStore _ticketStore;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
         private readonly IConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddPermissionAction(
             IResourceSetRepository resourceSetRepository,
-            ITicketRepository ticketRepository,
+            ITicketStore ticketStore,
             IRepositoryExceptionHelper repositoryExceptionHelper,
             IConfigurationService configurationService,
             IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
-            _ticketRepository = ticketRepository;
+            _ticketStore = ticketStore;
             _repositoryExceptionHelper = repositoryExceptionHelper;
             _configurationService = configurationService;
             _umaServerEventSource = umaServerEventSource;
@@ -82,7 +83,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             await CheckAddPermissionParameter(addPermissionParameters);
             var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
             var tickets = new List<Ticket>();
-            foreach(var addPermissionParameter in addPermissionParameters)
+            foreach(var addPermissionParameter in addPermissionParameters) // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
             {
                 tickets.Add(new Ticket
                 {
@@ -97,7 +98,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             
             await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.AtLeastOneTicketCannotBeInserted,
-                () => _ticketRepository.Insert(tickets));
+                () => _ticketStore.AddAsync(tickets));
             _umaServerEventSource.FinishAddPermission(json);
             return tickets.Select(t => t.Id);
         }
