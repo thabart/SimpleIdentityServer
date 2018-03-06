@@ -16,11 +16,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using SimpleIdentityServer.Uma.Common.DTOs;
-using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
+using SimpleIdentityServer.Core.Api.Introspection;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Serializers;
+using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Linq;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -35,41 +36,24 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             _introspectionActions = introspectionActions;
         }
-        
-        [HttpGet]
-        public async Task<ActionResult> Get()
-        {
-            return await Introspect();
-        }
 
         [HttpPost]
-        public async Task<ActionResult> Post()
+        public async Task<Introspection> Post()
         {
-            return await Introspect();
-        }
-
-        [HttpPost("bulk")]
-        public async Task<ActionResult> PostBulk([FromBody] PostIntrospection parameter)
-        {
-            if (parameter == null)
+            if (Request.Form == null)
             {
-                throw new ArgumentNullException(nameof(parameter));
+                throw new ArgumentNullException(nameof(Request.Form));
             }
 
-            var result = await _introspectionActions.GetIntrospection(parameter.Rpts);
-            return new OkObjectResult(result);
-        }
-
-        private async Task<ActionResult> Introspect()
-        {
+            var serializer = new ParamSerializer();
+            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))
             {
                 var authorizationHeaderValue = authorizationHeader.First();
                 var splittedAuthorizationHeaderValue = authorizationHeaderValue.Split(' ');
-                if (splittedAuthorizationHeaderValue.Count() == 2 &&
-                    string.Equals(splittedAuthorizationHeaderValue.First(), "Bearer", StringComparison.CurrentCultureIgnoreCase))
+                if (splittedAuthorizationHeaderValue.Count() == 2)
                 {
                     authenticationHeaderValue = new AuthenticationHeaderValue(
                         splittedAuthorizationHeaderValue[0],
@@ -77,13 +61,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 }
             }
 
-            if (authenticationHeaderValue == null)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.Forbidden);
-            }
-
-            var result = await _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
-            return new OkObjectResult(result);
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
+            return result.ToDto();
         }
     }
 }

@@ -133,13 +133,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             if (generatedToken == null)
             {
                 generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, payload, payload);
-                await _tokenStore.AddToken(generatedToken);
-                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
-            }
+                if (generatedToken.IdTokenPayLoad != null)
+                {
+                    generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
+                }
 
-            if (generatedToken.IdTokenPayLoad != null)
-            {
-                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(client, generatedToken.IdTokenPayLoad);
+                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, generatedToken.AccessToken, allowedTokenScopes);
             }
 
             return generatedToken;

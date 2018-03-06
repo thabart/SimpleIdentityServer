@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -237,6 +238,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ResourceRegistrationEndpoint = configuration.ResourceRegistrationEndpoint,
                 ResponseTypesSupported = configuration.ResponseTypesSupported,
                 RevocationEndpoint = configuration.RevocationEndpoint,
+                PoliciesEndpoint = configuration.PoliciesEndpoint,
                 ScopesSupported = configuration.ScopesSupported,
                 TokenEndpoint = configuration.TokenEndpoint,
                 TokenEndpointAuthMethodsSupported = configuration.TokenEndpointAuthMethodsSupported,
@@ -249,7 +251,108 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         #endregion
 
         #region OAUTH2.0
-        
+
+        public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
+        {
+            var responseTypes = new List<ResponseType>();
+            var redirectUris = clientResponse.redirect_uris == null
+                ? new List<string>()
+                : clientResponse.redirect_uris.ToList();
+            var grantTypes = new List<GrantType>();
+            ApplicationTypes? applicationType = null;
+            if (clientResponse.response_types != null &&
+                clientResponse.response_types.Any())
+            {
+                foreach (var responseType in clientResponse.response_types)
+                {
+                    var responseTypeSplitted = responseType.Split(' ');
+                    foreach (var response in responseTypeSplitted)
+                    {
+                        ResponseType responseTypeEnum;
+                        if (Enum.TryParse(response, out responseTypeEnum) &&
+                            !responseTypes.Contains(responseTypeEnum))
+                        {
+                            responseTypes.Add(responseTypeEnum);
+                        }
+                    }
+                }
+            }
+
+            if (clientResponse.grant_types != null &&
+                clientResponse.grant_types.Any())
+            {
+                foreach (var grantType in clientResponse.grant_types)
+                {
+                    GrantType grantTypeEnum;
+                    if (Enum.TryParse(grantType, out grantTypeEnum))
+                    {
+                        grantTypes.Add(grantTypeEnum);
+                    }
+                }
+            }
+
+            ApplicationTypes appTypeEnum;
+            if (Enum.TryParse(clientResponse.application_type, out appTypeEnum))
+            {
+                applicationType = appTypeEnum;
+            }
+
+            return new RegistrationParameter
+            {
+                ApplicationType = applicationType,
+                ClientName = clientResponse.client_name,
+                ClientUri = clientResponse.client_uri,
+                Contacts = clientResponse.contacts == null ? new List<string>() : clientResponse.contacts.ToList(),
+                DefaultAcrValues = clientResponse.default_acr_values,
+                DefaultMaxAge = clientResponse.default_max_age,
+                GrantTypes = grantTypes,
+                IdTokenEncryptedResponseAlg = clientResponse.id_token_encrypted_response_alg,
+                IdTokenEncryptedResponseEnc = clientResponse.id_token_encrypted_response_enc,
+                IdTokenSignedResponseAlg = clientResponse.id_token_signed_response_alg,
+                InitiateLoginUri = clientResponse.initiate_login_uri,
+                Jwks = clientResponse.jwks,
+                JwksUri = clientResponse.jwks_uri,
+                LogoUri = clientResponse.logo_uri,
+                PolicyUri = clientResponse.policy_uri,
+                RedirectUris = redirectUris,
+                RequestObjectEncryptionAlg = clientResponse.request_object_encryption_alg,
+                RequestObjectEncryptionEnc = clientResponse.request_object_encryption_enc,
+                RequestObjectSigningAlg = clientResponse.request_object_signing_alg,
+                RequestUris = clientResponse.request_uris,
+                RequireAuthTime = clientResponse.require_auth_time,
+                ResponseTypes = responseTypes,
+                SectorIdentifierUri = clientResponse.sector_identifier_uri,
+                SubjectType = clientResponse.subject_type,
+                TokenEndPointAuthMethod = clientResponse.token_endpoint_auth_method,
+                TokenEndPointAuthSigningAlg = clientResponse.token_endpoint_auth_signing_alg,
+                TosUri = clientResponse.tos_uri,
+                UserInfoEncryptedResponseAlg = clientResponse.userinfo_encrypted_response_alg,
+                UserInfoEncryptedResponseEnc = clientResponse.userinfo_encrypted_response_enc,
+                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg,
+                ScimProfile = clientResponse.scim_profile
+            };
+        }
+
+
+        public static Introspection ToDto(this IntrospectionResult introspectionResult)
+        {
+            return new Introspection
+            {
+                Active = introspectionResult.Active,
+                Audience = introspectionResult.Audience,
+                ClientId = introspectionResult.ClientId,
+                Expiration = introspectionResult.Expiration,
+                IssuedAt = introspectionResult.IssuedAt,
+                Issuer = introspectionResult.Issuer,
+                Jti = introspectionResult.Jti,
+                Nbf = introspectionResult.Nbf,
+                Scope = introspectionResult.Scope.Split(' ').ToList(),
+                Subject = introspectionResult.Subject,
+                TokenType = introspectionResult.TokenType,
+                UserName = introspectionResult.UserName
+            };
+        }
+
         public static ResourceOwnerGrantTypeParameter ToResourceOwnerGrantTypeParameter(this TokenRequest request)
         {
             return new ResourceOwnerGrantTypeParameter
@@ -295,6 +398,22 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientId = request.ClientId,
                 ClientSecret = request.ClientSecret,
                 Scope = request.Scope
+            };
+        }
+
+        public static GetTokenViaTicketIdParameter ToTokenIdGrantTypeParameter(this TokenRequest request)
+        {
+            return new GetTokenViaTicketIdParameter
+            {
+                ClaimToken = request.ClaimToken,
+                ClaimTokenFormat = request.ClaimTokenFormat,
+                ClientId = request.ClientId,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientSecret = request.ClientSecret,
+                Pct = request.Pct,
+                Rpt = request.Rpt,
+                Ticket = request.Ticket
             };
         }
 

@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 
@@ -52,7 +53,11 @@ namespace SimpleIdentityServer.Uma.Startup
                 IsLogFileEnabled = true,
                 OpenIdIntrospection = "https://localhost:5443/introspect",
                 OpenIdWellKnownConfiguration = "https://localhost:5443/.well-known/openid-configuration",
-                IsDataMigrated = true
+                IsDataMigrated = true,
+                EvtStoreDataSourceType = DbTypes.SQLSERVER,
+                EvtStoreConnectionString = "Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                OauthDbType = DbTypes.SQLSERVER,
+                OautConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
             };
         }
 

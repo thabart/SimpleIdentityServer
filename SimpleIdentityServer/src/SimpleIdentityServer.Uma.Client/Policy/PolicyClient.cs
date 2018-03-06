@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Client.Policy
             }
 
             var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
-            return configuration.PolicyEndPoint;
+            return configuration.PoliciesEndpoint;
         }
     }
 }

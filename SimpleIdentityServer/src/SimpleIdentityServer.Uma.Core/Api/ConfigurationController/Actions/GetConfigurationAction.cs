@@ -61,9 +61,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
                 UmaProfilesSupported = _umaProfilesSupported,
                 ResourceRegistrationEndpoint = absoluteUriWithVirtualPath + ResourceSetApi,
                 PermissionEndpoint = absoluteUriWithVirtualPath + PermissionApi,
+                PoliciesEndpoint = absoluteUriWithVirtualPath + PolicyApi,
                 // OAUTH2.0
                 Issuer = absoluteUriWithVirtualPath,
-                AuthorizationEndpoint = absoluteUriWithVirtualPath + AuthorizationApi,
+                AuthorizationEndpoint = null,// absoluteUriWithVirtualPath + AuthorizationApi,
                 TokenEndpoint = absoluteUriWithVirtualPath + TokenApi,
                 JwksUri = absoluteUriWithVirtualPath + JwksApi,
                 RegistrationEndpoint = absoluteUriWithVirtualPath + RegistrationApi,

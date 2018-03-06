@@ -14,26 +14,15 @@
 // limitations under the License.
 #endregion
 
-using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Services
 {
     public class DefaultConfigurationService : IConfigurationService
     {
-        public Task<string> GetAuthorizationOperation()
+        public Task<string> GetWellKnownConfiguration()
         {
-            return Task.FromResult("https://localhost:5443/authorization");
-        }
-
-        public Task<string> GetRegisterOperation()
-        {
-            return Task.FromResult("https://localhost:5443/registration");
-        }
-
-        public Task<string> GetTokenOperation()
-        {
-            return Task.FromResult("https://localhost:5443/token");
+            return Task.FromResult("https://localhost:5443/.well-known/openid-configuration");
         }
 
         public Task<int> GetRptLifeTime()

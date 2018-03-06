@@ -26,5 +26,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string InvalidTicket = "invalid_ticket";
         public const string ExpiredTicket = "expired_ticket";
         public const string InvalidRpt = "invalid_rpt";
+        public const string InvalidGrant = "invalid_grant";
+        public const string InvalidClient = "invalid_client";
     }
 }

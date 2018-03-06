@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
     public interface IPermissionControllerActions
     {
         Task<string> Add(AddPermissionParameter addPermissionParameter, string clientId);
-        Task<IEnumerable<string>> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId);
+        Task<string> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId);
     }
 
     internal class PermissionControllerActions : IPermissionControllerActions
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController
             return _addPermissionAction.Execute(clientId, addPermissionParameter);
         }
 
-        public Task<IEnumerable<string>> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId)
+        public Task<string> Add(IEnumerable<AddPermissionParameter> addPermissionParameters, string clientId)
         {
             return _addPermissionAction.Execute(clientId, addPermissionParameters);
         }

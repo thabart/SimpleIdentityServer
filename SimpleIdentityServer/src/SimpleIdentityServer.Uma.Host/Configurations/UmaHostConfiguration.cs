@@ -38,6 +38,12 @@ namespace SimpleIdentityServer.Uma.Host.Configurations
         public DbTypes DbType { get; set; }
         public string DbConnectionString { get; set; }
 
+        public DbTypes OauthDbType { get; set; }
+        public string OautConnectionString { get; set; }
+
+        public DbTypes EvtStoreDataSourceType { get; set; }
+        public string EvtStoreConnectionString { get; set; }
+
         public string OpenIdWellKnownConfiguration { get; set; }
         public string OpenIdIntrospection { get; set; }
         public string ClientId { get; set; }

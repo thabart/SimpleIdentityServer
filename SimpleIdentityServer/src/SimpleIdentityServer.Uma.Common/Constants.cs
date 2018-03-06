@@ -139,6 +139,7 @@ namespace SimpleIdentityServer.Uma.Common
         public const string JwksUri = "jwks_uri";
         public const string AuthorizationEndpoint = "authorization_endpoint";
         public const string ClaimsInteractionEndpoint = "claims_interaction_endpoint";
+        public const string PoliciesEndpoint = "policies_endpoint";
         public const string IntrospectionEndpoint = "introspection_endpoint";
         public const string ResourceRegistrationEndpoint = "resource_registration_endpoint";
         public const string ClaimTokenProfilesSupported = "claim_token_profiles_supported";

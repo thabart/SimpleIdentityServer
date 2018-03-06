@@ -32,7 +32,8 @@ namespace SimpleIdentityServer.Core.Models
         @implicit,
         refresh_token,
         client_credentials,
-        password
+        password,
+        ticket_id
     }
 
     public enum TokenEndPointAuthenticationMethods

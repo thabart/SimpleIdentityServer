@@ -14,13 +14,19 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Code;
-using System.Collections.Generic;
-
 namespace SimpleIdentityServer.Uma.Core
 {
     internal static class Constants
     {
+        public static string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#IDToken";
+
+        public static class RptClaims
+        {
+            public const string Ticket = "ticket";
+            public const string Scopes = "scopes";
+            public const string ResourceSetId = "resource_id";
+        }
+
         public static class AddPermissionNames
         {
             public const string ResourceSetId = "resource_set_id";
@@ -60,13 +66,5 @@ namespace SimpleIdentityServer.Uma.Core
         {
             public const string Csharp = "csharp";
         }
-
-        public static Dictionary<Languages, string> MappingLanguageToCodes = new Dictionary<Languages, string>
-        {
-            {
-                Languages.Csharp,
-                LanguageCodes.Csharp
-            }
-        };
     }
 }

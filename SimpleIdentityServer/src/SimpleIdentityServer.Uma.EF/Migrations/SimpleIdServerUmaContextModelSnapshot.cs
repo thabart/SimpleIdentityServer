@@ -13,7 +13,7 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
+                .HasAnnotation("ProductVersion", "1.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Policy", b =>
@@ -82,61 +82,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                     b.ToTable("ResourceSets");
                 });
 
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Rpt", b =>
-                {
-                    b.Property<string>("Value");
-
-                    b.Property<DateTime>("CreateDateTime");
-
-                    b.Property<DateTime>("ExpirationDateTime");
-
-                    b.Property<string>("ResourceSetId");
-
-                    b.Property<string>("TicketId");
-
-                    b.HasKey("Value");
-
-                    b.HasIndex("ResourceSetId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("Rpts");
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Scope", b =>
-                {
-                    b.Property<string>("Id");
-
-                    b.Property<string>("IconUri");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Scopes");
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
-                {
-                    b.Property<string>("Id");
-
-                    b.Property<string>("ClientId");
-
-                    b.Property<DateTime>("CreateDateTime");
-
-                    b.Property<DateTime>("ExpirationDateTime");
-
-                    b.Property<string>("ResourceSetId");
-
-                    b.Property<string>("Scopes");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSetId");
-
-                    b.ToTable("Tickets");
-                });
-
             modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.PolicyResource", b =>
                 {
                     b.HasOne("SimpleIdentityServer.Uma.EF.Models.Policy", "Policy")
@@ -156,24 +101,6 @@ namespace SimpleIdentityServer.Uma.EF.Migrations
                         .WithMany("Rules")
                         .HasForeignKey("PolicyId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Rpt", b =>
-                {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet", "ResourceSet")
-                        .WithMany("Rpts")
-                        .HasForeignKey("ResourceSetId");
-
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.Ticket", "Ticket")
-                        .WithMany("Rpts")
-                        .HasForeignKey("TicketId");
-                });
-
-            modelBuilder.Entity("SimpleIdentityServer.Uma.EF.Models.Ticket", b =>
-                {
-                    b.HasOne("SimpleIdentityServer.Uma.EF.Models.ResourceSet", "ResourceSet")
-                        .WithMany("Tickets")
-                        .HasForeignKey("ResourceSetId");
                 });
         }
     }

@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Uma.Host.Tests.Fakes;
 using System;
 using System.Net.Http;
 
@@ -26,10 +27,12 @@ namespace SimpleIdentityServer.Uma.Host.Tests
     {
         public TestServer Server { get; }
         public HttpClient Client { get; }
+        public SharedContext SharedCtx { get; }
 
         public TestUmaServerFixture()
         {
-            var startup = new FakeUmaStartup();
+            SharedCtx = new SharedContext();
+            var startup = new FakeUmaStartup(SharedCtx);
             Server = new TestServer(new WebHostBuilder()
                 .UseUrls("http://localhost:5000")
                 .ConfigureServices(services =>
@@ -38,6 +41,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 })
                 .UseSetting(WebHostDefaults.ApplicationKey, typeof(FakeUmaStartup).GetType().Assembly.FullName));
             Client = Server.CreateClient();
+            FakeHttpClientFactory.Instance.Set(Server);
         }
 
         public void Dispose()

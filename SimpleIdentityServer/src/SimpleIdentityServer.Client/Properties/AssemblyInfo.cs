@@ -36,3 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("SimpleIdentityServer.Client.Unit.Tests")]
 [assembly: InternalsVisibleTo("SimpleIdentityServer.Host.Tests")]
+[assembly: InternalsVisibleTo("SimpleIdentityServer.Uma.Host.Tests")]

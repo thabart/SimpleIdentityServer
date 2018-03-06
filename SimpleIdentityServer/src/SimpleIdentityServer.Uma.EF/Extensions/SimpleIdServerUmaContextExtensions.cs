@@ -32,8 +32,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
         public static void EnsureSeedData(this SimpleIdServerUmaContext context)
         {
             InsertResources(context);
-            // InsertPolicies(context);
-            // InsertPolicyRules(context);
             context.SaveChanges();
         }
 

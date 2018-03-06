@@ -52,7 +52,6 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         /// </summary>
         [DataMember(Name = IntrospectionNames.Expiration)]
         public int Expiration { get; set; }
-
         /// <summary>
         /// Gets or sets the issue date
         /// </summary>

@@ -16,22 +16,16 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Uma.Core.Api.Authorization;
-using SimpleIdentityServer.Uma.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Uma.Core.Api.CodeSampleController;
-using SimpleIdentityServer.Uma.Core.Api.CodeSampleController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
-using SimpleIdentityServer.Uma.Core.Api.IntrospectionController;
-using SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
-using SimpleIdentityServer.Uma.Core.Code;
+using SimpleIdentityServer.Uma.Core.Api.Token;
+using SimpleIdentityServer.Uma.Core.Api.Token.Actions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Policies;
@@ -44,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Core
 {
     public static class SimpleIdServerUmaCoreExtensions
     {
-        public static IServiceCollection AddInMemoryStore(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddUmaInMemoryStore(this IServiceCollection serviceCollection)
         {
             if (serviceCollection == null)
             {
@@ -94,15 +88,12 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IDeleteResourceSetAction, DeleteResourceSetAction>();
             serviceCollection.AddTransient<IGetAllResourceSetAction, GetAllResourceSetAction>();
             serviceCollection.AddTransient<IResourceSetParameterValidator, ResourceSetParameterValidator>();
-            serviceCollection.AddTransient<IScopeParameterValidator, ScopeParameterValidator>();
             serviceCollection.AddTransient<IPermissionControllerActions, PermissionControllerActions>();
             serviceCollection.AddTransient<IAddPermissionAction, AddPermissionAction>();
             serviceCollection.AddTransient<IRepositoryExceptionHelper, RepositoryExceptionHelper>();
-            serviceCollection.AddTransient<IGetAuthorizationAction, GetAuthorizationAction>();
             serviceCollection.AddTransient<IAuthorizationPolicyValidator, AuthorizationPolicyValidator>();
             serviceCollection.AddTransient<IBasicAuthorizationPolicy, BasicAuthorizationPolicy>();
             serviceCollection.AddTransient<ICustomAuthorizationPolicy, CustomAuthorizationPolicy>();
-            serviceCollection.AddTransient<IAuthorizationActions, AuthorizationActions>();
             serviceCollection.AddTransient<IAddAuthorizationPolicyAction, AddAuthorizationPolicyAction>();
             serviceCollection.AddTransient<IPolicyActions, PolicyActions>();
             serviceCollection.AddTransient<IGetAuthorizationPolicyAction, GetAuthorizationPolicyAction>();
@@ -111,13 +102,6 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IUpdatePolicyAction, UpdatePolicyAction>();
             serviceCollection.AddTransient<IConfigurationActions, ConfigurationActions>();
             serviceCollection.AddTransient<IGetConfigurationAction, GetConfigurationAction>();
-            serviceCollection.AddTransient<IGetIntrospectAction, GetIntrospectAction>();
-            serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
-            serviceCollection.AddTransient<IGetBackendCodeAction, GetBackendCodeAction>();
-            serviceCollection.AddTransient<ICodeProvider, CodeProvider>();
-            serviceCollection.AddTransient<ICodeSampleActions, CodeSampleActions>();
-            serviceCollection.AddTransient<IGetFrontendCodeAction, GetFrontendCodeAction>();
-            serviceCollection.AddTransient<IIdentityServerClientFactory, IdentityServerClientFactory>();
             serviceCollection.AddTransient<IJwtTokenParser, JwtTokenParser>();
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
@@ -131,7 +115,8 @@ namespace SimpleIdentityServer.Uma.Core
                 serviceCollection.AddSingleton<IConfigurationService>(umaServerOptions.ConfigurationService);
             }
 
-            serviceCollection.AddSimpleIdentityServerJwt();
+            serviceCollection.AddTransient<IUmaTokenActions, UmaTokenActions>();
+            serviceCollection.AddTransient<IGetTokenByTicketIdAction, GetTokenByTicketIdAction>();
         }
     }
 }

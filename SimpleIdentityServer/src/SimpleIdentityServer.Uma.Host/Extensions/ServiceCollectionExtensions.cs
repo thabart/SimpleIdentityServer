@@ -19,6 +19,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
@@ -68,7 +72,9 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
         {
             var parametersProvider = new ParametersProvider(configuration.OpenIdWellKnownConfiguration);
-            services.AddSimpleIdServerUmaCore();
+            services.AddSimpleIdServerUmaCore()
+                .AddSimpleIdentityServerCore()
+                .AddSimpleIdentityServerJwt();
 
             // 1. Enable caching.
             if (configuration.CachingType == CachingTypes.REDIS)
@@ -95,6 +101,32 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     break;
                 case DbTypes.INMEMORY:
                     services.AddSimpleIdServerUmaInMemory();
+                    break;
+            }
+
+            switch (configuration.OauthDbType)
+            {
+                case DbTypes.SQLSERVER:
+                    services.AddSimpleIdentityServerSqlServer(configuration.OautConnectionString);
+                    break;
+                case DbTypes.POSTGRES:
+                    services.AddSimpleIdentityServerPostgre(configuration.OautConnectionString);
+                    break;
+                case DbTypes.INMEMORY:
+                    services.AddSimpleIdentityServerInMemory();
+                    break;
+            }
+
+            switch (configuration.EvtStoreDataSourceType)
+            {
+                case DbTypes.SQLSERVER:
+                    services.AddEventStoreSqlServer(configuration.EvtStoreConnectionString);
+                    break;
+                case DbTypes.POSTGRES:
+                    services.AddEventStorePostgre(configuration.EvtStoreConnectionString);
+                    break;
+                case DbTypes.INMEMORY:
+                    services.AddEventStoreInMemory();
                     break;
             }
 

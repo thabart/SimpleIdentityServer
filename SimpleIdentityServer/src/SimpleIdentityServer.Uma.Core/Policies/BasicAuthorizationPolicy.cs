@@ -28,10 +28,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IBasicAuthorizationPolicy
     {
-        Task<AuthorizationPolicyResult> Execute(
-            Ticket ticket,
-            Policy policy,
-            List<ClaimTokenParameter> claimTokenParameters);
+        Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticket, Policy policy, ClaimTokenParameter claimTokenParameters);
     }
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
@@ -39,26 +36,21 @@ namespace SimpleIdentityServer.Uma.Core.Policies
         private readonly IParametersProvider _parametersProvider;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJwtTokenParser _jwtTokenParser;
-        private const string IdTokenType = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken";
         
-        public BasicAuthorizationPolicy(
-            IParametersProvider parametersProvider,
-            IIdentityServerClientFactory identityServerClientFactory,
-            IJwtTokenParser jwtTokenParser)
+        public BasicAuthorizationPolicy(IParametersProvider parametersProvider, IIdentityServerClientFactory identityServerClientFactory, IJwtTokenParser jwtTokenParser)
         {
             _parametersProvider = parametersProvider;
             _identityServerClientFactory = identityServerClientFactory;
             _jwtTokenParser = jwtTokenParser;
         }
 
-        public async Task<AuthorizationPolicyResult> Execute(
-            Ticket validTicket,
-            Policy authorizationPolicy,
-            List<ClaimTokenParameter> claimTokenParameters)
+        #region Public methods
+
+        public async Task<AuthorizationPolicyResult> Execute(TicketLineParameter ticketLineParameter, Policy authorizationPolicy, ClaimTokenParameter claimTokenParameter)
         {
-            if (validTicket == null)
+            if (ticketLineParameter == null)
             {
-                throw new ArgumentNullException(nameof(validTicket));
+                throw new ArgumentNullException(nameof(ticketLineParameter));
             }
 
             if (authorizationPolicy == null)
@@ -78,7 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy.Rules)
             {
-                result = await ExecuteAuthorizationPolicyRule(validTicket, rule, claimTokenParameters);
+                result = await ExecuteAuthorizationPolicyRule(ticketLineParameter, rule, claimTokenParameter);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;
@@ -88,13 +80,14 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             return result;
         }
 
-        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(
-            Ticket validTicket,
-            PolicyRule authorizationPolicy,
-            List<ClaimTokenParameter> claimTokenParameters)
+        #endregion
+
+        #region Private methods
+
+        private async Task<AuthorizationPolicyResult> ExecuteAuthorizationPolicyRule(TicketLineParameter ticketLineParameter, PolicyRule authorizationPolicy, ClaimTokenParameter claimTokenParameter)
         {
             // 1. Check can access to the scope
-            if (validTicket.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
+            if (ticketLineParameter.Scopes.Any(s => !authorizationPolicy.Scopes.Contains(s)))
             {
                 return new AuthorizationPolicyResult
                 {
@@ -103,7 +96,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 2. Check clients are correct
-            var clientAuthorizationResult = CheckClients(authorizationPolicy, validTicket);
+            var clientAuthorizationResult = CheckClients(authorizationPolicy, ticketLineParameter);
             if (clientAuthorizationResult != null &&
                 clientAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -111,7 +104,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameters);
+            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter);
             if (claimAuthorizationResult != null
                 && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -119,8 +112,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 4. Check the resource owner consent is needed
-            if (authorizationPolicy.IsResourceOwnerConsentNeeded &&
-                !validTicket.IsAuthorizedByRo)
+            if (authorizationPolicy.IsResourceOwnerConsentNeeded && !ticketLineParameter.IsAuthorizedByRo)
             {
                 return new AuthorizationPolicyResult
                 {
@@ -169,9 +161,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             };
         }
 
-        private async Task<AuthorizationPolicyResult> CheckClaims(
-            PolicyRule authorizationPolicy,
-            List<ClaimTokenParameter> claimTokenParameters)
+        private async Task<AuthorizationPolicyResult> CheckClaims(PolicyRule authorizationPolicy, ClaimTokenParameter claimTokenParameter)
         {
             if (authorizationPolicy.Claims == null ||
                 !authorizationPolicy.Claims.Any())
@@ -179,15 +169,13 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 return null;
             }
 
-
-            if (claimTokenParameters == null ||
-                !claimTokenParameters.Any(c => c.Format == IdTokenType))
+            if (claimTokenParameter == null || claimTokenParameter.Format != Constants.IdTokenType)
             {
                 return GetNeedInfoResult(authorizationPolicy.Claims);
             }
 
-            var idToken = claimTokenParameters.First(c => c.Format == IdTokenType);
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token);
+            var idToken = claimTokenParameter.Token;
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
@@ -256,9 +244,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             };
         }
 
-        private AuthorizationPolicyResult CheckClients(
-            PolicyRule authorizationPolicy,
-            Ticket validTicket)
+        private AuthorizationPolicyResult CheckClients(PolicyRule authorizationPolicy, TicketLineParameter ticketLineParameter)
         {
             if (authorizationPolicy.ClientIdsAllowed == null ||
                 !authorizationPolicy.ClientIdsAllowed.Any())
@@ -266,7 +252,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 return null;
             }
 
-            if (!authorizationPolicy.ClientIdsAllowed.Contains(validTicket.ClientId))
+            if (!authorizationPolicy.ClientIdsAllowed.Contains(ticketLineParameter.ClientId))
             {
                 return new AuthorizationPolicyResult
                 {
@@ -279,5 +265,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 Type = AuthorizationPolicyResultEnum.Authorized
             };
         }
+
+        #endregion
     }
 }

@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         public async Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Update(request, configuration.ResourceSetRegistrationEndPoint, token);
+            return await Update(request, configuration.ResourceRegistrationEndpoint, token);
         }
 
         public Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token)
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         public async Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.ResourceSetRegistrationEndPoint, token);
+            return await Add(request, configuration.ResourceRegistrationEndpoint, token);
         }
 
         public async Task<bool> Delete(string id, string url, string token)
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         public async Task<bool> DeleteByResolution(string id, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Delete(id, configuration.ResourceSetRegistrationEndPoint, token);
+            return await Delete(id, configuration.ResourceRegistrationEndpoint, token);
         }
 
         public Task<IEnumerable<string>> GetAll(string url, string token)
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await GetAll(configuration.ResourceSetRegistrationEndPoint, token);
+            return await GetAll(configuration.ResourceRegistrationEndpoint, token);
         }
 
         public Task<ResourceSetResponse> Get(string id, string url, string token)
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
         public async Task<ResourceSetResponse> GetByResolution(string id, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(id, configuration.ResourceSetRegistrationEndPoint, token);
+            return await Get(id, configuration.ResourceRegistrationEndpoint, token);
         }
     }
 }

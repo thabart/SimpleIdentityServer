@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
     internal interface IAddPermissionAction
     {
         Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameters);
-        Task<IEnumerable<string>> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters);
+        Task<string> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters);
     }
 
     internal class AddPermissionAction : IAddPermissionAction
@@ -62,10 +62,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
             var result = await Execute(clientId, new[] { addPermissionParameter });
-            return result.First();
+            return result;
         }
 
-        public async Task<IEnumerable<string>> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters)
+        public async Task<string> Execute(string clientId, IEnumerable<AddPermissionParameter> addPermissionParameters)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -82,25 +82,32 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
             await CheckAddPermissionParameter(addPermissionParameters);
             var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
-            var tickets = new List<Ticket>();
+            var ticket = new Ticket
+            {
+                Id = Guid.NewGuid().ToString(),
+                ClientId = clientId,
+                CreateDateTime = DateTime.UtcNow,
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds)
+            };
+            var ticketLines = new List<TicketLine>();
             foreach(var addPermissionParameter in addPermissionParameters) // TH : ONE TICKET FOR MULTIPLE PERMISSIONS.
             {
-                tickets.Add(new Ticket
+                ticketLines.Add(new TicketLine
                 {
                     Id = Guid.NewGuid().ToString(),
-                    ClientId = clientId,
-                    ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds),
                     Scopes = addPermissionParameter.Scopes,
-                    ResourceSetId = addPermissionParameter.ResourceSetId,
-                    CreateDateTime = DateTime.UtcNow
+                    ResourceSetId = addPermissionParameter.ResourceSetId
                 });
             }
-            
-            await _repositoryExceptionHelper.HandleException(
-                ErrorDescriptions.AtLeastOneTicketCannotBeInserted,
-                () => _ticketStore.AddAsync(tickets));
+
+            ticket.Lines = ticketLines;
+            if(!await _ticketStore.AddAsync(ticket))
+            {
+                throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketAlreadyExists);
+            }
+
             _umaServerEventSource.FinishAddPermission(json);
-            return tickets.Select(t => t.Id);
+            return ticket.Id;
         }
 
         private async Task CheckAddPermissionParameter(IEnumerable<AddPermissionParameter> addPermissionParameters)

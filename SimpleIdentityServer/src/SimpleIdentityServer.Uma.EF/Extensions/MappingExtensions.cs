@@ -44,31 +44,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
             };
         }
 
-        public static Domain.Ticket ToDomain(this Model.Ticket ticket)
-        {
-            return new Domain.Ticket
-            {
-                Id = ticket.Id,
-                Scopes = GetList(ticket.Scopes),
-                ClientId = ticket.ClientId,
-                ExpirationDateTime = ticket.ExpirationDateTime,
-                ResourceSetId = ticket.ResourceSetId,
-                CreateDateTime = ticket.CreateDateTime
-            };
-        }
-
-        public static Domain.Rpt ToDomain(this Model.Rpt rpt)
-        {
-            return new Domain.Rpt
-            {
-                TicketId = rpt.TicketId,
-                ExpirationDateTime = rpt.ExpirationDateTime,
-                ResourceSetId = rpt.ResourceSetId,
-                Value = rpt.Value,
-                CreateDateTime = rpt.CreateDateTime
-            };
-        }
-
         public static Domain.Policy ToDomain(this Model.Policy policy)
         {
             var rules = new List<Domain.PolicyRule>();
@@ -132,31 +107,6 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Type = resourceSet.Type,
                 Uri = resourceSet.Uri,
                 PolicyResources = policyIds
-            };
-        }
-
-        public static Model.Ticket ToModel(this Domain.Ticket ticket)
-        {
-            return new Model.Ticket
-            {
-                Id = ticket.Id,
-                Scopes = GetConcatenatedList(ticket.Scopes),
-                ExpirationDateTime = ticket.ExpirationDateTime,
-                ClientId = ticket.ClientId,
-                ResourceSetId = ticket.ResourceSetId,
-                CreateDateTime = ticket.CreateDateTime
-            };
-        }
-
-        public static Model.Rpt ToModel(this Domain.Rpt rpt)
-        {
-            return new Model.Rpt
-            {
-                TicketId = rpt.TicketId,
-                ExpirationDateTime = rpt.ExpirationDateTime,
-                ResourceSetId = rpt.ResourceSetId,
-                Value = rpt.Value,
-                CreateDateTime = rpt.CreateDateTime
             };
         }
 

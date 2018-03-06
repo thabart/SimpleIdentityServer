@@ -66,13 +66,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad);
             generatedToken.ParentTokenId = grantedToken.Id;
-            await _tokenStore.AddToken(generatedToken);
             // 3. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
                 generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad);
             }
 
+            await _tokenStore.AddToken(generatedToken);
             _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
                 generatedToken.Scope);

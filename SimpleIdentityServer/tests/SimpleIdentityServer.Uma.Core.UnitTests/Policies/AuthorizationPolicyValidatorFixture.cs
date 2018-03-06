@@ -53,7 +53,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             var ticket = new Ticket
             {
-                ResourceSetId = "resource_set_id"
+                Lines = new List<TicketLine>
+                {
+                    new TicketLine
+                    {
+                        ResourceSetId = "resource_set_id"
+                    }
+                }
+                
             };
             InitializeFakeObjects();
             _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
@@ -63,17 +70,32 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _authorizationPolicyValidator.IsAuthorized(ticket, "client_id", null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, ticket.ResourceSetId));
+            Assert.True(exception.Message == ErrorDescriptions.SomeResourcesDontExist);
         }
 
         [Fact]
         public async Task When_Policy_Doesnt_Exist_Then_Authorized_Is_Returned()
         {
             // ARRANGE
-            var ticket = new Ticket();
-            var resourceSet = new ResourceSet();
+            var ticket = new Ticket
+            {
+                Lines = new List<TicketLine>
+                {
+                    new TicketLine
+                    {
+                        ResourceSetId = "1"
+                    }
+                }
+            };
+            IEnumerable<ResourceSet> resourceSet = new List<ResourceSet>
+            {
+                new ResourceSet
+                {
+                    Id = "1"
+                }
+            };
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(resourceSet));
 
             // ACT
@@ -87,19 +109,32 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         public async Task When_AuthorizationPolicy_Is_Correct_Then_Authorized_Is_Returned()
         {
             // ARRANGE
-            var ticket = new Ticket();
-            var resourceSet = new ResourceSet
+            var ticket = new Ticket
             {
-                AuthorizationPolicyIds = new List<string> { "authorization_policy_id" },
-                Policies = new List<Policy>
+                Lines = new List<TicketLine>
                 {
-                    new Policy()
+                    new TicketLine
+                    {
+                        ResourceSetId = "1"
+                    }
+                }
+            };
+            IEnumerable<ResourceSet> resourceSet = new List<ResourceSet>
+            {
+                new ResourceSet
+                {
+                    Id = "1",
+                    AuthorizationPolicyIds = new List<string> { "authorization_policy_id" },
+                    Policies = new List<Policy>
+                    {
+                        new Policy()
+                    }
                 }
             };
             InitializeFakeObjects();
-            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>()))
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(resourceSet));
-            _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<Ticket>(), It.IsAny<Policy>(), It.IsAny<List<ClaimTokenParameter>>()))
+            _basicAuthorizationPolicyStub.Setup(b => b.Execute(It.IsAny<TicketLineParameter>(), It.IsAny<Policy>(), It.IsAny<ClaimTokenParameter>()))
                 .Returns(Task.FromResult(new AuthorizationPolicyResult
                 {
                     Type = AuthorizationPolicyResultEnum.Authorized

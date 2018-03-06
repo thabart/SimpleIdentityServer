@@ -68,6 +68,11 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
                 throw new ArgumentNullException(nameof(introspectionParameter));
             }
 
+            if (string.IsNullOrWhiteSpace(introspectionParameter.Token))
+            {
+                throw new ArgumentNullException(nameof(introspectionParameter.Token));
+            }
+
             _introspectionParameterValidator.Validate(introspectionParameter);
 
             // 2. Authenticate the client
@@ -84,8 +89,6 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             {
                 tokenTypeHint = introspectionParameter.TokenTypeHint;
             }
-
-            // 1. CHECK THE REVOCATION.
 
             // 4. Trying to fetch the information about the access_token  || refresh_token
             GrantedToken grantedToken = null;

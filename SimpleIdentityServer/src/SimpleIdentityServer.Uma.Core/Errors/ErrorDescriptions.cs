@@ -22,6 +22,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheUrlIsNotWellFormed = "the url {0} is not well formed";
         public const string TheResourceSetCannotBeInserted = "an error occured while trying to insert the resource set";
         public const string TheResourceSetDoesntExist = "resource set {0} doesn't exist";
+        public const string SomeResourcesDontExist = "some resources don't exist";
         public const string AtLeastOneResourceDoesntExist = "at least one resource doesn't exist";
         public const string ThePolicyDoesntContainResource = "the authorization policy doesn't contain the resource";
         public const string TheResourceSetCannotBeUpdated = "resource set {0} cannot be udpated";
@@ -41,6 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
         public const string TheTicketIsExpired = "the ticket is expired";
         public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
+        public const string TheTicketAlreadyExists = "the ticket  already exists";
         public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
         public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
         public const string ThePolicyCannotBeUpdated = "the authorization policy cannot be updated";
@@ -51,5 +53,8 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheRptsDontExist = "the rpts {0} don't exist";
         public const string TheRptIsExpired = "the rpt is expired";
         public const string TheAuthorizationPolicyDoesntExist = "the authorization policy {0} doesn't exist";
+        public const string TheClaimTokenIsNotValid = "the claim token parameter is not valid";
+        public const string TheAuthorizationPolicyIsNotSatisfied = "the authorization policy is not satisfied";
+        public const string TheClientDoesntSupportTheGrantType = "the client doesn't support the grant type {0}";
     }
 }

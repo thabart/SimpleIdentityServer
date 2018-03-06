@@ -70,10 +70,10 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameters = postPermissions.Select(p => p.ToParameter());
             var clientId = this.GetClientId();
-            var ticketIds = await _permissionControllerActions.Add(parameters, clientId);
-            var result = new AddPermissionsResponse
+            var ticketId = await _permissionControllerActions.Add(parameters, clientId);
+            var result = new AddPermissionResponse
             {
-                TicketIds = ticketIds
+                TicketId = ticketId
             };
             return new ObjectResult(result)
             {

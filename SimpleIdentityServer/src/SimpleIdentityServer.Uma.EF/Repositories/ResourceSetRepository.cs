@@ -164,8 +164,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 try
                 {
                     var record = await _context.ResourceSets
-                        .Include(r => r.Rpts)
-                        .Include(r => r.Tickets)
                         .FirstOrDefaultAsync(r => r.Id == id)
                         .ConfigureAwait(false);
                     if (record == null)

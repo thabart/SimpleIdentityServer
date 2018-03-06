@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Client
         IUserInfoClient CreateUserInfoClient();
         IRegistrationClient CreateRegistrationClient();
         IAuthorizationClient CreateAuthorizationClient();
+        IIntrospectClient CreateIntrospectionClient();
     }
 
     public class IdentityServerClientFactory : IIdentityServerClientFactory
@@ -46,6 +47,12 @@ namespace SimpleIdentityServer.Client
         }
 
         #endregion
+
+        public IIntrospectClient CreateIntrospectionClient()
+        {
+            var result = (IIntrospectClient)_serviceProvider.GetService(typeof(IIntrospectClient));
+            return result;
+        }
 
         /// <summary>
         /// Get the discovery client

@@ -26,8 +26,8 @@ namespace SimpleIdentityServer.Client.Permission
     {
         Task<AddPermissionResponse> Add(PostPermission request, string url, string token);
         Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token);
-        Task<AddPermissionsResponse> Add(IEnumerable<PostPermission> request, string url, string token);
-        Task<AddPermissionsResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResponse> Add(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token);
     }
 
     internal class PermissionClient : IPermissionClient
@@ -51,18 +51,18 @@ namespace SimpleIdentityServer.Client.Permission
         public async Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.PermissionRegistrationEndPoint, token);
+            return await Add(request, configuration.PermissionEndpoint, token);
         }
 
-        public Task<AddPermissionsResponse> Add(IEnumerable<PostPermission> request, string url, string token)
+        public Task<AddPermissionResponse> Add(IEnumerable<PostPermission> request, string url, string token)
         {
             return _addPermissionsOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddPermissionsResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token)
+        public async Task<AddPermissionResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.PermissionRegistrationEndPoint, token);
+            return await Add(request, configuration.PermissionEndpoint, token);
         }
     }
 }

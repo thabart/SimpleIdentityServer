@@ -133,6 +133,16 @@ namespace SimpleIdentityServer.Core.Common
         public const string CodeVerifier = "code_verifier";
     }
 
+    // https://docs.kantarainitiative.org/uma/wg/oauth-uma-grant-2.0-05.html#seek-authorization
+    public static class RequestTokenUma
+    {
+        public const string Ticket = "ticket";
+        public const string ClaimToken = "claim_token";
+        public const string ClaimTokenFormat = "claim_token_format";
+        public const string Pct = "pct";
+        public const string Rpt = "rpt";
+    }
+
     public static class GrantTypes
     {
         public const string ClientCredentials = "client_credentials";
@@ -140,6 +150,7 @@ namespace SimpleIdentityServer.Core.Common
         public const string RefreshToken = "refresh_token";
         public const string AuthorizationCode = "authorization_code";
         public const string ValidateBearer = "validate_bearer";
+        public const string UmaTicket = "uma_ticket";
     }
 
     public static class TokenTypes

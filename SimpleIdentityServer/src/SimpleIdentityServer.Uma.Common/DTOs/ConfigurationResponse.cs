@@ -42,6 +42,8 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         public string PermissionEndpoint { get; set; }
         [DataMember(Name = ConfigurationResponseNames.RevocationEndpoint)]
         public string RevocationEndpoint { get; set; }
+        [DataMember(Name = ConfigurationResponseNames.PoliciesEndpoint)]
+        public string PoliciesEndpoint { get; set; }
         [DataMember(Name = ConfigurationResponseNames.ClaimTokenProfilesSupported)]
         public List<string> ClaimTokenProfilesSupported { get; set; }
         [DataMember(Name = ConfigurationResponseNames.UmaProfilesSupported)]

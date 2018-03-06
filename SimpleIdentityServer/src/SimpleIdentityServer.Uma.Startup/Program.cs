@@ -14,6 +14,9 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+
 namespace SimpleIdentityServer.Uma.Startup
 {
     public class Program

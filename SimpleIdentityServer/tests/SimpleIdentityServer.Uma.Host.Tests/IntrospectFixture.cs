@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using Xunit;
+/*
 using Moq;
 using SimpleIdentityServer.Client.Authorization;
 using SimpleIdentityServer.Client.Configuration;
@@ -26,12 +28,12 @@ using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
-
+*/
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
     public class IntrospectFixture : IClassFixture<TestUmaServerFixture>
     {
+        /*
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IPolicyClient _policyClient;
         private IResourceSetClient _resourceSetClient;
@@ -218,5 +220,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new GetIntrospectionsAction(_httpClientFactoryStub.Object),
                 new GetConfigurationOperation(_httpClientFactoryStub.Object));
         }
+        */
     }
 }

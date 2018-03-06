@@ -21,7 +21,6 @@ using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 {
     public interface IAuthorizationPolicyValidator
     {
-        Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, List<ClaimTokenParameter> claimTokenParameters);
+        Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, ClaimTokenParameter claimTokenParameter);
     }
 
     internal class AuthorizationPolicyValidator : IAuthorizationPolicyValidator
@@ -47,8 +46,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             _resourceSetRepository = resourceSetRepository;
             _umaServerEventSource = umaServerEventSource;
         }
-        
-        public async Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, List<ClaimTokenParameter> claimTokenParameters)
+
+        #region Public methods
+
+        public async Task<AuthorizationPolicyResult> IsAuthorized(Ticket validTicket, string clientId, ClaimTokenParameter claimTokenParameter)
         {
             if (validTicket == null)
             {
@@ -59,37 +60,64 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             {
                 throw new ArgumentNullException(nameof(clientId));
             }
-
-            var resourceSet = await _resourceSetRepository.Get(validTicket.ResourceSetId);
-            if (resourceSet == null)
+            
+            if (validTicket.Lines == null || !validTicket.Lines.Any())
             {
-                throw new BaseUmaException(ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceSetDoesntExist, validTicket.ResourceSetId));
+                throw new ArgumentNullException(nameof(validTicket.Lines));
             }
 
-            if (resourceSet.Policies == null ||
-                !resourceSet.Policies.Any())
+            var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId);
+            var resources = await _resourceSetRepository.Get(resourceIds);
+            if (resources == null || !resources.Any() || resources.Count() != resourceIds.Count())
+            {
+                throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
+            }
+
+            AuthorizationPolicyResult validationResult = null;
+            foreach (var ticketLine in validTicket.Lines)
+            {
+                var ticketLineParameter = new TicketLineParameter(validTicket.ClientId, ticketLine.Scopes, validTicket.IsAuthorizedByRo);
+                var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
+                validationResult = await Validate(ticketLineParameter, resource, claimTokenParameter);
+                if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
+                {
+                    _umaServerEventSource.AuthorizationPoliciesFailed(validTicket.Id);
+                    return validationResult;
+                }
+            }
+
+            return validationResult;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private async Task<AuthorizationPolicyResult> Validate(TicketLineParameter ticketLineParameter, ResourceSet resource, ClaimTokenParameter claimTokenParameter)
+        {
+            if (resource.Policies == null || !resource.Policies.Any())
             {
                 return new AuthorizationPolicyResult
                 {
                     Type = AuthorizationPolicyResultEnum.Authorized
                 };
             }
-
-            foreach(var authorizationPolicy in resourceSet.Policies)
+            
+            foreach (var authorizationPolicy in resource.Policies)
             {
-                var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
+                var result = await _basicAuthorizationPolicy.Execute(ticketLineParameter, authorizationPolicy, claimTokenParameter);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;
                 }
             }
 
-            _umaServerEventSource.AuthorizationPoliciesFailed(validTicket.Id);
             return new AuthorizationPolicyResult
             {
                 Type = AuthorizationPolicyResultEnum.NotAuthorized
-            };            
+            };
         }
+
+        #endregion
     }
 }

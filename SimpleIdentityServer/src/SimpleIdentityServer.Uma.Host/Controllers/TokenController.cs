@@ -75,7 +75,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                     result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue);
                     break;
                 case GrantTypes.uma_ticket:
-
+                    var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
+                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue);
                     break;
             }
 

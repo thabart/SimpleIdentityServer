@@ -56,5 +56,15 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string ClientAssertion { get; set; }
         [DataMember(Name = RequestTokenNames.CodeVerifier)]
         public string CodeVerifier { get; set; }
+        [DataMember(Name = RequestTokenUma.Ticket)]
+        public string Ticket { get; set; }
+        [DataMember(Name = RequestTokenUma.ClaimToken)]
+        public string ClaimToken { get; set; }
+        [DataMember(Name = RequestTokenUma.ClaimTokenFormat)]
+        public string ClaimTokenFormat { get; set; }
+        [DataMember(Name = RequestTokenUma.Pct)]
+        public string Pct { get; set; }
+        [DataMember(Name = RequestTokenUma.Rpt)]
+        public string Rpt { get; set; }
     }
 }

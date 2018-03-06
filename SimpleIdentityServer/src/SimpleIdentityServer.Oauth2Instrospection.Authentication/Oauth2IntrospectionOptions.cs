@@ -21,11 +21,8 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
     public class Oauth2IntrospectionOptions
     {
         public string InstrospectionEndPoint { get; set; }
-
         public string ClientId { get; set; }
-
         public string ClientSecret { get; set; }
-
         public HttpClientHandler BackChannelHttpHandler { get; set; }
     }
 }

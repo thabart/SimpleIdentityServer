@@ -15,25 +15,16 @@
 #endregion
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
+using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Oauth2Instrospection.Authentication;
-using SimpleIdentityServer.Uma.Core;
-using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
-using SimpleIdentityServer.Uma.EF.Extensions;
-using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
 using System;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -50,8 +41,11 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-            
-            loggerFactory.AddSerilog();
+
+            if (loggerFactory != null)
+            {
+                loggerFactory.AddSerilog();
+            }
 
             // 1. Display status code page.
             app.UseStatusCodePages();
@@ -74,8 +68,12 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                         simpleIdServerUmaContext.Database.EnsureCreated();
                     }
                     catch (Exception) { }
+                }
 
-                    simpleIdServerUmaContext.EnsureSeedData();
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                    simpleIdentityServerContext.Database.EnsureCreated();
                 }
             }
 
@@ -94,79 +92,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     template: "{controller}/{action}/{id?}");
             });
             return app;
-        }
-
-        private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
-        {
-            var parametersProvider = new ParametersProvider(configuration.OpenIdWellKnownConfiguration);
-            services.AddSimpleIdServerUmaCore();
-
-            // 1. Enable caching.
-            if (configuration.CachingType == CachingTypes.REDIS)
-            {
-                services.AddConcurrency(opt => opt.UseRedis(o =>
-                {
-                    o.Configuration = configuration.CachingConnectionString;
-                    o.InstanceName = configuration.CachingInstanceName;
-                }));
-            }
-            else
-            {
-                services.AddConcurrency(opt => opt.UseInMemory());
-            }
-
-            // 2. Enable database.
-            switch(configuration.DbType)
-            {
-                case DbTypes.SQLSERVER:
-                    services.AddSimpleIdServerUmaSqlServer(configuration.DbConnectionString);
-                    break;
-                case DbTypes.POSTGRES:
-                    services.AddSimpleIdServerUmaPostgresql(configuration.DbConnectionString);
-                    break;
-                case DbTypes.INMEMORY:
-                    services.AddSimpleIdServerUmaInMemory();
-                    break;
-            }
-
-            // 3. Enable logging.
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            if (configuration.IsLogFileEnabled)
-            {
-                logger.WriteTo.RollingFile(configuration.LogFilePathFormat);
-            }
-
-            if (configuration.IsElasticSearchEnabled)
-            {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration.OpenIdWellKnownConfiguration))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = "umaserver-{0:yyyy.MM.dd}",
-                    TemplateName = "uma-events-template"
-                });
-            }
-
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
-            services.AddLogging();
-            services.AddTransient<IHostingProvider, HostingProvider>();
-            services.AddSingleton<IParametersProvider>(parametersProvider);
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Uma.EF
     {
         #region Constructor
 
-        public SimpleIdServerUmaContext(DbContextOptions dbContextOptions):base(dbContextOptions)
+        public SimpleIdServerUmaContext(DbContextOptions<SimpleIdServerUmaContext> dbContextOptions):base(dbContextOptions)
         {
         }
 
@@ -33,8 +33,6 @@ namespace SimpleIdentityServer.Uma.EF
         #region Properties
 
         public virtual DbSet<ResourceSet> ResourceSets { get; set; }
-        public virtual DbSet<Ticket> Tickets { get; set; }
-        public virtual DbSet<Rpt> Rpts { get; set; }
         public virtual DbSet<Policy> Policies { get; set; }
         public virtual DbSet<PolicyRule> PolicyRules { get; set; }
 
@@ -45,8 +43,6 @@ namespace SimpleIdentityServer.Uma.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.AddResourceSetMappings();
-            modelBuilder.AddTicketMappings();
-            modelBuilder.AddRptMappings();
             modelBuilder.AddPolicyMappings();
             modelBuilder.AddPolicyRuleMappings();
             modelBuilder.AddPolicyResourceMappings();

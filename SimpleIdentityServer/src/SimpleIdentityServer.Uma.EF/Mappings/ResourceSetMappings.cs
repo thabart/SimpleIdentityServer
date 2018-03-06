@@ -28,14 +28,6 @@ namespace SimpleIdentityServer.Uma.EF.Mappings
             modelBuilder.Entity<ResourceSet>()
                 .ToTable("ResourceSets")
                 .HasKey(r => r.Id);
-            modelBuilder.Entity<ResourceSet>()
-                .HasMany(r => r.Tickets)
-                .WithOne(t => t.ResourceSet)
-                .HasForeignKey(t => t.ResourceSetId);
-            modelBuilder.Entity<ResourceSet>()
-                .HasMany(r => r.Rpts)
-                .WithOne(r => r.ResourceSet)
-                .HasForeignKey(r => r.ResourceSetId);
         }
 
         #endregion

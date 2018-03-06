@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Uma.Core.Stores
     {
         Task<bool> AddAsync(IEnumerable<Ticket> tickets);
         Task<bool> AddAsync(Ticket ticket);
-        Task<bool> RemoveAsync(Ticket ticket);
+        Task<bool> RemoveAsync(string ticketId);
         Task<Ticket> GetAsync(string ticketId);
     }
 
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Core.Stores
                 throw new ArgumentNullException(nameof(ticket));
             }
 
-            if (!_mappingStrToTickets.ContainsKey(ticket.Id))
+            if (_mappingStrToTickets.ContainsKey(ticket.Id))
             {
                 return Task.FromResult(false);
             }
@@ -56,19 +56,19 @@ namespace SimpleIdentityServer.Uma.Core.Stores
             return Task.FromResult(true);
         }
 
-        public Task<bool> RemoveAsync(Ticket ticket)
+        public Task<bool> RemoveAsync(string ticketId)
         {
-            if (ticket == null)
+            if (string.IsNullOrWhiteSpace(ticketId))
             {
-                throw new ArgumentNullException(nameof(ticket));
+                throw new ArgumentNullException(nameof(ticketId));
             }
 
-            if (!_mappingStrToTickets.ContainsKey(ticket.Id))
+            if (!_mappingStrToTickets.ContainsKey(ticketId))
             {
                 return Task.FromResult(false);
             }
 
-            _mappingStrToTickets.Remove(ticket.Id);
+            _mappingStrToTickets.Remove(ticketId);
             return Task.FromResult(true);
         }
 

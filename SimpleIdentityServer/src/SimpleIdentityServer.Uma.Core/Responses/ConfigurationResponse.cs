@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Uma.Core.Responses
         public string ResourceRegistrationEndpoint { get; set; }
         public string PermissionEndpoint { get; set; }
         public string RevocationEndpoint { get; set; }
+        public string PoliciesEndpoint { get; set; }
         public List<string> ClaimTokenProfilesSupported { get; set; }
         public List<string> UmaProfilesSupported { get; set; }
         public List<string> ScopesSupported { get; set; }

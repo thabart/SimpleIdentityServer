@@ -27,6 +27,7 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UseAuthorizationCode(string code, string redirectUrl, string codeVerifier = null);
         ITokenClient UseClientCredentials(params string[] scopes);
         ITokenClient UseClientCredentials(List<string> scopes);
+        ITokenClient UseTicketId(string ticketId, string claimToken);
         ITokenClient UsePassword(string userName, string password, params string[] scopes);
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
         ITokenClient UseRefreshToken(string refreshToken);
@@ -138,6 +139,24 @@ namespace SimpleIdentityServer.Client.Selectors
 
             _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.RefreshToken);
             _requestBuilder.Content.Add(RequestTokenNames.RefreshToken, refreshToken);
+            return _tokenClient;
+        }
+
+        public ITokenClient UseTicketId(string ticketId, string claimToken)
+        {
+            if (string.IsNullOrWhiteSpace(ticketId))
+            {
+                throw new ArgumentNullException(nameof(ticketId));
+            }
+
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.UmaTicket);
+            _requestBuilder.Content.Add(RequestTokenUma.Ticket, ticketId);
+            if (!string.IsNullOrWhiteSpace(claimToken))
+            {
+                _requestBuilder.Content.Add(RequestTokenUma.ClaimToken, claimToken);
+            }
+
+            _requestBuilder.Content.Add(RequestTokenUma.ClaimTokenFormat, "http://openid.net/specs/openid-connect-core-1_0.html#IDToken");
             return _tokenClient;
         }
 

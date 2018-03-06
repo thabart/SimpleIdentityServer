@@ -18,6 +18,7 @@
   </PropertyGroup>  
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.csproj" />
     <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj" />
   </ItemGroup>  

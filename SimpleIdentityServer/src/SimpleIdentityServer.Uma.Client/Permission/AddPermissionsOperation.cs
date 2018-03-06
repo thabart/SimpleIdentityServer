@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Client.Permission
     public interface IAddPermissionsOperation
     {
         Task<AddPermissionResponse> ExecuteAsync(PostPermission request, string url, string token);
-        Task<AddPermissionsResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token);
     }
 
     internal class AddPermissionsOperation : IAddPermissionsOperation
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Client.Permission
             return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
         }
 
-        public async Task<AddPermissionsResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token)
+        public async Task<AddPermissionResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token)
         {
             if (request == null)
             {
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Client.Permission
             var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<AddPermissionsResponse>(content);
+            return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
         }
     }
 }

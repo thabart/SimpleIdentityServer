@@ -14,9 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Configuration;
+using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
@@ -48,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "token");
 
             // ASSERT
             Assert.NotNull(resources);
@@ -65,9 +70,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header");
             var resource = await _resourceSetClient.GetByResolution(resources.First(),
-                baseUrl + "/.well-known/uma-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ASSERT
             Assert.NotNull(resource);
@@ -83,11 +88,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header");
             var resource = await _resourceSetClient.DeleteByResolution(resources.First(),
-                baseUrl + "/.well-known/uma-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header");
             var information = await Assert.ThrowsAsync<HttpRequestException>(() => _resourceSetClient.GetByResolution(resources.First(),
-                baseUrl + "/.well-known/uma-configuration", "header"));
+                baseUrl + "/.well-known/uma2-configuration", "header"));
 
             // ASSERT
             Assert.True(resource);
@@ -111,7 +116,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     "scope"
                 }
             },
-            baseUrl + "/.well-known/uma-configuration", "header");
+            baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ASSERT
             Assert.NotNull(resource);
@@ -132,7 +137,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     "scope"
                 }
             },
-            baseUrl + "/.well-known/uma-configuration", "header");
+            baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ACT
             var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
@@ -144,8 +149,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 {
                     "scope2"
                 }
-            }, baseUrl + "/.well-known/uma-configuration", "header");
-            var information = await _resourceSetClient.GetByResolution(updateResult.Id, baseUrl + "/.well-known/uma-configuration", "header");
+            }, baseUrl + "/.well-known/uma2-configuration", "header");
+            var information = await _resourceSetClient.GetByResolution(updateResult.Id, baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ASSERT
             Assert.NotNull(information);
@@ -156,6 +161,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
         private void InitializeFakeObjects()
         {
+            var services = new ServiceCollection();
+            services.AddSimpleIdentityServerJwt();
+            var provider = services.BuildServiceProvider();
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
             _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
                 new DeleteResourceSetOperation(_httpClientFactoryStub.Object),

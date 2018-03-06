@@ -107,17 +107,17 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             if (grantedToken == null)
             {
                 grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload);
-                await _tokenStore.AddToken(grantedToken);
                 _simpleIdentityServerEventSource.GrantAccessToClient(
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,
                     grantedToken.IdToken);
-            }
+                // Fill-in the id-token
+                if (grantedToken.IdTokenPayLoad != null)
+                {
+                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
+                }
 
-            // Fill-in the id-token
-            if (grantedToken.IdTokenPayLoad != null)
-            {
-                grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
+                await _tokenStore.AddToken(grantedToken);
             }
 
             return grantedToken;

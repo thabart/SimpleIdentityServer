@@ -20,16 +20,15 @@ namespace SimpleIdentityServer.Uma.Host
     {
         public static class RouteValues
         {
-            public const string Configuration = ".well-known/uma2-configuration ";
-            public const string DiscoveryAction = ".well-known/openid-configuration";
+            public const string Configuration = ".well-known/uma2-configuration";
             public const string ResourceSet = "rs/resource_set";
-            public const string Scope = "scopes";
             public const string Permission = "/perm";
-            public const string Authorization = "/rpt";
             public const string Policies = "/policies";
-            public const string Introspection = "/status";
-            public const string CodeSample = "/codesamples";
+            public const string Introspection = "/introspect";
             public const string Token = "/token";
+            public const string Jwks = "/jwks";
+            public const string Registration = "/registration";
+            public const string DiscoveryAction = ".well-known/openid-configuration";
         }
 
         public static class ClaimNames

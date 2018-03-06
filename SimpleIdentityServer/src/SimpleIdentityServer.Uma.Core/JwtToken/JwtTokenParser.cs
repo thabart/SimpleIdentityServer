@@ -21,7 +21,6 @@ using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jwt = SimpleIdentityServer.Core.Jwt;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
@@ -73,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             }
 
             var jsonWebKey = jsonWebKeys.First(j => j.Kid == protectedHeader.Kid);
-            if (protectedHeader.Alg == Jwt.Constants.JwsAlgNames.NONE)
+            if (protectedHeader.Alg == SimpleIdentityServer.Core.Jwt.Constants.JwsAlgNames.NONE)
             {
                 return _jwsParser.GetPayload(jws);
             }

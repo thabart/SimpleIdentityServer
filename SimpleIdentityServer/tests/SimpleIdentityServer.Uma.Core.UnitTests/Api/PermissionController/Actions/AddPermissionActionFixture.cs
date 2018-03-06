@@ -23,6 +23,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Services;
+using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
     public class AddPermissionActionFixture
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
-        private Mock<ITicketRepository> _ticketRepositortStub;
+        private Mock<ITicketStore> _ticketStoreStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private Mock<IConfigurationService> _configurationServiceStub;
@@ -172,6 +173,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
                     }
                 }
             };
+            _ticketStoreStub.Setup(r => r.AddAsync(It.IsAny<Ticket>())).Returns(Task.FromResult(true));
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(It.IsAny<string>(), It.IsAny<Func<Task<IEnumerable<ResourceSet>>>>()))
                 .Returns(Task.FromResult(resources));
             _configurationServiceStub.Setup(c => c.GetTicketLifeTime()).Returns(Task.FromResult(2));
@@ -186,13 +188,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
         private void InitializeFakeObjects()
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
-            _ticketRepositortStub = new Mock<ITicketRepository>();
+            _ticketStoreStub = new Mock<ITicketStore>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
             _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _configurationServiceStub = new Mock<IConfigurationService>();
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
-                _ticketRepositortStub.Object,
+                _ticketStoreStub.Object,
                 _repositoryExceptionHelperStub.Object,
                 _configurationServiceStub.Object,
                 _umaServerEventSourceStub.Object);

@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 {
                     "read"
                 }
-            }, baseUrl + "/.well-known/uma-configuration", "header");
+            }, baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 {
                     "read"
                 }
-            }, baseUrl + "/.well-known/uma-configuration", "header");
+            }, baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ASSERT
             Assert.NotNull(ticket);
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 {
                     "read"
                 }
-            }, baseUrl + "/.well-known/uma-configuration", "header");
+            }, baseUrl + "/.well-known/uma2-configuration", "header");
             var permissions = new List<PostPermission>
             {
                 new PostPermission
@@ -108,11 +108,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             };
 
             // ACT
-            var tickets = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma-configuration", "header");
+            var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma2-configuration", "header");
 
             // ASSERT
-            Assert.NotNull(tickets);
-            Assert.True(tickets.TicketIds.Count() == 2);
+            Assert.NotNull(ticket);
         }
 
         private void InitializeFakeObjects()

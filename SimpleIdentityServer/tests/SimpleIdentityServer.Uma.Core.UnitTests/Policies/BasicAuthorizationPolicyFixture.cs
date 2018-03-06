@@ -38,14 +38,14 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
         [Fact]
-        public void When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
+        public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new Ticket(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _basicAuthorizationPolicy.Execute(new TicketLineParameter("client_id"), null, null));
         }
         
         [Fact]
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
                 Scopes = new List<string>
                 {
@@ -89,9 +89,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("invalid_client_id")
             {
-                ClientId = "invalid_client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -134,9 +133,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -175,19 +173,17 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameter = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "bad_format",
-                    Token = "token"
-                }
+                Format = "bad_format",
+                Token = "token"
             };
+
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
 
             // ASSERT
             Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
@@ -212,9 +208,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -253,24 +248,21 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameters = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
             _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
-                .Returns(Task.FromResult<JwsPayload>(null));
+                .Returns(Task.FromResult((JwsPayload)null));
 
             // ACT
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
@@ -279,9 +271,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -322,13 +313,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameter = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
@@ -341,10 +329,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
@@ -353,9 +341,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -396,13 +383,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameters = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
@@ -413,7 +397,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
@@ -422,9 +406,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -465,13 +448,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameters = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
@@ -484,7 +464,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
     
         [Fact]
@@ -493,9 +473,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -536,13 +515,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameter = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
@@ -552,10 +528,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(Task.FromResult(payload));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
 
         [Fact]
@@ -564,9 +540,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             // ARRANGE
             const string configurationUrl = "http://localhost/configuration";
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 Scopes = new List<string>
                 {
                     "read",
@@ -607,13 +582,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                     }
                 }
             };
-            var claimTokenParameters = new List<ClaimTokenParameter>
+            var claimTokenParameter = new ClaimTokenParameter
             {
-                new ClaimTokenParameter
-                {
-                    Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
-                    Token = "token"
-                }
+                Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
+                Token = "token"
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
@@ -626,10 +598,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 }));
 
             // ACT
-            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameters);
+            var result = await _basicAuthorizationPolicy.Execute(ticket, authorizationPolicy, claimTokenParameter);
 
             // ASSERT
-            Assert.True(result.Type == AuthorizationPolicyResultEnum.NotAuthorized);
+            Assert.True(result.Type == AuthorizationPolicyResultEnum.NeedInfo);
         }
         
         [Fact]
@@ -637,9 +609,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 IsAuthorizedByRo = false,
                 Scopes = new List<string>
                 {
@@ -682,9 +653,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
         {
             // ARRANGE
             InitializeFakeObjects();
-            var ticket = new Ticket
+            var ticket = new TicketLineParameter("client_id")
             {
-                ClientId = "client_id",
                 IsAuthorizedByRo = true,
                 Scopes = new List<string>
                 {
