@@ -22,6 +22,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Store.Redis\SimpleIdentityServer.Store.Redis.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.csproj" />

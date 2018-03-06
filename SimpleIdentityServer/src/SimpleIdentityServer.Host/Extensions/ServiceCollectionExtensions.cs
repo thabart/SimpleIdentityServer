@@ -33,6 +33,7 @@ using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Store.Redis;
 using System;
 
 namespace SimpleIdentityServer.Host
@@ -114,6 +115,20 @@ namespace SimpleIdentityServer.Host
                     break;
                 case DataSourceTypes.InMemory:
                     serviceCollection.AddEventStoreInMemory();
+                    break;
+            }
+
+            switch(options.Storage.Type)
+            {
+                case CachingTypes.Redis:
+                    serviceCollection.AddRedisStores((opts) =>
+                    {
+                        opts.Configuration = options.Storage.ConnectionString;
+                        opts.InstanceName = options.Storage.InstanceName;
+                    }, options.Storage.Port);
+                    break;
+                case CachingTypes.InMemory:
+                    serviceCollection.AddInMemoryStores();
                     break;
             }
             

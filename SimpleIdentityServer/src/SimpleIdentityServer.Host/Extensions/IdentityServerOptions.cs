@@ -66,6 +66,12 @@ namespace SimpleIdentityServer.Host
         InMemory
     }
 
+    public enum CachingTypes
+    {
+        InMemory,
+        Redis
+    }
+
     public sealed class DataSourceOptions
     {
         public DataSourceOptions()
@@ -107,6 +113,19 @@ namespace SimpleIdentityServer.Host
         public IEnumerable<Type> Handlers { get; set; }
     }
 
+    public class CachingOptions
+    {
+        public CachingOptions()
+        {
+            Type = CachingTypes.InMemory;
+        }
+
+        public CachingTypes Type;
+        public string ConnectionString { get; set; }
+        public string InstanceName { get; set; }
+        public int Port { get; set; }
+    }
+
     public class IdentityServerOptions
     {
         public IdentityServerOptions()
@@ -115,7 +134,13 @@ namespace SimpleIdentityServer.Host
             Scim = new ScimOptions();
             Logging = new LoggingOptions();
             DataSource = new DataSourceOptions();
+            Storage = new CachingOptions();
         }
+
+        /// <summary>
+        /// Get or sets the storage options.
+        /// </summary>
+        public CachingOptions Storage { get; set; }
         /// <summary>
         /// Enable or disable the developer mode
         /// </summary>

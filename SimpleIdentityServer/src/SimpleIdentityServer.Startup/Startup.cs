@@ -33,6 +33,12 @@ namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
+        private const string SQLSERVER_NAME = "SQLSERVER";
+        private const string SQLITE_NAME = "SQLITE";
+        private const string POSTGRE_NAME = "POSTGRE";
+        private const string REDIS_NAME = "REDIS";
+        private const string INMEMORY_NAME = "INMEMORY";
+
         private AuthenticationMiddlewareOptions _authenticationOptions;
         private IdentityServerOptions _options;
         public IConfigurationRoot Configuration { get; set; }
@@ -100,19 +106,20 @@ namespace SimpleIdentityServer.Startup
                 TwoFactorServiceStore = twoFactorServiceStore
             };
 
+            var storeType = Configuration["Store:Database"];
             var openIdType = Configuration["Db:OpenIdType"];
             var evtStoreType = Configuration["Db:EvtStoreType"];
-            if (string.Equals(openIdType, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(openIdType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlServer;
                 _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
             }
-            else if (string.Equals(openIdType, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(openIdType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlLite;
                 _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
             }
-            else if (string.Equals(openIdType, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(openIdType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.Postgre;
                 _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
@@ -122,17 +129,17 @@ namespace SimpleIdentityServer.Startup
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
             }
 
-            if (string.Equals(evtStoreType, "SQLSERVER", System.StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(evtStoreType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlServer;
                 _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
             }
-            else if (string.Equals(evtStoreType, "SQLITE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(evtStoreType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlLite;
                 _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
             }
-            else if (string.Equals(evtStoreType, "POSTGRE", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(evtStoreType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.Postgre;
                 _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
@@ -140,6 +147,25 @@ namespace SimpleIdentityServer.Startup
             else
             {
                 _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.InMemory;
+            }
+
+            if (string.Equals(storeType, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                _options.Storage.Type = CachingTypes.Redis;
+                _options.Storage.ConnectionString = Configuration["Store:ConnectionString"];
+                _options.Storage.InstanceName = Configuration["Store:InstanceName"];
+                var port = Configuration["Store:Port"];
+                int portNumber;
+                if (!int.TryParse(port, out portNumber))
+                {
+                    portNumber = 6379;
+                }
+
+                _options.Storage.Port = portNumber;
+            }
+            else
+            {
+                _options.Storage.Type = CachingTypes.InMemory;
             }
 
             bool isLogFileEnabled,
@@ -168,11 +194,11 @@ namespace SimpleIdentityServer.Startup
             var cachingDatabase = Configuration["Caching:Database"];
             if (string.IsNullOrWhiteSpace(cachingDatabase))
             {
-                cachingDatabase = "INMEMORY";
+                cachingDatabase = INMEMORY_NAME;
             }
 
             // 1. Configure the caching
-            if (string.Equals(cachingDatabase, "REDIS", System.StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(cachingDatabase, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddStorage(opt => opt.UseRedis(o =>
                 {
@@ -180,7 +206,7 @@ namespace SimpleIdentityServer.Startup
                     o.InstanceName = Configuration["Caching:InstanceName"];
                 }));
             }
-            else if (string.Equals(cachingDatabase, "INMEMORY", System.StringComparison.CurrentCultureIgnoreCase))
+            else if (string.Equals(cachingDatabase, INMEMORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 services.AddStorage(opt => opt.UseInMemory());
             }
@@ -253,7 +279,7 @@ namespace SimpleIdentityServer.Startup
                 CookieName = Constants.CookieName
             });
             // 5. Enable multi parties authentication.
-            app.UseAuthentication(_authenticationOptions);
+            // app.UseAuthentication(_authenticationOptions);
             // 6. Enable SimpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);
             // 7. Configure ASP.NET MVC

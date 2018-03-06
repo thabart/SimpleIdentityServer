@@ -52,13 +52,13 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             // 2. Enable OAUTH authentication.
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
-                InstrospectionEndPoint = configuration.OpenIdIntrospection,
-                ClientId = configuration.ClientId,
-                ClientSecret = configuration.ClientSecret
+                InstrospectionEndPoint = configuration.AuthorizationServer.IntrospectionEndpoints,
+                ClientId = configuration.AuthorizationServer.ClientId,
+                ClientSecret = configuration.AuthorizationServer.ClientSecret
             };
             app.UseAuthenticationWithIntrospection(introspectionOptions);
             // 3. Insert seed data
-            if (configuration.IsDataMigrated)
+            if (configuration.DataSource.IsUmaMigrated)
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
@@ -69,7 +69,10 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     }
                     catch (Exception) { }
                 }
+            }
 
+            if (configuration.DataSource.IsOauthMigrated)
+            {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();

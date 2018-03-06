@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System;
+
 namespace SimpleIdentityServer.Uma.Host.Configurations
 {
     public enum CachingTypes
@@ -29,32 +31,122 @@ namespace SimpleIdentityServer.Uma.Host.Configurations
         INMEMORY
     }
 
-    public class UmaHostConfiguration
+    public sealed class DataSourceOptions
     {
-        public CachingTypes CachingType { get; set; }
-        public string CachingConnectionString { get; set; }
-        public string CachingInstanceName { get; set; }
+        public DataSourceOptions()
+        {
+            IsUmaMigrated = true;
+            IsOauthMigrated = true;
+            UmaDbType = DbTypes.INMEMORY;
+            OauthDbType = DbTypes.INMEMORY;
+            EvtStoreDataSourceType = DbTypes.INMEMORY;
+        }
 
-        public DbTypes DbType { get; set; }
-        public string DbConnectionString { get; set; }
-
+        public bool IsUmaMigrated { get; set; }
+        public bool IsOauthMigrated { get; set; }
+        public DbTypes UmaDbType { get; set; }
         public DbTypes OauthDbType { get; set; }
-        public string OautConnectionString { get; set; }
-
         public DbTypes EvtStoreDataSourceType { get; set; }
+        public string UmaConnectionString { get; set; }
+        public string OauthConnectionString { get; set; }
         public string EvtStoreConnectionString { get; set; }
+    }
 
-        public string OpenIdWellKnownConfiguration { get; set; }
-        public string OpenIdIntrospection { get; set; }
+    public sealed class FileLogsOptions
+    {
+        public FileLogsOptions()
+        {
+            IsEnabled = false;
+            PathFormat = "log-{Date}.txt";
+        }
+
+        public bool IsEnabled { get; set; }
+        public string PathFormat { get; set; }
+    }
+
+    public sealed class ElasticsearchOptions
+    {
+        public ElasticsearchOptions()
+        {
+            IsEnabled = false;
+            Url = "http://localhost:9200";
+        }
+
+        public bool IsEnabled { get; set; }
+        public string Url { get; set; }
+    }
+
+    public sealed class OauthOptions
+    {
+        public string IntrospectionEndpoints { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+    }        
 
-        public bool IsLogFileEnabled { get; set; }
-        public string LogFilePathFormat { get; set; }
+    public sealed class CachingOptions
+    {
+        public CachingOptions()
+        {
+            Type = CachingTypes.INMEMORY;
+        }
 
-        public bool IsElasticSearchEnabled { get; set; }
-        public string ElasticSearchUrl { get; set; }
+        public CachingTypes Type { get; set; }
+        public string ConnectionString { get; set; }
+        public string InstanceName { get; set; }
+        public int Port { get; set; }
+    }
 
-        public bool IsDataMigrated { get; set; }
+    public class UmaHostConfiguration
+    {
+        public UmaHostConfiguration()
+        {
+            AuthorizationServer = new OauthOptions();
+            DataSource = new DataSourceOptions();
+            ResourceCaching = new CachingOptions();
+            FileLog = new FileLogsOptions();
+            Elasticsearch = new ElasticsearchOptions();
+            Storage = new CachingOptions();
+        }
+
+        /// <summary>
+        /// Get or set the authorization server options.
+        /// </summary>
+        public OauthOptions AuthorizationServer { get; set; }
+        /// <summary>
+        /// Get or set the datasource.
+        /// </summary>
+        public DataSourceOptions DataSource { get; set; }
+        /// <summary>
+        /// Get or set the caching options.
+        /// </summary>
+        public CachingOptions ResourceCaching { get; set; }
+        /// <summary>
+        /// Get or set the storage options (access token + authorization code ...).
+        /// </summary>
+        public CachingOptions Storage { get; set; }
+        /// <summary>
+        /// Get or set the file log options.
+        /// </summary>
+        public FileLogsOptions FileLog { get; set; }
+        /// <summary>
+        /// Get or set the elastic search options.
+        /// </summary>
+        public ElasticsearchOptions Elasticsearch { get; set; }
+        /// <summary>
+        /// Get or set the OPENID well known configuration.
+        /// </summary>
+        public string OpenIdWellKnownConfiguration { get; set; }
+        /// <summary>
+        /// Service used to authenticate the resource owner.
+        /// </summary>
+        public Type AuthenticateResourceOwner { get; set; }
+        /// <summary>
+        /// Service used to retrieve configurations (expiration date time etc ...)
+        /// </summary>
+        public Type ConfigurationService { get; set; }
+        /// <summary>
+        /// Service used to encrypt the password
+        /// </summary>
+        public Type PasswordService { get; set; }
     }
 }

@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 
@@ -40,24 +39,46 @@ namespace SimpleIdentityServer.Uma.Startup
             Configuration = builder.Build();
             _umaHostConfiguration = new UmaHostConfiguration // TH : The settings must come from the appsettings.json.
             {
-                CachingConnectionString = "localhost",
-                CachingInstanceName = "UmaInstance",
-                CachingType = CachingTypes.REDIS,
-                ClientId = "Uma",
-                ClientSecret = "Uma",
-                DbConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                DbType = DbTypes.SQLSERVER,
-                ElasticSearchUrl = "http://localhost:9200",
-                IsElasticSearchEnabled = true,
-                LogFilePathFormat = "log-{Date}.txt",
-                IsLogFileEnabled = true,
-                OpenIdIntrospection = "https://localhost:5443/introspect",
-                OpenIdWellKnownConfiguration = "https://localhost:5443/.well-known/openid-configuration",
-                IsDataMigrated = true,
-                EvtStoreDataSourceType = DbTypes.SQLSERVER,
-                EvtStoreConnectionString = "Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                OauthDbType = DbTypes.SQLSERVER,
-                OautConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                AuthorizationServer = new OauthOptions
+                {
+                    ClientId = "uma",
+                    ClientSecret = "uma",
+                    IntrospectionEndpoints = ""
+                },
+                DataSource = new DataSourceOptions
+                {
+                    IsOauthMigrated = true,
+                    IsUmaMigrated = true,
+                    EvtStoreDataSourceType = DbTypes.SQLSERVER,
+                    OauthDbType = DbTypes.SQLSERVER,
+                    UmaDbType = DbTypes.SQLSERVER,
+                    UmaConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                    EvtStoreConnectionString = "Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                    OauthConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+                },
+                Elasticsearch = new ElasticsearchOptions
+                {
+                    IsEnabled = false
+                },
+                FileLog = new FileLogsOptions
+                {
+                    IsEnabled = true,
+                    PathFormat = "log-{Date}.txt"
+                },
+                Storage = new CachingOptions
+                {
+                    Type = CachingTypes.REDIS,
+                    ConnectionString = "localhost",
+                    InstanceName = "UmaInstance",
+                    Port = 6379
+                },
+                ResourceCaching = new CachingOptions
+                {
+                    Type = CachingTypes.REDIS,
+                    ConnectionString = "localhost",
+                    InstanceName = "UmaInstance",
+                    Port = 6379
+                }
             };
         }
 

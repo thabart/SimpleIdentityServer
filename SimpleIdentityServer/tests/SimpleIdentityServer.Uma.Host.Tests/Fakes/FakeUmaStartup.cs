@@ -53,13 +53,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         {
             _configuration = new UmaHostConfiguration
             {
-                CachingType = CachingTypes.INMEMORY,
-                DbType = DbTypes.INMEMORY,
-                EvtStoreDataSourceType = DbTypes.INMEMORY,
-                OauthDbType = DbTypes.INMEMORY,
-                ClientId = "",
-                ClientSecret = "",
-                IsDataMigrated = true,
                 OpenIdWellKnownConfiguration = "http://localhost:5000/.well-known/uma2-configuration"
             };
             _context = context;

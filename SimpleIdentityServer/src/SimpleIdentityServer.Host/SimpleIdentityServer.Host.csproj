@@ -35,6 +35,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Store.Redis\SimpleIdentityServer.Store.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +65,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="1.0.0" />
     <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis.Core" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
