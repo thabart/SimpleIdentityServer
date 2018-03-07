@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Uma.Host Class Library</Description>
+    <Description>SimpleIdentityServer.Scim.Host Class Library</Description>
     <Authors>thabart</Authors>
     <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Uma.Host</AssemblyName>
-    <PackageId>SimpleIdentityServer.Uma.Host</PackageId>
+    <AssemblyName>SimpleIdentityServer.Scim.Host</AssemblyName>
+    <PackageId>SimpleIdentityServer.Scim.Host</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>

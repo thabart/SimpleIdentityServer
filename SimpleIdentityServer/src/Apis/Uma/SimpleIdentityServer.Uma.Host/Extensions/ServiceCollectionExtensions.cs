@@ -34,6 +34,7 @@ using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
+using SimpleIdentityServer.Uma.Store.Redis;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
@@ -143,7 +144,11 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                         opts.Configuration = configuration.Storage.ConnectionString;
                         opts.InstanceName = configuration.Storage.InstanceName;
                     }, configuration.Storage.Port);
-                    // TODO : implement the REDIS CACHE FOR UMA.
+                    services.AddUmaRedisStore((opts) =>
+                    {
+                        opts.Configuration = configuration.Storage.ConnectionString;
+                        opts.InstanceName = configuration.Storage.InstanceName;
+                    }, configuration.Storage.Port);
                     break;
                 case CachingTypes.INMEMORY:
                     services.AddInMemoryStores();

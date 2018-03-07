@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="SimpleIdentityServer.pfx;Views\**;wwwroot\css\**;wwwroot\lib\**;wwwroot\img\**;wwwroot\fonts\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <EmbeddedResource Include="Views\**;wwwroot\css\**;wwwroot\lib\**;wwwroot\img\**;wwwroot\fonts\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>

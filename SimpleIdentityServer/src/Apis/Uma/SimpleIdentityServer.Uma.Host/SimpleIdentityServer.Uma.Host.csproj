@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Uma.EF\SimpleIdentityServer.Uma.EF.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Store.Redis\SimpleIdentityServer.Uma.Store.Redis.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />

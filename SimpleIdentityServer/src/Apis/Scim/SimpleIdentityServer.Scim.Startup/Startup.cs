@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Scim.Db.EF;
+using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Host.Configurations;
 using SimpleIdentityServer.Scim.Host.Extensions;
 
@@ -60,6 +62,11 @@ namespace SimpleIdentityServer.Scim.Startup
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseScimHost(loggerFactory, _configuration);
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
+                scimDbContext.EnsureSeedData();
+            }
         }
     }
 }

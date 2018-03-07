@@ -274,7 +274,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
              SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.GivenName, "The given name of the User, or first name in most Western languages (e.g., 'Barbara' given the full name 'Ms. Barbara J Jensen, III')."),
              SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.MiddleName, "The middle name(s) of the User (e.g., 'Jane' given the full name 'Ms. Barbara J Jensen, III')."),
              SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.HonorificPrefix, "The honorific prefix(es) of the User, or title in most Western languages (e.g., 'Ms.' given the full name 'Ms. Barbara J Jensen, III')."),
-             SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.HonorificPrefix, "The honorific suffix(es) of the User, or suffix in most Western languages (e.g., 'III' given the full name 'Ms. Barbara J Jensen, III').")
+             SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.HonorificSuffix, "The honorific suffix(es) of the User, or suffix in most Western languages (e.g., 'III' given the full name 'Ms. Barbara J Jensen, III').")
         };
 
         private static List<SchemaAttribute> UserAddressAttributes = new List<SchemaAttribute>

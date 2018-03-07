@@ -87,6 +87,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
                 Id = Guid.NewGuid().ToString(),
                 ClientId = clientId,
                 CreateDateTime = DateTime.UtcNow,
+                ExpiresIn = ticketLifetimeInSeconds,
                 ExpirationDateTime = DateTime.UtcNow.AddSeconds(ticketLifetimeInSeconds)
             };
             var ticketLines = new List<TicketLine>();

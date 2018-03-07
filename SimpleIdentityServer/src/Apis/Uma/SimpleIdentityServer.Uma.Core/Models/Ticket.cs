@@ -26,6 +26,7 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public bool IsAuthorizedByRo { get; set; }
         public DateTime ExpirationDateTime { get; set; }
         public DateTime CreateDateTime { get; set; }
+        public int ExpiresIn { get; set; }
         public IEnumerable<TicketLine> Lines { get; set; }
     }
 }

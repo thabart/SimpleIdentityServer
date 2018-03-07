@@ -1,10 +1,12 @@
-dotnet test tests\SimpleIdentityServer.Configuration.Core.Tests
+REM SIMPLEIDSERVER
 dotnet test tests\SimpleIdentityServer.Core.Jwt.UnitTests
 dotnet test tests\SimpleIdentityServer.Core.UnitTests
-dotnet test tests\SimpleIdentityServer.Manager.Core.Tests
-dotnet test tests\SimpleIdentityServer.Oauth2Instrospection.Authentication.Tests
+dotnet test tests\SimpleIdentityServer.Host.Tests
+
+REM UMA
 dotnet test tests\SimpleIdentityServer.Uma.Core.UnitTests
-dotnet test tests\SimpleIdentityServer.UmaIntrospection.Authentication.Tests
-dotnet test tests\SimpleIdentityServer.UmaManager.Client.Unit.Tests
-dotnet test tests\SimpleIdentityServer.UserInformation.Authentication.Tests
+dotnet test tests\SimpleIdentityServer.Uma.Host.Tests
+
+REM SCIM
 dotnet test tests\SimpleIdentityServer.Scim.Core.Tests
+dotnet test tests\SimpleIdentityServer.Scim.Client.Tests
