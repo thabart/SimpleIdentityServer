@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.Host.Tests
             _server = server;
         }
 
+		/*
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
@@ -58,6 +59,7 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotNull(introspection.Scope);
             Assert.True(introspection.Scope.Count() == 1 && introspection.Scope.First() == "scim");
         }
+		*/
 
         [Fact]
         public async Task When_Introspecting_IdToken_Then_Information_Are_Returned()

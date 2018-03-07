@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public TestScimServerFixture()
         {
-            Server = new TestServer(new WebHostBuilder().UseUrls("http://localhost:5555").UseStartup<Startup.Startup>());
+            Server = new TestServer(new WebHostBuilder().UseUrls("http://localhost:5555").UseStartup<FakeStartup>());
             Client = Server.CreateClient();
         }
 

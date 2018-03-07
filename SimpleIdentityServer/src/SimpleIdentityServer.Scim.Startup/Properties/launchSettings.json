@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleIdentityServer.Scim.Startup": {
-      "commandName": "Project",
-      "commandLineArgs": "http://*:5555"
-    }
-  }
-}

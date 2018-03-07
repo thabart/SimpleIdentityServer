@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Uma\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
   </ItemGroup>
   
   <ItemGroup>

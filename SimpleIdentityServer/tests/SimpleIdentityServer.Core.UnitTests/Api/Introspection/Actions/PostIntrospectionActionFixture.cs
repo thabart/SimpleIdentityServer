@@ -58,7 +58,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new IntrospectionParameter();
+            var parameter = new IntrospectionParameter
+            {
+                Token = "token"
+            };
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 

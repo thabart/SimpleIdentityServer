@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SimpleIdentityServer.Uma.ProtectedResource": {
+      "commandName": "Project",
+      "commandLineArgs": "http://localhost:5000",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

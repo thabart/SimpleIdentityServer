@@ -16,7 +16,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Extensions
             InsertTranslations(context);
             InsertJsonWebKeys(context, sharedContext);
             InsertClients(context);
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch { }
         }
 
         private static void InsertScopes(SimpleIdentityServerContext context)

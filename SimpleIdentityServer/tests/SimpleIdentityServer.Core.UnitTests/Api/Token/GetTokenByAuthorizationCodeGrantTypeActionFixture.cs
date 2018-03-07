@@ -361,10 +361,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
+            var r = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
 
             // ASSERTS
-            _clientHelper.Verify(j => j.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
+            Assert.NotNull(r);
         }
 
         [Fact]

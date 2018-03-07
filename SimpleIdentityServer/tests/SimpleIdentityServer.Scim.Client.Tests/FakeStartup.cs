@@ -16,10 +16,13 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
+using SimpleIdentityServer.Scim.Host.Controllers;
+using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -32,7 +35,19 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             services.AddInMemoryDb();
             services.AddConcurrency(opt => opt.UseInMemory());
             services.AddScim();
-            services.AddMvc();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {
+                    return true;
+                }));
+                options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => {
+                    return true;
+                }));
+            });
+            var mvc = services.AddMvc();
+            var parts = mvc.PartManager.ApplicationParts;
+            parts.Clear();
+            parts.Add(new AssemblyPart(typeof(ResourceTypesController).GetTypeInfo().Assembly));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

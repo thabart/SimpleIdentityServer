@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "SimpleIdentityServer.Uma.Startup": {
+      "commandName": "Project",
+      "commandLineArgs": "https://localhost:5445",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:54643/"
+    }
+  }
+}
