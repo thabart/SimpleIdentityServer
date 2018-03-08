@@ -42,13 +42,9 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(scheme);
             }
 
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(scheme);
-            if (user == null)
-            {
-                user = controller.User;
-            }
-
-            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
+            var authenticationManager = controller.GetAuthenticationManager();
+            var authenticatedUser = (await authenticationManager.GetAuthenticateInfoAsync(scheme)).Principal;
+            return authenticatedUser ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
         public static async Task<ClaimsPrincipal> GetAuthenticatedUser2F(this Controller controller)
@@ -58,8 +54,9 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            var user  = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
-            return user ?? new ClaimsPrincipal(new ClaimsIdentity());
+            var authenticationManager = controller.GetAuthenticationManager();
+            var authenticatedUser = (await authenticationManager.GetAuthenticateInfoAsync(Constants.TwoFactorCookieName)).Principal;
+            return authenticatedUser ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
         public static AuthenticationManager GetAuthenticationManager(this Controller controller) 
