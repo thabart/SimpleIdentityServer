@@ -15,7 +15,13 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-  </PropertyGroup>  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <None Remove="Extensions\**" />
+  </ItemGroup>  
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />

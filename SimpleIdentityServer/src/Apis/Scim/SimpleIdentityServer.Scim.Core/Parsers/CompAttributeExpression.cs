@@ -52,6 +52,26 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public ComparisonOperators Operator { get; set; }
         public string Value { get; set; }
 
+        public IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<Representation> representations)
+        {
+            if (representations == null)
+            {
+                throw new ArgumentNullException(nameof(representations));
+            }
+
+            var resourceAttrParameterExpr = System.Linq.Expressions.Expression.Parameter(typeof(RepresentationAttribute), "a");
+            var propertyName = System.Linq.Expressions.Expression.Property(resourceAttrParameterExpr, "Name");
+            var propertyValue = System.Linq.Expressions.Expression.Property(resourceAttrParameterExpr, "Value");
+            var equalName = System.Linq.Expressions.Expression.Equal(propertyName, System.Linq.Expressions.Expression.Constant(Path));
+            switch (Operator)
+            {
+                case ComparisonOperators.eq:
+
+                    break;
+            }
+            return null;
+        }
+
         protected override IEnumerable<RepresentationAttribute> EvaluateRepresentation(IEnumerable<RepresentationAttribute> representationAttrs)
         {
             var result = new List<RepresentationAttribute>();

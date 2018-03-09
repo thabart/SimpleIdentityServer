@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Core.Models
 {
     public class RepresentationAttribute : ICloneable, IComparable
     {
+        public RepresentationAttribute() { }
         public RepresentationAttribute(SchemaAttributeResponse schemaAttribute)
         {
             SchemaAttribute = schemaAttribute;
@@ -32,6 +33,9 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public SchemaAttributeResponse SchemaAttribute { get; private set; }
 
         public RepresentationAttribute Parent { get; set; }
+
+        public string Name { get; set; }
+        public string Value { get; set; }
 
         public string FullPath
         {
