@@ -11,12 +11,161 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
     public class TranslatorFixture
     {
         [Fact]
-        public void WhenExecuteSelectName()
+        public void When_Select_FirstName()
         {
-            var firstPerson = new Representation();
-            var secondPerson = new Representation();
-            var firstAttrs = new List<RepresentationAttribute>();
-            firstAttrs.Add(new RepresentationAttribute
+            var representationAttributes = new List<RepresentationAttribute>
+            {
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "firstName"
+                        },
+                        Value = "jsmith"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "lastName"
+                        },
+                        Value = "smooth"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "name"
+                        },
+                        Id = "id"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "firstName"
+                        },
+                        Value = "jhon",
+                        RepresentationAttributeIdParent = "id"
+                    }
+            };
+            var res = representationAttributes.Where(r => r.SchemaAttribute.Name == "name") // Select all the names + firstName
+                .Join(representationAttributes,
+                    post => post.Id,
+                    z => z.RepresentationAttributeIdParent,
+                    (a, b) => new { a = a, b = b })
+                    .Where(b => b.b.SchemaAttribute.Name == "firstName")
+                    .Select(b => b.b.Value).ToList();
+            var queryableAttrs = representationAttributes.AsQueryable();
+            var p = new Core.Parsers.FilterParser();
+            var parsed = p.Parse("name.firstName");
+
+            var evalutedExpr = parsed.Evaluate(queryableAttrs);
+
+            var finalSelectArg = Expression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
+            var finalSelectRequestBody = Expression.Lambda(evalutedExpr, new ParameterExpression[] { finalSelectArg });
+            var o = (IQueryable<object>)finalSelectRequestBody.Compile().DynamicInvoke(queryableAttrs);
+
+            Assert.NotNull(o);
+            Assert.True(o.First().ToString() == "jhon");
+        }
+
+        [Fact]
+        public void When_Select_FirstName_Equals_To_John()
+        {
+            var representationAttributes = new List<RepresentationAttribute>
+            {
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "firstName"
+                        },
+                        Value = "jsmith"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "lastName"
+                        },
+                        Value = "smooth"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "name"
+                        },
+                        Id = "id"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "name"
+                        },
+                        Id = "id_correct",
+                        Children = new List<RepresentationAttribute>
+                        {
+                            new RepresentationAttribute
+                            {
+                                SchemaAttribute = new SchemaAttribute
+                                {
+                                    Name = "firstName"
+                                },
+                                Value = "john",
+                                RepresentationAttributeIdParent = "id_correct"
+                            }
+                        }
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "firstName"
+                        },
+                        Value = "jhon",
+                        RepresentationAttributeIdParent = "id"
+                    },
+                    new RepresentationAttribute
+                    {
+                        SchemaAttribute = new SchemaAttribute
+                        {
+                            Name = "firstName"
+                        },
+                        Value = "john",
+                        RepresentationAttributeIdParent = "id_correct"
+                    }
+            };
+            var res = representationAttributes.Where(r => r.SchemaAttribute.Name == "name") // Select all the names + firstName
+                // .Where(a => a.Children.Any(c => c.SchemaAttribute.Name == "" && c.Value == ""))
+                .Join(representationAttributes,
+                    post => post.Id,
+                    z => z.RepresentationAttributeIdParent,
+                    (a, b) => new { a = a, b = b })
+                    .Where(b => b.b.SchemaAttribute.Name == "firstName")
+                    .Where(b => b.b.Value == "john")
+                    .Select(b => b.b.Value).ToList();
+            var queryableAttrs = representationAttributes.AsQueryable();
+            var p = new Core.Parsers.FilterParser();
+            var parsed = p.Parse("name[firstName eq john]");
+
+            var evalutedExpr = parsed.Evaluate(queryableAttrs);
+
+            var finalSelectArg = Expression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
+            var finalSelectRequestBody = Expression.Lambda(evalutedExpr, new ParameterExpression[] { finalSelectArg });
+            var o = (IQueryable<object>)finalSelectRequestBody.Compile().DynamicInvoke(queryableAttrs);
+
+            Assert.NotNull(o);
+            Assert.True(o.First().ToString() == "john");
+        }
+
+        [Fact]
+        public void When_Execute_Where_Instruction_On_UserName()
+        {
+            var attrs = new List<RepresentationAttribute>();
+            attrs.Add(new RepresentationAttribute
             {
                 SchemaAttribute = new SchemaAttribute
                 {
@@ -24,10 +173,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
                 },
                 Value = "bjensen"
             });
-            firstPerson.Attributes = firstAttrs;
-
-            var secondAttrs = new List<RepresentationAttribute>();
-            secondAttrs.Add(new RepresentationAttribute
+            attrs.Add(new RepresentationAttribute
             {
                 SchemaAttribute = new SchemaAttribute
                 {
@@ -35,57 +181,18 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
                 },
                 Value = "jsmith"
             });
-            secondPerson.Attributes = secondAttrs;
+            var queryableAttrs = attrs.AsQueryable();
 
-            // TODO : GENERATE THE TREE VIEW BASED ON THE INSTRUCTION.
+            var p = new Core.Parsers.FilterParser();
+            var parsed = p.Parse("userName eq jsmith");
+            var evalutedExpr = parsed.Evaluate(queryableAttrs);
 
-            /*
-            Expression.Property(Expression.Constant())
-            var equality = Expression.Equals();
-            */
-            var resources = new List<Representation> { firstPerson, secondPerson };
-            var p = new SimpleIdentityServer.Scim.Core.Parsers.FilterParser();
-            var parsed = p.Parse("userName eq \"john\"");
-            parsed.Evaluate(resources);
+            var finalSelectArg = Expression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
+            var finalSelectRequestBody = Expression.Lambda(evalutedExpr, new ParameterExpression[] { finalSelectArg });
+            var o = (IQueryable<object>)finalSelectRequestBody.Compile().DynamicInvoke(queryableAttrs);
 
-            var rr = resources.Where(r => r.Attributes.Any(a => a.SchemaAttribute.Name == "userName" && a.Value == "jsmith"));
-
-            var resourceParameter = Expression.Parameter(typeof(SimpleIdentityServer.Scim.Core.Models.Representation), "r");
-            var resourceAttributes = Expression.PropertyOrField(resourceParameter, "Attributes");
-
-            var resourceAttrParameterExpr = Expression.Parameter(typeof(SimpleIdentityServer.Scim.Core.Models.RepresentationAttribute), "a");
-            var propertyName = Expression.Property(resourceAttrParameterExpr, "Name");
-            var propertyValue = Expression.Property(resourceAttrParameterExpr, "Value");
-
-            var equalName = Expression.Equal(propertyName, Expression.Constant("userName"));
-            var equalValue = Expression.Equal(propertyValue, Expression.Constant("jsmith"));
-            var andExpression = Expression.And(equalName, equalValue);
-
-            var predicate = Expression.Lambda<Func<SimpleIdentityServer.Scim.Core.Models.RepresentationAttribute, bool>>(andExpression, resourceAttrParameterExpr);
-            var anyR = Expression.Call(typeof(Enumerable), "Any", new[] { typeof(SimpleIdentityServer.Scim.Core.Models.RepresentationAttribute) }, resourceAttributes, predicate);
-            var call = Expression.Lambda<Func< SimpleIdentityServer.Scim.Core.Models.Representation, bool>>(anyR, resourceParameter);
-
-            var enumarableType = typeof(Queryable);
-            var genericMethod = enumarableType.GetMethods()
-                 .Where(m => m.Name == "Where" && m.IsGenericMethodDefinition)
-                 .Where(m => m.GetParameters().Count() == 2).First().MakeGenericMethod(typeof(SimpleIdentityServer.Scim.Core.Models.Representation));
-            var where = Expression.Call(genericMethod, Expression.Constant(resources), call);
-
-            var finalSelectArg = Expression.Parameter(typeof(IQueryable<SimpleIdentityServer.Scim.Core.Models.Representation>), "f");
-            var finalSelectRequestBody = Expression.Lambda(where, new ParameterExpression[] { finalSelectArg });
-            var o = (IQueryable<object>)finalSelectRequestBody.Compile().DynamicInvoke(rr);
-            // Expression.Lambda();
-            string s = "";
-        }
-
-        public static IQueryable<object> Filter<TSource>(IQueryable<TSource> source, string filter)
-        {
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-
-            return null;
+            Assert.NotNull(o);
+            Assert.True(o.Count() == 1);
         }
     }
 }
