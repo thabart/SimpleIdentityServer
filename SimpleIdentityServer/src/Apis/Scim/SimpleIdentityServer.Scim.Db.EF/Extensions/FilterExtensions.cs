@@ -10,10 +10,11 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 {
     public static class FilterExtensions
     {
+        private static int _scI = 0;
         private static string _whereMethodName = "Where";
         private static string _anyMethodName = "Any";
 
-        public static LinqExpression Evaluate(this Filter filter, IEnumerable<RepresentationAttribute> representationAttributes)
+        public static System.Linq.Expressions.LambdaExpression Evaluate(this Filter filter, IEnumerable<RepresentationAttribute> representationAttributes)
         {
             if (filter == null)
             {
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             return filter.Expression.Evaluate(representationAttributes);
         }
 
-        public static LinqExpression Evaluate(this Expression expression, IEnumerable<RepresentationAttribute> representationAttributes)
+        public static System.Linq.Expressions.LambdaExpression Evaluate(this Expression expression, IEnumerable<RepresentationAttribute> representationAttributes)
         {
             if (expression == null)
             {
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             return null;
         }
 
-        public static LinqExpression Evaluate(this AttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
+        public static System.Linq.Expressions.LambdaExpression Evaluate(this AttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
         {
             if (expression == null)
             {
@@ -73,10 +74,18 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             }
 
             var path = expression.Path;
-            return path.Evaluate(LinqExpression.Constant(representationAttributes));
+
+            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
+            var result = path.Evaluate(resourceAttrParameterExpr);
+            var whereLambda = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(result, resourceAttrParameterExpr);
+            var whereMethod = GetWhereMethod<RepresentationAttribute>();
+            var whereExpr = LinqExpression.Call(whereMethod, LinqExpression.Constant(representationAttributes), whereLambda);
+            var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
+            var finalSelectRequestBody = LinqExpression.Lambda(whereExpr, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
+            return finalSelectRequestBody;
         }
 
-        public static LinqExpression Evaluate(this CompAttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
+        public static System.Linq.Expressions.LambdaExpression Evaluate(this CompAttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
         {
             if (expression == null)
             {
@@ -88,107 +97,120 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                 throw new ArgumentNullException(nameof(expression.Path));
             }
 
-            return expression.Evaluate(LinqExpression.Constant(representationAttributes));
+            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
+            var expr = expression.Evaluate(resourceAttrParameterExpr);
+            var whereLambda = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(expr, resourceAttrParameterExpr);
+            var whereMethod = GetWhereMethod<RepresentationAttribute>();
+            var callWhereMethod = LinqExpression.Call(whereMethod, LinqExpression.Constant(representationAttributes), whereLambda);
+            var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
+            var finalSelectRequestBody = LinqExpression.Lambda(callWhereMethod, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
+            return finalSelectRequestBody;
         }
 
-        public static LinqExpression Evaluate(this AttributePath attributePath, LinqExpression outerExpression, bool isPath = false)
+        public static LinqExpression Evaluate(this AttributePath attributePath, System.Linq.Expressions.ParameterExpression resourceAttrParameterExpr)
         {
             if (attributePath == null)
             {
                 throw new ArgumentNullException(nameof(attributePath));
             }
             
-            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "a");
-            var schemaAttributeParameter = LinqExpression.Property(resourceAttrParameterExpr, "SchemaAttribute");
-            var propertyName = LinqExpression.Property(schemaAttributeParameter, "Name");
-            var equalName = LinqExpression.Equal(propertyName, LinqExpression.Constant(attributePath.Name)); // name = <path>
-            var call = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(equalName, resourceAttrParameterExpr); // a => a.name = <path>
-            var whereMethod = GetWhereMethod<RepresentationAttribute>();
-            var result = LinqExpression.Call(whereMethod, outerExpression, call); // where(a => a.name = <path>)
-            var enumerableType = typeof(Queryable);
-            var enumerableMethods = enumerableType.GetMethods();
-            if (attributePath.ValueFilter != null) // where(a => a.name = <path>).where(a => a.Children.any(<instruction>))
+            var result = GetPathExpression(attributePath, resourceAttrParameterExpr);
+
+            if (attributePath.ValueFilter != null)
             {
-                var valueFilterExpr = EvaluateValueFilter((CompAttributeExpression)attributePath.ValueFilter.Expression);
-                result = LinqExpression.Call(whereMethod, result, valueFilterExpr);
+                var compExpr = (CompAttributeExpression)attributePath.ValueFilter.Expression;
+                var act = new Func<System.Linq.Expressions.ParameterExpression, LinqExpression>((p) =>
+                {
+                    return GetComparisonExpression(compExpr, p);
+                });
+                var anyExpr = EvaluateChildren(compExpr.Path, resourceAttrParameterExpr, act);
+                result = LinqExpression.AndAlso(result, anyExpr);
             }
 
             if (attributePath.Next != null)
             {
-                var next = attributePath.Next;
-                var outerArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "x");
-                var innerArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "y");
-                var outerProperty = LinqExpression.Property(outerArg, "Id");
-                var innerProperty = LinqExpression.Property(innerArg, "RepresentationAttributeIdParent");
-                var outerLambda = LinqExpression.Lambda(outerProperty, new System.Linq.Expressions.ParameterExpression[] { outerArg });
-                var innerLambda = LinqExpression.Lambda(innerProperty, new System.Linq.Expressions.ParameterExpression[] { innerArg });
-                var resultSelector = LinqExpression.Lambda(innerArg, new System.Linq.Expressions.ParameterExpression[] { outerArg, innerArg });
-                var joinMethod = enumerableMethods.Where(m => m.Name == "Join" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count == 5).First();
-                var joinGenericMethod = joinMethod.MakeGenericMethod(typeof(RepresentationAttribute), typeof(RepresentationAttribute), typeof(string), typeof(RepresentationAttribute));
-                result = LinqExpression.Call(joinGenericMethod, result, outerExpression, outerLambda, innerLambda, resultSelector); // add join.
-                return Evaluate(next, result, true);
-            }
-            else if (isPath)
-            {
-                var selectArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "r");
-                var selectProperty = LinqExpression.Property(selectArg, "Value");
-                var selectLambda = LinqExpression.Lambda(selectProperty, new System.Linq.Expressions.ParameterExpression[] { selectArg });
-                var selectMethod = enumerableMethods.Where(m => m.Name == "Select" && m.IsGenericMethodDefinition).Where(m => m.GetParameters().ToList().Count() == 2).First();
-                var selectGenericMethod = selectMethod.MakeGenericMethod(typeof(RepresentationAttribute), typeof(string));
-                return LinqExpression.Call(selectGenericMethod, result, selectLambda);
+                var anyExpr = EvaluateChildren(attributePath, resourceAttrParameterExpr, null);
+                result = LinqExpression.AndAlso(result, anyExpr);
             }
 
             return result;
         }
-
-        /// <summary>
-        /// Evaluates the filter and returns where expression.
-        /// </summary>
-        /// <param name="compAttributeExpression"></param>
-        /// <param name="representationAttributes"></param>
-        /// <returns></returns>
-        public static LinqExpression Evaluate(this CompAttributeExpression compAttributeExpression, LinqExpression outerExpress)
+        
+        public static LinqExpression Evaluate(this CompAttributeExpression compAttributeExpression,  System.Linq.Expressions.ParameterExpression arg)
         {
             if (compAttributeExpression == null)
             {
                 throw new ArgumentNullException(nameof(compAttributeExpression));
             }
 
-            if (outerExpress == null)
+            if (arg == null)
             {
-                throw new ArgumentNullException(nameof(outerExpress));
+                throw new ArgumentNullException(nameof(arg));
             }
 
-            var selection = compAttributeExpression.Path.Evaluate(outerExpress);
-            var equalityExpr = GetComparisonExpression(compAttributeExpression);
-            var whereMethod = GetWhereMethod<RepresentationAttribute>();
-            var callWhereMethod = LinqExpression.Call(whereMethod, selection, equalityExpr);
-            return callWhereMethod;
+            var selection = compAttributeExpression.Path.Evaluate(arg);
+            var equalityExpr = GetComparisonExpression(compAttributeExpression, arg);
+            return LinqExpression.AndAlso(selection, equalityExpr);
         }
 
-        private static LinqExpression EvaluateValueFilter(CompAttributeExpression compAttrExpr)
+        private static LinqExpression EvaluateChildren(AttributePath path, System.Linq.Expressions.ParameterExpression arg, Func<System.Linq.Expressions.ParameterExpression, LinqExpression> callback = null)
         {
-            var anyArg = LinqExpression.Parameter(typeof(RepresentationAttribute), "rp");
-            var childrenProperty = LinqExpression.Property(anyArg, "Children");
-            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "a");
-            var schemaAttrProperty = LinqExpression.Property(resourceAttrParameterExpr, "SchemaAttribute");
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
+            if (arg == null)
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+
+            var subChild = LinqExpression.Parameter(typeof(RepresentationAttribute), GetSc());
+            var childrenProperty = LinqExpression.Property(arg, "Children");
             var equalNotNull = LinqExpression.NotEqual(childrenProperty, LinqExpression.Constant(null));
+            LinqExpression result = null;
+            if (callback != null)
+            {
+                result = callback(subChild);
+            }
 
-            var propertyName = LinqExpression.Property(schemaAttrProperty, "Name");
-            var equalName = LinqExpression.Equal(propertyName, LinqExpression.Constant(compAttrExpr.Path.Name)); // name = <path>
+            if (path.Next != null)
+            {
+                var subCond = path.Next.Evaluate(subChild);
+                if (result != null)
+                {
+                    result = LinqExpression.AndAlso(result, subCond);
+                }
+                else
+                {
+                    result = subCond;
+                }
+            }
 
-            var equalValue = GetComparisonExpression(compAttrExpr, resourceAttrParameterExpr);
-
-            var equalExpr = LinqExpression.AndAlso(equalName, equalValue);
-
-            var callEqualValue = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(equalExpr, resourceAttrParameterExpr); // c => c.value = <value>
+            var callEqualValue = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(result, subChild); // c => c.value = <value>
             var anyExpr = LinqExpression.Call(typeof(Enumerable), _anyMethodName, new[] { typeof(RepresentationAttribute) }, childrenProperty, callEqualValue);
+            return LinqExpression.AndAlso(equalNotNull, anyExpr);
+        }
 
-            var cond = LinqExpression.AndAlso(equalNotNull, anyExpr);
+        #region Private static methods
 
-            var result = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(cond, anyArg);
-            return result;
+        private static LinqExpression GetPathExpression(AttributePath path, LinqExpression representationAttrExpr)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (representationAttrExpr == null)
+            {
+                throw new ArgumentNullException(nameof(representationAttrExpr));
+            }
+
+            var schemaAttributeParameter = LinqExpression.Property(representationAttrExpr, "SchemaAttribute");
+            var propertyName = LinqExpression.Property(schemaAttributeParameter, "Name");
+            var notNull = LinqExpression.NotEqual(schemaAttributeParameter, LinqExpression.Constant(null));
+            var equal = LinqExpression.Equal(propertyName, LinqExpression.Constant(path.Name));
+            return LinqExpression.AndAlso(notNull, equal);
         }
 
         private static LinqExpression GetComparisonExpression(CompAttributeExpression compAttributeExpression)
@@ -236,5 +258,13 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                  .Where(m => m.GetParameters().Count() == 2).First().MakeGenericMethod(typeof(T));
             return genericMethod;
         }
+
+        private static string GetSc()
+        {
+            _scI++;
+            return $"sc{_scI}";
+        }
+
+        #endregion
     }
 }
