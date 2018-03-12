@@ -26,7 +26,30 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     {
         public string Name { get; set; }
         public AttributePath Next { get; set; }
+        public AttributePath Parent { get; set; }
         public Filter ValueFilter { get; set; }
+
+        public KeyValuePair<AttributePath, int> GetLastPath(int i = 0)
+        {
+            if (Next != null)
+            {
+                return Next.GetLastPath(++i);
+            }
+
+            return new KeyValuePair<AttributePath, int>(this, i);
+        }
+
+        public void SetNext(AttributePath next)
+        {
+            if (next == null)
+            {
+                Next = null;
+                return;
+            }
+
+            Next = next;
+            Next.Parent = this;
+        }
 
         public string Evaluate(JToken jObj)
         {

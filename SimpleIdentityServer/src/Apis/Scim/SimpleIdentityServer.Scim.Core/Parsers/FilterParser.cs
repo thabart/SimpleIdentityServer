@@ -170,12 +170,37 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
         private static Expression GetAttributeExpression(IEnumerable<string> parameters)
         {
-            ComparisonOperators op = (ComparisonOperators)Enum.Parse(typeof(ComparisonOperators), parameters.ElementAt(1));
-            return new CompAttributeExpression
+            var path = GetPath(parameters.First());
+            var kvp = path.GetLastPath();
+            var op = (ComparisonOperators)Enum.Parse(typeof(ComparisonOperators), parameters.ElementAt(1));
+            if (kvp.Value == 0)
             {
-                Operator = op,
-                Value =  op != ComparisonOperators.pr ? parameters.ElementAt(2) : null,
-                Path = GetPath(parameters.First())
+                return new CompAttributeExpression
+                {
+                    Operator = op,
+                    Value = op != ComparisonOperators.pr ? parameters.ElementAt(2) : null,
+                    Path = GetPath(parameters.First())
+                };
+            }
+
+            var parentPath = kvp.Key;
+            var parent = parentPath.Parent;
+            parent.ValueFilter = new Filter
+            {
+                Expression = new CompAttributeExpression
+                {
+                    Operator = op,
+                    Path = new AttributePath
+                    {
+                        Name = parentPath.Name
+                    },
+                    Value = op != ComparisonOperators.pr ? parameters.ElementAt(2) : null
+                }
+            };
+            parent.SetNext(null);
+            return new AttributeExpression
+            {
+                Path = path
             };
         }
 
@@ -207,7 +232,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     continue;
                 }
 
-                tmp.Next = attr;
+                tmp.SetNext(attr);
                 tmp = attr;
             }
 

@@ -210,7 +210,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     }
                     
                     // 4.5.2 Check uniqueness
-                    if (filteredAttr.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    if (filteredAttr.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any()) // TH  : SELECT THE VALUE AND CHECK THE UNIQUENESS.
                     {
                         var filter = _filterParser.Parse(filteredAttr.FullPath);
                         var uniqueAttrs = new List<RepresentationAttribute>();

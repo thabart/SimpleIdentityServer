@@ -14,16 +14,16 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
         private static string _whereMethodName = "Where";
         private static string _anyMethodName = "Any";
 
-        public static System.Linq.Expressions.LambdaExpression Evaluate(this Filter filter, IEnumerable<RepresentationAttribute> representationAttributes)
+        public static System.Linq.Expressions.LambdaExpression EvaluateFilter(this Filter filter, IQueryable<Representation> representations)
         {
             if (filter == null)
             {
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            if (representationAttributes == null)
+            if (representations == null)
             {
-                throw new ArgumentNullException(nameof(representationAttributes));
+                throw new ArgumentNullException(nameof(representations));
             }
 
             if (filter.Expression == null)
@@ -31,89 +31,189 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                 throw new ArgumentNullException(nameof(filter.Expression));
             }
 
-            return filter.Expression.Evaluate(representationAttributes);
+            return filter.Expression.Evaluate(representations);
         }
 
-        public static System.Linq.Expressions.LambdaExpression Evaluate(this Expression expression, IEnumerable<RepresentationAttribute> representationAttributes)
+        #region Private static methods
+
+        private static System.Linq.Expressions.LambdaExpression Evaluate(this Expression expression, IQueryable<Representation> representations)
         {
             if (expression == null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            if (representationAttributes == null)
+            if (representations == null)
             {
-                throw new ArgumentNullException(nameof(representationAttributes));
+                throw new ArgumentNullException(nameof(representations));
+            }
+
+            var representationParameter = LinqExpression.Parameter(typeof(Representation), "rp");
+            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
+            var representationAttributesProperty = LinqExpression.Property(representationParameter, "Attributes");
+            var result = expression.Evaluate(representationParameter);
+            if (result == null)
+            {
+                return null;
+            }
+
+            var whereMethod = GetWhereMethod<Representation>();
+            var equalLambda = LinqExpression.Lambda<Func<Representation, bool>>(result, representationParameter);
+            var whereExpr = LinqExpression.Call(whereMethod, LinqExpression.Constant(representations), equalLambda);
+            var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<Representation>), "f");
+            var finalSelectRequestBody = LinqExpression.Lambda(whereExpr, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
+            return finalSelectRequestBody;
+        }
+
+        private static LinqExpression Evaluate(this Expression expression, System.Linq.Expressions.ParameterExpression resourceAttrParameterExpr)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
             }
 
             var compAttrExpression = expression as CompAttributeExpression;
             var attrExpression = expression as AttributeExpression;
+            var logicalExpression = expression as LogicalExpression;
             if (compAttrExpression != null)
             {
-                return compAttrExpression.Evaluate(representationAttributes);
+                return compAttrExpression.Evaluate(resourceAttrParameterExpr);
             }
 
             if (attrExpression != null)
             {
-                return attrExpression.Evaluate(representationAttributes);
+                return attrExpression.Evaluate(resourceAttrParameterExpr);
+            }
+
+            if (logicalExpression != null)
+            {
+                return logicalExpression.Evaluate(resourceAttrParameterExpr);
             }
 
             return null;
         }
 
-        public static System.Linq.Expressions.LambdaExpression Evaluate(this AttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
+        private static LinqExpression Evaluate(this AttributeExpression expr, System.Linq.Expressions.ParameterExpression arg)
         {
-            if (expression == null)
+            if (expr == null)
             {
-                throw new ArgumentNullException(nameof(representationAttributes));
+                throw new ArgumentNullException(nameof(expr));
             }
 
-            if (expression.Path == null)
+            if (expr.Path == null)
             {
-                throw new ArgumentNullException(nameof(expression.Path));
+                throw new ArgumentNullException(nameof(expr.Path));
             }
 
-            var path = expression.Path;
-
-            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
-            var result = path.Evaluate(resourceAttrParameterExpr);
-            var whereLambda = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(result, resourceAttrParameterExpr);
-            var whereMethod = GetWhereMethod<RepresentationAttribute>();
-            var whereExpr = LinqExpression.Call(whereMethod, LinqExpression.Constant(representationAttributes), whereLambda);
-            var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
-            var finalSelectRequestBody = LinqExpression.Lambda(whereExpr, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
-            return finalSelectRequestBody;
-        }
-
-        public static System.Linq.Expressions.LambdaExpression Evaluate(this CompAttributeExpression expression, IEnumerable<RepresentationAttribute> representationAttributes)
-        {
-            if (expression == null)
+            if (arg == null)
             {
-                throw new ArgumentNullException(nameof(representationAttributes));
-            }
-
-            if (expression.Path == null)
-            {
-                throw new ArgumentNullException(nameof(expression.Path));
+                throw new ArgumentNullException(nameof(arg));
             }
 
             var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
-            var expr = expression.Evaluate(resourceAttrParameterExpr);
-            var whereLambda = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(expr, resourceAttrParameterExpr);
-            var whereMethod = GetWhereMethod<RepresentationAttribute>();
-            var callWhereMethod = LinqExpression.Call(whereMethod, LinqExpression.Constant(representationAttributes), whereLambda);
-            var finalSelectArg = LinqExpression.Parameter(typeof(IQueryable<RepresentationAttribute>), "f");
-            var finalSelectRequestBody = LinqExpression.Lambda(callWhereMethod, new System.Linq.Expressions.ParameterExpression[] { finalSelectArg });
-            return finalSelectRequestBody;
+            var selection = expr.Path.Evaluate(resourceAttrParameterExpr);
+            var andEqual = GetAttributesAny(selection, arg, resourceAttrParameterExpr);
+            return andEqual;
         }
 
-        public static LinqExpression Evaluate(this AttributePath attributePath, System.Linq.Expressions.ParameterExpression resourceAttrParameterExpr)
+        private static LinqExpression EvaluateSelection(this AttributePath path, LinqExpression arg)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (arg == null)
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+
+            var property = LinqExpression.Property(arg, path.Name);
+            if (path.Next != null)
+            {
+                return path.Next.EvaluateSelection(property);
+            }
+
+            return property;
+        }
+
+        private static LinqExpression Evaluate(this CompAttributeExpression compAttributeExpression,  System.Linq.Expressions.ParameterExpression arg)
+        {
+            if (compAttributeExpression == null)
+            {
+                throw new ArgumentNullException(nameof(compAttributeExpression));
+            }
+
+            if (arg == null)
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+
+            var resourceAttrParameterExpr = LinqExpression.Parameter(typeof(RepresentationAttribute), "ra");
+            var representationAttributesProperty = LinqExpression.Property(arg, "Attributes");
+
+            var selection = compAttributeExpression.Path.Evaluate(resourceAttrParameterExpr);
+            var equalityExpr = GetComparisonExpression(compAttributeExpression, resourceAttrParameterExpr);
+            var equalExpr = LinqExpression.AndAlso(selection, equalityExpr);
+            var andEqual = GetAttributesAny(equalExpr, arg, resourceAttrParameterExpr);
+            return andEqual;
+        }
+
+        private static LinqExpression Evaluate(this LogicalExpression expression, System.Linq.Expressions.ParameterExpression arg)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            if (arg == null)
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+
+            LinqExpression leftExpression = null;
+            LinqExpression rightExpression = null;
+            if (expression.AttributeLeft != null)
+            {
+                leftExpression = expression.AttributeLeft.Evaluate(arg);
+            }
+
+            if (expression.AttributeRight != null)
+            {
+                rightExpression = expression.AttributeRight.Evaluate(arg);
+            }
+
+            if (leftExpression != null && rightExpression != null)
+            {
+                switch(expression.Operator)
+                {
+                    case LogicalOperators.and:
+                        return LinqExpression.And(leftExpression, rightExpression);
+                    case LogicalOperators.or:
+                        return LinqExpression.Or(leftExpression, rightExpression);
+                }
+            }
+
+            if (leftExpression != null)
+            {
+                return leftExpression;
+            }
+
+            if (rightExpression != null)
+            {
+                return rightExpression;
+            }
+
+            return null;
+        }
+
+        private static LinqExpression Evaluate(this AttributePath attributePath, System.Linq.Expressions.ParameterExpression resourceAttrParameterExpr)
         {
             if (attributePath == null)
             {
                 throw new ArgumentNullException(nameof(attributePath));
             }
-            
+
             var result = GetPathExpression(attributePath, resourceAttrParameterExpr);
 
             if (attributePath.ValueFilter != null)
@@ -134,23 +234,6 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             }
 
             return result;
-        }
-        
-        public static LinqExpression Evaluate(this CompAttributeExpression compAttributeExpression,  System.Linq.Expressions.ParameterExpression arg)
-        {
-            if (compAttributeExpression == null)
-            {
-                throw new ArgumentNullException(nameof(compAttributeExpression));
-            }
-
-            if (arg == null)
-            {
-                throw new ArgumentNullException(nameof(arg));
-            }
-
-            var selection = compAttributeExpression.Path.Evaluate(arg);
-            var equalityExpr = GetComparisonExpression(compAttributeExpression, arg);
-            return LinqExpression.AndAlso(selection, equalityExpr);
         }
 
         private static LinqExpression EvaluateChildren(AttributePath path, System.Linq.Expressions.ParameterExpression arg, Func<System.Linq.Expressions.ParameterExpression, LinqExpression> callback = null)
@@ -192,7 +275,24 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             return LinqExpression.AndAlso(equalNotNull, anyExpr);
         }
 
-        #region Private static methods
+        private static LinqExpression GetAttributesAny(LinqExpression expr, System.Linq.Expressions.ParameterExpression arg, System.Linq.Expressions.ParameterExpression raArg)
+        {
+            if (expr == null)
+            {
+                throw new ArgumentNullException(nameof(expr));
+            }
+
+            if (arg == null)
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+            
+            var representationAttributesProperty = LinqExpression.Property(arg, "Attributes");
+            var anyLambda = LinqExpression.Lambda<Func<RepresentationAttribute, bool>>(expr, raArg);
+            var anyExpr = LinqExpression.Call(typeof(Enumerable), _anyMethodName, new[] { typeof(RepresentationAttribute) }, representationAttributesProperty, anyLambda);
+            var attributesNotEqual = LinqExpression.NotEqual(representationAttributesProperty, LinqExpression.Constant(null));
+            return LinqExpression.AndAlso(attributesNotEqual, anyExpr);
+        }
 
         private static LinqExpression GetPathExpression(AttributePath path, LinqExpression representationAttrExpr)
         {

@@ -21,7 +21,6 @@ using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -67,7 +66,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Get representations & add the common attributes.
-            var representations = await _representationStore.GetRepresentations(resourceType);
+            var representations = await _representationStore.SearchRepresentations(resourceType, searchParameter);
             foreach(var representation in representations)
             {
                 var location = locationPattern.Replace("{id}", representation.Id);

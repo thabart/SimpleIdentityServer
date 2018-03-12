@@ -11,28 +11,28 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
         [Fact]
         public void When_Filtering_User_On_UserName_Then_One_User_Is_Rturned()
         {
-            var attrs = new List<RepresentationAttribute>();
-            attrs.Add(new RepresentationAttribute
+            var representations = new List<Representation>
             {
-                SchemaAttribute = new SchemaAttribute
+                new Representation
                 {
-                    Name = "userName"
-                },
-                Value = "bjensen"
-            });
-            attrs.Add(new RepresentationAttribute
-            {
-                SchemaAttribute = new SchemaAttribute
-                {
-                    Name = "userName"
-                },
-                Value = "jsmith"
-            });
-            var queryableAttrs = attrs.AsQueryable();
+                    Attributes = new List<RepresentationAttribute>
+                    {
+                        new RepresentationAttribute
+                        {
+                            SchemaAttribute = new SchemaAttribute
+                            {
+                                Name = "userName"
+                            },
+                            Value = "jsmith"
+                        }
+                    }
+                }
+            };
+            var queryableAttrs = representations.AsQueryable();
 
             var p = new Core.Parsers.FilterParser();
             var parsed = p.Parse("userName eq jsmith");
-            var evalutedExpr = parsed.Evaluate(queryableAttrs);
+            var evalutedExpr = parsed.EvaluateFilter(queryableAttrs);
 
             var o = (IQueryable<object>)evalutedExpr.Compile().DynamicInvoke(queryableAttrs);
 
@@ -43,20 +43,17 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
         [Fact]
         public void When_Filtering_On_FirstLetter_Then_One_User_Is_Returned()
         {
-            var attrs = new List<RepresentationAttribute>();
-            attrs.Add(new RepresentationAttribute
+            var representations = new List<Representation>
             {
-                SchemaAttribute = new SchemaAttribute
+                new Representation
                 {
-                    Name = "name"
-                },
-                Children = new List<RepresentationAttribute>
-                {
-                    new RepresentationAttribute
+                    Attributes = new List<RepresentationAttribute>
                     {
+                        new RepresentationAttribute
+                        {
                         SchemaAttribute = new SchemaAttribute
                         {
-                            Name = "firstName"
+                            Name = "name"
                         },
                         Children = new List<RepresentationAttribute>
                         {
@@ -64,19 +61,114 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
                             {
                                 SchemaAttribute = new SchemaAttribute
                                 {
-                                    Name = "firstLetter"
+                                    Name = "firstName"
                                 },
-                                Value = "NO"
+                                Children = new List<RepresentationAttribute>
+                                {
+                                    new RepresentationAttribute
+                                    {
+                                        SchemaAttribute = new SchemaAttribute
+                                        {
+                                            Name = "firstLetter"
+                                        },
+                                        Value = "NO"
+                                    }
+                                }
+                            }
+                        }
+                        }
+                    }
+                }
+            };
+            var queryableAttrs = representations.AsQueryable();
+
+            var p = new Core.Parsers.FilterParser();
+            var parsed = p.Parse("name.firstName[firstLetter eq NO]");
+            var evalutedExpr = parsed.EvaluateFilter(queryableAttrs);
+
+            var o = (IQueryable<object>)evalutedExpr.Compile().DynamicInvoke(queryableAttrs);
+
+            Assert.NotNull(o);
+            Assert.True(o.Count() == 1);
+        }
+
+        [Fact]
+        public void When_Filtering_On_FirstName_And_LastName_Then_One_User_Is_Returned()
+        {
+            var representations = new List<Representation>
+            {
+                new Representation
+                {
+                    Attributes = new List<RepresentationAttribute>
+                    {
+                        new RepresentationAttribute
+                        {
+                            SchemaAttribute = new SchemaAttribute
+                            {
+                                Name = "firstName"
+                            },
+                            Value = "tom"
+                        },
+                        new RepresentationAttribute
+                        {
+                            SchemaAttribute = new SchemaAttribute
+                            {
+                                Name = "lastName"
+                            },
+                            Value = "tim"
+                        }
+                    }
+                }
+            };
+            var queryableAttrs = representations.AsQueryable();
+
+            var p = new Core.Parsers.FilterParser();
+            var parsed = p.Parse("firstName eq tom and lastName eq tim");
+            var evalutedExpr = parsed.EvaluateFilter(queryableAttrs);
+
+            var o = (IQueryable<object>)evalutedExpr.Compile().DynamicInvoke(queryableAttrs);
+
+            Assert.NotNull(o);
+            Assert.True(o.Count() == 1);
+
+        }
+
+        [Fact]
+        public void When_Filtering_On_FirstName_Or_LastName_Then_One_User_Is_Returned()
+        {
+            var representations = new List<Representation>
+            {
+                new Representation
+                {
+                    Attributes = new List<RepresentationAttribute>
+                    {
+                        new RepresentationAttribute
+                        {
+                            SchemaAttribute = new SchemaAttribute
+                            {
+                                Name = "name"
+                            },
+                            Children = new List<RepresentationAttribute>
+                            {
+                                new RepresentationAttribute
+                                {
+                                    SchemaAttribute = new SchemaAttribute
+                                    {
+                                        Name = "firstName"
+                                    },
+                                    Value = "thierry"
+                                }
                             }
                         }
                     }
                 }
-            });
-            var queryableAttrs = attrs.AsQueryable();
-
+            };
+            
+            var queryableAttrs = representations.AsQueryable();
+                        
             var p = new Core.Parsers.FilterParser();
-            var parsed = p.Parse("name.firstName[firstLetter eq NO]");
-            var evalutedExpr = parsed.Evaluate(queryableAttrs);
+            var parsed = p.Parse("(name.firstName eq thierry) or (name.lastName eq lokit)");
+            var evalutedExpr = parsed.EvaluateFilter(queryableAttrs);
 
             var o = (IQueryable<object>)evalutedExpr.Compile().DynamicInvoke(queryableAttrs);
 

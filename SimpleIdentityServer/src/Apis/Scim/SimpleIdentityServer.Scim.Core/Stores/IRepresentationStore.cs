@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Core.Parsers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,6 +23,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
 {
     public interface IRepresentationStore
     {
+        Task<IEnumerable<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter);
         Task<bool> AddRepresentation(Representation representation);
         Task<Representation> GetRepresentation(string id);
         Task<IEnumerable<Representation>> GetRepresentations(string resourceType);

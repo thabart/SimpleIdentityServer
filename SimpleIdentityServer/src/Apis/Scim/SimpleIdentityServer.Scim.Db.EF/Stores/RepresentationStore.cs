@@ -16,9 +16,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Db.EF.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,6 +37,34 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
         {
             _context = context;
             _transformers = transformers;
+        }
+
+        public async Task<IEnumerable<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter)
+        {
+            if (string.IsNullOrWhiteSpace(resourceType))
+            {
+                throw new ArgumentNullException(nameof(resourceType));
+            }
+
+            if (searchParameter == null)
+            {
+                throw new ArgumentNullException(nameof(searchParameter));
+            }
+
+            IQueryable<Models.Representation> representations = _context.Representations
+                .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
+                .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children);
+            if (searchParameter.Filter != null)
+            {
+                var lambdaExpression = searchParameter.Filter.EvaluateFilter(representations);
+            }
+
+            if (searchParameter.SortBy != null) { }
+
+            representations = representations.Skip(searchParameter.StartIndex);
+            representations = representations.Take(searchParameter.Count);
+            var result = await representations.ToListAsync().ConfigureAwait(false);
+            return result.Select(r => r.ToDomain());
         }
 
         public async Task<bool> AddRepresentation(Representation representation)
