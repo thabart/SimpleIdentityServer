@@ -92,11 +92,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         {
             var result = new JObject();
             var schemas = new JArray();
-            var content = new JArray();
-            content.Add(filter.Values);
             schemas.Add(Common.Constants.Messages.ListResponse);
             result.Add(Common.Constants.ScimResourceNames.Schemas, schemas);
-            result[Common.Constants.SearchParameterResponseNames.Resources] = content;
+            result[Common.Constants.SearchParameterResponseNames.Resources] = filter.Values;
             if (filter.ItemsPerPage.HasValue)
             {
                 result.Add(Common.Constants.SearchParameterResponseNames.ItemsPerPage, filter.ItemsPerPage);

@@ -276,13 +276,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                         }
                     }
                 });
-            _representationStoreStub.Setup(r => r.GetRepresentations(It.IsAny<string>()))
-                .Returns(Task.FromResult((IEnumerable<Representation>)new List<Representation>
+            _representationStoreStub.Setup(r => r.SearchValues(It.IsAny<string>(), It.IsAny<Filter>()))
+                .Returns(Task.FromResult((IEnumerable<RepresentationAttribute>)new List<RepresentationAttribute>
                 {
-                    new Representation
-                    {
-                        Attributes = new[]
-                        {
                             new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "members", MultiValued = false, Type = Common.Constants.SchemaAttributeTypes.Complex, Mutability = Common.Constants.SchemaAttributeMutability.ReadWrite, Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server })
                             {
                                 Values = new []
@@ -290,8 +286,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                                     new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry")
                                 }
                             }
-                        }
-                    }
                 }));
 
             // ACT

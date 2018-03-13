@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public SearchParameter()
         {
             Count = 100;
-            StartIndex = 1;
+            StartIndex = 0;
             SortOrder = SortOrders.Ascending;
         }
 

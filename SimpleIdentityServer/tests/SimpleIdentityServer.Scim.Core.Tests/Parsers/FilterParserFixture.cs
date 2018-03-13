@@ -353,58 +353,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filtering_Representation_By_Existing_Adr_Then_Two_Attributes_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var representation = new Representation
-            {
-                Attributes = new[]
-                {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
-                    {
-                        Values = new []
-                        {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = new []
-                                {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr1")
-                                }
-                            },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = new []
-                                {
-                                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "adr", Type = Common.Constants.SchemaAttributeTypes.String }, "adr2")
-                                }
-                            },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = null
-                            },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = null
-                            }
-                        }
-                    }
-                }
-            };
-            var result = _filterParser.Parse("persons[person.adr pr]");
-
-            // ACT 
-            var attributes = result.Evaluate(representation);
-
-            // ASSERTS
-            Assert.NotNull(attributes);
-            var persons = attributes.First() as ComplexRepresentationAttribute;
-            Assert.NotNull(persons);
-            var person = persons.Values;
-            Assert.True(person.Count() == 2);
-        }
-
-        [Fact]
         public void When_Filtering_Representation_By_Existing_Adr_And_Pickup_Only_Addresses_Then_Two_Adrs_Are_Returned()
         {
             // ARRANGE
@@ -458,34 +406,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
         }
 
         [Fact]
-        public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_Or_Lokit_Then_Two_Attributes_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var representation = new Representation
-            {
-                Attributes = new[]
-                {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                    {
-                        Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
-                        }
-                    }
-                }
-            };
-            var result = _filterParser.Parse("(name.firstName eq thierry) or (name.lastName eq lokit)");
-
-            // ACT 
-            var attributes = result.Evaluate(representation);
-
-            // ASSERTS
-            Assert.NotNull(attributes);
-            Assert.True(attributes.Count() == 1);
-        }
-
-        [Fact]
         public void When_Filtering_Representation_By_FirstName_Equals_To_Thierry_And_Not_Equals_To_Lokit_Then_Attributes_Are_Returned()
         {
             // ARRANGE
@@ -511,93 +431,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             // ASSERTS
             Assert.NotNull(attributes);
             Assert.True(attributes.Count() == 1);
-        }
-
-        [Fact]
-        public void When_Filtering_Representation_By_FirstName_Not_Equals_To_Thierry_Then_Attributes_Are_Returned()
-        {
-            InitializeFakeObjects();
-            var representation = new Representation
-            {
-                Attributes = new[]
-                {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                    {
-                        Values = new [] {
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
-                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
-                        }
-                    }
-                }
-            };
-            var result = _filterParser.Parse("not (name.firstName eq thierry) and not (name.lastName eq lokit)");
-
-            // ACT 
-            var attributes = result.Evaluate(representation);
-
-            // ASSERTS
-            Assert.NotNull(attributes);
-            Assert.True(attributes.Count() == 1);
-        }
-
-        [Fact]
-        public void When_Filtering_Representations_By_Complex_Filter_Then_Attributes_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var representation = new Representation
-            {
-                Attributes = new[]
-                {
-                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "persons", Type = Common.Constants.SchemaAttributeTypes.Complex, MultiValued = true })
-                    {
-                        Values = new []
-                        {
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = new RepresentationAttribute[]
-                                {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                                    {
-                                        Values = new []
-                                        {
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "laetitia"),
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
-                                        }
-                                    },
-                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Common.Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-05-13T04:42:34Z"))
-                                }
-                            },
-                            new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "person", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                            {
-                                Values = new RepresentationAttribute[]
-                                {
-                                    new ComplexRepresentationAttribute(new SchemaAttributeResponse { Name = "name", Type = Common.Constants.SchemaAttributeTypes.Complex })
-                                    {
-                                        Values = new []
-                                        {
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "firstName", Type = Common.Constants.SchemaAttributeTypes.String }, "thierry"),
-                                            new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "lastName", Type = Common.Constants.SchemaAttributeTypes.String }, "loki")
-                                        }
-                                    },
-                                    new SingularRepresentationAttribute<DateTime>(new SchemaAttributeResponse { Name = "birthDate", Type = Common.Constants.SchemaAttributeTypes.DateTime }, DateTime.Parse("2011-06-13T04:42:34Z"))
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            var result = _filterParser.Parse("persons[person.name.lastName eq loki and person.birthDate le 2011-05-13T04:42:34Z].person.name.firstName");
-
-            // ACT 
-            var attributes = result.Evaluate(representation);
-
-            // ASSERTS
-            Assert.NotNull(attributes);
-            Assert.True(attributes.Count() == 1);
-            var firstName = attributes.First() as SingularRepresentationAttribute<string>;
-            Assert.NotNull(firstName);
-            Assert.True(firstName.Value == "laetitia");
         }
 
         [Fact]

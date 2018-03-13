@@ -36,6 +36,14 @@ namespace SimpleIdentityServer.Scim.Db.EF.Mappings
                 .HasMany(a => a.Children)
                 .WithOne(a => a.Parent)
                 .HasForeignKey(a => a.RepresentationAttributeIdParent);
+            builder.Entity<RepresentationAttribute>()
+                .HasOne(a => a.SchemaAttribute)
+                .WithMany(a => a.RepresentationAttributes)
+                .HasForeignKey(a => a.SchemaAttributeId);
+            builder.Entity<RepresentationAttribute>()
+                .HasMany(a => a.Values)
+                .WithOne(a => a.RepresentationAttribute)
+                .HasForeignKey(a => a.RepresentationAttributeId);
             return builder;
         }
     }

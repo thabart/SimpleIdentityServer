@@ -193,11 +193,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                     },
                     Id = identifier
                 }));
-            _representationStoreStub.Setup(r => r.GetRepresentations(It.IsAny<string>()))
-                .Returns(Task.FromResult((IEnumerable<Representation>)new List<Representation> { new Representation
+            _representationStoreStub.Setup(r => r.SearchValues(It.IsAny<string>(), It.IsAny<Filter>()))
+                .Returns(Task.FromResult((IEnumerable<RepresentationAttribute>)new List<RepresentationAttribute> {
                 {
-                    Attributes = new[]
-                    {
                         new SingularRepresentationAttribute<string>(new SchemaAttributeResponse
                         {
                             Id = Guid.NewGuid().ToString(),
@@ -206,8 +204,6 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                             Uniqueness = Common.Constants.SchemaAttributeUniqueness.Server,
                             Type = Common.Constants.SchemaAttributeTypes.String
                         }, "representation_id_2")
-                    },
-                    Id = Guid.NewGuid().ToString()
                 }}));
             _apiResponseFactoryStub.Setup(a => a.CreateError(HttpStatusCode.BadRequest,
                 It.IsAny<ErrorResponse>()))

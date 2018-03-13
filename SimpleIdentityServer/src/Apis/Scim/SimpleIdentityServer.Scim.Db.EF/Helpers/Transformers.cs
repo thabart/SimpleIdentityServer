@@ -16,7 +16,6 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using System;
@@ -69,8 +68,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
         }
 
         public RepresentationAttribute Transform(Model.RepresentationAttribute attr)
-        {            
-            if (attr == null || (attr.Children == null && string.IsNullOrWhiteSpace(attr.Value)))
+        {
+            if (attr == null || (attr.Children == null && string.IsNullOrWhiteSpace(attr.Value)) && attr.ValueNumber == default(double))
             {
                 return null;
             }
@@ -107,48 +106,95 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 case Common.Constants.SchemaAttributeTypes.String:
                     if (isArr)
                     {
-                        var record = JsonConvert.DeserializeObject<IEnumerable<string>>(attr.Value);
-                        return new SingularRepresentationAttribute<IEnumerable<string>>(schemaAttr, record);
-                    }
-
-                    var str = JsonConvert.DeserializeObject<string>(attr.Value);
-                    return new SingularRepresentationAttribute<string>(schemaAttr, str);
+                        var values = new List<string>();
+                        if (attr.Values != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                values.Add(value.Value);
+                            }
+                        }
+                        return new SingularRepresentationAttribute<IEnumerable<string>>(schemaAttr, values);
+                    }                    
+                    return new SingularRepresentationAttribute<string>(schemaAttr, attr.Value);
                 case Common.Constants.SchemaAttributeTypes.Boolean:
+                    bool r = false;
                     if (isArr)
                     {
-                        var record = JsonConvert.DeserializeObject<IEnumerable<bool>>(attr.Value);
-                        return new SingularRepresentationAttribute<IEnumerable<bool>>(schemaAttr, record);
+                        var values = new List<bool>();
+                        if (attr.Values != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                if (bool.TryParse(value.Value, out r))
+                                {
+                                    values.Add(r);
+                                }
+                            }
+                        }
+                        return new SingularRepresentationAttribute<IEnumerable<bool>>(schemaAttr, values);
                     }
-
-                    var b = JsonConvert.DeserializeObject<bool>(attr.Value);
-                    return new SingularRepresentationAttribute<bool>(schemaAttr, b);
+                    bool.TryParse(attr.Value, out r);
+                    return new SingularRepresentationAttribute<bool>(schemaAttr, r);
                 case Common.Constants.SchemaAttributeTypes.DateTime:
+                    DateTime dateTime = DateTime.Now;
+                    double d;
                     if (isArr)
                     {
-                        var record = JsonConvert.DeserializeObject<IEnumerable<DateTime>>(attr.Value);
-                        return new SingularRepresentationAttribute<IEnumerable<DateTime>>(schemaAttr, record);
+                        var values = new List<DateTime>();
+                        if (attr.Values != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                if (double.TryParse(value.Value, out d))
+                                {
+                                    values.Add(d.ToDateTime());
+                                }
+                            }
+                        }
+                        return new SingularRepresentationAttribute<IEnumerable<DateTime>>(schemaAttr, values);
                     }
-
-                    var datetime = JsonConvert.DeserializeObject<DateTime>(attr.Value);
-                    return new SingularRepresentationAttribute<DateTime>(schemaAttr, datetime);
+                    if (attr.ValueNumber != default(double))
+                    {
+                        dateTime = attr.ValueNumber.ToDateTime();
+                    }
+                    return new SingularRepresentationAttribute<DateTime>(schemaAttr, dateTime);
                 case Common.Constants.SchemaAttributeTypes.Decimal:
+                    decimal dec;
                     if (isArr)
                     {
-                        var record = JsonConvert.DeserializeObject<IEnumerable<decimal>>(attr.Value);
-                        return new SingularRepresentationAttribute<IEnumerable<decimal>>(schemaAttr, record);
+                        var values = new List<decimal>();
+                        if (attr.Values != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                if (decimal.TryParse(value.Value, out dec))
+                                {
+                                    values.Add(dec);
+                                }
+                            }
+                        }
+                        return new SingularRepresentationAttribute<IEnumerable<decimal>>(schemaAttr, values);
                     }
-
-                    var dec = JsonConvert.DeserializeObject<decimal>(attr.Value);
-                    return new SingularRepresentationAttribute<decimal>(schemaAttr, dec);
+                    return new SingularRepresentationAttribute<decimal>(schemaAttr, (decimal)attr.ValueNumber);
                 case Common.Constants.SchemaAttributeTypes.Integer:
+                    int i;
                     if (isArr)
                     {
-                        var record = JsonConvert.DeserializeObject<IEnumerable<int>>(attr.Value);
-                        return new SingularRepresentationAttribute<IEnumerable<int>>(schemaAttr, record);
+                        var values = new List<int>();
+                        if (attr.Values != null)
+                        {
+                            foreach (var value in attr.Values)
+                            {
+                                if (int.TryParse(value.Value, out i))
+                                {
+                                    values.Add(i);
+                                }
+                            }
+                        }
+                        return new SingularRepresentationAttribute<IEnumerable<int>>(schemaAttr, values);
                     }
-
-                    var i = JsonConvert.DeserializeObject<int>(attr.Value);
-                    return new SingularRepresentationAttribute<int>(schemaAttr, i);
+                    return new SingularRepresentationAttribute<int>(schemaAttr, (int)attr.ValueNumber);
             }
 
             return null;
@@ -186,7 +232,71 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 return record;
             }
 
-            record.Value = attr.GetSerializedValue();
+            
+            if (attr.SchemaAttribute.MultiValued)
+            {
+                var singular = attr as SingularRepresentationAttribute<IEnumerable<string>>;
+                if (singular != null)
+                {
+                    var representationAttributeValues = new List<Model.RepresentationAttributeValue>();
+                    switch (attr.SchemaAttribute.Type)
+                    {
+                        case Common.Constants.SchemaAttributeTypes.Boolean:
+                        case Common.Constants.SchemaAttributeTypes.String:
+                        case Common.Constants.SchemaAttributeTypes.Integer:
+                        case Common.Constants.SchemaAttributeTypes.Decimal:
+                            foreach (var value in singular.Value)
+                            {
+                                representationAttributeValues.Add(new Model.RepresentationAttributeValue
+                                {
+                                    Id = Guid.NewGuid().ToString(),
+                                    Value = value.ToString()
+                                });
+                            }
+                            break;
+                        case Common.Constants.SchemaAttributeTypes.DateTime:
+                            foreach (var value in singular.Value)
+                            {
+                                DateTime dt;
+                                if (DateTime.TryParse(value, out dt))
+                                {
+                                    representationAttributeValues.Add(new Model.RepresentationAttributeValue
+                                    {
+                                        Id = Guid.NewGuid().ToString(),
+                                        Value = dt.ToUnix().ToString()
+                                    });
+                                }
+                            }
+                            break;
+                    }
+
+                    record.Values = representationAttributeValues;
+                }
+            }
+            else
+            {
+                var value = attr.GetValue();                
+                switch (attr.SchemaAttribute.Type)
+                {
+                    case Common.Constants.SchemaAttributeTypes.Boolean:
+                    case Common.Constants.SchemaAttributeTypes.String:
+                        record.Value = value.ToString();
+                        break;
+                    case Common.Constants.SchemaAttributeTypes.Decimal:
+                        var dec = (decimal)value;
+                        record.ValueNumber = (double)dec;
+                        break;
+                    case Common.Constants.SchemaAttributeTypes.Integer:
+                        var i = (int)value;
+                        record.ValueNumber = i;
+                        break;
+                    case Common.Constants.SchemaAttributeTypes.DateTime:
+                        var d = (DateTime)value;
+                        record.ValueNumber = d.ToUnix();
+                        break;
+                }
+            }
+
             return record;
         }
     }

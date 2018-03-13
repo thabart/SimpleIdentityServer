@@ -100,7 +100,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Get patch operations.
-            var allRepresentations = await _representationStore.GetRepresentations(representation.ResourceType);
             ErrorResponse errorResponse;
             var operations = _patchRequestParser.Parse(jObj, out errorResponse);
             if (operations == null)
@@ -210,15 +209,10 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     }
                     
                     // 4.5.2 Check uniqueness
-                    if (filteredAttr.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any()) // TH  : SELECT THE VALUE AND CHECK THE UNIQUENESS.
+                    if (filteredAttr.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server) // TH  : SELECT THE VALUE AND CHECK THE UNIQUENESS.
                     {
                         var filter = _filterParser.Parse(filteredAttr.FullPath);
-                        var uniqueAttrs = new List<RepresentationAttribute>();
-                        foreach(var records in allRepresentations.Select(r => filter.Evaluate(r)))
-                        {
-                            uniqueAttrs.AddRange(records);
-                        }
-
+                        var uniqueAttrs = await _representationStore.SearchValues(representation.ResourceType, filter);
                         if (uniqueAttrs.Any())
                         {
                             if (uniqueAttrs.Any(a => a.CompareTo(filteredAttr) == 0))
@@ -356,69 +350,6 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 response.Location,
                 representation.Version,
                 representation.Id);
-        }
-
-        private bool RemoveEnum(RepresentationAttribute attr, RepresentationAttribute attrToBeRemoved)
-        {
-            switch (attr.SchemaAttribute.Type)
-            {
-                case Common.Constants.SchemaAttributeTypes.String:
-                    var strAttr = attr as SingularRepresentationAttribute<IEnumerable<string>>;
-                    var strAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<string>>;
-                    if (strAttr == null || strAttrToBeRemoved == null)
-                    {
-                        return false;
-                    }
-
-                    strAttr.Value = strAttr.Value.Except(strAttrToBeRemoved.Value);
-                    break;
-                case Common.Constants.SchemaAttributeTypes.Boolean:
-                    var bAttr = attr as SingularRepresentationAttribute<IEnumerable<bool>>;
-                    var bAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<bool>>;
-                    if (bAttr == null || bAttrToBeRemoved == null)
-                    {
-                        return false;
-                    }
-
-                    bAttr.Value = bAttr.Value.Except(bAttrToBeRemoved.Value);
-                    break;
-                case Common.Constants.SchemaAttributeTypes.DateTime:
-                    var dAttr = attr as SingularRepresentationAttribute<IEnumerable<DateTime>>;
-                    var dAttrToBeRemoved = attrToBeRemoved as SingularRepresentationAttribute<IEnumerable<DateTime>>;
-                    if (dAttr == null || dAttrToBeRemoved == null)
-                    {
-                        return false;
-                    }
-
-                    dAttr.Value = dAttr.Value.Except(dAttrToBeRemoved.Value);
-                    break;
-                case Common.Constants.SchemaAttributeTypes.Complex:
-                    var cAttr = attr as ComplexRepresentationAttribute;
-                    var cAttrToBeRemoved = attrToBeRemoved as ComplexRepresentationAttribute;
-                    if (cAttr == null || cAttrToBeRemoved == null)
-                    {
-                        return false;
-                    }
-
-                    var attrsToBeRemoved = new List<RepresentationAttribute>();
-                    foreach(var attrToBeRemovedValue in cAttrToBeRemoved.Values)
-                    {
-                        var removed = cAttr.Values.FirstOrDefault(c => attrToBeRemovedValue.Equals(c));
-                        if (removed == null)
-                        {
-                            continue;
-                        }
-
-                        attrsToBeRemoved.Add(removed);
-                    }
-
-                    cAttr.Values = cAttr.Values.Where(v => !attrsToBeRemoved.Contains(v));
-                    break;
-                default:
-                    return false;
-            }
-
-            return true;
         }
 
         private bool Remove(RepresentationAttribute attr, RepresentationAttribute attrToBeRemoved)

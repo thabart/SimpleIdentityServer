@@ -64,6 +64,28 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _filterParser = filterParser;
         }
 
+        private class UpdateResponse
+        {
+            public UpdateResponse()
+            {
+                IsError = false;
+            }
+
+            public void SetError(ErrorResponse errorResponse)
+            {
+                if (errorResponse == null)
+                {
+                    throw new ArgumentNullException(nameof(errorResponse));
+                }
+
+                ErrorResponse = errorResponse;
+                IsError = true;
+            }
+
+            public ErrorResponse ErrorResponse { get; set; }
+            public bool IsError { get; set; }
+        }
+
         public async Task<ApiActionResult> Execute(string id, JObject jObj, string schemaId, string locationPattern, string resourceType)
         {
             // 1. Check parameters.
@@ -108,11 +130,11 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Update attributes.
-            var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType)).Where(r => r.Id != record.Id);
-            ErrorResponse error;
-            if (!UpdateRepresentation(record, representation.Representation, allRepresentations, out error))
+            // var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType)).Where(r => r.Id != record.Id);
+            var updateRepr = await UpdateRepresentation(record, representation.Representation);
+            if (updateRepr.IsError)
             {
-                return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, error);
+                return _apiResponseFactory.CreateError(HttpStatusCode.BadRequest, updateRepr.ErrorResponse);
             }
 
             // 5. Store the new representation.
@@ -133,9 +155,9 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 record.Id);
         }
 
-        private bool UpdateRepresentation(Representation source, Representation target, IEnumerable<Representation> allRepresentations, out ErrorResponse error)
+        private async Task<UpdateResponse> UpdateRepresentation(Representation source, Representation target)
         {
-            error = null;
+            var result = new UpdateResponse();
             if (source.Attributes == null)
             {
                 source.Attributes = new List<RepresentationAttribute>();
@@ -152,18 +174,15 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 }
 
                 // 2. Update the attribute
-                if (!UpdateAttribute(sourceAttribute, targetAttribute, allRepresentations, out error))
-                {
-                    return false;
-                }
+                result = await UpdateAttribute(sourceAttribute, targetAttribute, source.ResourceType);
             }
 
-            return true;
+            return result;
         }
 
-        private bool UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target, IEnumerable<Representation> allRepresentations, out ErrorResponse error)
+        private async Task<UpdateResponse> UpdateAttribute(RepresentationAttribute source, RepresentationAttribute target, string resourceType)
         {
-            error = null;
+            var result = new UpdateResponse();
             var complexSource = source as ComplexRepresentationAttribute;
             var complexTarget = target as ComplexRepresentationAttribute;
             if (complexTarget != null)
@@ -176,39 +195,34 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     {
                         if (complexTarget.CompareTo(complexSource) != 0)
                         {
-                            error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
+                            result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, schemaAttribute.Name),
                                 HttpStatusCode.BadRequest,
-                                Common.Constants.ScimTypeValues.Mutability);
-                            return false;
+                                Common.Constants.ScimTypeValues.Mutability));
+                            return result;
                         }
                     }
                     
                     // Check uniqueness
-                    if (schemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+                    if (schemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
                     {
                         var filter = _filterParser.Parse(complexTarget.FullPath);
-                        var uniqueAttrs = new List<RepresentationAttribute>();
-                        foreach (var records in allRepresentations.Select(r => filter.Evaluate(r)))
-                        {
-                            uniqueAttrs.AddRange(records);
-                        }
-
+                        var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter);
                         if (uniqueAttrs.Any())
                         {
                             if (uniqueAttrs.Any(a => a.CompareTo(complexTarget) == 0))
                             {
-                                error = _errorResponseFactory.CreateError(
+                                result.SetError(_errorResponseFactory.CreateError(
                                     string.Format(ErrorMessages.TheAttributeMustBeUnique, complexTarget.SchemaAttribute.Name), 
                                     HttpStatusCode.BadRequest,
-                                    Common.Constants.ScimTypeValues.Uniqueness);
-                                return false;
+                                    Common.Constants.ScimTypeValues.Uniqueness));
+                                return result;
                             }
                         }
                     }
                 }
 
                 complexSource.Values = complexTarget.Values;
-                return true;
+                return result;
             }
             
             // Check mutability
@@ -216,38 +230,34 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             {
                 if (source.CompareTo(target) != 0)
                 {
-                    error = _errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
+                    result.SetError(_errorResponseFactory.CreateError(string.Format(ErrorMessages.TheImmutableAttributeCannotBeUpdated, target.SchemaAttribute.Name),
                         HttpStatusCode.BadRequest,
-                        Common.Constants.ScimTypeValues.Mutability);
-                    return false;
+                        Common.Constants.ScimTypeValues.Mutability));
+                    return result;
                 }
             }
 
             // Check uniqueness
-            if (target.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server && allRepresentations != null && allRepresentations.Any())
+            if (target.SchemaAttribute.Uniqueness == Common.Constants.SchemaAttributeUniqueness.Server)
             {
                 var filter = _filterParser.Parse(target.FullPath);
-                var uniqueAttrs = new List<RepresentationAttribute>();
-                foreach (var records in allRepresentations.Select(r => filter.Evaluate(r)))
-                {
-                    uniqueAttrs.AddRange(records);
-                }
-
+                var uniqueAttrs = await _representationStore.SearchValues(resourceType, filter);
                 if (uniqueAttrs.Any())
                 {
                     if (uniqueAttrs.Any(a => a.CompareTo(target) == 0))
                     {
-                        error = _errorResponseFactory.CreateError(
+                        result.SetError(_errorResponseFactory.CreateError(
                             string.Format(ErrorMessages.TheAttributeMustBeUnique, target.SchemaAttribute.Name),
                             HttpStatusCode.BadRequest,
-                            Common.Constants.ScimTypeValues.Uniqueness);
-                        return false;
+                            Common.Constants.ScimTypeValues.Uniqueness));
+                        return result;
                     }
                 }
             }
 
             // Assign the values
-            return AssignValues(source, target);
+            AssignValues(source, target);
+            return result;
         }
 
         private static bool AssignValues(RepresentationAttribute source, RepresentationAttribute target)

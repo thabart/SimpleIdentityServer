@@ -53,18 +53,44 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
 
             IQueryable<Models.Representation> representations = _context.Representations
                 .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
-                .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children);
+                .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
+                .Include(r => r.Attributes).ThenInclude(a => a.Values)
+                .Where(r => r.ResourceType == resourceType);
             if (searchParameter.Filter != null)
             {
                 var lambdaExpression = searchParameter.Filter.EvaluateFilter(representations);
+                representations = (IQueryable<Models.Representation>)lambdaExpression.Compile().DynamicInvoke(representations);
             }
-
-            if (searchParameter.SortBy != null) { }
 
             representations = representations.Skip(searchParameter.StartIndex);
             representations = representations.Take(searchParameter.Count);
             var result = await representations.ToListAsync().ConfigureAwait(false);
-            return result.Select(r => r.ToDomain());
+            return result.Select(r =>
+            {
+                var rep = r.ToDomain();
+                rep.Attributes = GetRepresentationAttributes(r);
+                return rep;
+            });
+        }
+
+        public async  Task<IEnumerable<RepresentationAttribute>> SearchValues(string resourceType, Filter filter)
+        {
+            if (string.IsNullOrWhiteSpace(resourceType))
+            {
+                throw new ArgumentNullException(nameof(resourceType));
+            }
+
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
+            IQueryable<Model.Representation> representations = _context.Representations.Where(r => r.ResourceType == resourceType);
+            IQueryable<Model.RepresentationAttribute> representationAttributes = _context.RepresentationAttributes;
+            var lambdaExpression = filter.EvaluateSelection(representations, representationAttributes);
+            var res = (IQueryable<Models.RepresentationAttribute>)lambdaExpression.Compile().DynamicInvoke(representations);
+            var result = await res.ToListAsync().ConfigureAwait(false);
+            return GetRepresentationAttributes(result);
         }
 
         public async Task<bool> AddRepresentation(Representation representation)
@@ -118,30 +144,6 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             catch
             {
                 return null;
-            }
-        }
-
-        public async Task<IEnumerable<Representation>> GetRepresentations(string resourceType)
-        {
-            try
-            {
-                var representations = await _context.Representations
-                    .Include(r => r.Attributes).ThenInclude(a => a.Children).ThenInclude(a => a.Children)
-                    .Include(r => r.Attributes).ThenInclude(a => a.SchemaAttribute).ThenInclude(s => s.Children)
-                    .Where(r => r.ResourceType == resourceType).ToListAsync().ConfigureAwait(false);
-                var lst = new List<Representation>();
-                foreach(var representation in representations)
-                {
-                    var record = representation.ToDomain();
-                    record.Attributes = GetRepresentationAttributes(representation);
-                    lst.Add(record);
-                }
-
-                return lst;
-            }
-            catch
-            {
-                return new Representation[0];
             }
         }
 
@@ -220,8 +222,18 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 return new List<RepresentationAttribute>();
             }
 
+            return GetRepresentationAttributes(representation.Attributes);
+        }
+
+        private List<RepresentationAttribute> GetRepresentationAttributes(List<Model.RepresentationAttribute> attributes)
+        {
+            if (attributes == null)
+            {
+                throw new ArgumentNullException(nameof(attributes));
+            }
+            
             var result = new List<RepresentationAttribute>();
-            foreach(var attribute in representation.Attributes)
+            foreach (var attribute in attributes)
             {
                 var transformed = _transformers.Transform(attribute);
                 if (transformed == null)

@@ -14,15 +14,17 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Db.EF.Extensions
+namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
 {
     public static class ScimDbContextExtensions
     {
+        private const char _separator = ',';
         public static void EnsureSeedData(this ScimDbContext context)
         {
             if (context == null)
@@ -78,8 +80,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                     Mutability = mutability,
                     Returned = returned,
                     Uniqueness = uniqueness,
-                    ReferenceTypes = MappingExtensions.ConcatList(referenceTypes),
-                    CanonicalValues = MappingExtensions.ConcatList(canonicalValues),
+                    ReferenceTypes = ConcatList(referenceTypes),
+                    CanonicalValues = ConcatList(canonicalValues),
                     IsCommon = isCommon
                 };
             }
@@ -110,8 +112,8 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                     Mutability = mutability,
                     Returned = returned,
                     Uniqueness = uniqueness,
-                    ReferenceTypes = MappingExtensions.ConcatList(referenceTypes),
-                    CanonicalValues = MappingExtensions.ConcatList(canonicalValues),
+                    ReferenceTypes = ConcatList(referenceTypes),
+                    CanonicalValues = ConcatList(canonicalValues),
                     Children = subAttributes,
                     IsCommon = isCommon,
                     Type = Common.Constants.SchemaAttributeTypes.Complex
@@ -276,6 +278,11 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
              SchemaAttributeFactory.CreateAttribute(Common.Constants.NameResponseNames.HonorificSuffix, "The honorific suffix(es) of the User, or suffix in most Western languages (e.g., 'III' given the full name 'Ms. Barbara J Jensen, III').")
         };
 
+        private static List<SchemaAttribute> ComplexAttributeNamesSub = new List<SchemaAttribute>
+        {
+            SchemaAttributeFactory.CreateAttribute("test", ""),
+        };
+
         private static List<SchemaAttribute> UserAddressAttributes = new List<SchemaAttribute>
         {
              SchemaAttributeFactory.CreateAttribute(Common.Constants.AddressResponseNames.Formatted, "The full mailing address, formatted for display or use with a mailing label.  This attribute MAY contain newlines."),
@@ -306,6 +313,32 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                                     "REQUIRED.",
                     uniqueness: Common.Constants.SchemaAttributeUniqueness.Server,
                     required : true),
+                // TST : arr
+                SchemaAttributeFactory.CreateAttribute(
+                    "arr",
+                    "",
+                    multiValued: true,
+                    required : false),
+                // TST : date                
+                SchemaAttributeFactory.CreateAttribute(
+                    "date",
+                    "",
+                    type: Common.Constants.SchemaAttributeTypes.DateTime,
+                    multiValued: false,
+                    required : false),
+                // TST : age
+                SchemaAttributeFactory.CreateAttribute(
+                    "age",
+                    "",
+                    type: Common.Constants.SchemaAttributeTypes.Integer,
+                    multiValued: false,
+                    required : false),
+                // TST : complexarr
+                SchemaAttributeFactory.CreateComplexAttribute(
+                    "complexarr",
+                    "",
+                    ComplexAttributeNamesSub,
+                    multiValued: true),
                 // name
                 SchemaAttributeFactory.CreateComplexAttribute(
                     Common.Constants.UserResourceResponseNames.Name,
@@ -485,5 +518,15 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
         };
 
         #endregion
+
+        public static string ConcatList(IEnumerable<string> lst)
+        {
+            if (lst == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join(_separator.ToString(), lst);
+        }
     }
 }

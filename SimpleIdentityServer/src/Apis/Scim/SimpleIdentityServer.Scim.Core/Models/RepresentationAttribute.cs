@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
@@ -48,6 +47,11 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public object Clone()
         {
             return CloneObj();
+        }
+
+        public virtual dynamic GetValue()
+        {
+            return string.Empty;
         }
 
         protected virtual object CloneObj()
@@ -97,11 +101,6 @@ namespace SimpleIdentityServer.Scim.Core.Models
             return CompareTo(representation);
         }
 
-        public virtual string GetSerializedValue()
-        {
-            return string.Empty;
-        }
-
         public virtual bool SetValue(RepresentationAttribute attr)
         {
             return false;
@@ -122,6 +121,11 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
         public T Value { get; set; }
 
+        public override dynamic GetValue()
+        {
+            return Value;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null)
@@ -141,11 +145,6 @@ namespace SimpleIdentityServer.Scim.Core.Models
         public override int GetHashCode()
         {
             return Value.GetHashCode();
-        }
-
-        public override string GetSerializedValue()
-        {
-            return JsonConvert.SerializeObject(Value);
         }
 
         public override bool SetValue(RepresentationAttribute attr)

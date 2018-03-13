@@ -23,10 +23,10 @@ namespace SimpleIdentityServer.Scim.Core.Stores
 {
     public interface IRepresentationStore
     {
+        Task<IEnumerable<RepresentationAttribute>> SearchValues(string resourceType, Filter filter);
         Task<IEnumerable<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter);
         Task<bool> AddRepresentation(Representation representation);
         Task<Representation> GetRepresentation(string id);
-        Task<IEnumerable<Representation>> GetRepresentations(string resourceType);
         Task<bool> RemoveRepresentation(Representation representation);
         Task<bool> UpdateRepresentation(Representation representation);
     }

@@ -21,12 +21,15 @@ namespace SimpleIdentityServer.Scim.Db.EF.Models
     public class RepresentationAttribute
     {
         public string Id { get; set; }
+        public string Type { get; set; }
         public string Value { get; set; }
+        public double ValueNumber { get; set; }
         public string RepresentationAttributeIdParent { get; set; }
         public string RepresentationId { get; set; }
         public string SchemaAttributeId { get; set; }
         public virtual RepresentationAttribute Parent { get; set; }
         public virtual List<RepresentationAttribute> Children { get; set; }
+        public virtual List<RepresentationAttributeValue> Values { get; set; }
         public virtual SchemaAttribute SchemaAttribute { get; set; }
         public virtual Representation Representation { get; set; }
     }

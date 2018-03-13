@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         public int? ItemsPerPage { get; set; }
         public int? StartIndex { get; set; }
         public int TotalNumbers { get; set; }
-        public IEnumerable<object> Values { get; set; }
+        public JArray Values { get; set; }
     }
 
     public class Response
@@ -200,16 +200,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             // 2. Filter the representations.
             foreach(var representation in representations)
             {
-                // 1. Apply filter on the values.
-                if (searchParameter.Filter != null)
-                {
-                    if (!searchParameter.Filter.Evaluate(representation).Any())
-                    {
-                        continue;
-                    }
-                }
-
-                // 2. Exclude & include certains attributes.
+                // 2.1 Exclude & include certains attributes.
                 IEnumerable<RepresentationAttribute> attributes = null;
                 if (searchParameter.ExcludedAttributes != null && searchParameter.ExcludedAttributes.Any())
                 {
@@ -252,7 +243,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                     continue;
                 }
 
-                // 3. Add all attributes
+                // 2.2 Add all attributes
                 var obj = new JObject();
                 foreach (JProperty token in attributes.Select(a => (JProperty)GetToken(a, a.SchemaAttribute)))
                 {
@@ -283,7 +274,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             {
                 filterResult.StartIndex = searchParameter.StartIndex;
                 filterResult.ItemsPerPage = searchParameter.Count;
-                filterResult.Values = result.Skip(searchParameter.StartIndex - 1).Take(searchParameter.Count);
+                filterResult.Values = result;
             }
             else
             {

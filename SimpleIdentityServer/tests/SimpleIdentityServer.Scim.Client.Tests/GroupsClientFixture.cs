@@ -135,7 +135,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Get 10 groups
             var eightResult = await _groupsClient.SearchGroups(baseUrl, new SearchParameter
             {
-                StartIndex = 1,
+                StartIndex = 0,
                 Count = 10
             });
 

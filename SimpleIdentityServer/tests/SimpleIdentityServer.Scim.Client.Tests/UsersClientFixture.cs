@@ -18,16 +18,19 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Factories;
+using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
     public class UsersClientFixture : IClassFixture<TestScimServerFixture>
     {
+        private const string baseUrl = "http://localhost:5555";
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private readonly TestScimServerFixture _testScimServerFixture;
         private IUsersClient _usersClient;
@@ -38,9 +41,68 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         }
 
         [Fact]
+        public async Task When_Inset_Complex_Users_Then_Information_Are_Correct()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var jArr = new JArray();
+            jArr.Add("a1");
+            jArr.Add("a2");
+            var jObj = new JObject();
+            jObj.Add(Common.Constants.NameResponseNames.MiddleName, "middlename");
+            jObj.Add(Common.Constants.NameResponseNames.GivenName, "givename");
+            var complexArr = new JArray();
+            var complexObj = new JObject();
+            complexObj.Add("test", "test2");
+            complexArr.Add(complexObj);
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+            var firstResult = await _usersClient.AddUser(baseUrl)
+                .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "username"))
+                .AddAttribute(new JProperty("arr", jArr))
+                .AddAttribute(new JProperty("date", DateTime.UtcNow))
+                .AddAttribute(new JProperty("age", 23))
+                .AddAttribute(new JProperty("complexarr", complexArr))
+                .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.Name, jObj))
+                .Execute();
+            var id = firstResult.Content["id"].ToString();
+
+            var firstSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 10,
+                Filter = $"arr co a1"
+            });
+            var secondSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 10,
+                Filter = $"complexarr[test eq test2]"
+            });
+            var thirdSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 10,
+                Filter = $"age le 23"
+            });
+            var newDate = DateTime.UtcNow.AddDays(2).ToUnix().ToString();
+            var fourthSearch = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 10,
+                Filter = $"date lt {newDate}"
+            });
+
+            Assert.NotNull(firstSearch);
+            Assert.NotNull(secondSearch);
+            Assert.NotNull(thirdSearch);
+            Assert.NotNull(fourthSearch);
+
+            var eightResult = await _usersClient.DeleteUser(baseUrl, id);
+        }
+
+        [Fact]
         public async Task When_Executing_Operations_On_Users_Then_No_Exceptions_Are_Thrown()
         {
-            const string baseUrl = "http://localhost:5555";
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
@@ -125,12 +187,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Get 10 users
             var sixResult = await _usersClient.SearchUsers(baseUrl, new SearchParameter
             {
-                StartIndex = 1,
+                StartIndex = 0,
                 Count = 10
             });
 
             // ASSERTS
             Assert.NotNull(sixResult);
+            var c = sixResult.Content["Resources"];
             Assert.True(sixResult.Content["Resources"].Count() == 10);
 
             // ACT : Get only emails

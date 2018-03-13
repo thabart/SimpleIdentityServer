@@ -39,6 +39,7 @@ namespace SimpleIdentityServer.Scim.Db.EF
             }
 
             builder.AddRepresentationAttributeMappings()
+                .AddRepresentationAttributeValueMappings()
                 .AddRepresentationMappings()
                 .AddSchemaAttributeMappings()
                 .AddSchemaMappings()

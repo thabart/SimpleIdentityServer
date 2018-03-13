@@ -263,7 +263,7 @@ namespace SimpleIdentityServer.Scim.Common
         {
             public const string SubAttributes = "subAttributes";
         }
-
+        
         public static class SchemaAttributeTypes
         {
             public const string String = "string";
