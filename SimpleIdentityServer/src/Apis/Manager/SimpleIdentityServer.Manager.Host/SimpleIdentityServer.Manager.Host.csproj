@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj" />
+    <ProjectReference Include="..\..\..\Lib\Serilog\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Manager.Core\SimpleIdentityServer.Manager.Core.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.csproj" />
-    <ProjectReference Include="..\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Oauth2Instrospection.Authentication\SimpleIdentityServer.Oauth2Instrospection.Authentication.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
+    <ProjectReference Include="..\..\Configuration\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

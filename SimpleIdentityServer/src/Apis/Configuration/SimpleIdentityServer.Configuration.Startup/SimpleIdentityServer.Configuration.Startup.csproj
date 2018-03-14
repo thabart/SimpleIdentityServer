@@ -13,9 +13,9 @@
     <ProjectReference Include="..\..\..\Lib\Serilog\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Configuration.EF\SimpleIdentityServer.Configuration.EF.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Configuration.Host\SimpleIdentityServer.Configuration.Host.csproj" />
-    <ProjectReference Include="..\..\..\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
-    <ProjectReference Include="..\..\..\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
-    <ProjectReference Include="..\..\..\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
   </ItemGroup>
 
   <ItemGroup>

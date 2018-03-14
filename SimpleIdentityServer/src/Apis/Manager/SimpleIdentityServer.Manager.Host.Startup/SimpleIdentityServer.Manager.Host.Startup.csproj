@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.UserInformation.Authentication\SimpleIdentityServer.UserInformation.Authentication.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.UserInformation.Authentication\SimpleIdentityServer.UserInformation.Authentication.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
-    <ProjectReference Include="..\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
-    <ProjectReference Include="..\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
   </ItemGroup>
 
   <ItemGroup>
