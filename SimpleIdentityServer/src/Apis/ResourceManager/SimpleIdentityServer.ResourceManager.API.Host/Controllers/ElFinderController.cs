@@ -94,6 +94,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.MkPerm:
                     return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter));
+                case ElFinderCommands.UmaResource
+                    return new OkObjectResult(await ExecuteUmaResource(deserializedParameter.ElFinderParameter));
             }
 
             return new OkResult();
@@ -858,6 +860,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     record.Claims = claims;
                 }
 
+                JToken jtProvider;
+                if (rule.TryGetValue(Constants.ElFinderAuthPolRuleNames.OpenIdProvider, out jtProvider))
+                {
+                    record.OpenIdProvider = jtProvider.ToString();
+                }
+
                 authPolRules.Add(record);
             }
 
@@ -894,6 +902,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                                 Value = c.Value
                             }).ToList(),
                             Script = string.Empty,
+                            OpenIdProvider = apr.OpenIdProvider,
                             IsResourceOwnerConsentNeeded = false
                         }
                     ).ToList()
@@ -947,6 +956,34 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             // TODO : Deserialize the rules & do the necessary to insert the permissions.
             var jObj = new JObject();
             return jObj;
+        }
+
+        /// <summary>
+        /// Get the information of the UMA resource.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
+        private async Task<JObject> ExecuteUmaResource(ElFinderParameter elFinderParameter)
+        {
+            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
+            {
+                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
+            }
+
+            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            if (asset == null)
+            {
+                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
+            }
+
+            var result = new JObject();
+            if (string.IsNullOrWhiteSpace(asset.ResourceId))
+            {
+                result.Add(Constants.ElFinderResponseNames.Status, "not_found");
+                return result;
+            }
+
+            return null;
         }
 
         #endregion

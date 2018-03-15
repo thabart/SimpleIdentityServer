@@ -78,7 +78,8 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             policyRuleDataTable.Columns.Add("PolicyId", typeof(string));
             policyRuleDataTable.Columns.Add("Scopes", typeof(string));
             policyRuleDataTable.Columns.Add("Script", typeof(string));
-            foreach(var record in parameter)
+            policyRuleDataTable.Columns.Add("OpenIdProvider", typeof(string));
+            foreach (var record in parameter)
             {
                 var model = record.ToModel();
                 var policyRow = policyDataTable.NewRow();
@@ -107,6 +108,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                         policyRuleRow["PolicyId"] = model.Id;
                         policyRuleRow["Scopes"] = rule.Scopes;
                         policyRuleRow["Script"] = rule.Script;
+                        policyRuleRow["OpenIdProvider"] = rule.OpenIdProvider;
                         policyRuleDataTable.Rows.Add(policyRuleRow);
                     }
                 }
@@ -211,6 +213,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
                             rule.IsResourceOwnerConsentNeeded = ru.IsResourceOwnerConsentNeeded;
                             rule.Script = ru.Script;
+                            rule.OpenIdProvider = ru.OpenIdProvider;
                             rule.ClientIdsAllowed = MappingExtensions.GetConcatenatedList(ru.ClientIdsAllowed);
                             rule.Scopes = MappingExtensions.GetConcatenatedList(ru.Scopes);
                             rule.Claims = JsonConvert.SerializeObject(ru.Claims == null ? new List<Claim>() : ru.Claims);

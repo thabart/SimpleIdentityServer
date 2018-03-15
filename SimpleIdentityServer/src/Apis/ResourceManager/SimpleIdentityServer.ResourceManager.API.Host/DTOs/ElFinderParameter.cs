@@ -20,7 +20,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Access,
         Perms,
         MkPerm,
-        OpenIdClients
+        OpenIdClients,
+        UmaResource
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -65,7 +66,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Access, ElFinderCommands.Access },
             { Constants.ElFinderCommands.Perms, ElFinderCommands.Perms },
             { Constants.ElFinderCommands.MkPerm, ElFinderCommands.MkPerm },
-            { Constants.ElFinderCommands.OpenIdClients, ElFinderCommands.OpenIdClients }
+            { Constants.ElFinderCommands.OpenIdClients, ElFinderCommands.OpenIdClients },
+            { Constants.ElFinderCommands.UmaResource, ElFinderCommands.UmaResource}
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, 

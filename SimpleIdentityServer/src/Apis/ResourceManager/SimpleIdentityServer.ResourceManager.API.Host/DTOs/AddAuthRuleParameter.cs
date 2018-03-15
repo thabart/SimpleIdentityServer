@@ -14,5 +14,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         public IEnumerable<string> OpenIdClients { get; set; }
         public IEnumerable<string> OpenIdScopes { get; set; }
         public IEnumerable<AddAuthRuleClaimParameter> Claims { get; set; }
+        public string OpenIdProvider { get; set; }
     }
 }

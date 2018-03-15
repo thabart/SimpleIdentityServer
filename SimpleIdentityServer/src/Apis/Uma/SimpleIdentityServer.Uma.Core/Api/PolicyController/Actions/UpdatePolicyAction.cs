@@ -86,7 +86,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                     IsResourceOwnerConsentNeeded = ruleParameter.IsResourceOwnerConsentNeeded,
                     Scopes = ruleParameter.Scopes,
                     Script = ruleParameter.Script,
-                    Claims = claims
+                    Claims = claims,
+                    OpenIdProvider = ruleParameter.OpenIdProvider
                 });
             }
 

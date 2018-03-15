@@ -32,6 +32,7 @@ namespace SimpleIdentityServer.Uma.Core.Models
         public List<Claim> Claims { get; set; }
         public bool IsResourceOwnerConsentNeeded { get; set; }
         public string Script { get; set; }
+        public string OpenIdProvider { get; set; }
     }
 
     public class Policy

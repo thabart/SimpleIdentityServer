@@ -134,7 +134,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Scopes = policyRule.Scopes,
-                Script = policyRule.Script
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 
@@ -169,7 +170,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Id = policyRule.Id,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Scopes = policyRule.Scopes,
-                Script = policyRule.Script
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 
@@ -209,7 +211,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Scopes = policyRule.Scopes,
-                Script = policyRule.Script
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 

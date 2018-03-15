@@ -84,6 +84,7 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetList(policyRule.Scopes),
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider,
                 Claims = claims
             };
         }

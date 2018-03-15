@@ -17,10 +17,11 @@
 
         public static class ElFinderAuthPolRuleNames
         {
-            public const string Claims = "claims";
             public const string Id = "id";
+            public const string Claims = "openidclaims";
             public const string OpenIdClients = "openidclients";
-            public const string Scopes = "scopes";
+            public const string Scopes = "permissions";
+            public const string OpenIdProvider = "provider";
         }
 
         public static class ElFinderDtoNames
@@ -58,6 +59,7 @@
             public const string OpenIdClaims = "openidclaims";
             public const string Permissions = "permissions";
             public const string IdProviders = "idproviders";
+            public const string Status = "status";
         }
 
         public static class ElFinderOptionNames
@@ -162,6 +164,7 @@
             public const string Perms = "perms";
             public const string MkPerm = "mkperm";
             public const string OpenIdClients = "openidclients";
+            public const string UmaResource = "umaresource";
         }
     }
 }

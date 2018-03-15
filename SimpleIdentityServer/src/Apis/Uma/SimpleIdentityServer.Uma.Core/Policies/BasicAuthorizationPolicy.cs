@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var idToken = claimTokenParameter.Token;
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult
