@@ -18,6 +18,7 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
@@ -54,6 +55,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly ITokenStore _tokenStore;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
+        private readonly IJwtGenerator _jwtGenerator;
 
         #region Constructor
 
@@ -67,7 +69,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             ITokenStore tokenStore,
-            IGrantedTokenHelper grantedTokenHelper)
+            IGrantedTokenHelper grantedTokenHelper,
+            IJwtGenerator jwtGenerator)
         {
             _clientValidator = clientValidator;
             _authorizationCodeStore = authorizationCodeStore;
@@ -79,6 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _tokenStore = tokenStore;
             _grantedTokenHelper = grantedTokenHelper;
+            _jwtGenerator = jwtGenerator;
         }
 
         #endregion
@@ -114,6 +118,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
+                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad);
                     grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
                 }
 

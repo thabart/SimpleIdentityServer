@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
@@ -46,6 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
+        private Mock<IJwtGenerator> _jwtGeneratorStub;
         private IGetTokenByAuthorizationCodeGrantTypeAction _getTokenByAuthorizationCodeGrantTypeAction;
 
         #region Exceptions
@@ -447,6 +449,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
+            _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByAuthorizationCodeGrantTypeAction = new GetTokenByAuthorizationCodeGrantTypeAction(
                 _clientValidatorFake.Object,
                 _authorizationCodeStoreFake.Object,
@@ -457,7 +460,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _simpleIdentityServerEventSourceFake.Object,
                 _authenticateInstructionGeneratorStub.Object,
                 _tokenStoreFake.Object,
-                _grantedTokenHelperStub.Object); 
+                _grantedTokenHelperStub.Object,
+                _jwtGeneratorStub.Object); 
         }
     }
 }

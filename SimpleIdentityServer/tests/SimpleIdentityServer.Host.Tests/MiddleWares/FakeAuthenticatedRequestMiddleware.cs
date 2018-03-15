@@ -14,39 +14,27 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Text.Encodings.Web;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
-    public class FakeAuthenticatedRequestMiddleware
+    public class FakeAuthenticatedRequestMiddleware : AuthenticationMiddleware<TestAuthenticationOptions>
     {
-        public const string TestingCookieAuthentication = "TestCookieAuthentication";
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate next;
 
-        public FakeAuthenticatedRequestMiddleware(RequestDelegate next)
+        public FakeAuthenticatedRequestMiddleware(RequestDelegate next, IOptions<TestAuthenticationOptions> options, ILoggerFactory loggerFactory)
+            : base(next, options, loggerFactory, UrlEncoder.Default)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-
-            _next = next;
+            this.next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        protected override AuthenticationHandler<TestAuthenticationOptions> CreateHandler()
         {
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "administrator")
-            }, TestingCookieAuthentication);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            context.User = claimsPrincipal;
-            await _next(context);
+            return new TestAuthenticationHandler();
         }
     }
 }

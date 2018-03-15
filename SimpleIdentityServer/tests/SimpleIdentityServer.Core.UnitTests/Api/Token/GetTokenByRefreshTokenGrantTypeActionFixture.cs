@@ -14,21 +14,20 @@
 // limitations under the License.
 #endregion
 
-using System;
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
-using Xunit;
-using SimpleIdentityServer.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -38,6 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
+        private Mock<IJwtGenerator> _jwtGeneratorStub;
         private IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
 
         #region Exceptions
@@ -106,11 +106,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
+            _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 _clientHelperFake.Object,
                 _simpleIdentityServerEventSourceStub.Object,
                 _grantedTokenGeneratorHelperStub.Object,
-                _tokenStoreStub.Object);
+                _tokenStoreStub.Object,
+                _jwtGeneratorStub.Object);
         }
 
         #endregion

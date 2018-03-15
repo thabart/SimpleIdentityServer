@@ -41,6 +41,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 {
     public interface IJwtGenerator
     {
+        Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
         Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
@@ -125,6 +126,37 @@ namespace SimpleIdentityServer.Core.JwtToken
         }
 
         #region Public methods
+
+        public async Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload)
+        {
+            if (jwsPayload == null)
+            {
+                throw new ArgumentNullException(nameof(jwsPayload));
+            }
+
+            var timeKeyValuePair = await GetExpirationAndIssuedTime();
+            var expirationInSeconds = timeKeyValuePair.Key;
+            var issuedAtTime = timeKeyValuePair.Value;
+            if (jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.Iat))
+            {
+                jwsPayload[Jwt.Constants.StandardClaimNames.Iat] = issuedAtTime;
+            }
+            else
+            {
+                jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
+            }
+
+            if (jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.ExpirationTime))
+            {
+                jwsPayload[Jwt.Constants.StandardClaimNames.ExpirationTime] = expirationInSeconds;
+            }
+            else
+            {
+                jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
+            }
+
+            return jwsPayload;
+        }
 
         public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes)
         {

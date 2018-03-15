@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Stores;
@@ -37,17 +38,20 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
+        private readonly IJwtGenerator _jwtGenerator;
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IClientHelper clientHelper,
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
-            ITokenStore tokenStore)
+            ITokenStore tokenStore,
+            IJwtGenerator jwtGenerator)
         {
             _clientHelper = clientHelper;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
+            _jwtGenerator = jwtGenerator;
         }
 
         public async Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
@@ -69,6 +73,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 3. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
+                await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad);
                 generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad);
             }
 

@@ -25,7 +25,6 @@ using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Host.Tests.Extensions;
@@ -39,8 +38,6 @@ using System.Reflection;
 using System.Text;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
-using SimpleIdentityServer.Store.Redis;
-using Microsoft.Extensions.Caching.Redis;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -77,7 +74,7 @@ namespace SimpleIdentityServer.Host.Tests
                 },
                 Authenticate = new AuthenticateOptions
                 {
-                    CookieName = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication
+                    CookieName = TestAuthenticationOptions.TestingCookieAuthentication
                 },
                 Scim = new ScimOptions
                 {
@@ -106,7 +103,10 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             // 5. Configure authentication.
-            services.AddAuthentication(opts => opts.SignInScheme = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication);
+            services.AddAuthentication(opts =>
+            {
+                opts.SignInScheme = TestAuthenticationOptions.TestingCookieAuthentication;
+            });
             return services.BuildServiceProvider();
         }
 
@@ -119,7 +119,6 @@ namespace SimpleIdentityServer.Host.Tests
             }
 
 
-            var tttt = app.ApplicationServices.GetService<IEventAggregateRepository>();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
@@ -127,7 +126,7 @@ namespace SimpleIdentityServer.Host.Tests
             // 3. Use cookie authentication
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = FakeAuthenticatedRequestMiddleware.TestingCookieAuthentication,
+                AuthenticationScheme = TestAuthenticationOptions.TestingCookieAuthentication,
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true
             });
@@ -166,11 +165,6 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
-            var opts = new RedisCacheOptions
-            {
-                InstanceName = "SimpleIdServerInstance",
-                Configuration = "localhost"
-            };
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()
@@ -179,7 +173,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSimpleIdentityServerInMemory()
                 .AddEventStoreInMemory()
                 .AddDefaultBus()
-                .AddRedisStores(opts);
+                .AddInMemoryStores();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 
