@@ -18,6 +18,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
 
             AddAssets(resourceManagerContext);
             AddAssetAuthPolicies(resourceManagerContext);
+            AddIdProviders(resourceManagerContext);
             resourceManagerContext.SaveChanges();
         }
 
@@ -93,6 +94,23 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                    }
                 });
             }
+        }
+
+        private static void AddIdProviders(ResourceManagerDbContext context)
+        {
+            if (!context.IdProviders.Any())
+            {
+                context.IdProviders.AddRange(new[]
+                {
+                    new IdProvider
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "simple identity server",
+                        Name = "simpleidserver",
+                        OpenIdWellKnownUrl = "https://localhost:5443/.well-known/openid-configuration"
+                    }
+                });
+           }
         }
     }
 }

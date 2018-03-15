@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9451b4a22cd3895c9b65"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "322c8e19dfa51e12b9f5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -1055,12 +1055,10 @@ module.exports = warning;
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -2091,7 +2089,7 @@ exports.i(__webpack_require__(88), "");
 exports.i(__webpack_require__(85), "");
 
 // module
-exports.push([module.i, "* {\r\n    margin: 0;\r\n}\r\n\r\nh1, h2, h3, h4, h5 {\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\nul {\r\n    margin-bottom: 0;\r\n}\r\n\r\nhtml, body, .navbar-static-side {\r\n    height: 100%;\r\n}\r\n\r\nbody {\r\n    font-family: \"Helvetica Neue\", \"Helvetica\", \"Roboto\", \"Arial\", sans-serif;\r\n    line-height: 1.5;\r\n}\r\n\r\n.full-width {\r\n    width: 100% !important;\r\n}\r\n\r\n.center {\r\n    margin: 0 auto;\r\n}\r\n\r\n.block {\r\n    display: block;\r\n}\r\n\r\n.center-text {\r\n    text-align: center;\r\n}\r\n\r\n.center-column {\r\n    float: none;\r\n    margin: 0 auto;\r\n}\r\n\r\n.margin-5 {\r\n    margin: 5px;\r\n}\r\n\r\n.margin-10 {\r\n    margin: 10px;\r\n}\r\n\r\na.active {\r\n    background-color: rgb(238,238,238);\r\n}\r\n\r\n.box {\r\n    margin: 5px;\r\n}\r\n\r\n.list-item {\r\n    background-color: rgba(227, 101, 80, 0.51);\r\n    border-radius: 2px;\r\n    border: 1px solid rgb(227, 101, 80);\r\n    padding: 5px;\r\n}\r\n\r\n.no-margin {\r\n    margin: 0 !important;\r\n}\r\n\r\n.inline-block {\r\n    display: inline-block;\r\n}\r\n\r\n#wrapper {\r\n    z-index: 100;\r\n}\r\n\r\n#wrapper, .navbar-static-side {\r\n    -webkit-transition: all 0.4s;\r\n    transition: all 0.4s;\r\n}\r\n\r\n#body {\r\n    background-color: rgba(128, 128, 128, 0.12);\r\n    padding: 5px;\r\n}\r\n\r\n#body .cell {\r\n    background-color: white;\r\n    padding: 10px;\r\n}\r\n\r\n@media (min-width: 768px) {\r\n    #wrapper {\r\n        margin: 0 0 0 220px;\r\n    }\r\n}\r\n\r\n@media (max-width: 768px) {\r\n    #wrapper {\r\n        margin: 0;\r\n    }\r\n\r\n    .navbar-static-side {\r\n        width: 0px !important;\r\n    }\r\n\r\n        .navbar-static-side li {\r\n            display: none;\r\n        }\r\n}\r\n\r\n.jwsarea {\r\n    height: 300px !important;\r\n}\r\n\r\n.jwearea {\r\n    height: 200px !important;\r\n}\r\n", ""]);
+exports.push([module.i, "* {\n    margin: 0;\n}\n\nh1, h2, h3, h4, h5 {\n    margin: 0;\n    padding: 0;\n}\n\nul {\n    margin-bottom: 0;\n}\n\nhtml, body, .navbar-static-side {\n    height: 100%;\n}\n\nbody {\n    font-family: \"Helvetica Neue\", \"Helvetica\", \"Roboto\", \"Arial\", sans-serif;\n    line-height: 1.5;\n}\n\n.full-width {\n    width: 100% !important;\n}\n\n.center {\n    margin: 0 auto;\n}\n\n.block {\n    display: block;\n}\n\n.center-text {\n    text-align: center;\n}\n\n.center-column {\n    float: none;\n    margin: 0 auto;\n}\n\n.margin-5 {\n    margin: 5px;\n}\n\n.margin-10 {\n    margin: 10px;\n}\n\na.active {\n    background-color: rgb(238,238,238);\n}\n\n.box {\n    margin: 5px;\n}\n\n.list-item {\n    background-color: rgba(227, 101, 80, 0.51);\n    border-radius: 2px;\n    border: 1px solid rgb(227, 101, 80);\n    padding: 5px;\n}\n\n.no-margin {\n    margin: 0 !important;\n}\n\n.inline-block {\n    display: inline-block;\n}\n\n#wrapper {\n    z-index: 100;\n}\n\n#wrapper, .navbar-static-side {\n    -webkit-transition: all 0.4s;\n    transition: all 0.4s;\n}\n\n#body {\n    background-color: rgba(128, 128, 128, 0.12);\n    padding: 5px;\n}\n\n#body .cell {\n    background-color: white;\n    padding: 10px;\n}\n\n@media (min-width: 768px) {\n    #wrapper {\n        margin: 0 0 0 220px;\n    }\n}\n\n@media (max-width: 768px) {\n    #wrapper {\n        margin: 0;\n    }\n\n    .navbar-static-side {\n        width: 0px !important;\n    }\n\n        .navbar-static-side li {\n            display: none;\n        }\n}\n\n.jwsarea {\n    height: 300px !important;\n}\n\n.jwearea {\n    height: 200px !important;\n}\n", ""]);
 
 // exports
 
@@ -3156,72 +3154,78 @@ var isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
 /**
  * Copyright 2015, Yahoo! Inc.
  * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
  */
-
-
-var REACT_STATICS = {
-    childContextTypes: true,
-    contextTypes: true,
-    defaultProps: true,
-    displayName: true,
-    getDefaultProps: true,
-    mixins: true,
-    propTypes: true,
-    type: true
-};
-
-var KNOWN_STATICS = {
-  name: true,
-  length: true,
-  prototype: true,
-  caller: true,
-  callee: true,
-  arguments: true,
-  arity: true
-};
-
-var defineProperty = Object.defineProperty;
-var getOwnPropertyNames = Object.getOwnPropertyNames;
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-var getPrototypeOf = Object.getPrototypeOf;
-var objectPrototype = getPrototypeOf && getPrototypeOf(Object);
-
-module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
-    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
-
-        if (objectPrototype) {
-            var inheritedComponent = getPrototypeOf(sourceComponent);
-            if (inheritedComponent && inheritedComponent !== objectPrototype) {
-                hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
+(function (global, factory) {
+     true ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.hoistNonReactStatics = factory());
+}(this, (function () {
+    'use strict';
+    
+    var REACT_STATICS = {
+        childContextTypes: true,
+        contextTypes: true,
+        defaultProps: true,
+        displayName: true,
+        getDefaultProps: true,
+        getDerivedStateFromProps: true,
+        mixins: true,
+        propTypes: true,
+        type: true
+    };
+    
+    var KNOWN_STATICS = {
+        name: true,
+        length: true,
+        prototype: true,
+        caller: true,
+        callee: true,
+        arguments: true,
+        arity: true
+    };
+    
+    var defineProperty = Object.defineProperty;
+    var getOwnPropertyNames = Object.getOwnPropertyNames;
+    var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+    var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+    var getPrototypeOf = Object.getPrototypeOf;
+    var objectPrototype = getPrototypeOf && getPrototypeOf(Object);
+    
+    return function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
+        if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
+            
+            if (objectPrototype) {
+                var inheritedComponent = getPrototypeOf(sourceComponent);
+                if (inheritedComponent && inheritedComponent !== objectPrototype) {
+                    hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
+                }
             }
-        }
-
-        var keys = getOwnPropertyNames(sourceComponent);
-
-        if (getOwnPropertySymbols) {
-            keys = keys.concat(getOwnPropertySymbols(sourceComponent));
-        }
-
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            if (!REACT_STATICS[key] && !KNOWN_STATICS[key] && (!blacklist || !blacklist[key])) {
-                var descriptor = getOwnPropertyDescriptor(sourceComponent, key);
-                try { // Avoid failures from read-only properties
-                    defineProperty(targetComponent, key, descriptor);
-                } catch (e) {}
+            
+            var keys = getOwnPropertyNames(sourceComponent);
+            
+            if (getOwnPropertySymbols) {
+                keys = keys.concat(getOwnPropertySymbols(sourceComponent));
             }
+            
+            for (var i = 0; i < keys.length; ++i) {
+                var key = keys[i];
+                if (!REACT_STATICS[key] && !KNOWN_STATICS[key] && (!blacklist || !blacklist[key])) {
+                    var descriptor = getOwnPropertyDescriptor(sourceComponent, key);
+                    try { // Avoid failures from read-only properties
+                        defineProperty(targetComponent, key, descriptor);
+                    } catch (e) {}
+                }
+            }
+            
+            return targetComponent;
         }
-
+        
         return targetComponent;
-    }
-
-    return targetComponent;
-};
+    };
+})));
 
 
 /***/ }),
@@ -3603,7 +3607,7 @@ var I18n = function (_Component) {
       if (!this.mounted) return;
 
       this.t = this.getI18nTranslate();
-      this.setState({ i18nLoadedAt: new Date() });
+      this.setState({ i18nLoadedAt: new Date() }); // rerender
     }
   }, {
     key: 'getI18nTranslate',
@@ -3629,7 +3633,11 @@ var I18n = function (_Component) {
         }, 100);
       }
 
-      return children(this.t, { i18n: this.i18n, t: this.t });
+      return children(this.t, {
+        i18n: this.i18n,
+        t: this.t,
+        ready: ready
+      });
     }
   }]);
 
@@ -7305,7 +7313,7 @@ exports = module.exports = __webpack_require__(10)(false);
 
 
 // module
-exports.push([module.i, ".identity-providers-selector {\r\n    margin: 5px;\r\n}\r\n\r\n.identity-providers-selector img {\r\n    width: 60px;\r\n}\r\n\r\n.identity-providers-selector .card {\r\n    cursor: pointer;\r\n}\r\n", ""]);
+exports.push([module.i, ".identity-providers-selector {\n    margin: 5px;\n}\n\n.identity-providers-selector img {\n    width: 60px;\n}\n\n.identity-providers-selector .card {\n    cursor: pointer;\n}\n", ""]);
 
 // exports
 
@@ -7319,7 +7327,7 @@ exports = module.exports = __webpack_require__(10)(false);
 
 
 // module
-exports.push([module.i, ".cssload-thecube {\r\n    width: 22px;\r\n    height: 22px;\r\n    margin: 0 auto;\r\n    margin-top: 15px;\r\n    position: relative;\r\n    transform: rotateZ(45deg);\r\n    -o-transform: rotateZ(45deg);\r\n    -ms-transform: rotateZ(45deg);\r\n    -webkit-transform: rotateZ(45deg);\r\n    -moz-transform: rotateZ(45deg);\r\n}\r\n\r\n    .cssload-thecube .cssload-cube {\r\n        position: relative;\r\n        transform: rotateZ(45deg);\r\n        -o-transform: rotateZ(45deg);\r\n        -ms-transform: rotateZ(45deg);\r\n        -webkit-transform: rotateZ(45deg);\r\n        -moz-transform: rotateZ(45deg);\r\n    }\r\n\r\n    .cssload-thecube .cssload-cube {\r\n        float: left;\r\n        width: 50%;\r\n        height: 50%;\r\n        position: relative;\r\n        transform: scale(1.1);\r\n        -o-transform: scale(1.1);\r\n        -ms-transform: scale(1.1);\r\n        -webkit-transform: scale(1.1);\r\n        -moz-transform: scale(1.1);\r\n    }\r\n\r\n        .cssload-thecube .cssload-cube:before {\r\n            content: \"\";\r\n            position: absolute;\r\n            top: 0;\r\n            left: 0;\r\n            width: 100%;\r\n            height: 100%;\r\n            background-color: rgb(235,118,9);\r\n            animation: cssload-fold-thecube 2.76s infinite linear both;\r\n            -o-animation: cssload-fold-thecube 2.76s infinite linear both;\r\n            -ms-animation: cssload-fold-thecube 2.76s infinite linear both;\r\n            -webkit-animation: cssload-fold-thecube 2.76s infinite linear both;\r\n            -moz-animation: cssload-fold-thecube 2.76s infinite linear both;\r\n            transform-origin: 100% 100%;\r\n            -o-transform-origin: 100% 100%;\r\n            -ms-transform-origin: 100% 100%;\r\n            -webkit-transform-origin: 100% 100%;\r\n            -moz-transform-origin: 100% 100%;\r\n        }\r\n\r\n    .cssload-thecube .cssload-c2 {\r\n        transform: scale(1.1) rotateZ(90deg);\r\n        -o-transform: scale(1.1) rotateZ(90deg);\r\n        -ms-transform: scale(1.1) rotateZ(90deg);\r\n        -webkit-transform: scale(1.1) rotateZ(90deg);\r\n        -moz-transform: scale(1.1) rotateZ(90deg);\r\n    }\r\n\r\n    .cssload-thecube .cssload-c3 {\r\n        transform: scale(1.1) rotateZ(180deg);\r\n        -o-transform: scale(1.1) rotateZ(180deg);\r\n        -ms-transform: scale(1.1) rotateZ(180deg);\r\n        -webkit-transform: scale(1.1) rotateZ(180deg);\r\n        -moz-transform: scale(1.1) rotateZ(180deg);\r\n    }\r\n\r\n    .cssload-thecube .cssload-c4 {\r\n        transform: scale(1.1) rotateZ(270deg);\r\n        -o-transform: scale(1.1) rotateZ(270deg);\r\n        -ms-transform: scale(1.1) rotateZ(270deg);\r\n        -webkit-transform: scale(1.1) rotateZ(270deg);\r\n        -moz-transform: scale(1.1) rotateZ(270deg);\r\n    }\r\n\r\n    .cssload-thecube .cssload-c2:before {\r\n        animation-delay: 0.35s;\r\n        -o-animation-delay: 0.35s;\r\n        -ms-animation-delay: 0.35s;\r\n        -webkit-animation-delay: 0.35s;\r\n        -moz-animation-delay: 0.35s;\r\n    }\r\n\r\n    .cssload-thecube .cssload-c3:before {\r\n        animation-delay: 0.69s;\r\n        -o-animation-delay: 0.69s;\r\n        -ms-animation-delay: 0.69s;\r\n        -webkit-animation-delay: 0.69s;\r\n        -moz-animation-delay: 0.69s;\r\n    }\r\n\r\n    .cssload-thecube .cssload-c4:before {\r\n        animation-delay: 1.04s;\r\n        -o-animation-delay: 1.04s;\r\n        -ms-animation-delay: 1.04s;\r\n        -webkit-animation-delay: 1.04s;\r\n        -moz-animation-delay: 1.04s;\r\n    }\r\n\r\n\r\n\r\n@keyframes cssload-fold-thecube {\r\n    0%, 10% {\r\n        transform: perspective(42px) rotateX(-180deg);\r\n        opacity: 0;\r\n    }\r\n\r\n    25%, 75% {\r\n        transform: perspective(42px) rotateX(0deg);\r\n        opacity: 1;\r\n    }\r\n\r\n    90%, 100% {\r\n        transform: perspective(42px) rotateY(180deg);\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@-o-keyframes cssload-fold-thecube {\r\n    0%, 10% {\r\n        -o-transform: perspective(42px) rotateX(-180deg);\r\n        opacity: 0;\r\n    }\r\n\r\n    25%, 75% {\r\n        -o-transform: perspective(42px) rotateX(0deg);\r\n        opacity: 1;\r\n    }\r\n\r\n    90%, 100% {\r\n        -o-transform: perspective(42px) rotateY(180deg);\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@-ms-keyframes cssload-fold-thecube {\r\n    0%, 10% {\r\n        -ms-transform: perspective(42px) rotateX(-180deg);\r\n        opacity: 0;\r\n    }\r\n\r\n    25%, 75% {\r\n        -ms-transform: perspective(42px) rotateX(0deg);\r\n        opacity: 1;\r\n    }\r\n\r\n    90%, 100% {\r\n        -ms-transform: perspective(42px) rotateY(180deg);\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes cssload-fold-thecube {\r\n    0%, 10% {\r\n        -webkit-transform: perspective(42px) rotateX(-180deg);\r\n        opacity: 0;\r\n    }\r\n\r\n    25%, 75% {\r\n        -webkit-transform: perspective(42px) rotateX(0deg);\r\n        opacity: 1;\r\n    }\r\n\r\n    90%, 100% {\r\n        -webkit-transform: perspective(42px) rotateY(180deg);\r\n        opacity: 0;\r\n    }\r\n}\r\n\r\n@-moz-keyframes cssload-fold-thecube {\r\n    0%, 10% {\r\n        -moz-transform: perspective(42px) rotateX(-180deg);\r\n        opacity: 0;\r\n    }\r\n\r\n    25%, 75% {\r\n        -moz-transform: perspective(42px) rotateX(0deg);\r\n        opacity: 1;\r\n    }\r\n\r\n    90%, 100% {\r\n        -moz-transform: perspective(42px) rotateY(180deg);\r\n        opacity: 0;\r\n    }\r\n}\r\n", ""]);
+exports.push([module.i, ".cssload-thecube {\n    width: 22px;\n    height: 22px;\n    margin: 0 auto;\n    margin-top: 15px;\n    position: relative;\n    transform: rotateZ(45deg);\n    -o-transform: rotateZ(45deg);\n    -ms-transform: rotateZ(45deg);\n    -webkit-transform: rotateZ(45deg);\n    -moz-transform: rotateZ(45deg);\n}\n\n    .cssload-thecube .cssload-cube {\n        position: relative;\n        transform: rotateZ(45deg);\n        -o-transform: rotateZ(45deg);\n        -ms-transform: rotateZ(45deg);\n        -webkit-transform: rotateZ(45deg);\n        -moz-transform: rotateZ(45deg);\n    }\n\n    .cssload-thecube .cssload-cube {\n        float: left;\n        width: 50%;\n        height: 50%;\n        position: relative;\n        transform: scale(1.1);\n        -o-transform: scale(1.1);\n        -ms-transform: scale(1.1);\n        -webkit-transform: scale(1.1);\n        -moz-transform: scale(1.1);\n    }\n\n        .cssload-thecube .cssload-cube:before {\n            content: \"\";\n            position: absolute;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            background-color: rgb(235,118,9);\n            animation: cssload-fold-thecube 2.76s infinite linear both;\n            -o-animation: cssload-fold-thecube 2.76s infinite linear both;\n            -ms-animation: cssload-fold-thecube 2.76s infinite linear both;\n            -webkit-animation: cssload-fold-thecube 2.76s infinite linear both;\n            -moz-animation: cssload-fold-thecube 2.76s infinite linear both;\n            transform-origin: 100% 100%;\n            -o-transform-origin: 100% 100%;\n            -ms-transform-origin: 100% 100%;\n            -webkit-transform-origin: 100% 100%;\n            -moz-transform-origin: 100% 100%;\n        }\n\n    .cssload-thecube .cssload-c2 {\n        transform: scale(1.1) rotateZ(90deg);\n        -o-transform: scale(1.1) rotateZ(90deg);\n        -ms-transform: scale(1.1) rotateZ(90deg);\n        -webkit-transform: scale(1.1) rotateZ(90deg);\n        -moz-transform: scale(1.1) rotateZ(90deg);\n    }\n\n    .cssload-thecube .cssload-c3 {\n        transform: scale(1.1) rotateZ(180deg);\n        -o-transform: scale(1.1) rotateZ(180deg);\n        -ms-transform: scale(1.1) rotateZ(180deg);\n        -webkit-transform: scale(1.1) rotateZ(180deg);\n        -moz-transform: scale(1.1) rotateZ(180deg);\n    }\n\n    .cssload-thecube .cssload-c4 {\n        transform: scale(1.1) rotateZ(270deg);\n        -o-transform: scale(1.1) rotateZ(270deg);\n        -ms-transform: scale(1.1) rotateZ(270deg);\n        -webkit-transform: scale(1.1) rotateZ(270deg);\n        -moz-transform: scale(1.1) rotateZ(270deg);\n    }\n\n    .cssload-thecube .cssload-c2:before {\n        animation-delay: 0.35s;\n        -o-animation-delay: 0.35s;\n        -ms-animation-delay: 0.35s;\n        -webkit-animation-delay: 0.35s;\n        -moz-animation-delay: 0.35s;\n    }\n\n    .cssload-thecube .cssload-c3:before {\n        animation-delay: 0.69s;\n        -o-animation-delay: 0.69s;\n        -ms-animation-delay: 0.69s;\n        -webkit-animation-delay: 0.69s;\n        -moz-animation-delay: 0.69s;\n    }\n\n    .cssload-thecube .cssload-c4:before {\n        animation-delay: 1.04s;\n        -o-animation-delay: 1.04s;\n        -ms-animation-delay: 1.04s;\n        -webkit-animation-delay: 1.04s;\n        -moz-animation-delay: 1.04s;\n    }\n\n\n\n@keyframes cssload-fold-thecube {\n    0%, 10% {\n        transform: perspective(42px) rotateX(-180deg);\n        opacity: 0;\n    }\n\n    25%, 75% {\n        transform: perspective(42px) rotateX(0deg);\n        opacity: 1;\n    }\n\n    90%, 100% {\n        transform: perspective(42px) rotateY(180deg);\n        opacity: 0;\n    }\n}\n\n@-o-keyframes cssload-fold-thecube {\n    0%, 10% {\n        -o-transform: perspective(42px) rotateX(-180deg);\n        opacity: 0;\n    }\n\n    25%, 75% {\n        -o-transform: perspective(42px) rotateX(0deg);\n        opacity: 1;\n    }\n\n    90%, 100% {\n        -o-transform: perspective(42px) rotateY(180deg);\n        opacity: 0;\n    }\n}\n\n@-ms-keyframes cssload-fold-thecube {\n    0%, 10% {\n        -ms-transform: perspective(42px) rotateX(-180deg);\n        opacity: 0;\n    }\n\n    25%, 75% {\n        -ms-transform: perspective(42px) rotateX(0deg);\n        opacity: 1;\n    }\n\n    90%, 100% {\n        -ms-transform: perspective(42px) rotateY(180deg);\n        opacity: 0;\n    }\n}\n\n@-webkit-keyframes cssload-fold-thecube {\n    0%, 10% {\n        -webkit-transform: perspective(42px) rotateX(-180deg);\n        opacity: 0;\n    }\n\n    25%, 75% {\n        -webkit-transform: perspective(42px) rotateX(0deg);\n        opacity: 1;\n    }\n\n    90%, 100% {\n        -webkit-transform: perspective(42px) rotateY(180deg);\n        opacity: 0;\n    }\n}\n\n@-moz-keyframes cssload-fold-thecube {\n    0%, 10% {\n        -moz-transform: perspective(42px) rotateX(-180deg);\n        opacity: 0;\n    }\n\n    25%, 75% {\n        -moz-transform: perspective(42px) rotateX(0deg);\n        opacity: 1;\n    }\n\n    90%, 100% {\n        -moz-transform: perspective(42px) rotateY(180deg);\n        opacity: 0;\n    }\n}\n", ""]);
 
 // exports
 
@@ -7333,7 +7341,7 @@ exports = module.exports = __webpack_require__(10)(false);
 
 
 // module
-exports.push([module.i, ".navbar.left {\r\n    margin-bottom: 0px;\r\n    padding: 0;\r\n}\r\n\r\n.navbar-static-side {\r\n    position: fixed;\r\n    width: 220px;\r\n}", ""]);
+exports.push([module.i, ".navbar.left {\n    margin-bottom: 0px;\n    padding: 0;\n}\n\n.navbar-static-side {\n    position: fixed;\n    width: 220px;\n}", ""]);
 
 // exports
 
@@ -7347,7 +7355,7 @@ exports = module.exports = __webpack_require__(10)(false);
 
 
 // module
-exports.push([module.i, ".default .identity-providers-selector .active {\r\n    border-color: #E36550;\r\n}\r\n\r\n.default .navbar.left li a:hover,\r\n.default .navbar.left li a.active {\r\n    background-color: #DE472E;\r\n}\r\n\r\n.default .navbar.left a {\r\n    color: white;\r\n}\r\n\r\n.default .navbar.left {\r\n    background-color: #E36550;\r\n}", ""]);
+exports.push([module.i, ".default .identity-providers-selector .active {\n    border-color: #E36550;\n}\n\n.default .navbar.left li a:hover,\n.default .navbar.left li a.active {\n    background-color: #DE472E;\n}\n\n.default .navbar.left a {\n    color: white;\n}\n\n.default .navbar.left {\n    background-color: #E36550;\n}", ""]);
 
 // exports
 
@@ -40710,6 +40718,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -40784,8 +40794,13 @@ function translate(namespaceArg) {
             };
           }
 
-          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__I18n__["a" /* default */], _extends({ ns: this.namespaces }, this.options, this.props, { i18n: this.i18n }), function (t, context) {
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(WrappedComponent, _extends({}, _this2.props, extraProps, context));
+          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__I18n__["a" /* default */], _extends({ ns: this.namespaces }, this.options, this.props, { i18n: this.i18n }), function (t, _ref) {
+            var ready = _ref.ready,
+                context = _objectWithoutProperties(_ref, ['ready']);
+
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(WrappedComponent, _extends({
+              tReady: ready
+            }, _this2.props, extraProps, context));
           });
         }
       }]);

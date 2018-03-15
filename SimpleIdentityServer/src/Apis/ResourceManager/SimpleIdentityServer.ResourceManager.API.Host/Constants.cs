@@ -57,6 +57,7 @@
             public const string OpenIdClients = "openidclients";
             public const string OpenIdClaims = "openidclaims";
             public const string Permissions = "permissions";
+            public const string IdProviders = "idproviders";
         }
 
         public static class ElFinderOptionNames
@@ -108,6 +109,13 @@
             public const string ClientId = "client_id";
             public const string LogoUri = "logo_uri";
             public const string ClientName = "client_name";
+        }
+
+        public static class ElFinderIdProviderResponseNames
+        {
+            public const string Url = "url";
+            public const string Name = "name";
+            public const string Description = "description";
         }
 
         public static class ErrorDtoNames
