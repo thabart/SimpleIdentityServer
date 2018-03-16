@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Account;
+using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
@@ -24,11 +26,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly IAccountActions _accountActions;
 
-        public AccountController(IAccountActions accountActions)
+        public AccountController(IAccountActions accountActions, IAuthenticationService authenticationService, IUserActions userActions) : base(authenticationService, userActions)
         {
             _accountActions = accountActions;
         }
@@ -36,9 +38,9 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            if (authenticatedUser != null &&
-                authenticatedUser.Identity.IsAuthenticated)
+            var authenticatedUser = await SetUser();
+            if (authenticatedUser.Key != null &&
+                authenticatedUser.Key.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User");
             }
@@ -54,9 +56,9 @@ namespace SimpleIdentityServer.Startup.Controllers
                 throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            if (authenticatedUser != null &&
-                authenticatedUser.Identity.IsAuthenticated)
+            var authenticatedUser = await SetUser();
+            if (authenticatedUser.Key != null &&
+                authenticatedUser.Key.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "User");
             }

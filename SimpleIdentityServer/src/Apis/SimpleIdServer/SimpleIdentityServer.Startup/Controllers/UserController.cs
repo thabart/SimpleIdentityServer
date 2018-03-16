@@ -29,11 +29,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Core.Extensions;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
     [Authorize("Connected")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private const string DefaultLanguage = "en";
         private readonly IUserActions _userActions;
@@ -43,7 +44,8 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         public UserController(
             IUserActions userActions,
-            ITranslationManager translationManager)
+            ITranslationManager translationManager,
+            IAuthenticationService authenticationService) : base(authenticationService, userActions)
         {
             _userActions = userActions;
             _translationManager = translationManager;
@@ -56,16 +58,14 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var user = await GetCurrentUser();
-            ViewBag.IsLocalAccount = user.IsLocalAccount;
+            await SetUser();
             return View();
         }
 
         [HttpGet]
         public async Task<ActionResult> Consent()
         {
-            var user = await GetCurrentUser();
-            ViewBag.IsLocalAccount = user.IsLocalAccount;
+            await SetUser();
             return await GetConsents();
         }
 
@@ -84,23 +84,24 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Edit()
         {
-            var user = await GetCurrentUser();
-            if (!await SetUserEditViewBag(user))
+            var user = await SetUser();
+            if (user.Value != null && !user.Value.IsLocalAccount)
             {
                 return RedirectToAction("Index");
             }
 
+            await TranslateUserEditView(DefaultLanguage);
             ViewBag.IsUpdated = false;
             string subject = string.Empty,
                 email = string.Empty,
                 phoneNumber = string.Empty,
                 name = string.Empty;
-            if(user.Claims != null)
+            if(user.Value.Claims != null)
             {
-                var subjectClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-                var emailClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
-                var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
-                var nameClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
+                var subjectClaim = user.Value.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+                var emailClaim = user.Value.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
+                var phoneNumberClaim = user.Value.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+                var nameClaim = user.Value.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
                 if (subjectClaim != null)
                 {
                     subject = subjectClaim.Value;
@@ -127,8 +128,8 @@ namespace SimpleIdentityServer.Startup.Controllers
                 Login = subject,
                 Email = email,
                 Name = name,
-                Password = user.Password,
-                TwoAuthenticationFactor = user.TwoFactorAuthentication,
+                Password = user.Value.Password,
+                TwoAuthenticationFactor = user.Value.TwoFactorAuthentication,
                 PhoneNumber = phoneNumber
             });
         }
@@ -143,15 +144,16 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 1. Set view bag
-            var subject = (await this.GetAuthenticatedUser(Constants.CookieName)).GetSubject();
-            var user = await GetCurrentUser();
-            if (!await SetUserEditViewBag(user))
+            var user = await SetUser();
+            var subject = user.Key.GetSubject();
+            if (!user.Value.IsLocalAccount)
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheResourceOwnerIsNotALocalAccount);
             }
 
+            await TranslateUserEditView(DefaultLanguage);
             // 2. Validate the view model
             if (!ModelState.IsValid)
             {
@@ -161,7 +163,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 3. Update the resource owner
             var parameter = viewModel.ToParameter();
-            foreach(var newClaim in user.Claims.Where(uc => !parameter.Claims.Any(pc => pc.Type == uc.Type)))
+            foreach(var newClaim in user.Value.Claims.Where(uc => !parameter.Claims.Any(pc => pc.Type == uc.Type)))
             {
                 parameter.Claims.Add(newClaim);
             }
@@ -177,15 +179,15 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Simulator()
         {
-            var user = await GetCurrentUser();
-            ViewBag.IsLocalAccount = user.IsLocalAccount;
+            await SetUser();
             ViewBag.Url = string.Format("{0}://{1}", HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
             return View();
         }
 
         [HttpGet]
-        public ActionResult Callback()
+        public async Task<ActionResult> Callback()
         {
+            await SetUser();
             var p = HttpContext.Request.Path;
             var path = Request.Path;
             var query = Request.Query;
@@ -201,7 +203,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Confirm()
         {
-            var user = await this.GetAuthenticatedUser(Constants.CookieName);
+            var user = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieName);
             await _userActions.ConfirmUser(user);
             return RedirectToAction("Index");
         }
@@ -212,8 +214,8 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<ActionResult> GetConsents()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var consents = await _userActions.GetConsents(authenticatedUser);
+            var authenticatedUser = await SetUser();
+            var consents = await _userActions.GetConsents(authenticatedUser.Key);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
             {
@@ -237,24 +239,6 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             return View(result);
-        }
-
-        private async Task<ResourceOwner> GetCurrentUser()
-        {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            return await _userActions.GetUser(authenticatedUser);
-        }
-
-        private async Task<bool> SetUserEditViewBag(ResourceOwner user)
-        {
-            if (!user.IsLocalAccount)
-            {
-                return false;
-            }
-
-            await TranslateUserEditView(DefaultLanguage);
-            ViewBag.IsLocalAccount = user.IsLocalAccount;
-            return true;
         }
 
         private async Task TranslateUserEditView(string uiLocales)

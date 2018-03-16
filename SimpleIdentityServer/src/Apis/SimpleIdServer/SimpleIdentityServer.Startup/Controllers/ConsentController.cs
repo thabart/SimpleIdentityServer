@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
+using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
@@ -34,7 +36,7 @@ using System.Threading.Tasks;
 namespace SimpleIdentityServer.Startup.Controllers
 {
     [Authorize("Connected")]
-    public class ConsentController : Controller
+    public class ConsentController : BaseController
     {
         private readonly IConsentActions _consentActions;
         private readonly IDataProtector _dataProtector;
@@ -47,7 +49,9 @@ namespace SimpleIdentityServer.Startup.Controllers
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IEventPublisher eventPublisher,
-            IEventAggregateRepository eventAggregateRepository)
+            IEventAggregateRepository eventAggregateRepository,
+            IAuthenticationService authenticationService,
+            IUserActions usersAction) : base(authenticationService, usersAction)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -60,9 +64,9 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Models.Client();
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await SetUser();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser);
+                authenticatedUser.Key);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
@@ -88,7 +92,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieName);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
             await LogConsentAccepted(actionResult, parameter.ProcessId);

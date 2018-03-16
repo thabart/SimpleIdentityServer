@@ -14,8 +14,8 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Clie
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core.Common /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core.Jwt /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Authentication.Common /p:PackageVersion=%packageVersion%
-dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Oauth2Instrospection.Authentication /p:PackageVersion=%packageVersion%
-dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.UserInformation.Authentication /p:PackageVersion=%packageVersion%
+REM dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Oauth2Instrospection.Authentication /p:PackageVersion=%packageVersion%
+REM dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.UserInformation.Authentication /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Logging /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer /p:PackageVersion=%packageVersion%

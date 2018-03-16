@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 {
     public class ErrorController : Controller
     {
-        public ActionResult Get401() 
+        public ActionResult Get401()
         {
             return View();
         }

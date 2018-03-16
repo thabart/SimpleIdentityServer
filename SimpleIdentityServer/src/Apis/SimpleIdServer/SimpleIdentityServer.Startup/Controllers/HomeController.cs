@@ -14,17 +14,25 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.WebSite.User;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {
-    public class HomeController : Controller
-    {        
-        #region Public methods
-        
-        [HttpGet]
-        public ActionResult Index() 
+    public class HomeController : BaseController
+    {
+        public HomeController(IAuthenticationService authenticationService, IUserActions userActions) : base(authenticationService, userActions)
         {
+        }
+
+        #region Public methods
+
+        [HttpGet]
+        public async Task<ActionResult> Index() 
+        {
+            await SetUser();
             return View();    
         }
         

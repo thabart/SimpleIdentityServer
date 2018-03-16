@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Authenticate";
-    var loginProviders = Context.Authentication.GetAuthenticationSchemes().Where(a => a.DisplayName != null);
     var userNameState = ViewData.ModelState["UserName"];
     var passwordState = ViewData.ModelState["Password"];
 }
@@ -10,7 +9,7 @@
 @model SimpleIdentityServer.Startup.ViewModels.AuthorizeViewModel
 
 @section PageTitle
-{
+    {
     <h1>
         @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
     </h1>
@@ -24,7 +23,7 @@
             </h2>
         </div>
         <div>
-            @if (!loginProviders.Any())
+            @if (!Model.IdProviders.Any())
             {
                 <p>There is no external authentication services configured</p>
             }
@@ -32,9 +31,9 @@
             {
                 using (Html.BeginForm("ExternalLogin", "Authenticate"))
                 {
-                    foreach (var loginProvider in loginProviders)
+                    foreach (var loginProvider in Model.IdProviders)
                     {
-                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.DisplayName</button>                      
+                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.DisplayName</button>
                     }
                 }
             }

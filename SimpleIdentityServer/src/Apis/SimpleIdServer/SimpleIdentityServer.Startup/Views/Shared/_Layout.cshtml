@@ -2,11 +2,6 @@
 @using System.Security.Claims
 @using SimpleIdentityServer.Core.Jwt
 @using SimpleIdentityServer.Host.Extensions
-
-@{ 
-    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Startup.Constants.CookieName);
-}
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,22 +27,11 @@
                         <span class="navbar-brand">Simple Identity Server</span>
                     </a>
                 </div>
-                @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+                @if (ViewBag.IsAuthenticated)
                 {
-                    var claimsIdentity = user.Identity as ClaimsIdentity;
-                    var userName = "Unknown";
-                    if (claimsIdentity != null)
-                    {
-                        var claimName = claimsIdentity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
-                        if (claimName != null)
-                        {
-                            userName = claimName.Value;
-                        }
-                    }
-                        
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @userName</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @ViewBag.Name</a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="@Url.Content("~/User")">Profile</a>

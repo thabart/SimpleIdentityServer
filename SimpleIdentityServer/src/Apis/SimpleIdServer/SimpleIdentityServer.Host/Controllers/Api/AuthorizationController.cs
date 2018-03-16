@@ -26,11 +26,10 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Parsers;
 using System;
-using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -79,8 +78,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var serializer = new ParamSerializer();
             var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
-            var auth = await _authenticationService.AuthenticateAsync(this.HttpContext, _authenticateOptions.CookieName);
-            var authenticatedUser = await this.GetAuthenticatedUser(_authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();
             var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)

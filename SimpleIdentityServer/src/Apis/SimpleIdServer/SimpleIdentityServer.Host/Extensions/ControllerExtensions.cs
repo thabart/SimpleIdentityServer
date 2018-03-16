@@ -30,41 +30,6 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class ControllerExtensions
     {
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser(this Controller controller, string scheme)
-        {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            if (string.IsNullOrWhiteSpace(scheme))
-            {
-                throw new ArgumentNullException(scheme);
-            }
-
-            var authenticationManager = controller.GetAuthenticationManager();
-
-            var authenticatedUser = (await authenticationManager.GetAuthenticateInfoAsync(scheme)).Principal;
-            return authenticatedUser ?? new ClaimsPrincipal(new ClaimsIdentity());
-        }
-
-        public static async Task<ClaimsPrincipal> GetAuthenticatedUser2F(this Controller controller)
-        {
-            if (controller == null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            var authenticationManager = controller.GetAuthenticationManager();
-            var authenticatedUser = (await authenticationManager.GetAuthenticateInfoAsync(Constants.TwoFactorCookieName)).Principal;
-            return authenticatedUser ?? new ClaimsPrincipal(new ClaimsIdentity());
-        }
-
-        public static AuthenticationManager GetAuthenticationManager(this Controller controller) 
-        {
-            return controller.HttpContext.Authentication;
-        }
-
         public static ActionResult CreateRedirectionFromActionResult(
             this Controller controller,
             Core.Results.ActionResult actionResult,

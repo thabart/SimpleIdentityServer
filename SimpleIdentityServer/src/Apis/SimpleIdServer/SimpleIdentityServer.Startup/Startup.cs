@@ -187,20 +187,28 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
-            // 3. Configure the rate limitation
-
-            // 4. Configure Simple identity server
+            // 3. Configure Simple identity server
             services.AddSimpleIdentityServer(_options);
-            // 5. Enable logging
+            // 4. Enable logging
             services.AddLogging();
+            services.AddAuthentication(Constants.ExternalCookieName)
+                .AddCookie(Constants.ExternalCookieName)
+                .AddFacebook(opts =>
+                {
+                    opts.ClientId = "569242033233529";
+                    opts.ClientSecret = "12e0f33817634c0a650c0121d05e53eb";
+                    opts.SignInScheme = Constants.ExternalCookieName;
+                    opts.Scope.Add("public_profile");
+                    opts.Scope.Add("email");
+                });
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
                 });
-            // 6. Configure MVC
+            // 5. Configure MVC
             services.AddMvc();
-            // 7. Add authentication dependencies & configure it.
+            // 6. Add authentication dependencies & configure it.
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
@@ -220,10 +228,9 @@ namespace SimpleIdentityServer.Startup
             app.UseStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
-            // 4. Enable cookie authentication.
-            // 5. Enable SimpleIdentityServer
+            // 4. Enable SimpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);
-            // 6. Configure ASP.NET MVC
+            // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",

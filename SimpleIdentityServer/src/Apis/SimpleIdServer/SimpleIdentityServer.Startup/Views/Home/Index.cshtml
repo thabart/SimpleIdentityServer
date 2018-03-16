@@ -4,10 +4,6 @@
 
 @using SimpleIdentityServer.Host.Extensions
 
-@{
-    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Startup.Constants.CookieName);
-}
-
 <div class="row">
     <h1>Dashboard</h1>
     <a href="@Url.Content("~/.well-known/openid-configuration")">
@@ -23,7 +19,7 @@
             </div>
         </section>
     </a>
-    @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+    @if (ViewBag.IsAuthenticated)
     {
         <a href="@Url.Content("~/User")">
             <section class="col-md-3 tile"> 

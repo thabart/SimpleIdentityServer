@@ -33,7 +33,11 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
         {
             InsertResources(context);
             InsertPolicies(context);
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch { }
         }
 
         #endregion
