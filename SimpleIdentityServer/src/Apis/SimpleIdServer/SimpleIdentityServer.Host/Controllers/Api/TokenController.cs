@@ -54,14 +54,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 throw new ArgumentNullException(nameof(Request.Form));
             }
 
-            var nameValueCollection = new NameValueCollection();
-            foreach (var kvp in Request.Form)
-            {
-                nameValueCollection.Add(kvp.Key, kvp.Value);
-            }
-
             var serializer = new ParamSerializer();
-            var tokenRequest = serializer.Deserialize<TokenRequest>(nameValueCollection);
+            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
             GrantedToken result = null;
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;

@@ -43,6 +43,7 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             var authenticationManager = controller.GetAuthenticationManager();
+
             var authenticatedUser = (await authenticationManager.GetAuthenticateInfoAsync(scheme)).Principal;
             return authenticatedUser ?? new ClaimsPrincipal(new ClaimsIdentity());
         }

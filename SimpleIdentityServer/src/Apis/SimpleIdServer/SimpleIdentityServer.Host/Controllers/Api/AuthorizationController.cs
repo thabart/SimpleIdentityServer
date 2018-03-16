@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Authorization;
@@ -44,6 +45,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private readonly IActionResultParser _actionResultParser;
         private readonly IJwtParser _jwtParser;
         private readonly AuthenticateOptions _authenticateOptions;
+        private readonly IAuthenticationService _authenticationService;
 
         public AuthorizationController(
             IAuthorizationActions authorizationActions,
@@ -51,7 +53,8 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             IEncoder encoder,
             IActionResultParser actionResultParser,
             IJwtParser jwtParser,
-            AuthenticateOptions authenticateOptions)
+            AuthenticateOptions authenticateOptions,
+            IAuthenticationService authenticationService)
         {
             _authorizationActions = authorizationActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -59,6 +62,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
             _authenticateOptions = authenticateOptions;
+            _authenticationService = authenticationService;
         }
 
         [HttpGet]
@@ -72,15 +76,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorDescriptions.RequestIsNotValid);
             }
             
-            var nameValueCollection = new NameValueCollection();
-            foreach (var kvp in query)
-            {
-                nameValueCollection.Add(kvp.Key, kvp.Value);
-            }
-            
             var serializer = new ParamSerializer();
-            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(nameValueCollection);
+            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
+            var auth = await _authenticationService.AuthenticateAsync(this.HttpContext, _authenticateOptions.CookieName);
             var authenticatedUser = await this.GetAuthenticatedUser(_authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();
             var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
