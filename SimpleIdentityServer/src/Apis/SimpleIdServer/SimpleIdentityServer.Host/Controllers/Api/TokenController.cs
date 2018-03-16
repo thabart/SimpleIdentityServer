@@ -25,6 +25,7 @@ using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -53,8 +54,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 throw new ArgumentNullException(nameof(Request.Form));
             }
 
+            var nameValueCollection = new NameValueCollection();
+            foreach (var kvp in Request.Form)
+            {
+                nameValueCollection.Add(kvp.Key, kvp.Value);
+            }
+
             var serializer = new ParamSerializer();
-            var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
+            var tokenRequest = serializer.Deserialize<TokenRequest>(nameValueCollection);
             GrantedToken result = null;
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
@@ -103,8 +110,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 throw new ArgumentNullException(nameof(Request.Form));
             }
 
+            var nameValueCollection = new NameValueCollection();
+            foreach (var kvp in Request.Form)
+            {
+                nameValueCollection.Add(kvp.Key, kvp.Value);
+            }
+
             var serializer = new ParamSerializer();
-            var revocationRequest = serializer.Deserialize<RevocationRequest>(Request.Form);
+            var revocationRequest = serializer.Deserialize<RevocationRequest>(nameValueCollection);
             // 1. Fetch the authorization header
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;

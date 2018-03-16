@@ -52,13 +52,13 @@ namespace SimpleIdentityServer.Configuration.EF
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             if (isSqlServer)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkSqlServer()
                                 .AddDbContext<SimpleIdentityServerConfigurationContext>(options => options.UseSqlServer(connectionString));
             }
 
             else if (isPostgre)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkNpgsql()
                                 .AddDbContext<SimpleIdentityServerConfigurationContext>(options => options.UseNpgsql(connectionString));
             }
         }

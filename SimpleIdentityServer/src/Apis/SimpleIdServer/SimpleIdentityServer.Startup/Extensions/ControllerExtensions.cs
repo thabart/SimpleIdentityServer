@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Startup.Extensions
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Authentication.Middleware.Constants.CookieName);
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.ExternalCookieName);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
     }

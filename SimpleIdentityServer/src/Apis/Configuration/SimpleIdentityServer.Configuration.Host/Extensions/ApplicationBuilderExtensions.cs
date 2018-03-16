@@ -18,13 +18,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Configuration.Middleware;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 
 namespace SimpleIdentityServer.Configuration.Host.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static void UseConfigurationService(this IApplicationBuilder app, Oauth2IntrospectionOptions options)
+        public static void UseConfigurationService(this IApplicationBuilder app)
         {
             // Display status code page
             app.UseStatusCodePages();
@@ -37,10 +36,6 @@ namespace SimpleIdentityServer.Configuration.Host.Extensions
             {
                 ConfigurationEventSource = app.ApplicationServices.GetService<ConfigurationEventSource>()
             });
-            
-            // Enable authentication
-            app.UseAuthenticationWithIntrospection(options);
-
             // Launch ASP.NET MVC
             app.UseMvc(routes =>
             {

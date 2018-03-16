@@ -920,7 +920,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
             if (!context.JsonWebKeys.Any())
             {
                 var serializedRsa = string.Empty;
-#if NET46
+#if NET461
                 using (var provider = new RSACryptoServiceProvider())
                 {
                     serializedRsa = provider.ToXmlString(true);

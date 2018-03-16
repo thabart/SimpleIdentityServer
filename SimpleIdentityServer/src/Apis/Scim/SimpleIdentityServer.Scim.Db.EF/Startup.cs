@@ -54,13 +54,13 @@ namespace SimpleIdentityServer.Scim.Db.EF
             Console.WriteLine(isPostgre);
             if (isSqlServer)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkSqlServer()
                                 .AddDbContext<ScimDbContext>(options => options.UseSqlServer(connectionString));
             }
 
             if (isPostgre)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkNpgsql()
                                 .AddDbContext<ScimDbContext>(options => options.UseNpgsql(connectionString));
             }
         }

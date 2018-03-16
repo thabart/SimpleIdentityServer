@@ -20,8 +20,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Authentication.Middleware;
-using SimpleIdentityServer.Authentication.Middleware.Extensions;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Services;
@@ -39,7 +37,6 @@ namespace SimpleIdentityServer.Startup
         private const string REDIS_NAME = "REDIS";
         private const string INMEMORY_NAME = "INMEMORY";
 
-        private AuthenticationMiddlewareOptions _authenticationOptions;
         private IdentityServerOptions _options;
         public IConfigurationRoot Configuration { get; set; }
 
@@ -51,32 +48,6 @@ namespace SimpleIdentityServer.Startup
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            _authenticationOptions = new AuthenticationMiddlewareOptions
-            {
-                IdServer = new IdServerOptions
-                {
-                    ExternalLoginCallback = "/Authenticate/LoginCallback",
-                    LoginUrls = new List<string>
-                    {
-                        "/Authenticate",
-                        "/Authenticate/ExternalLogin",
-                        "/Authenticate/OpenId",
-                        "/Authenticate/LocalLoginOpenId",
-                        "/Authenticate/LocalLogin",
-                        "/Authenticate/ExternalLoginOpenId"
-                    }
-                },
-                ConfigurationEdp = new ConfigurationEdpOptions
-                {
-                    ConfigurationUrl = Configuration["ConfigurationEdp:Url"],
-                    ClientId = Configuration["ConfigurationEdp:ClientId"],
-                    ClientSecret = Configuration["ConfigurationEdp:ClientSecret"],
-                    Scopes = new List<string>
-                    {
-                        "display_configuration"
-                    }
-                }
-            };
             var twoFactorServiceStore = new TwoFactorServiceStore();
             var factory = new SimpleIdServerConfigurationClientFactory();
             twoFactorServiceStore.Add(new DefaultTwilioSmsService(factory, Configuration["ConfigurationEdp:Url"]));
@@ -217,32 +188,19 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyHeader()));
 
             // 3. Configure the rate limitation
-            /*
-            services.Configure<RateLimitationOptions>(opt =>
-            {
-                opt.IsEnabled = true;
-                opt.RateLimitationElements = new List<RateLimitationElement>
-                {
-                    new RateLimitationElement
-                    {
-                        Name = "PostToken",
-                        NumberOfRequests = 20,
-                        SlidingTime = 2000
-                    }
-                };
-                opt.MemoryCache = new MemoryCache(new MemoryCacheOptions());
-            });
-            */
 
             // 4. Configure Simple identity server
             services.AddSimpleIdentityServer(_options);
             // 5. Enable logging
             services.AddLogging();
+            services.AddAuthentication(Constants.CookieName)
+                .AddCookie(Constants.CookieName, opts =>
+                {
+                    opts.LoginPath = "/Authenticate";
+                });
             // 6. Configure MVC
             services.AddMvc();
             // 7. Add authentication dependencies & configure it.
-            services.AddAuthenticationMiddleware();
-            services.AddAuthentication(opts => opts.SignInScheme = Constants.CookieName);
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
@@ -257,32 +215,15 @@ namespace SimpleIdentityServer.Startup
         {
             //1 . Enable CORS.
             app.UseCors("AllowAll");
+            app.UseAuthentication();
             // 2. Use static files.
             app.UseStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable cookie authentication.
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = Host.Constants.TwoFactorCookieName
-            });
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = Authentication.Middleware.Constants.CookieName
-            });
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                LoginPath = new PathString("/Authenticate"),
-                AuthenticationScheme = Constants.CookieName,
-                CookieName = Constants.CookieName
-            });
-            // 5. Enable multi parties authentication.
-            // app.UseAuthentication(_authenticationOptions);
-            // 6. Enable SimpleIdentityServer
+            // 5. Enable SimpleIdentityServer
             app.UseSimpleIdentityServer(_options, loggerFactory);
-            // 7. Configure ASP.NET MVC
+            // 6. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
                 routes.MapRoute("Error401Route",

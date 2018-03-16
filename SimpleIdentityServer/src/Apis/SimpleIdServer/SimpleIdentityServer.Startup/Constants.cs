@@ -18,6 +18,7 @@ namespace SimpleIdentityServer.Startup
 {
     public static class Constants
     {
-        public const string CookieName = "SimpleIdServer";
+        public const string CookieName = "SimpleIdServer-Startup";
+        public const string ExternalCookieName = "External-SimpleIdServer";
     }
 }

@@ -14,10 +14,7 @@
 // limitations under the License.
 #endregion
 
-#if NET45 || UAP
-#else
 using Microsoft.AspNetCore.Http;
-#endif
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Specialized;
@@ -56,10 +53,6 @@ namespace SimpleIdentityServer.Core.Common.Serializers
             return Deserialize<T>(this.ConvertNameValueCollection(input));
         }
 
-#if NET45 || UAP
-
-#else
-
         public T Deserialize<T>(IFormCollection form)
         {
             return Deserialize<T>(ConvertNameValueCollection(form));
@@ -69,8 +62,6 @@ namespace SimpleIdentityServer.Core.Common.Serializers
         {
             return Deserialize<T>(ConvertNameValueCollection(query));
         }
-
-#endif
 
         public object Deserialize(string input)
         {
@@ -261,9 +252,7 @@ namespace SimpleIdentityServer.Core.Common.Serializers
 
             return output.ToString().TrimEnd(new[] { '&' });
         }
-#if NET45 || UAP
-
-#else
+		
         private string ConvertNameValueCollection(IFormCollection form)
         {
             var output = new StringBuilder();
@@ -293,6 +282,5 @@ namespace SimpleIdentityServer.Core.Common.Serializers
 
             return output.ToString().TrimEnd(new[] { '&' });
         }
-#endif
     }
 }

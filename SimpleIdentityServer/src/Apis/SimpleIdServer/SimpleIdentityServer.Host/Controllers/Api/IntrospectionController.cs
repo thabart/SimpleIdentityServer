@@ -21,6 +21,7 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Host.Extensions;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -45,10 +46,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             {
                 throw new ArgumentNullException(nameof(Request.Form));
             }
+            
+            var nameValueCollection = new NameValueCollection();
+            foreach(var kvp in Request.Form)
+            {
+                nameValueCollection.Add(kvp.Key, kvp.Value);
+            }
 
             var s = Thread.CurrentThread.ManagedThreadId;
             var serializer = new ParamSerializer();
-            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(Request.Form);
+            var introspectionRequest = serializer.Deserialize<IntrospectionRequest>(nameValueCollection);
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
             if (Request.Headers.TryGetValue("Authorization", out authorizationHeader))

@@ -26,7 +26,6 @@ using SimpleIdentityServer.Configuration.Core;
 using SimpleIdentityServer.Configuration.EF;
 using SimpleIdentityServer.Configuration.EF.Extensions;
 using SimpleIdentityServer.Configuration.Host.Extensions;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
@@ -81,12 +80,7 @@ namespace SimpleIdentityServer.Configuration.Startup
             loggerFactory.AddSerilog();
 
             // 3. Enable configuration service
-            app.UseConfigurationService(new Oauth2IntrospectionOptions
-            {
-                InstrospectionEndPoint = introspectionUrl,
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            });
+            app.UseConfigurationService();
         }
 
         private void RegisterServices(IServiceCollection services)

@@ -27,9 +27,6 @@ using Microsoft.AspNetCore.Builder;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
-#if NETSTANDARD1_6
-using curl_sharp;
-#endif
 
 namespace SimpleIdentityServer.UserInformation.Authentication
 {
@@ -122,7 +119,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             {
                 throw new ArgumentException(ErrorDescriptions.TheUserInfoEndPointIsNotAWellFormedUrl);
             }
-#if NET46
+			
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             requestMessage.Headers.Add(AuthorizationName, string.Format("Bearer {0}", token));
@@ -134,19 +131,6 @@ namespace SimpleIdentityServer.UserInformation.Authentication
 
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
-#else
-            var argument = string.Format("-H \"Accept: application/json\" -H \"Authorization: Bearer {0}\" -X GET {1}",
-                token, url);
-            try
-            {
-                var content = await CurlClient.Curl(argument);
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-#endif
         }
 
         private static ClaimsPrincipal CreateClaimPrincipal(Dictionary<string, string> userInformationResponse)

@@ -74,11 +74,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             _httpClient = new HttpClient(handler);
 
             var nullAuthenticationBuilder = app.New();
-            var nullAuthenticationOptions = new NullAuthenticationOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true
-            };
+            var nullAuthenticationOptions = new NullAuthenticationOptions();
             nullAuthenticationBuilder.UseMiddleware<NullAuthenticationMiddleware>(Options.Create(nullAuthenticationOptions));
             nullAuthenticationBuilder.Run(ctx => next(ctx));
             _nullAuthenticationNext = nullAuthenticationBuilder.Build();

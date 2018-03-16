@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
             RSAParameters rsaParameters;
-#if NET46
+#if NET461
             using (var provider = new RSACryptoServiceProvider())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);

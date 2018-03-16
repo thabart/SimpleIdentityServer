@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 return string.Empty;
             }
 
-            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == Oauth2Instrospection.Authentication.Constants.ClaimNames.ClientId);
+            var claim = controller.User.Claims.FirstOrDefault(c => c.Type == "client_id");
             if (claim == null)
             {
                 return string.Empty;

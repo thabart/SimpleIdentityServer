@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Host.Tests
     public class FakeStartup : IStartup
     {
         public const string ScimEndPoint = "http://localhost:5555/";
+        public const string DefaultSchema = "Cookies";
         private IdentityServerOptions _options;
         private IJsonWebKeyEnricher _jsonWebKeyEnricher;
         private SharedContext _context;
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.Host.Tests
                 },
                 Authenticate = new AuthenticateOptions
                 {
-                    CookieName = TestAuthenticationOptions.TestingCookieAuthentication
+                    CookieName = DefaultSchema
                 },
                 Scim = new ScimOptions
                 {
@@ -97,16 +98,16 @@ namespace SimpleIdentityServer.Host.Tests
                 .AllowAnyHeader()));
             // 3. Configure Simple identity server
             ConfigureIdServer(services);
+            services.AddAuthentication(opts =>
+            {
+                opts.DefaultAuthenticateScheme = DefaultSchema;
+                opts.DefaultChallengeScheme = DefaultSchema;
+            }).AddFakeCustomAuth(o => { });
             // 4. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
-            // 5. Configure authentication.
-            services.AddAuthentication(opts =>
-            {
-                opts.SignInScheme = TestAuthenticationOptions.TestingCookieAuthentication;
-            });
             return services.BuildServiceProvider();
         }
 
@@ -118,19 +119,11 @@ namespace SimpleIdentityServer.Host.Tests
                 context.EnsureSeedData(_context);
             }
 
-
+            app.UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
             app.UseStaticFiles();
-            // 3. Use cookie authentication
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = TestAuthenticationOptions.TestingCookieAuthentication,
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true
-            });
-            app.UseMiddleware<FakeAuthenticatedRequestMiddleware>();
             // 4. Use simple identity server.
             app.UseSimpleIdentityServer(_options);
             // 5. Client JWKS endpoint

@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             string input,
             byte[] signature);
 
-#if NET46 || NET45
+#if NET461
 
         string SignWithEllipseCurve(string serializedKeys,
            string combinedJwsNotSigned);
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
     public class CreateJwsSignature : ICreateJwsSignature
     {
-#if NET46 || NET45
+#if NET461
         private readonly Dictionary<JwsAlg, string> _mappingJwsAlgorithmToRsaHashingAlgorithms = new Dictionary<JwsAlg, string>
         {
             {
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         };
 #endif
 
-#if NET46  || NET45
+#if NET461
         private readonly ICngKeySerializer _cngKeySerializer;
 
         public CreateJwsSignature(ICngKeySerializer cngKeySerializer)
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 #if UAP
             // TODO : Implement
             return null;
-#elif NET46 || NET45
+#elif NET461
             using (var rsa = new RSACryptoServiceProvider())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 #if UAP
             // TODO : Implement
             return false;
-#elif NET46 || NET45
+#elif NET461
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(serializedKeys);
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 
         #region Elliptic Curve algorithm
 
-#if NET46 || NET45
+#if NET461
 
         public string SignWithEllipseCurve(string serializedKeys,
             string combinedJwsNotSigned)

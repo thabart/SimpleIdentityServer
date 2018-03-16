@@ -188,7 +188,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             // 2. Set cookie
             var authManager = this.GetAuthenticationManager();
             await SetLocalCookie(authManager, claims);
-            await authManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
+            await authManager.SignOutAsync(Constants.ExternalCookieName);
 
             // 3. Redirect to the profile
             return RedirectToAction("Index", "User");
@@ -457,7 +457,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             {
                 var authenticationManager = this.GetAuthenticationManager();
                 await SetLocalCookie(authenticationManager, actionResult.Claims);
-                await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
+                await authenticationManager.SignOutAsync(Constants.ExternalCookieName);
                 await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);

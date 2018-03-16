@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
@@ -34,13 +35,11 @@ namespace SimpleIdentityServer.Startup
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
-                    var httpsOptions = new HttpsConnectionFilterOptions
+                    options.Listen(IPAddress.Loopback, 5443, listenOpts =>
                     {
-                        ServerCertificate = new X509Certificate2("SimpleIdServer.pfx")
-                    };
-                    options.UseHttps(httpsOptions);
+                        listenOpts.UseHttps("SimpleIdServer.pfx");
+                    });
                 })
-                .UseUrls(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 // .UseConfiguration(configuration)
                 .UseStartup<Startup>()

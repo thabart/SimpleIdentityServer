@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -30,9 +31,11 @@ namespace SimpleIdentityServer.Uma.Startup
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
-                    options.UseHttps("Uma.pfx");
+                    options.Listen(IPAddress.Loopback, 5443, listenOpts =>
+                    {
+                        listenOpts.UseHttps("Uma.pfx");
+                    });
                 })
-                .UseUrls(args)
                 // .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

@@ -3,29 +3,13 @@
   <PropertyGroup>
     <Description>Serilog.Sinks.RabbitMQ Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Serilog.Sinks.RabbitMQ</AssemblyName>
     <PackageId>Serilog.Sinks.RabbitMQ</PackageId>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
     <PackageReference Include="Serilog" Version="2.6.0" />
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.1.1" />
-    <PackageReference Include="System.IO" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
   </ItemGroup>
-
 </Project>

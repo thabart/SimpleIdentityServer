@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Jws.Actions
             // ARRANGE
             InitializeFakeObjects();
             var serializedRsa = string.Empty;
-#if NET46
+#if NET461
             using (var provider = new RSACryptoServiceProvider())
             {
                 serializedRsa = provider.ToXmlString(true);

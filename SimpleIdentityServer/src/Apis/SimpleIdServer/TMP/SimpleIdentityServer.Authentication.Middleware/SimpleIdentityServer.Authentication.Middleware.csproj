@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Authentication.Middlewaree Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.Authentication.Middleware</AssemblyName>
     <PackageId>SimpleIdentityServer.Authentication.Middleware</PackageId>
   </PropertyGroup>
@@ -16,29 +16,29 @@
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Net.Http" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+	<PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <DefineConstants>$(DefineConstants);NET</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);CORE</DefineConstants>
   </PropertyGroup>
 

@@ -1,23 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Scim.Common Class Library</Description>
+    <Description>SimpleIdentityServer.Authentication.Common Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Scim.Common</AssemblyName>
-    <PackageId>SimpleIdentityServer.Scim.Common</PackageId>
+    <AssemblyName>SimpleIdentityServer.Authentication.Common</AssemblyName>
+    <PackageId>SimpleIdentityServer.Authentication.Common</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System.Web" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Runtime" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+
 </Project>

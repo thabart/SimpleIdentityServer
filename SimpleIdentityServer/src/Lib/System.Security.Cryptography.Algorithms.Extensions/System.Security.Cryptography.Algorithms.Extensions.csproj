@@ -3,21 +3,21 @@
   <PropertyGroup>
     <Description>System.Security.Cryptography.Algorithms.Extensions Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>System.Security.Cryptography.Algorithms.Extensions</AssemblyName>
     <PackageId>System.Security.Cryptography.Algorithms.Extensions</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="System.Collections" Version="4.0.11" />
-    <PackageReference Include="System.Collections.NonGeneric" Version="4.0.1" />
-    <PackageReference Include="System.Diagnostics.Contracts" Version="4.0.1" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.2.0" />
-    <PackageReference Include="System.Runtime.Extensions" Version="4.1.0" />
-    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.0.0" />
-    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
   </ItemGroup>
-
 </Project>

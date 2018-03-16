@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core.Stores;
@@ -34,7 +35,7 @@ namespace SimpleIdentityServer.Scim.Db.EF
             }
 
             RegisterServices(services);
-            services.AddEntityFramework()
+            services.AddEntityFrameworkInMemoryDatabase()
                  .AddDbContext<ScimDbContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return services;
         }
@@ -52,7 +53,7 @@ namespace SimpleIdentityServer.Scim.Db.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<ScimDbContext>(options => options.UseSqlServer(connectionString));
             return serviceCollection;
         }
@@ -70,7 +71,7 @@ namespace SimpleIdentityServer.Scim.Db.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkNpgsql()
                             .AddDbContext<ScimDbContext>(options => options.UseNpgsql(connectionString));
             return serviceCollection;
         }

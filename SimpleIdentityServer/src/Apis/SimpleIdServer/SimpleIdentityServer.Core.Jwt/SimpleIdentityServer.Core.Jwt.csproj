@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Core.Jwt Class Library</Description>
     <Authors>thabart</Authors>
-    <TargetFrameworks>net46;net45;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.Core.Jwt</AssemblyName>
     <PackageId>SimpleIdentityServer.Core.Jwt</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
@@ -20,40 +20,24 @@
     <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <ProjectReference Include="..\..\..\Lib\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj" />
-    <PackageReference Include="System.Security.Claims" Version="4.0.1" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
-    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.1.1" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
-    <PackageReference Include="System.Private.DataContractSerialization" Version="4.1.1" />
-    <PackageReference Include="System.Xml.XmlSerializer" Version="4.0.11" />
-    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.OpenSsl" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
+    <PackageReference Include="System.Security.Cryptography.OpenSsl" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
 </Project>

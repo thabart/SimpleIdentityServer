@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.EventStore.EF
             var isPostgre = bool.Parse(Configuration["isPostgre"]);
             Console.WriteLine(isSqlServer);
             Console.WriteLine(connectionString);
-            services.AddEntityFramework()
+            services.AddEntityFrameworkSqlServer()
                .AddDbContext<EventStoreContext>(options =>
                    options.UseSqlServer(connectionString));
         }

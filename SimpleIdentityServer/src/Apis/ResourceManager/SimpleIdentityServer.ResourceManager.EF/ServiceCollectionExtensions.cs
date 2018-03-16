@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
@@ -11,7 +12,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
         public static IServiceCollection AddResourceManagerSqlServer(this IServiceCollection serviceCollection, string connectionString)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<ResourceManagerDbContext>(options =>
                     options.UseSqlServer(connectionString));
             return serviceCollection;
@@ -22,7 +23,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
             string connectionString)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<ResourceManagerDbContext>(options =>
                     options.UseSqlite(connectionString));
             return serviceCollection;
@@ -33,7 +34,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
             string connectionString)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<ResourceManagerDbContext>(options =>
                     options.UseNpgsql(connectionString));
             return serviceCollection;
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
             this IServiceCollection serviceCollection)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkInMemoryDatabase()
                 .AddDbContext<ResourceManagerDbContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return serviceCollection;
         }

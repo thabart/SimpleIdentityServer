@@ -57,19 +57,19 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             Console.WriteLine(connectionString);
             if (isSqlServer)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkSqlServer()
                    .AddDbContext<SimpleIdentityServerContext>(options =>
                        options.UseSqlServer(connectionString));
             }
             else if (isSqlLite)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkSqlite()
                    .AddDbContext<SimpleIdentityServerContext>(options =>
                        options.UseSqlite(connectionString));
             }
             else if (isPostgre)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkNpgsql()
                     .AddDbContext<SimpleIdentityServerContext>(options =>
                         options.UseNpgsql(connectionString));
             }

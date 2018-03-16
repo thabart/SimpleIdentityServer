@@ -54,13 +54,13 @@ namespace SimpleIdentityServer.Uma.EF
             Console.WriteLine(isPostgre);
             if (isSqlServer)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkSqlServer()
                                 .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
             }
 
             if (isPostgre)
             {
-                services.AddEntityFramework()
+                services.AddEntityFrameworkNpgsql()
                                 .AddDbContext<SimpleIdServerUmaContext>(options => options.UseNpgsql(connectionString));
             }
         }

@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 #if UAP
             // TODO : Implement
             return null;
-#elif NET46 || NET45
+#elif NET461
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
         {
 #if UAP
             return null;
-#elif NET46 || NET45
+#elif NET461
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.FromXmlString(jsonWebKey.SerializedKey);

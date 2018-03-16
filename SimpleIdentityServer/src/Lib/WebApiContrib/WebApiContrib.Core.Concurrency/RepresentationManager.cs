@@ -132,9 +132,9 @@ namespace WebApiContrib.Core.Concurrency
                 return etags.Any(e =>
                 {
                     if (e.IsWeak)
-                    {
+                    {                        
                         // Weak etag
-                        if (c.Etag.Contains(e.Tag))
+                        if (c.Etag.Contains(e.Tag.ToString()))
                         {
                             return true;
                         }
@@ -181,7 +181,7 @@ namespace WebApiContrib.Core.Concurrency
                     if (etag.IsWeak)
                     {
                         // Weak etag
-                        if (c.Etag.Contains(etag.Tag))
+                        if (c.Etag.Contains(etag.Tag.ToString()))
                         {
                             return false;
                         }

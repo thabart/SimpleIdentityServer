@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
@@ -34,7 +35,7 @@ namespace SimpleIdentityServer.EventStore.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<EventStoreContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Transient);
             return serviceCollection;
         }
@@ -47,7 +48,7 @@ namespace SimpleIdentityServer.EventStore.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<EventStoreContext>(options => options.UseSqlite(connectionString), ServiceLifetime.Transient);
             return serviceCollection;
         }
@@ -60,7 +61,7 @@ namespace SimpleIdentityServer.EventStore.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<EventStoreContext>(options =>
                     options.UseNpgsql(connectionString), ServiceLifetime.Transient);
             return serviceCollection;
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.EventStore.EF
             }
 
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkInMemoryDatabase()
                 .AddDbContext<EventStoreContext>((options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))), ServiceLifetime.Transient);
             return serviceCollection;
         }

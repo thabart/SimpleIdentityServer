@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
 #if UAP
             // TODO : Extract RSA Key information ...
             return null;
-#elif NET46 || NET45
+#elif NET461
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);

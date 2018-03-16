@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Middlewares;
@@ -50,13 +49,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             // 1. Display status code page.
             app.UseStatusCodePages();
             // 2. Enable OAUTH authentication.
-            var introspectionOptions = new Oauth2IntrospectionOptions
-            {
-                InstrospectionEndPoint = configuration.AuthorizationServer.IntrospectionEndpoints,
-                ClientId = configuration.AuthorizationServer.ClientId,
-                ClientSecret = configuration.AuthorizationServer.ClientSecret
-            };
-            app.UseAuthenticationWithIntrospection(introspectionOptions);
             // 3. Insert seed data
             if (configuration.DataSource.IsUmaMigrated)
             {

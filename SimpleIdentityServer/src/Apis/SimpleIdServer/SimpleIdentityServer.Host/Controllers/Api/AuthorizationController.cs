@@ -29,6 +29,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
+using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -70,9 +71,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.RequestIsNotValid);
             }
-
+            
+            var nameValueCollection = new NameValueCollection();
+            foreach (var kvp in query)
+            {
+                nameValueCollection.Add(kvp.Key, kvp.Value);
+            }
+            
             var serializer = new ParamSerializer();
-            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
+            var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(nameValueCollection);
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
             var authenticatedUser = await this.GetAuthenticatedUser(_authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Host.Configurations;
 using System;
@@ -29,6 +28,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
 
             // 1. Display status code page.
             app.UseStatusCodePages();
+			/*
             // 2. Enable OAUTH authentication.
             var introspectionOptions = new Oauth2IntrospectionOptions
             {
@@ -37,6 +37,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                 ClientSecret = configuration.AuthorizationServer.ClientSecret
             };
             app.UseAuthenticationWithIntrospection(introspectionOptions);
+			*/
             // 3. Insert seed data
             if (configuration.DataSource.IsDataMigrated)
             {

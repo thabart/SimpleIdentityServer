@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
-#if NET46
+#if NET461
             using (var provider = new RSACryptoServiceProvider())
             {
                 provider.FromXmlString(jsonWebKey.SerializedKey);

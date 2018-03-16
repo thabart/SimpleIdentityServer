@@ -15,10 +15,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.DataAccess.SqlServer.Repositories;
 
 namespace SimpleIdentityServer.DataAccess.SqlServer
@@ -30,7 +29,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             string connectionString)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseSqlServer(connectionString));
             return serviceCollection;
@@ -41,7 +40,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             string connectionString)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseSqlite(connectionString));
             return serviceCollection;
@@ -51,7 +50,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             this IServiceCollection serviceCollection,
             string connectionString) {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
                     options.UseNpgsql(connectionString));
             return serviceCollection;
@@ -61,7 +60,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer
             this IServiceCollection serviceCollection)
         {
             RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFramework()
+            serviceCollection.AddEntityFrameworkInMemoryDatabase()
                 .AddDbContext<SimpleIdentityServerContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             return serviceCollection;
         }

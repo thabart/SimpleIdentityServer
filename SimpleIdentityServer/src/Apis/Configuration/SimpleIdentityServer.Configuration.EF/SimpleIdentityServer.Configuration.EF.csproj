@@ -3,17 +3,17 @@
   <PropertyGroup>
     <Description>SimpleIdentityServer.Configuration.EF Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.Configuration.EF</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>SimpleIdentityServer.Configuration.EF</PackageId>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\*.resx" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
-    <None Update="appsettings.json;appsettings.docker.json">
+    <None Update="appsettings.docker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
@@ -22,27 +22,26 @@
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Configuration.Core\SimpleIdentityServer.Configuration.Core.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.0.0">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />
   </ItemGroup>
-
 </Project>

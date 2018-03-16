@@ -19,7 +19,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Host.Middleware;
-using SimpleIdentityServer.Oauth2Instrospection.Authentication;
 using System;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
@@ -52,15 +51,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 ManagerEventSource = (IManagerEventSource)applicationBuilder.ApplicationServices.GetService(typeof(IManagerEventSource))
             });
-            // 5. Enable introspection.
-            var introspectionOptions = new Oauth2IntrospectionOptions
-            {
-                InstrospectionEndPoint = options.Introspection.IntrospectionUrl,
-                ClientId = options.Introspection.ClientId,
-                ClientSecret = options.Introspection.ClientSecret
-            };
-            applicationBuilder.UseAuthenticationWithIntrospection(introspectionOptions);
-            // 6. Launch ASP.NET API
+            // 5. Launch ASP.NET API
             applicationBuilder.UseMvc(routes =>
             {
                 routes.MapRoute(
