@@ -21,6 +21,7 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Logg
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Store.Redis /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Host /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection /p:PackageVersion=%packageVersion%
 
 REM SCIM
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Client /p:PackageVersion=%packageVersion%
