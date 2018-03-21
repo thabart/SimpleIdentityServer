@@ -291,12 +291,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 
             if (attributePath.ValueFilter != null)
             {
-                var compExpr = (CompAttributeExpression)attributePath.ValueFilter.Expression;
-                var act = new Func<System.Linq.Expressions.ParameterExpression, LinqExpression>((p) =>
-                {
-                    return GetComparisonExpression(compExpr, p);
-                });
-                var anyExpr = EvaluateChildren(compExpr.Path, resourceAttrParameterExpr, act);
+                var anyExpr = BuildChildrenExpr(attributePath.ValueFilter.Expression, resourceAttrParameterExpr);
                 result = LinqExpression.AndAlso(result, anyExpr);
             }
 
@@ -304,6 +299,37 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
             {
                 var anyExpr = EvaluateChildren(attributePath, resourceAttrParameterExpr, null);
                 result = LinqExpression.AndAlso(result, anyExpr);
+            }
+
+            return result;
+        }
+
+        private static LinqExpression BuildChildrenExpr(Expression expr, System.Linq.Expressions.ParameterExpression resourceAttrParameterExpr)
+        {
+            var compExpr = expr as CompAttributeExpression;
+            var logExpr = expr as LogicalExpression;
+            if (compExpr != null)
+            {
+                var act = new Func<System.Linq.Expressions.ParameterExpression, LinqExpression>((p) =>
+                {
+                    return GetComparisonExpression(compExpr, p);
+                });
+                return EvaluateChildren(compExpr.Path, resourceAttrParameterExpr, act);
+            }
+            
+            var leftExpr = logExpr.AttributeLeft;
+            var rightExpr = logExpr.AttributeRight;
+            var leftChildConds = BuildChildrenExpr(leftExpr, resourceAttrParameterExpr);
+            var rightChildConds = BuildChildrenExpr(rightExpr, resourceAttrParameterExpr);
+            LinqExpression result = null;
+            switch(logExpr.Operator)
+            {
+                case LogicalOperators.and:
+                    result = LinqExpression.AndAlso(leftChildConds, rightChildConds);
+                    break;
+                case LogicalOperators.or:
+                    result = LinqExpression.OrElse(leftChildConds, rightChildConds);
+                    break;
             }
 
             return result;

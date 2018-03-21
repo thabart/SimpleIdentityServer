@@ -376,6 +376,15 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
                                                 Type = Common.Constants.SchemaAttributeTypes.String
                                             },
                                             Value = "value"
+                                        },
+                                        new RepresentationAttribute
+                                        {
+                                            SchemaAttribute = new SchemaAttribute
+                                            {
+                                                Name = "type",
+                                                Type = Common.Constants.SchemaAttributeTypes.String
+                                            },
+                                            Value = "type"
                                         }
                                     }
                                 }
@@ -384,12 +393,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.LinqSql
                     }
                 }
             };
-
-            // representations.Where(r => r.Attributes.Any(a => a.SchemaAttribute.Name == "complexarr" && a.Children.Any(bc => bc.Children.Any())))
+            
             var queryableAttrs = representations.AsQueryable();
 
             var p = new Core.Parsers.FilterParser();
-            var parsed = p.Parse("complexarr[test eq value]");
+            var parsed = p.Parse("complexarr[test eq value and type eq type2 or test eq value]");
             var evalutedExpr = parsed.EvaluateFilter(queryableAttrs);
 
             var o = (IQueryable<object>)evalutedExpr.Compile().DynamicInvoke(queryableAttrs);
