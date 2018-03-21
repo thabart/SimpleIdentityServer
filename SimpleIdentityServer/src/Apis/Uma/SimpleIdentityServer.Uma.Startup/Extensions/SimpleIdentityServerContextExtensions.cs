@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
 
 namespace SimpleIdentityServer.Uma.Startup.Extensions
@@ -64,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
 #else
                 using (var rsa = new RSAOpenSsl())
                 {
-                    serializedRsa = rsa.ToXmlString(true);
+                    serializedRsa = rsa.ToXmlStringNetCore(true);
                 }
 #endif
 

@@ -441,17 +441,10 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             if (!context.JsonWebKeys.Any())
             {
                 var serializedRsa = string.Empty;
-#if NET461
                 using (var provider = new RSACryptoServiceProvider())
                 {
                     serializedRsa = provider.ToXmlString(true);
                 }
-#else
-                using (var rsa = new RSAOpenSsl())
-                {
-                    serializedRsa = rsa.ToXmlString(true);
-                }
-#endif
 
                 context.JsonWebKeys.AddRange(new[]
                 {

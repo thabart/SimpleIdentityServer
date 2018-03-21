@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 #else
             using (var provider = new RSAOpenSsl())
             {
-                provider.FromXmlString(jsonWebKey.SerializedKey);
+                provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
                 var rsaParameters = provider.ExportParameters(false);
                 // Export the modulus
                 var modulus = rsaParameters.Modulus.Base64EncodeBytes();

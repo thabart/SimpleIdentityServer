@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
             using (var rsaCryptoServiceProvider = new RSAOpenSsl())
             {
                 rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                return rsaCryptoServiceProvider.ToXmlString(false);
+                return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
             }
 #endif
         }

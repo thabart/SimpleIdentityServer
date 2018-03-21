@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             using (var rsa = new RSAOpenSsl())
             {
                 var bytesToBeSigned = ASCIIEncoding.ASCII.GetBytes(combinedJwsNotSigned);
-                rsa.FromXmlString(serializedKeys);
+                rsa.FromXmlStringNetCore(serializedKeys);
                 var byteToBeConverted = rsa.SignData(bytesToBeSigned, 0, bytesToBeSigned.Length, hashMethod, RSASignaturePadding.Pkcs1);
                 return byteToBeConverted.Base64EncodeBytes();
             }
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 #elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
-                rsa.FromXmlString(serializedKeys);
+                rsa.FromXmlStringNetCore(serializedKeys);
                 return rsa.VerifyData(plainBytes, signature, hashMethod, RSASignaturePadding.Pkcs1);
             }
 #endif

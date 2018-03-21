@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 #else
                 using (var rsa = new RSAOpenSsl())
                 {
-                    serializedRsa = rsa.ToXmlString(true);
+                    serializedRsa = rsa.ToXmlStringNetCore(true);
                 }
 #endif
 

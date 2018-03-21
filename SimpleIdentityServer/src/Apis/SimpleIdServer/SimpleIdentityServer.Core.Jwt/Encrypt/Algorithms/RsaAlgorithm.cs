@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Extensions;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 #elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
-                rsa.FromXmlString(jsonWebKey.SerializedKey);
+                rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
                 return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
             }
 #endif
@@ -63,7 +64,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 #elif NETSTANDARD
             using (var rsa = new RSAOpenSsl())
             {
-                rsa.FromXmlString(jsonWebKey.SerializedKey);
+                rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
                 return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
             }
 #endif
