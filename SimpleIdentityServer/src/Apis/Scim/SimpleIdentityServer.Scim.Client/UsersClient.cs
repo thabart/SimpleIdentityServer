@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await GetUser(FormatUrl(baseUrl), id, accessToken);
+            return await GetUser(baseUrl.ParseUri(), id, accessToken);
         }
 
         public async Task<ScimResponse> GetUser(Uri baseUri, string id, string accessToken = null)

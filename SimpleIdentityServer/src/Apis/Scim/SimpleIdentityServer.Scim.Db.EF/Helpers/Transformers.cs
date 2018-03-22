@@ -280,7 +280,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Helpers
                 {
                     case Common.Constants.SchemaAttributeTypes.Boolean:
                     case Common.Constants.SchemaAttributeTypes.String:
-                        record.Value = value.ToString();
+                        record.Value = value == null ? string.Empty : value.ToString();
                         break;
                     case Common.Constants.SchemaAttributeTypes.Decimal:
                         var dec = (decimal)value;
