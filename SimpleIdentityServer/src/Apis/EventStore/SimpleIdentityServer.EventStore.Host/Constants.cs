@@ -18,9 +18,18 @@ namespace SimpleIdentityServer.EventStore.Host
 {
     public class Constants
     {
+        public static string Version = "1.0";
+
         public static class RouteNames
         {
+            public const string Discovery = "configuration";
             public const string Events = "events";
+        }
+
+        public static class ConfigurationParameterNames
+        {
+            public const string EventsEndpoint = "events_endpoint";
+            public const string Version = "version";
         }
 
         public static class SearchParameterNames

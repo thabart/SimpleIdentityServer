@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SimpleIdentityServer.Rfid.Website": {
+    "SimpleIdentityServer.EventStore.Startup": {
       "commandName": "Project",
       "commandLineArgs": "http://*:5301"
     }
