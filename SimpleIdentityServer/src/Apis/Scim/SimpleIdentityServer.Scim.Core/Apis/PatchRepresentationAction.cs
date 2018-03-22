@@ -500,6 +500,26 @@ namespace SimpleIdentityServer.Scim.Core.Apis
 
                     dAttr.Value = dAttrToBeSet.Value;
                     break;
+                case Common.Constants.SchemaAttributeTypes.Integer:
+                    var iAttr = attr as SingularRepresentationAttribute<int>;
+                    var iAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<int>;
+                    if (iAttr == null || iAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    iAttr.Value = iAttrToBeSet.Value;
+                    break;
+                case Common.Constants.SchemaAttributeTypes.Decimal:
+                    var deAttr = attr as SingularRepresentationAttribute<decimal>;
+                    var deAttrToBeSet = attrToBeSet as SingularRepresentationAttribute<decimal>;
+                    if (deAttr == null || deAttrToBeSet == null)
+                    {
+                        return false;
+                    }
+
+                    deAttr.Value = deAttrToBeSet.Value;
+                    break;
                 case Common.Constants.SchemaAttributeTypes.Complex:
                     var cAttr = attr as ComplexRepresentationAttribute;
                     var cAttrToBSet = attrToBeSet as ComplexRepresentationAttribute;
