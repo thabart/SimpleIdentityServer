@@ -47,12 +47,25 @@ namespace SimpleIdentityServer.OAuth2Introspection
 
             var claims = new List<Claim>
             {
-                new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Subject),
-                new Claim(Core.Jwt.Constants.StandardClaimNames.ClientId, introspectionResult.ClientId),
                 new Claim(Core.Jwt.Constants.StandardClaimNames.ExpirationTime, introspectionResult.Expiration.ToString()),
-                new Claim(Core.Jwt.Constants.StandardClaimNames.Iat, introspectionResult.IssuedAt.ToString()),
-                new Claim(Core.Jwt.Constants.StandardClaimNames.Issuer, introspectionResult.Issuer)
+                new Claim(Core.Jwt.Constants.StandardClaimNames.Iat, introspectionResult.IssuedAt.ToString())
             };
+
+            if (!string.IsNullOrWhiteSpace(introspectionResult.Subject))
+            {
+                claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Subject));
+            }
+
+            if (!string.IsNullOrWhiteSpace(introspectionResult.ClientId))
+            {
+                claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.ClientId, introspectionResult.ClientId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(introspectionResult.Issuer))
+            {
+                claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Issuer, introspectionResult.Issuer));
+            }
+
             if (introspectionResult.Scope != null)
             {
                 foreach(var scope in introspectionResult.Scope)
