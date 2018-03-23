@@ -2,6 +2,7 @@
 @import 'navbar.css';
 @import 'palette.css';
 @import 'connections.css';
+@import 'workflow.css';
 
 * {
     margin: 0;

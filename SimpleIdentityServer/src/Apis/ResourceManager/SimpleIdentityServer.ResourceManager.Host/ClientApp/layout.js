@@ -37,6 +37,7 @@ class Layout extends Component {
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
                         <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
+                        <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
                         {(this.state.isLoggedIn && (
                             <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
                         ))}
@@ -73,7 +74,8 @@ class Layout extends Component {
                     </button>
                     <div className="collapse navbar-collapse" id="collapseNavBar">
                         <ul className="navbar-nav mr-auto navbar-right">
-                            <li className="nav-item"><NavLink to="/about" className="nav-link">About</NavLink></li>
+                            <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
+                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
                             {(this.state.isLoggedIn && (
                                 <li className="nav-item"><NavLink to="/resources" className="nav-link">Resources</NavLink></li>
                             ))}

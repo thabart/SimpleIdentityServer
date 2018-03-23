@@ -35,7 +35,7 @@ class OpenIdTab extends Component {
                 </li>
             </ul>
             <div className="tab-content">
-                {this.state.tabName === 'logs' && (<ChartsTab />)}
+                {this.state.tabName === 'logs' && (<LogsTab />)}
                 {this.state.tabName === 'charts' && (<ChartsTab />)}
             </div>
         </div>);

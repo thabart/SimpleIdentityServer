@@ -1,29 +1,26 @@
 ﻿import React, { Component } from "react";
+import $ from "jquery";
+import 'jquery-ui/ui/widgets/dialog';
 
 class Modal extends React.Component {
     constructor(props) {
         super(props);
+        this.dialog = null;
         this.myDiv = null;
+        this.state = {
+            isVisible: false
+        }
     }
 
     render() {
+        var style = {};
+        if (!this.state.isVisible) {
+            style = {display: 'none'};
+        }
+
         return (
-            <div className="modal fade" ref={c => this.myDiv = c}>
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">{this.props.title}</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div className="modal-body">
-                            {this.props.children}
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Fermer</button>
-                            <button type="button" className="btn btn-default" onClick={this.props.onConfirmHandle}>{this.props.confirmTxt}</button>
-                        </div>
-                    </div>
-                </div>
+            <div ref={c => this.myDiv = c} style={style} title={this.props.title}>
+                {this.props.children}
             </div>
         );
     }
@@ -32,11 +29,29 @@ class Modal extends React.Component {
         $(this.myDiv).modal('toggle');
     }
 
-    componentDidMount() {
-        if (this.myDiv) {
-            $(this.myDiv).modal('show');
-            $(this.myDiv).on('hidden.bs.modal', this.props.handleHideModal);
-        }
+    show() {        
+        var self = this;
+        self.setState({
+            isVisible: true
+        });
+        self.dialog = $(self.myDiv).dialog({
+            resizable: false,
+            height: "auto",
+            width: 900,
+            modal: true
+        });
+        self.dialog.on('dialogclose', function(e) {
+            self.hide();
+            if (self.props.onClose) {
+                self.props.onClose();
+            }
+        });
+    }
+
+    hide() {
+        this.setState({
+            isVisible: false
+        });
     }
 }
 

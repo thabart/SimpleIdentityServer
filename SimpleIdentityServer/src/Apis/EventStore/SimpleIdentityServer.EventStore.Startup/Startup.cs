@@ -25,7 +25,8 @@ namespace SimpleIdentityServer.EventStore.Startup
             {
                 DataSource = new DataSourceConfiguration
                 {
-                    Type = DbTypes.INMEMORY
+                    Type = DbTypes.SQLSERVER,
+					ConnectionString = "Data Source=.;Initial Catalog=EventStore;Integrated Security=True;"
                 }
             };
         }

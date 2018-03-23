@@ -17,7 +17,7 @@ module.exports = (env) => {
             ]
         },
         entry: {
-            vendor: ['react', 'react-dom', 'react-router-dom', 'jquery', 'popper.js', 'bootstrap/dist/css/bootstrap.css', 'bootstrap'],
+            vendor: ['react', 'react-dom', 'react-router-dom', 'jquery', 'popper.js', 'bootstrap/dist/css/bootstrap.css', 'bootstrap', 'react-table/react-table.css', 'jquery-ui/themes/base/all.css', 'codemirror/lib/codemirror.css'],
         },
         output: {
             path: path.join(__dirname, 'wwwroot', 'dist'),
@@ -27,7 +27,7 @@ module.exports = (env) => {
         },
         plugins: [
             extractCSS,
-            new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
+            new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery', 'window.jQuery': 'jquery', 'window.$' : 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
             new webpack.DllPlugin({
                 path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
