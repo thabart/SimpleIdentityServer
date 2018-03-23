@@ -16,9 +16,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Parsers;
 using SimpleIdentityServer.EventStore.EF.Repositories;
 using System;

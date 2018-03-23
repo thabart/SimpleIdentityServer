@@ -18,14 +18,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.User;
+using SimpleIdentityServer.Handler.Bus;
+using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
@@ -43,6 +44,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         private readonly ITranslationManager _translationManager;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventAggregateRepository _eventAggregateRepository;
+        private readonly IPayloadSerializer _payloadSerializer;
 
         public ConsentController(
             IConsentActions consentActions,
@@ -51,13 +53,15 @@ namespace SimpleIdentityServer.Startup.Controllers
             IEventPublisher eventPublisher,
             IEventAggregateRepository eventAggregateRepository,
             IAuthenticationService authenticationService,
-            IUserActions usersAction) : base(authenticationService, usersAction)
+            IUserActions usersAction,
+            IPayloadSerializer payloadSerializer) : base(authenticationService, usersAction)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
             _eventPublisher = eventPublisher;
             _eventAggregateRepository = eventAggregateRepository;
+            _payloadSerializer = payloadSerializer;
         }
         
         public async Task<ActionResult> Index(string code)
@@ -142,7 +146,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return;
             }
 
-            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, act, evtAggregate.Order + 1));
+            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), evtAggregate.Order + 1));
         }
 
         private async Task LogConsentRejected(string processId)

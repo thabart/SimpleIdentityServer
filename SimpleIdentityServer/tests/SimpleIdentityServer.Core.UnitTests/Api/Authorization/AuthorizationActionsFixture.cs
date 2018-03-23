@@ -17,7 +17,6 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -26,6 +25,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -45,6 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
+        private Mock<IPayloadSerializer> _payloadSerializerStub;
         private IAuthorizationActions _authorizationActions;
 
         [Fact]
@@ -245,6 +246,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
+            _payloadSerializerStub = new Mock<IPayloadSerializer>();
             _authorizationActions = new AuthorizationActions(
                 _getAuthorizationCodeOperationFake.Object,
                 _getTokenViaImplicitWorkflowOperationFake.Object,
@@ -253,7 +255,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 _parameterParserHelperFake.Object,
                 _simpleIdentityServerEventSourceFake.Object,
                 _authorizationFlowHelperFake.Object,
-                _eventPublisherStub.Object);
+                _eventPublisherStub.Object,
+                _payloadSerializerStub.Object);
         }
     }
 }

@@ -25,6 +25,18 @@ namespace SimpleIdentityServer.EventStore.EF.Models
         public string Payload { get; set; }
         public string Description { get; set; }
         public int Order { get; set; }
+        /// <summary>
+        /// Information, error.
+        /// </summary>
+        public int Verbosity { get; set; }
+        /// <summary>
+        /// OPENID, UMA, SCIM2.0
+        /// </summary>
+        public string Type { get; set; }
+        /// <summary>
+        /// granted_token, revoked_token etc ...
+        /// </summary>
+        public string Key { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 }

@@ -16,12 +16,12 @@
 div.tooltip {	
 	position: absolute;			
 	text-align: center;			
-	width: 60px;					
-	height: 28px;					
+	width: 150px;					
+	height: 60px;					
 	padding: 2px;				
-	font: 12px sans-serif;		
-	background: lightsteelblue;	
+	font: 14px sans-serif;		
+	background: #e9e9e9;	
 	border: 0px;		
-	border-radius: 8px;			
+	border-radius: 2px;			
 	pointer-events: none;			
 }

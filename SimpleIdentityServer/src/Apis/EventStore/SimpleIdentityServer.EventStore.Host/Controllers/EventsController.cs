@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.EventStore.Host.Builders;
 using SimpleIdentityServer.EventStore.Host.Extensions;
 using SimpleIdentityServer.EventStore.Host.Parsers;
 using System.Threading.Tasks;
+using SimpleIdentityServer.EventStore.Core.Repositories;
 
 namespace SimpleIdentityServer.EventStore.Host.Controllers
 {

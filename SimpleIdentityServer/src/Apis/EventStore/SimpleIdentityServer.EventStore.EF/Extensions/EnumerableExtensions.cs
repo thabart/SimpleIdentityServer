@@ -14,15 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.EventStore.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
-using System.Reflection;
 
 namespace SimpleIdentityServer.EventStore.EF.Extensions
 {
@@ -39,11 +38,11 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
 
         private static Dictionary<string, string> _mappingJsonNameToModelName = new Dictionary<string, string>
         {
-            { Core.Common.EventResponseNames.Id, "Id" },
-            { Core.Common.EventResponseNames.AggregateId, "AggregateId" },
-            { Core.Common.EventResponseNames.Payload, "Payload" },
-            { Core.Common.EventResponseNames.Description, "Description" },
-            { Core.Common.EventResponseNames.CreatedOn, "CreatedOn" }
+            { Constants.EventResponseNames.Id, "Id" },
+            { Constants.EventResponseNames.AggregateId, "AggregateId" },
+            { Constants.EventResponseNames.Payload, "Payload" },
+            { Constants.EventResponseNames.Description, "Description" },
+            { Constants.EventResponseNames.CreatedOn, "CreatedOn" }
         };
 
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IEnumerable<TSource> query, string propertyName)

@@ -20,9 +20,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Models;
@@ -31,6 +30,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.User;
+using SimpleIdentityServer.Handler.Bus;
+using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Startup.Extensions;
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         private readonly IEventAggregateRepository _eventAggregateRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
+        private readonly IPayloadSerializer _payloadSerializer;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -70,7 +72,8 @@ namespace SimpleIdentityServer.Startup.Controllers
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUserActions userActions) : base(authenticationService, userActions)
+            IUserActions userActions,
+            IPayloadSerializer payloadSerializer) : base(authenticationService, userActions)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -80,6 +83,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventAggregateRepository = eventAggregateRepository;
             _eventPublisher = eventPublisher;
+            _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
         }
         
@@ -494,7 +498,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return;
             }
 
-            _eventPublisher.Publish(new ResourceOwnerAuthenticated(Guid.NewGuid().ToString(), processId, act, evtAggregate.Order + 1));
+            _eventPublisher.Publish(new ResourceOwnerAuthenticated(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), evtAggregate.Order + 1));
         }
 
         private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)

@@ -15,7 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
-using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.EventStore.Core.Parameters;
 using System;
 
 namespace SimpleIdentityServer.EventStore.Host.Parsers

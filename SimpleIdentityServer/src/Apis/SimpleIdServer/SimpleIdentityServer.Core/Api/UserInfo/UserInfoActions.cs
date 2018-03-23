@@ -15,10 +15,10 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
-using SimpleIdentityServer.Core.Bus;
-using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Handler.Bus;
+using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
@@ -33,11 +33,14 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
     {
         private readonly IGetJwsPayload _getJwsPayload;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IPayloadSerializer _payloadSerializer;
 
-        public UserInfoActions(IGetJwsPayload getJwsPayload, IEventPublisher eventPublisher)
+        public UserInfoActions(IGetJwsPayload getJwsPayload, IEventPublisher eventPublisher,
+            IPayloadSerializer payloadSerializer)
         {
             _getJwsPayload = getJwsPayload;
             _eventPublisher = eventPublisher;
+            _payloadSerializer = payloadSerializer;
         }
 
         public async Task<UserInfoResult> GetUserInformation(string accessToken)
@@ -45,9 +48,9 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken, 0));
+                _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(accessToken), 0));
                 var result = await _getJwsPayload.Execute(accessToken);
-                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
+                _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
             catch(IdentityServerException ex)

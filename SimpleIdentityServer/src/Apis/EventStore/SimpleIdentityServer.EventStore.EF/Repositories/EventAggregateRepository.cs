@@ -15,15 +15,16 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.EventStore.Core.Models;
+using SimpleIdentityServer.EventStore.Core.Parameters;
+using SimpleIdentityServer.EventStore.Core.Repositories;
+using SimpleIdentityServer.EventStore.Core.Results;
 using SimpleIdentityServer.EventStore.EF.Extensions;
 using SimpleIdentityServer.EventStore.EF.Parsers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EventStore.EF.Repositories
 {

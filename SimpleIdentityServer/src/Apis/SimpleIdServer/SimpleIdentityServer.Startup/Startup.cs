@@ -16,14 +16,13 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Services;
-using System.Collections.Generic;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -49,16 +48,12 @@ namespace SimpleIdentityServer.Startup
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
             var twoFactorServiceStore = new TwoFactorServiceStore();
-            var factory = new SimpleIdServerConfigurationClientFactory();
-            twoFactorServiceStore.Add(new DefaultTwilioSmsService(factory, Configuration["ConfigurationEdp:Url"]));
-            twoFactorServiceStore.Add(new DefaultEmailService(factory, Configuration["ConfigurationEdp:Url"]));
             _options = new IdentityServerOptions
             {
                 IsDeveloperModeEnabled = false,
                 DataSource = new DataSourceOptions
                 {
-                    IsOpenIdDataMigrated = true,
-                    IsEvtStoreDataMigrated = true,
+                    IsOpenIdDataMigrated = true
                 },
                 Logging = new LoggingOptions
                 {
@@ -98,26 +93,6 @@ namespace SimpleIdentityServer.Startup
             else
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
-            }
-
-            if (string.Equals(evtStoreType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlServer;
-                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
-            }
-            else if (string.Equals(evtStoreType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.SqlLite;
-                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
-            }
-            else if (string.Equals(evtStoreType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.Postgre;
-                _options.DataSource.EvtStoreConnectionString = Configuration["Db:EvtStoreConnectionString"];
-            }
-            else
-            {
-                _options.DataSource.EvtStoreDataSourceType = DataSourceTypes.InMemory;
             }
 
             if (string.Equals(storeType, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
@@ -182,13 +157,31 @@ namespace SimpleIdentityServer.Startup
                 services.AddStorage(opt => opt.UseInMemory());
             }
 
+            var evtStoreType = Configuration["Db:EvtStoreType"];
+            if (string.Equals(evtStoreType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                services.AddEventStoreSqlServer(Configuration["Db:EvtStoreConnectionString"]);
+            }
+            else if (string.Equals(evtStoreType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                services.AddEventStoreSqlLite(Configuration["Db:EvtStoreConnectionString"]);
+            }
+            else if (string.Equals(evtStoreType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                services.AddEventStorePostgre(Configuration["Db:EvtStoreConnectionString"]);
+            }
+            else
+            {
+                services.AddEventStoreInMemory();
+            }
+
             // 2. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
             // 3. Configure Simple identity server
-            services.AddSimpleIdentityServer(_options);
+            services.AddEventStoreBus().AddSimpleIdentityServer(_options);
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)

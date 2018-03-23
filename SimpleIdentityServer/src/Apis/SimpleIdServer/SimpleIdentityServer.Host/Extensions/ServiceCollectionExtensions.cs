@@ -21,14 +21,11 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
@@ -100,22 +97,6 @@ namespace SimpleIdentityServer.Host
                     break;
                 default:
                     throw new ArgumentException($"the data source '{options.DataSource.OpenIdDataSourceType}' type is not supported");
-            }
-
-            switch(options.DataSource.EvtStoreDataSourceType)
-            {
-                case DataSourceTypes.SqlServer:
-                    serviceCollection.AddEventStoreSqlServer(options.DataSource.EvtStoreConnectionString);
-                    break;
-                case DataSourceTypes.SqlLite:
-                    serviceCollection.AddEventStoreSqlLite(options.DataSource.EvtStoreConnectionString);
-                    break;
-                case DataSourceTypes.Postgre:
-                    serviceCollection.AddEventStorePostgre(options.DataSource.EvtStoreConnectionString);
-                    break;
-                case DataSourceTypes.InMemory:
-                    serviceCollection.AddEventStoreInMemory();
-                    break;
             }
 
             switch(options.Storage.Type)
@@ -211,9 +192,8 @@ namespace SimpleIdentityServer.Host
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()
-                .AddConfigurationClient()
+                // .AddConfigurationClient()
                 .AddIdServerLogging()
-                .AddBus(options)
                 .AddDataProtection();
 
             // Configure SeriLog pipeline
@@ -253,20 +233,6 @@ namespace SimpleIdentityServer.Host
             Log.Logger = log;
             services.AddLogging();
             services.AddSingleton<ILogger>(log);
-        }
-
-        private static IServiceCollection AddBus(this IServiceCollection services,
-            IdentityServerOptions options)
-        {
-            if (options.Event == null || options.Event.Publisher == null)
-            {
-                var handlers = options.Event == null ? null : options.Event.Handlers;
-                services.AddDefaultBus(handlers);
-                return services;
-            }
-
-            services.AddTransient(typeof(IEventPublisher), options.Event.Publisher);
-            return services;
         }
     }
 }

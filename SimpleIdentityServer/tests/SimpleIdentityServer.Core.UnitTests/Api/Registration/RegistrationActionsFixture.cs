@@ -21,13 +21,14 @@ using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
 using Xunit;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Bus;
+using SimpleIdentityServer.Handler.Bus;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
     public sealed class RegistrationActionsFixture
     {
         private Mock<IRegisterClientAction> _registerClientActionFake;
+        private Mock<IPayloadSerializer> _payloadSerializerStub;
         private IRegistrationActions _registrationActions;
 
         [Fact]
@@ -57,7 +58,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
         {
             _registerClientActionFake = new Mock<IRegisterClientAction>();
             var eventPublisherStub = new Mock<IEventPublisher>();
-            _registrationActions = new RegistrationActions(_registerClientActionFake.Object, eventPublisherStub.Object);
+            _payloadSerializerStub = new Mock<IPayloadSerializer>();
+            _registrationActions = new RegistrationActions(_registerClientActionFake.Object, eventPublisherStub.Object, _payloadSerializerStub.Object);
         }
     }
 }

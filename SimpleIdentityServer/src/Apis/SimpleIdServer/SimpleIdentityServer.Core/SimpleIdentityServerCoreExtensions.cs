@@ -31,10 +31,8 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Handlers;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.JwtToken;
@@ -164,42 +162,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
+            serviceCollection.AddTransient<IPayloadSerializer, PayloadSerializer>();
             return serviceCollection;
-        }
-
-        public static IServiceCollection AddDefaultBus(this IServiceCollection services, IEnumerable<Type> handlers = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.AddTransient<IPayloadSerializer, PayloadSerializer>();
-            services.AddTransient<AuthorizationHandler>();
-            services.AddTransient<OpenIdErrorHandler>();
-            services.AddTransient<TokenHandler>();
-            services.AddTransient<UserInfoHandler>();
-            services.AddTransient<IntrospectionHandler>();
-            services.AddTransient<RegistrationHandler>();
-            var provider = services.BuildServiceProvider();
-            var evtHandlerStore = new EvtHandlerStore(provider);
-            evtHandlerStore.Register(typeof(AuthorizationHandler));
-            evtHandlerStore.Register(typeof(OpenIdErrorHandler));
-            evtHandlerStore.Register(typeof(TokenHandler));
-            evtHandlerStore.Register(typeof(UserInfoHandler));
-            evtHandlerStore.Register(typeof(IntrospectionHandler));
-            evtHandlerStore.Register(typeof(RegistrationHandler));
-            if (handlers != null)
-            {
-                foreach (var handler in handlers)
-                {
-                    evtHandlerStore.Register(handler);
-                }
-            }
-
-            services.AddSingleton(typeof(IEvtHandlerStore), evtHandlerStore);
-            services.AddTransient<IEventPublisher, FakeBus>();
-            return services;
         }
     }
 }

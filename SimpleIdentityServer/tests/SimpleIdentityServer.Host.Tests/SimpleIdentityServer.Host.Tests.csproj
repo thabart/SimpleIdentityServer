@@ -25,9 +25,12 @@
 
   <ItemGroup>
     <!--<ProjectReference Include="..\..\src\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />-->
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Store.Redis\SimpleIdentityServer.Store.Redis.csproj" />
+    <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
     <ProjectReference Include="..\..\src\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
   </ItemGroup>
 

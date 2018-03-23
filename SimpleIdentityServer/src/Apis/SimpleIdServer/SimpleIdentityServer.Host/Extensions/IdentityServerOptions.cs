@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -77,13 +76,10 @@ namespace SimpleIdentityServer.Host
         public DataSourceOptions()
         {
             IsOpenIdDataMigrated = true;
-            IsEvtStoreDataMigrated = true;
             OpenIdDataSourceType = DataSourceTypes.InMemory;
-            EvtStoreDataSourceType = DataSourceTypes.InMemory;
         }
 
         public bool IsOpenIdDataMigrated { get; set; }
-        public bool IsEvtStoreDataMigrated { get; set; }
         /// <summary>
         /// Choose the type of your DataSource
         /// </summary>
@@ -92,8 +88,6 @@ namespace SimpleIdentityServer.Host
         /// Connection string
         /// </summary>
         public string OpenIdConnectionString { get; set; }
-        public DataSourceTypes EvtStoreDataSourceType { get; set; }
-        public string EvtStoreConnectionString { get; set; }
     }
 
     public class AuthenticateOptions

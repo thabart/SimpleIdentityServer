@@ -15,11 +15,11 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Events;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Handler.Bus;
+using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
@@ -34,11 +34,14 @@ namespace SimpleIdentityServer.Core.Api.Registration
     {
         private readonly IRegisterClientAction _registerClientAction;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IPayloadSerializer _payloadSerializer;
 
-        public RegistrationActions(IRegisterClientAction registerClientAction, IEventPublisher eventPublisher)
+        public RegistrationActions(IRegisterClientAction registerClientAction, IEventPublisher eventPublisher,
+            IPayloadSerializer payloadSerializer)
         {
             _registerClientAction = registerClientAction;
             _eventPublisher = eventPublisher;
+            _payloadSerializer = payloadSerializer;
         }
 
         public async Task<ClientRegistrationResponse> PostRegistration(RegistrationParameter registrationParameter)
@@ -51,9 +54,9 @@ namespace SimpleIdentityServer.Core.Api.Registration
             var processId = Guid.NewGuid().ToString();
             try
             {
-                _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, registrationParameter, 0));
+                _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(registrationParameter), 0));
                 var result = await _registerClientAction.Execute(registrationParameter);
-                _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, result, 1));
+                _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
             catch(IdentityServerException ex)

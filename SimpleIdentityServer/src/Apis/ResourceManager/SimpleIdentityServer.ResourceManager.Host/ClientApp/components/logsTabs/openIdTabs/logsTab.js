@@ -6,6 +6,7 @@ import Workflow from '../../workflow';
 import $ from 'jquery';
 import ReactTable from 'react-table'
 import CodeMirror from 'react-codemirror';
+import moment from 'moment';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/markdown/markdown';
@@ -31,6 +32,10 @@ class LogsTab extends Component {
         };
     }
 
+    getDate(d) {
+      return moment(d).format('LLL');
+    }
+
     fetchData(state, instance) {
     	var self = this;
     	self.setState({
@@ -46,7 +51,7 @@ class LogsTab extends Component {
     			searchResult.content.forEach(function(log) {
     				var obj = {
     					description: log.Description,
-    					created_on: log.CreatedOn,
+    					created_on: self.getDate(log.CreatedOn),
     					aggregate_id: log.AggregateId
     				};
     				if (log.Payload) {
@@ -80,12 +85,12 @@ class LogsTab extends Component {
     	$.get(href).done(function(result) {
     		var data = [];
     		if (result.content && result.content.length > 0) {    			
-				var record = { title: result.content[0]['Description'], sub: [], info: 'Created on ', payload: result.content[0]['Payload'] };
+				var record = { title: result.content[0]['Description'], sub: [], info: 'Created on <b>'+ self.getDate(result.content[0]['CreatedOn']) + '</b>', payload: result.content[0]['Payload'] };
 				data.push(record);
 				var parentRecord = record;
 				for (var i = 1; i < result.content.length; i++) {					
 					var e = result.content[i];
-					var subRecord = { title: e['Description'], sub: [], info: 'Created on ', payload: e['Payload'] };
+					var subRecord = { title: e['Description'], sub: [], info: 'Created on <b>' + self.getDate(e['CreatedOn'])  + '</b>', payload: e['Payload'] };
 					parentRecord.sub.push(subRecord);
 					parentRecord = subRecord;
 				}

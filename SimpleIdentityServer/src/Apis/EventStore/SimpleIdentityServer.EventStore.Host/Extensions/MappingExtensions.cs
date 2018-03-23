@@ -16,8 +16,9 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.EventStore.Core.Models;
+using SimpleIdentityServer.EventStore.Core.Parameters;
+using SimpleIdentityServer.EventStore.Core.Results;
 using System;
 
 namespace SimpleIdentityServer.EventStore.Host.Extensions
@@ -32,11 +33,13 @@ namespace SimpleIdentityServer.EventStore.Host.Extensions
             }
 
             var result = new JObject();
-            result.Add(new JProperty(Core.Common.EventResponseNames.Id, evt.Id));
-            result.Add(new JProperty(Core.Common.EventResponseNames.AggregateId, evt.AggregateId));
-            result.Add(new JProperty(Core.Common.EventResponseNames.Description, evt.Description));
-            result.Add(new JProperty(Core.Common.EventResponseNames.CreatedOn, evt.CreatedOn));
-            result.Add(new JProperty(Core.Common.EventResponseNames.Payload, evt.Payload));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.Id, evt.Id));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.AggregateId, evt.AggregateId));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.Description, evt.Description));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.CreatedOn, evt.CreatedOn));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.Type, evt.Type));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.Verbosity, evt.Verbosity));
+            result.Add(new JProperty(Core.Constants.EventResponseNames.Payload, evt.Payload));
             return result;
         }
 

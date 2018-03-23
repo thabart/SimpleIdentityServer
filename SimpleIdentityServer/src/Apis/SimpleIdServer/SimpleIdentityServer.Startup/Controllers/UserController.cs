@@ -14,22 +14,21 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Startup.Extensions;
-using SimpleIdentityServer.Core.Extensions;
-using Microsoft.AspNetCore.Authentication;
 
 namespace SimpleIdentityServer.Startup.Controllers
 {

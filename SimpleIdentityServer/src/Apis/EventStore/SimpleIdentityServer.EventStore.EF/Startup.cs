@@ -14,61 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 
 namespace SimpleIdentityServer.EventStore.EF
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration { get; set; }
-
-        public Startup(IHostingEnvironment env)
-        {
-            var environment = GetEnvironment();
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{environment}.json", optional: true)
-                .AddEnvironmentVariables();
-            
-            Configuration = builder.Build();
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
-            var isSqlServer = bool.Parse(Configuration["isSqlServer"]);
-            var isSqlLite = bool.Parse(Configuration["isSqlLite"]);
-            var isPostgre = bool.Parse(Configuration["isPostgre"]);
-            Console.WriteLine(isSqlServer);
-            Console.WriteLine(connectionString);
-            services.AddEntityFrameworkSqlServer()
-               .AddDbContext<EventStoreContext>(options =>
-                   options.UseSqlServer(connectionString));
-        }
-
-        public void Configure(IApplicationBuilder app,
-            IHostingEnvironment env,
-            ILoggerFactory loggerFactory)
-        {
-        }
-        
-        private static string GetEnvironment()
-        {
-            var configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables();
-            var environmentVariables = configuration.Build();
-            var environmentVariable = environmentVariables.GetChildren().FirstOrDefault(e => e.Key == "ASPNETCORE_ENVIRONMENT");
-            return environmentVariable == null ? string.Empty : environmentVariable.Value;
-        }
-
         public static void Main(string[] args) { }
     }
 }

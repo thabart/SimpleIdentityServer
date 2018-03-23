@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.EventStore.EF.Models;
 using System;
-using Domain = SimpleIdentityServer.Core.Models;
+using Domain = SimpleIdentityServer.EventStore.Core.Models;
 
 namespace SimpleIdentityServer.EventStore.EF.Extensions
 {
@@ -36,7 +36,9 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 Order = evtAggregate.Order,
                 CreatedOn = evtAggregate.CreatedOn,
                 Description = evtAggregate.Description,
-                Payload = evtAggregate.Payload
+                Payload = evtAggregate.Payload,
+                Type = evtAggregate.Type,
+                Verbosity = (Domain.EventVerbosities)evtAggregate.Verbosity
             };
         }
 
@@ -54,7 +56,9 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 CreatedOn = evtAggregate.CreatedOn,
                 Order = evtAggregate.Order,
                 Description = evtAggregate.Description,
-                Payload = evtAggregate.Payload
+                Payload = evtAggregate.Payload,
+                Type = evtAggregate.Type,
+                Verbosity = (int)evtAggregate.Verbosity
             };
         }
     }

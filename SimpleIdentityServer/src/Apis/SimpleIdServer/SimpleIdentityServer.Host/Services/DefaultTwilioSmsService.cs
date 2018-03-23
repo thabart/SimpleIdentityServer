@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Configuration.Client.Setting;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Services;
@@ -30,22 +28,16 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Services
 {
+    public class TwilioOptions
+    {
+        public string TwilioAccountSid { get; set; }
+        public string TwilioAuthToken { get; set; }
+        public string TwilioFromNumber { get; set; }
+        public string TwilioMessage { get; set; }
+    }
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
         private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages";
-        private const string TwilioAccountSid = "TwilioAccountSid";
-        private const string TwilioAuthToken = "TwilioAuthToken";
-        private const string TwilioFromNumber = "TwilioFromNumber";
-        private const string TwilioMessage = "TwilioMessage";
-
-        private List<string> _settingNames = new List<string>
-        {
-            TwilioAccountSid,
-            TwilioAuthToken,
-            TwilioFromNumber,
-            TwilioMessage
-        };
-
         private class TwilioSmsCredentials
         {
             public string AccountSid { get; set; } = string.Empty;
@@ -54,27 +46,16 @@ namespace SimpleIdentityServer.Host.Services
         }
 
         private readonly IHttpClientFactory _clientFactory;
+        private readonly TwilioOptions _options;
 
-        private readonly ISettingClient _settingClient;
-
-        private readonly string _configurationUrl;
-
-        public DefaultTwilioSmsService(
-            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
-            string configurationUrl)
+        public DefaultTwilioSmsService(TwilioOptions options)
         {
-            if (simpleIdServerConfigurationClientFactory == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            _settingClient = simpleIdServerConfigurationClientFactory.GetSettingClient();
-            _configurationUrl = configurationUrl;
+            _options = options;
             _clientFactory = new HttpClientFactory();
         }
 
@@ -103,20 +84,13 @@ namespace SimpleIdentityServer.Host.Services
             {
                 throw new ArgumentException("the phone number is missing");
             }
-
-            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
-            if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
-            {
-                throw new InvalidOperationException("there are one or more missing settings");
-            }
-
-            var dic = settings.ToDictionary(s => s.Key);
+            
             await SendMessage(new TwilioSmsCredentials
             {
-             AccountSid = dic[TwilioAccountSid].Value,
-             AuthToken = dic[TwilioAuthToken].Value,
-             FromNumber = dic[TwilioFromNumber].Value,
-            }, phoneNumberClaim.Value, string.Format(dic[TwilioMessage].Value, code));
+                AccountSid = _options.TwilioAccountSid,
+                AuthToken = _options.TwilioAuthToken,
+                FromNumber = _options.TwilioFromNumber,
+            }, phoneNumberClaim.Value, string.Format(_options.TwilioMessage, code));
         }
 
         private async Task<bool> SendMessage(

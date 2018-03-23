@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
@@ -58,9 +59,7 @@ namespace SimpleIdentityServer.Host.Tests
                 DataSource = new DataSourceOptions
                 {
                     OpenIdDataSourceType = DataSourceTypes.InMemory,
-                    IsOpenIdDataMigrated = false,
-                    EvtStoreDataSourceType = DataSourceTypes.InMemory,
-                    IsEvtStoreDataMigrated = false
+                    IsOpenIdDataMigrated = false
                 },
                 Logging = new LoggingOptions
                 {
@@ -165,7 +164,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddLogging()
                 .AddSimpleIdentityServerInMemory()
                 .AddEventStoreInMemory()
-                .AddDefaultBus()
+                .AddEventStoreBus()
                 .AddInMemoryStores();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }

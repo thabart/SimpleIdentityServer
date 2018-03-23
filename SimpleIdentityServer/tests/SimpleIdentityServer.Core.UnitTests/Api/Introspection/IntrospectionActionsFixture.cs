@@ -17,8 +17,8 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
-using SimpleIdentityServer.Core.Bus;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Handler.Bus;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
     public class IntrospectionActionsFixture
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
+        private Mock<IPayloadSerializer> _payloadSerializerStub;
 
         private IIntrospectionActions _introspectionActions;
 
@@ -69,7 +70,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
         {
             _postIntrospectionActionStub = new Mock<IPostIntrospectionAction>();
             var eventPublisherStub = new Mock<IEventPublisher>();
-            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object);
+            _payloadSerializerStub = new Mock<IPayloadSerializer>();
+            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object, _payloadSerializerStub.Object);
         }
     }
 }

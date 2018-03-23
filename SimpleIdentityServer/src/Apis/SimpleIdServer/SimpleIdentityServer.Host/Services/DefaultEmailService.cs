@@ -16,62 +16,39 @@
 
 using MailKit.Net.Smtp;
 using MimeKit;
-using SimpleIdentityServer.Configuration.Client;
-using SimpleIdentityServer.Configuration.Client.Setting;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Services
 {
+    public class EmailServiceOptions
+    {
+        public string EmailFromName { get; set; }
+        public string EmailFromAddress { get; set; }
+        public string EmailSubject { get; set; }
+        public string EmailBody { get; set; }
+        public string EmailSmtpHost { get; set; }
+        public int EmailSmtpPort { get; set; }
+        public bool EmailSmtpUseSsl { get; set; }
+        public string EmailUserName { get; set; }
+        public string EmailPassword { get; set; }
+    }
+
     public class DefaultEmailService : ITwoFactorAuthenticationService
     {
-        private const string EmailFromName = "EmailFromName";
-        private const string EmailFromAddress = "EmailFromAddress";
-        private const string EmailSubject = "EmailSubject";
-        private const string EmailBody = "EmailBody";
-        private const string EmailSmtpHost = "EmailSmtpHost";
-        private const string EmailSmtpPort = "EmailSmtpPort";
-        private const string EmailSmtpUseSsl = "EmailSmtpUseSsl";
-        private const string EmailUserName = "EmailUserName";
-        private const string EmailPassword = "EmailPassword";
+        private readonly EmailServiceOptions _options;
 
-        private List<string> _settingNames = new List<string>
+        public DefaultEmailService(EmailServiceOptions options)
         {
-            EmailFromName,
-            EmailFromAddress,
-            EmailSubject,
-            EmailBody,
-            EmailSmtpHost,
-            EmailSmtpPort,
-            EmailSmtpUseSsl,
-            EmailUserName,
-            EmailPassword
-        };
-
-        private readonly ISettingClient _settingClient;
-
-        private readonly string _configurationUrl;
-
-        public DefaultEmailService(
-            ISimpleIdServerConfigurationClientFactory simpleIdServerConfigurationClientFactory,
-            string configurationUrl)
-        {
-            if (simpleIdServerConfigurationClientFactory == null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(simpleIdServerConfigurationClientFactory));
+                throw new ArgumentNullException(nameof(options));
             }
-
-            if (string.IsNullOrWhiteSpace(configurationUrl))
-            {
-                throw new ArgumentNullException(nameof(configurationUrl));
-            }
-
-            _settingClient = simpleIdServerConfigurationClientFactory.GetSettingClient();
-            _configurationUrl = configurationUrl;
+            
+            _options = options;
         }
 
         public int Code
@@ -117,20 +94,14 @@ namespace SimpleIdentityServer.Host.Services
             {
                 displayName = displayNameClaim.Value;
             }
-            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
-            if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
-            {
-                throw new InvalidOperationException("there are one or more missing settings");
-            }
-
-            var dic = settings.ToDictionary(s => s.Key);
+            
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(dic[EmailFromName].Value, dic[EmailFromAddress].Value));
+            message.From.Add(new MailboxAddress(_options.EmailFromName, _options.EmailFromAddress));
             message.To.Add(new MailboxAddress(displayName, emailClaim.Value));
-            message.Subject = dic[EmailSubject].Value;
+            message.Subject = _options.EmailSubject;
             var bodyBuilder = new BodyBuilder()
             {
-                HtmlBody = string.Format(dic[EmailBody].Value, code)
+                HtmlBody = string.Format(_options.EmailBody, code)
             };
             message.Body = bodyBuilder.ToMessageBody();
 
@@ -139,9 +110,9 @@ namespace SimpleIdentityServer.Host.Services
                 client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
                     return true;
                 };
-                await client.ConnectAsync(dic[EmailSmtpHost].Value, int.Parse(dic[EmailSmtpPort].Value), bool.Parse(dic[EmailSmtpUseSsl].Value));
+                await client.ConnectAsync(_options.EmailSmtpHost, _options.EmailSmtpPort, _options.EmailSmtpUseSsl);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(dic[EmailUserName].Value, dic[EmailPassword].Value);
+                await client.AuthenticateAsync(_options.EmailUserName, _options.EmailPassword);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
