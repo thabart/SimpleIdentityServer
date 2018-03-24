@@ -194,6 +194,8 @@ namespace SimpleIdentityServer.Startup
                     opts.Scope.Add("public_profile");
                     opts.Scope.Add("email");
                 });
+            services.AddAuthentication(Host.Constants.TwoFactorCookieName)
+                .AddCookie(Host.Constants.TwoFactorCookieName);
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {

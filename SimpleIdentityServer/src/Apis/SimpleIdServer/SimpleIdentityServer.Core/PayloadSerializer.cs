@@ -76,11 +76,6 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-
-            if (authenticationHeaderValue == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationHeaderValue));
-            }
             
             var jsonObj = new JObject();
             jsonObj.Add("token", parameter.Token);
@@ -185,12 +180,7 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-
-            if (authenticationHeaderValue == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationHeaderValue));
-            }
-
+            
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -212,11 +202,6 @@ namespace SimpleIdentityServer.Core
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
-            }
-
-            if (authenticationHeaderValue == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationHeaderValue));
             }
             
             var clientId = GetClientId(authenticationHeaderValue);
@@ -256,11 +241,6 @@ namespace SimpleIdentityServer.Core
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-
-            if (authenticationHeaderValue == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationHeaderValue));
-            }
             
             var clientId = GetClientId(authenticationHeaderValue);
             if (string.IsNullOrWhiteSpace(clientId))
@@ -283,11 +263,6 @@ namespace SimpleIdentityServer.Core
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
-            }
-
-            if (authenticationHeaderValue == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationHeaderValue));
             }
             
             var clientId = GetClientId(authenticationHeaderValue);

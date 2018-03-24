@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{4E750A65-E3DF-4030-ACC0-C47FBDAA615C}"
 EndProject
@@ -70,6 +70,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Handler", "src\Apis\SimpleIdServer\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj", "{56462D54-F21A-449B-9704-4C38C7E370E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Handler", "src\Apis\SimpleIdServer\SimpleIdentityServer.Handler\SimpleIdentityServer.Handler.csproj", "{EC96A45B-1C01-4026-A171-303F433FD52B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Core", "src\Apis\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj", "{183834ED-B3E2-4E0B-A002-372605BFC32B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -222,6 +224,12 @@ Global
 		{EC96A45B-1C01-4026-A171-303F433FD52B}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{EC96A45B-1C01-4026-A171-303F433FD52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC96A45B-1C01-4026-A171-303F433FD52B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{183834ED-B3E2-4E0B-A002-372605BFC32B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -256,6 +264,7 @@ Global
 		{18CA8785-36FB-40A0-A271-97E07B44A185} = {4E5FA21D-715A-41BB-B215-8A7972362739}
 		{56462D54-F21A-449B-9704-4C38C7E370E6} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{EC96A45B-1C01-4026-A171-303F433FD52B} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{183834ED-B3E2-4E0B-A002-372605BFC32B} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

@@ -30,6 +30,8 @@ using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.User;
+using SimpleIdentityServer.EventStore.Core.Models;
+using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host.Extensions;
