@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Handlers;
-using SimpleIdentityServer.Handler.Bus;
+using SimpleBus.Core;
+using SimpleIdentityServer.EventStore.Handler.Handlers;
 using System;
 using System.Collections.Generic;
 
@@ -38,7 +38,6 @@ namespace SimpleIdentityServer.EventStore.Handler
             }
 
             services.AddSingleton(typeof(IEvtHandlerStore), evtHandlerStore);
-            services.AddTransient<IEventPublisher, FakeBus>();
             return services;
         }
     }

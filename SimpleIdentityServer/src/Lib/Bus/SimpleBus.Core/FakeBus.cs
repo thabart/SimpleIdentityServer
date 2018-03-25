@@ -17,36 +17,11 @@
 using System.Threading.Tasks;
 
 
-namespace SimpleIdentityServer.Handler.Bus
+namespace SimpleBus.Core
 {
     public interface IEventPublisher
     {
         void Publish<T>(T evt) where T : Event;
-    }
-
-    public class FakeBus : IEventPublisher
-    {
-        private readonly IEvtHandlerStore _evtHandlerStore;
-
-        public FakeBus(IEvtHandlerStore evtHandlerStore)
-        {
-            _evtHandlerStore = evtHandlerStore;
-        }
-
-        public void Publish<T>(T evt) where T : Event
-        {
-            var handlers = _evtHandlerStore.Get<T>();
-            if (handlers == null)
-            {
-                return;
-            }
-
-            foreach (var handler in handlers)
-            {
-                var handler1 = handler;
-                Task.Run(() => handler1.Handle(evt));
-            }
-        }
     }
 
     public interface IHandler

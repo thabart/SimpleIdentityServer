@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using SimpleBus.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
@@ -163,6 +164,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddIdServerLogging()
                 .AddLogging()
                 .AddSimpleIdentityServerInMemory()
+                .AddSimpleBusInMemory()
                 .AddEventStoreInMemory()
                 .AddEventStoreBus()
                 .AddInMemoryStores();

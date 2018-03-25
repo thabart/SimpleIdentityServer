@@ -10,7 +10,7 @@ using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
-using SimpleIdentityServer.Handler.Bus;
+using SimpleBus.Core;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {

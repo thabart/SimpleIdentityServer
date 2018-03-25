@@ -18,9 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Handler.Bus
+namespace SimpleBus.Core
 {
     public interface IEvtHandlerStore
     {
@@ -31,7 +30,6 @@ namespace SimpleIdentityServer.Handler.Bus
     public class EvtHandlerStore : IEvtHandlerStore
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, List<Func<Message, Task>>> _routes = new Dictionary<Type, List<Func<Message, Task>>>();
         private readonly ICollection<Type> _types = new List<Type>();
 
         public EvtHandlerStore(IServiceProvider serviceProvider)

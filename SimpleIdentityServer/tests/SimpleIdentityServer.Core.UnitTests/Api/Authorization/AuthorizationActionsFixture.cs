@@ -15,6 +15,7 @@
 #endregion
 
 using Moq;
+using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -25,7 +26,6 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;

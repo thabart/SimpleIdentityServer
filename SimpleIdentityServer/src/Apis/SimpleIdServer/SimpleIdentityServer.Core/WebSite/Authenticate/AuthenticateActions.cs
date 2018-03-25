@@ -14,13 +14,12 @@
 // limitations under the License.
 #endregion
 
+using SimpleBus.Core;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using System;
 using System.Collections.Generic;
 using System.Linq;

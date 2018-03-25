@@ -15,14 +15,14 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleBus.Core;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Handlers
+namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
     public class OpenIdErrorHandler : IHandle<OpenIdErrorReceived>
     {
@@ -61,7 +61,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Description = "An error occured",
                 Payload =  payload,
-                Order = evt.Order
+                Order = evt.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Error,
+                Key = "error"
             });
         }
     }

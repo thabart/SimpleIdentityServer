@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleBus.InMemory;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
@@ -181,7 +182,7 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyHeader()));
 
             // 3. Configure Simple identity server
-            services.AddEventStoreBus().AddSimpleIdentityServer(_options);
+            services.AddSimpleBusInMemory().AddEventStoreBus().AddSimpleIdentityServer(_options);
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)

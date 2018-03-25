@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleBus.Core;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Handlers
+namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
     public class TokenHandler : IHandle<GrantTokenViaAuthorizationCodeReceived>, IHandle<GrantTokenViaClientCredentialsReceived>, IHandle<GrantTokenViaRefreshTokenReceived>, IHandle<GrantTokenViaResourceOwnerCredentialsReceived>, IHandle<RevokeTokenReceived>, IHandle<TokenGranted>, IHandle<TokenRevoked>
     {
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via authorization code", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via authorization code", message.Order, "auth_code_grantype_started");
         }
 
         public async Task Handle(GrantTokenViaClientCredentialsReceived message)
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via client credentials", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via client credentials", message.Order, "client_credentials_grantype_started");
         }
 
         public async Task Handle(GrantTokenViaRefreshTokenReceived message)
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via refresh token", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via refresh token", message.Order, "refresh_token_grantype_started");
         }
 
         public async Task Handle(GrantTokenViaResourceOwnerCredentialsReceived message)
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via resource owner credentials", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Start grant token via resource owner credentials", message.Order, "resource_owner_grantype_started");
         }
 
         public async Task Handle(RevokeTokenReceived message)
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Start revoke token", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Start revoke token", message.Order, "revoke_token_started");
         }
 
         public async Task Handle(TokenGranted message)
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
             
-            await Add(message.Id, message.ProcessId, message.Payload, "Token granted", message.Order);
+            await Add(message.Id, message.ProcessId, message.Payload, "Token granted", message.Order, "token_granted");
         }
 
         public async Task Handle(TokenRevoked message)
@@ -99,15 +99,15 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            await Add(message.Id, message.ProcessId, "Token revoked", message.Order);
+            await Add(message.Id, message.ProcessId, "Token revoked", message.Order, "token_revoked");
         }
 
-        private Task Add(string id, string processId, string message, int order)
+        private Task Add(string id, string processId, string message, int order, string key)
         {
-            return Add(id, processId, null, message, order);
+            return Add(id, processId, null, message, order, key);
         }
 
-        private async Task Add(string id, string processId, string payload, string message, int order)
+        private async Task Add(string id, string processId, string payload, string message, int order, string key)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -126,7 +126,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = message,
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
-                Order = order
+                Order = order,
+                Key = key,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information
             });
         }
     }

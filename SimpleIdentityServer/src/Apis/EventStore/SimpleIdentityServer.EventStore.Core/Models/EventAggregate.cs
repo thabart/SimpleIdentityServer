@@ -17,6 +17,7 @@ namespace SimpleIdentityServer.EventStore.Core.Models
         public int Order { get; set; }
         public EventVerbosities Verbosity { get; set; }
         public string Type { get; set; }
+        public string Key { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 }

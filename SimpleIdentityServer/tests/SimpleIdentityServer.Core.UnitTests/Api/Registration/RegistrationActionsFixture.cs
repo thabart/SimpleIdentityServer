@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System;
 using Moq;
+using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;
-using Xunit;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Handler.Bus;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {

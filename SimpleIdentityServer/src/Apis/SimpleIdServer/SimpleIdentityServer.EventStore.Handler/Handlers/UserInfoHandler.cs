@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleBus.Core;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Handlers
+namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
     public class UserInfoHandler : IHandle<GetUserInformationReceived>, IHandle<UserInformationReturned>
     {
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
             
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Payload, "Start user information", parameter.Order);
+            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Payload, "Start user information", parameter.Order, "get_user_info_started");
         }
 
         public async Task Handle(UserInformationReturned parameter)
@@ -49,10 +49,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 throw new ArgumentNullException(nameof(parameter));
             }
             
-            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Payload, "User information returned", parameter.Order);
+            await AddEvent(parameter.Id, parameter.ProcessId, parameter.Payload, "User information returned", parameter.Order, "get_user_info_finished");
         }
 
-        private async Task AddEvent(string id, string processId, string content, string message, int order)
+        private async Task AddEvent(string id, string processId, string content, string message, int order, string key)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -71,7 +71,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = message,
                 AggregateId = processId,
                 Payload = content,
-                Order = order
+                Order = order,
+                Key = key,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information
             });
         }
     }

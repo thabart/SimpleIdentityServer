@@ -14,10 +14,9 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Handler.Bus
+namespace SimpleBus.Core
 {
-    public class Event : Message
+    public class Message
     {
-        public string Version { get; set; }
     }
 }

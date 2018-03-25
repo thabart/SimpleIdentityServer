@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-
-using SimpleIdentityServer.Handler.Bus;
+using SimpleBus.Core;
 
 namespace SimpleIdentityServer.Handler.Events
 {

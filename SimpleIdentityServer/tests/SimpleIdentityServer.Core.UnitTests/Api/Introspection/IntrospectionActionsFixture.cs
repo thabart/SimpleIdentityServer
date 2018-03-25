@@ -15,10 +15,10 @@
 #endregion
 
 using Moq;
+using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Handler.Bus;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;

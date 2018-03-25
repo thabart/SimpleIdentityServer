@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleBus.Core;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Handlers
+namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
     public class IntrospectionHandler : IHandle<IntrospectionRequestReceived>, IHandle<IntrospectionResultReturned>
     {
@@ -46,7 +46,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Start introspection",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "introspection_started"
             });
         }
 
@@ -64,7 +67,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Introspection result",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "introspection_finished"
             });
         }
     }

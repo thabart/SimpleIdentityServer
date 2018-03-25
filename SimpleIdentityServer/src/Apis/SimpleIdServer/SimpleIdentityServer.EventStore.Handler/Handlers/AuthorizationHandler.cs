@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
+using SimpleBus.Core;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Bus;
 using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Handlers
+namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
     public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>, IHandle<ResourceOwnerAuthenticated>, IHandle<ConsentAccepted>, IHandle<ConsentRejected>
     {
@@ -46,7 +46,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Start authorization process",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "auth_process_started"
             });
         }
 
@@ -64,7 +67,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Authorization granted",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "auth_granted"
             });
         }
 
@@ -82,7 +88,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Resource owner is authenticated",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "resource_owner_auth"
             });
         }
 
@@ -100,7 +109,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Consent accepted",
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "consent_accepted"
             });
         }
 
@@ -117,7 +129,10 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = message.ProcessId,
                 Description = "Consent rejected",
                 CreatedOn = DateTime.UtcNow,
-                Order = message.Order
+                Order = message.Order,
+                Type = Constants.Type,
+                Verbosity = EventVerbosities.Information,
+                Key = "consent_rejected"
             });
         }
     }

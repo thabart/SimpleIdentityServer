@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 Description = evtAggregate.Description,
                 Payload = evtAggregate.Payload,
                 Type = evtAggregate.Type,
+                Key = evtAggregate.Key,
                 Verbosity = (Domain.EventVerbosities)evtAggregate.Verbosity
             };
         }
@@ -58,6 +59,7 @@ namespace SimpleIdentityServer.EventStore.EF.Extensions
                 Description = evtAggregate.Description,
                 Payload = evtAggregate.Payload,
                 Type = evtAggregate.Type,
+                Key = evtAggregate.Key,
                 Verbosity = (int)evtAggregate.Verbosity
             };
         }

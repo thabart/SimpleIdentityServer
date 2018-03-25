@@ -32,7 +32,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
     public class ConsentActions : IConsentActions
     {
         private readonly IDisplayConsentAction _displayConsentAction;
-
         private readonly IConfirmConsentAction _confirmConsentAction;
 
         public ConsentActions(
