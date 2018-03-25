@@ -20,6 +20,9 @@ using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using System.Threading.Tasks;
+using SimpleBus.Core;
+using SimpleIdentityServer.Scim.Handler.Events;
+using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
@@ -43,6 +46,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IGetRepresentationAction _getRepresentationAction;
         private readonly IGetRepresentationsAction _getRepresentationsAction;
         private readonly ISearchParameterParser _searchParameterParser;
+        private readonly IEventPublisher _eventPublisher;
 
         public UsersAction(
             IAddRepresentationAction addRepresentationAction,
@@ -51,7 +55,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IDeleteRepresentationAction deleteRepresentationAction,
             IGetRepresentationAction getRepresentationAction,
             IGetRepresentationsAction getRepresentationsAction,
-            ISearchParameterParser searchParameterParser)
+            ISearchParameterParser searchParameterParser,
+            IEventPublisher eventPublisher)
         {
             _addRepresentationAction = addRepresentationAction;
             _updateRepresentationAction = updateRepresentationAction;
@@ -60,26 +65,77 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _getRepresentationAction = getRepresentationAction;
             _getRepresentationsAction = getRepresentationsAction;
             _searchParameterParser = searchParameterParser;
+            _eventPublisher = eventPublisher;
         }
 
-        public Task<ApiActionResult> AddUser(JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> AddUser(JObject jObj, string locationPattern)
         {
-            return _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.User, Common.Constants.ResourceTypes.User);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new AddUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.User, Common.Constants.ResourceTypes.User);
+                _eventPublisher.Publish(new AddUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
-        public Task<ApiActionResult> UpdateUser(string id, JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> UpdateUser(string id, JObject jObj, string locationPattern)
         {
-            return _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern, Common.Constants.ResourceTypes.User);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new UpdateUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern, Common.Constants.ResourceTypes.User);
+                _eventPublisher.Publish(new UpdateUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
-        public Task<ApiActionResult> PatchUser(string id, JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> PatchUser(string id, JObject jObj, string locationPattern)
         {
-            return _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new PatchUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern);
+                _eventPublisher.Publish(new PatchUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
-        public Task<ApiActionResult> RemoveUser(string id)
+        public async Task<ApiActionResult> RemoveUser(string id)
         {
-            return _deleteRepresentationAction.Execute(id);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                var jObj = new JObject();
+                jObj.Add("id", id);
+                _eventPublisher.Publish(new RemoveUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _deleteRepresentationAction.Execute(id);
+                _eventPublisher.Publish(new RemoveUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
         public Task<ApiActionResult> GetUser(string id, string locationPattern)

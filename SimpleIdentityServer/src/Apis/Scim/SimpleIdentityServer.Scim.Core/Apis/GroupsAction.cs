@@ -15,9 +15,13 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SimpleBus.Core;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
+using SimpleIdentityServer.Scim.Handler.Events;
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
@@ -42,6 +46,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
         private readonly IPatchRepresentationAction _patchRepresentationAction;
         private readonly ISearchParameterParser _searchParameterParser;
         private readonly IGetRepresentationsAction _getRepresentationsAction;
+        private readonly IEventPublisher _eventPublisher;
 
         public GroupsAction(
             IAddRepresentationAction addRepresentationAction,
@@ -50,7 +55,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             IUpdateRepresentationAction updateRepresentationAction,
             IPatchRepresentationAction patchRepresentationAction,
             ISearchParameterParser searchParameterParser,
-            IGetRepresentationsAction getRepresentationsAction)
+            IGetRepresentationsAction getRepresentationsAction,
+            IEventPublisher eventPublisher)
         {
             _addRepresentationAction = addRepresentationAction;
             _getRepresentationAction = getRepresentationAction;
@@ -59,11 +65,24 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _patchRepresentationAction = patchRepresentationAction;
             _searchParameterParser = searchParameterParser;
             _getRepresentationsAction = getRepresentationsAction;
+            _eventPublisher = eventPublisher;
         }
 
-        public Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern)
         {
-            return _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.Group, Common.Constants.ResourceTypes.Group);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new AddGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.Group, Common.Constants.ResourceTypes.Group);
+                _eventPublisher.Publish(new AddGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
         public Task<ApiActionResult> GetGroup(string id, string locationPattern, IQueryCollection query)
@@ -72,19 +91,57 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             return _getRepresentationAction.Execute(id, locationPattern, Common.Constants.SchemaUrns.Group);
         }
 
-        public Task<ApiActionResult> RemoveGroup(string id)
+        public async Task<ApiActionResult> RemoveGroup(string id)
         {
-            return _deleteRepresentationAction.Execute(id);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                var jObj = new JObject();
+                jObj.Add("id", id);
+                _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _deleteRepresentationAction.Execute(id);
+                _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
-        public Task<ApiActionResult> UpdateGroup(string id, JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> UpdateGroup(string id, JObject jObj, string locationPattern)
         {
-            return _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern, Common.Constants.ResourceTypes.Group);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern, Common.Constants.ResourceTypes.Group);
+                _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
-        public Task<ApiActionResult> PatchGroup(string id, JObject jObj, string locationPattern)
+        public async Task<ApiActionResult> PatchGroup(string id, JObject jObj, string locationPattern)
         {
-            return _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern);
+            var processId = Guid.NewGuid().ToString();
+            try
+            {
+                _eventPublisher.Publish(new PatchGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
+                var result = await _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern);
+                _eventPublisher.Publish(new PatchGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                _eventPublisher.Publish(new ScimErrorReceived(Guid.NewGuid().ToString(), processId, ex.Message, 1));
+                throw;
+            }
         }
 
         public Task<ApiActionResult> SearchGroups(IQueryCollection query, string locationPattern)

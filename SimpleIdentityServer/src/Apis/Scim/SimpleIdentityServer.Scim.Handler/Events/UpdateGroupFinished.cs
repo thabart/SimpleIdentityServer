@@ -2,9 +2,9 @@
 
 namespace SimpleIdentityServer.Scim.Handler.Events
 {
-    public class AddUserFinished : Event
+    public class UpdateGroupFinished : Event
     {
-        public AddUserFinished(string id, string processId, string payload, int order)
+        public UpdateGroupFinished(string id, string processId, string payload, int order)
         {
             Id = id;
             ProcessId = processId;

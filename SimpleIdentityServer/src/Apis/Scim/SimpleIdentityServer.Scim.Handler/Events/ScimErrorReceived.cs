@@ -2,19 +2,19 @@
 
 namespace SimpleIdentityServer.Scim.Handler.Events
 {
-    public class AddUserFinished : Event
+    public class ScimErrorReceived : Event
     {
-        public AddUserFinished(string id, string processId, string payload, int order)
+        public ScimErrorReceived(string id, string processId, string message, int order)
         {
             Id = id;
             ProcessId = processId;
-            Payload = payload;
+            Message = message;
             Order = order;
         }
 
         public string Id { get; private set; }
         public string ProcessId { get; private set; }
-        public string Payload { get; private set; }
+        public string Message { get; private set; }
         public int Order { get; private set; }
     }
 }
