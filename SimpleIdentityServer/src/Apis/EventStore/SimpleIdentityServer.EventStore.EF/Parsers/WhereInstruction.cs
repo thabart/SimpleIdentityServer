@@ -140,10 +140,11 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
             var prop = p.Last().TrimStart('\'', '"').TrimEnd('\'', '"');
             var property = Expression.Property(arg, p.First());
+            var exprConst = Cast(prop, property.Type);
             // Not equal
             if (p.ElementAt(1) == "neq")
             {
-                return Expression.NotEqual(property, Expression.Constant(prop));
+                return Expression.NotEqual(property, Expression.Constant(exprConst));
             }
 
             // Contains
@@ -151,7 +152,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("Contains", new[] { typeof(string) } );
-                return Expression.Call(property, methodInfo, Expression.Constant(prop));
+                return Expression.Call(property, methodInfo, Expression.Constant(exprConst));
             }
 
             // Starts with
@@ -159,7 +160,7 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("StartsWith", new[] { typeof(string), typeof(StringComparison) });
-                return Expression.Call(property, methodInfo, Expression.Constant(prop), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
+                return Expression.Call(property, methodInfo, Expression.Constant(exprConst), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
             }
 
             // Ends with
@@ -167,10 +168,50 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
             {
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("EndsWith", new[] { typeof(string), typeof(StringComparison) });
-                return Expression.Call(property, methodInfo, Expression.Constant(prop), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
+                return Expression.Call(property, methodInfo, Expression.Constant(exprConst), Expression.Constant(StringComparison.CurrentCultureIgnoreCase));
             }
 
-            return Expression.Equal(property, Expression.Constant(prop));
+            return Expression.Equal(property, Expression.Constant(exprConst));
+        }
+
+
+        private static dynamic Cast(string prop, Type propertyType)
+        {
+            if (IsNumericType(propertyType))
+            {
+                prop = prop.Replace("\"", "");
+                prop = prop.Replace("\'", "");
+                int result;
+                if (!int.TryParse(prop, out result))
+                {
+                    throw new InvalidOperationException($"the value {prop} is not a numeric");
+                }
+
+                return result;
+            }
+
+            return prop;
+        }
+
+        private static bool IsNumericType(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

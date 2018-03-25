@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Host.Configurations;
 using SimpleIdentityServer.EventStore.Host.Extensions;
 
@@ -41,6 +42,11 @@ namespace SimpleIdentityServer.EventStore.Startup
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseEventStore(loggerFactory, _configuration);
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var scimDbContext = serviceScope.ServiceProvider.GetService<EventStoreContext>();
+                scimDbContext.Database.EnsureCreated();
+            }
         }
     }
 }

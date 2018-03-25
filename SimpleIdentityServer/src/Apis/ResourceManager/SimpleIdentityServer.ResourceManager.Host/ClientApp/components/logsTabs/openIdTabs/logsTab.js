@@ -44,7 +44,7 @@ class LogsTab extends Component {
 
     	var url = Constants.eventSourceUrl;
     	var startIndex = state.page * state.pageSize;
-    	url += "/events/.search?filter=join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) orderby$on(CreatedOn),order(desc)&startIndex="+startIndex+"&count="+state.pageSize;
+    	url += "/events/.search?filter=where$(Type eq 'simpleidserver' and Verbosity eq '0') join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) orderby$on(CreatedOn),order(desc)&startIndex="+startIndex+"&count="+state.pageSize;
     	$.get(url).done(function(searchResult) {
     		var data = [];
     		if (searchResult.content) {

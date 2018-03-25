@@ -468,6 +468,34 @@ namespace SimpleIdentityServer.EventStore.Tests
             Assert.True(result.Count() == 2);
         }
 
+
+        [Fact]
+        public void When_Execute_Where_On_Number_Then_Results_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var persons = (new List<Person>
+            {
+                new Person
+                {
+                    Id = "1",
+                    BirthDate = DateTime.UtcNow,
+                    FirstName = "thierry1",
+                    LastName = "lastname1",
+                    Order = 0
+                }
+            }).AsQueryable();
+
+            // ACT
+            // Link : https://github.com/machine-legacy/machine.mta/blob/master/Source/Machine.Mta.MessageInterfaces/DefaultMessageInterfaceImplementationFactory.cs
+            var interpreter = _parser.Parse("where$(Order eq '0')");
+            var result = interpreter.Execute(persons);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.Count() == 1);
+        }
+
         [Fact]
         public void SaveAnonymousType()
         {
