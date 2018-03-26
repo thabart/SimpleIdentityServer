@@ -5,6 +5,16 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = (env) => {
   const isDevBuild = !(env && env.prod);
+  var baseUrl = process.env.BASE_URL;
+  var evtUrl = process.env.EVT_SOURCE_URL;
+  if (!baseUrl) {
+	baseUrl = 'http://localhost:64950';
+  }
+  
+  if (!evtUrl) {
+	evtUrl = 'http://localhost:5000';
+  }
+  
   return [{	  
       context: __dirname + "/ClientApp",
       entry: { 'main': __dirname + "/ClientApp/main.js" },
@@ -22,7 +32,9 @@ var config = (env) => {
 				'IS_CONNECTIONS_DISABLED': process.env.IS_CONNECTIONS_DISABLED,
 				'IS_SETTINGS_DISABLED': process.env.IS_SETTINGS_DISABLED,
 				'IS_CACHE_DISABLED': process.env.IS_CACHE_DISABLED,
-				'IS_MANAGE_DISABLED': process.env.IS_MANAGE_DISABLED
+				'IS_MANAGE_DISABLED': process.env.IS_MANAGE_DISABLED,
+				'BASE_URL': baseUrl,
+				'EVT_SOURCE_URL': evtUrl
 			}
 		})
 	  ],

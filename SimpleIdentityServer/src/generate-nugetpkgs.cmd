@@ -30,6 +30,8 @@ dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Common /p
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Core /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Db.EF /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Host /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Handler /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.EventStore.Handler /p:PackageVersion=%packageVersion%
 
 REM EVENT STORE
 dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.EF /p:PackageVersion=%packageVersion%

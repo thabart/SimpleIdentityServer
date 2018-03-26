@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Scim.Startup
             var host = new WebHostBuilder()
                 .UseKestrel()
                 // .UseConfiguration(configuration)
-                .UseUrls(args)
+                .UseUrls("http://localhost:60001")
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

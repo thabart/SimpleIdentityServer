@@ -39,8 +39,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             _usersAction = usersAction;
             _representationManager = representationManager;
         }
-
-        [Authorize("scim_manage")]
+        
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] JObject jObj)
         {
@@ -57,8 +56,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_manage")]
+        
         [HttpPatch("{id}")]
         public async Task<ActionResult> PatchUser(string id, [FromBody] JObject jObj)
         {
@@ -80,8 +78,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_manage")]
+        
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateUser(string id, [FromBody] JObject jObj)
         {
@@ -103,8 +100,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_manage")]
+        
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(string id)
         {
@@ -121,8 +117,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
             
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_read")]
+        
         [HttpGet("{id}")]
         public async Task<ActionResult> GetUser(string id)
         {
@@ -147,16 +142,14 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
 
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_read")]
+        
         [HttpGet]
         public async Task<ActionResult> SearchUsers()
         {
             var result = await _usersAction.SearchUsers(Request.Query, GetLocationPattern());
             return this.GetActionResult(result);
         }
-
-        [Authorize("scim_read")]
+        
         [HttpPost(".search")]
         public async Task<ActionResult> SearchUsers([FromBody] JObject jObj)
         {

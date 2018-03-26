@@ -22,10 +22,10 @@ using Microsoft.Extensions.Logging;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Configurations;
 using SimpleIdentityServer.Scim.Host.Extensions;
+using SimpleIdentityServer.Scim.Startup.Extensions;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
