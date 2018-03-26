@@ -8,13 +8,14 @@ var config = (env) => {
   var baseUrl = process.env.BASE_URL;
   var evtUrl = process.env.EVT_SOURCE_URL;
   if (!baseUrl) {
-	baseUrl = 'http://localhost:64950';
+	baseUrl = '"http://localhost:64950"';
   }
   
   if (!evtUrl) {
-	evtUrl = 'http://localhost:5000';
+	evtUrl = '"http://localhost:5000"';
   }
   
+  console.log(baseUrl);
   return [{	  
       context: __dirname + "/ClientApp",
       entry: { 'main': __dirname + "/ClientApp/main.js" },

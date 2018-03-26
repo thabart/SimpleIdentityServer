@@ -12,8 +12,6 @@ const columns = [
     { Header : 'Created on', accessor: 'created_on' }
 ];
 
-
-
 class ChartsTab extends Component {
     constructor(props) {
         super(props);

@@ -1,6 +1,6 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import { ScimTab, OpenIdTab, UmaTab } from './logsTabs';
+import { ScimTab, OpenIdTab, AuthorizationTab } from './logsTabs';
 import { withRouter } from 'react-router-dom';
 
 class Logs extends Component {
@@ -32,13 +32,13 @@ class Logs extends Component {
                     <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "scim")}>{t('scim')}</a>
                 </li>
                 <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "uma")}>{t('uma')}</a>
+                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "authorization")}>{t('authorization')}</a>
                 </li>
             </ul>
             <div className="tab-content">
                 {self.state.tabName === 'openid' && (<OpenIdTab />) }
                 {self.state.tabName === 'scim' && (<ScimTab />) }
-                {self.state.tabName === 'kibana' && (<KibanaTab />) }
+                {self.state.tabName === 'authorization' && (<AuthorizationTab />) }
             </div>
         </div>);
     }
@@ -46,7 +46,7 @@ class Logs extends Component {
     componentDidMount() {
         var self = this;
         var action = self.props.match.params.action;
-        if (!action || (action !== 'openid' && action !== 'uma' && action !== 'scim')) {
+        if (!action || (action !== 'openid' && action !== 'authorization' && action !== 'scim')) {
             action = 'openid';
         }
 
