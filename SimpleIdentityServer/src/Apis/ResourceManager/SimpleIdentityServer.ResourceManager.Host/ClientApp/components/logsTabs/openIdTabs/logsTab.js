@@ -52,29 +52,30 @@ class LogsTab extends Component {
     				var obj = {
     					description: log.Description,
     					created_on: self.getDate(log.CreatedOn),
-    					aggregate_id: log.AggregateId
+    					aggregate_id: log.AggregateId,
+                        client_id: '-'
     				};
     				if (log.Payload) {
     					var requestPayload = JSON.parse(log.Payload);
     					if (requestPayload && requestPayload.ClientId) {
     						obj['client_id'] = requestPayload.ClientId;
     					}
-    				} else {
-    					obj['client_id'] = '-';
     				}
 
     				data.push(obj);
     			});
     		}
 
-    		var pages = (searchResult.totalResults + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage;
+    		var pages = Math.round((searchResult.totalResults + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage);
     		self.setState({
     			data: data,
     			loading: false,
     			pages : pages
     		});
     	}).fail(function() {
-
+            self.setState({
+                loading: false
+            });
     	});
     }
 

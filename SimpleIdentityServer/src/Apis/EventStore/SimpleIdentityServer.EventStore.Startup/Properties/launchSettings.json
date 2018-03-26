@@ -2,7 +2,7 @@
   "profiles": {
     "SimpleIdentityServer.EventStore.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "http://*:5301"
+      "commandLineArgs": "http://*:5000"
     }
   }
 }

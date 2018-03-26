@@ -40,8 +40,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string condExpression = "(\\w|-|_|@)* (eq|neq|co|sw|ew) ('|\")((\\w|-|_|@)| )*('|\")";
-            const string expression = "((\\w|-|_|@)* (eq|neq|co|sw|ew) (('|\")((\\w|-|_|@)| )*('|\")( and | or ){0,1}))+";
+            const string condExpression = "(\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) ('|\")((\\w|-|_|@)| |\\d|:)*('|\")";
+            const string expression = "((\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) (('|\")((\\w|-|_|@)| |\\d|:)*('|\")( and | or ){0,1}))+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
@@ -132,7 +132,16 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         private static Expression BuildCondition(string str, ParameterExpression arg)
         {
-            var p = Regex.Split(str, " *(eq|neq|co|sw|ew) *");
+            var conds = Regex.Matches(str, "((('|\")(\\w|\\W|\\d)*('|\"))|(\\w|-|_|@))*");
+            var p = new List<string>();
+            foreach(Match cond in conds)
+            {
+                if (!string.IsNullOrWhiteSpace(cond.Value))
+                {
+                    p.Add(cond.Value);
+                }
+            }
+
             if (p.Count() != 3)
             {
                 throw new InvalidOperationException($"the condition {str} is not correct");
@@ -153,6 +162,30 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 var propInfo = (PropertyInfo)property.Member;
                 var methodInfo = propInfo.PropertyType.GetMethod("Contains", new[] { typeof(string) } );
                 return Expression.Call(property, methodInfo, Expression.Constant(exprConst));
+            }
+
+            // Less than
+            if (p.ElementAt(1) == "lt")
+            {
+                return Expression.LessThan(property, Expression.Constant(exprConst));
+            }
+
+            // Less or equal
+            if (p.ElementAt(1) == "le")
+            {
+                return Expression.LessThanOrEqual(property, Expression.Constant(exprConst));
+            }
+
+            // Greater than
+            if (p.ElementAt(1) == "gt")
+            {
+                return Expression.GreaterThan(property, Expression.Constant(exprConst));
+            }
+
+            // Greater or equal
+            if (p.ElementAt(1) == "ge")
+            {
+                return Expression.GreaterThanOrEqual(property, Expression.Constant(exprConst));
             }
 
             // Starts with
@@ -190,7 +223,25 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
                 return result;
             }
 
+            if (IsDateTime(propertyType))
+            {
+                prop = prop.Replace("\"", "");
+                prop = prop.Replace("\'", "");
+                DateTime dateTime;
+                if (!DateTime.TryParse(prop, out dateTime))
+                {
+                    throw new InvalidOperationException($"the value {prop} is not a valid datetime");
+                }
+
+                return dateTime;
+            }
+
             return prop;
+        }
+
+        private static bool IsDateTime(Type type)
+        {
+            return TypeCode.DateTime == Type.GetTypeCode(type);
         }
 
         private static bool IsNumericType(Type type)
