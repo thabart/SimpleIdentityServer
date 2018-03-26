@@ -2,9 +2,6 @@
 {
     internal static class Constants
     {
-        public const string ClientId = "ResourceManagerClientId";
-        public const string ClientSecret = "ResourceManagerClientSecret";
-
         public static class AuthenticateDtoNames
         {
             public const string Login = "login";

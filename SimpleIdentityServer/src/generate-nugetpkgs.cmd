@@ -14,7 +14,6 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Clie
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core.Common /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core.Jwt /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Authentication.Common /p:PackageVersion=%packageVersion%
-REM dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Oauth2Instrospection.Authentication /p:PackageVersion=%packageVersion%
 REM dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.UserInformation.Authentication /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Logging /p:PackageVersion=%packageVersion%
@@ -22,6 +21,8 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Data
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Store.Redis /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Host /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Handler /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.EventStore.Handler /p:PackageVersion=%packageVersion%
 
 REM SCIM
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Client /p:PackageVersion=%packageVersion%
@@ -32,6 +33,8 @@ dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Host /p:P
 
 REM EVENT STORE
 dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.EF /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.Core /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.Host /p:PackageVersion=%packageVersion%
 
 REM CONFIGURATION
 dotnet pack --output ..\..\..\feed Apis\Configuration\SimpleIdentityServer.Configuration.Client /p:PackageVersion=%packageVersion%
@@ -45,4 +48,6 @@ dotnet pack --output ..\..\..\feed Lib\WebApiContrib\WebApiContrib.Core.Concurre
 dotnet pack --output ..\..\..\feed Lib\WebApiContrib\WebApiContrib.Core.Storage /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Lib\Bus\SimpleBus.Core /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Lib\Bus\SimpleBus.InMemory /p:PackageVersion=%packageVersion%
 REM dotnet pack --output ..\..\..\feed Lib\WebApiContrib\WebApiContrib.Core.Storage.SqlServer /p:PackageVersion=%packageVersion%

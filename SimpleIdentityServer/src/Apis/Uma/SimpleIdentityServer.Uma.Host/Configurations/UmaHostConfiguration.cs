@@ -39,14 +39,12 @@ namespace SimpleIdentityServer.Uma.Host.Configurations
             IsOauthMigrated = true;
             UmaDbType = DbTypes.INMEMORY;
             OauthDbType = DbTypes.INMEMORY;
-            EvtStoreDataSourceType = DbTypes.INMEMORY;
         }
 
         public bool IsUmaMigrated { get; set; }
         public bool IsOauthMigrated { get; set; }
         public DbTypes UmaDbType { get; set; }
         public DbTypes OauthDbType { get; set; }
-        public DbTypes EvtStoreDataSourceType { get; set; }
         public string UmaConnectionString { get; set; }
         public string OauthConnectionString { get; set; }
         public string EvtStoreConnectionString { get; set; }

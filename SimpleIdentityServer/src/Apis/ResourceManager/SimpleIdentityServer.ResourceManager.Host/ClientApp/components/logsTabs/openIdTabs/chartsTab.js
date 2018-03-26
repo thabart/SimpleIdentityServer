@@ -199,19 +199,21 @@ class ChartsTab extends Component {
     }
 
     render() {
+        var self = this;
+        const { t } = self.props;
         return (<div className="row">
         	<div className="col-md-6">
         		<div className="card">
 			      <div className="card-header" data-target="#authorization" data-toggle="collapse">Authorization</div>
 			      <div className="card-block collapse show" id="authorization" style={{overflow: "hidden"}}>
                     <div className="form-group">
-                        <label>Select the number of weeks</label>
+                        <label>{t('selectNbWeeksAuthReport')}</label>
                         <select className="form-control" onChange={this.changeAuthorizationDataNbWeeks} value={this.state.nbAuthorizationDataWeeks}>
-                            <option value={1}>1 week</option>
-                            <option value={2}>2 weeks</option>
-                            <option value={3}>3 weeks</option>
-                            <option value={4}>4 weeks</option>
-                            <option value={5}>5 weeks</option>
+                            <option value={1}>{t('oneWeek')}</option>
+                            <option value={2}>{t('twoWeek')}</option>
+                            <option value={3}>{t('threeWeek')}</option>
+                            <option value={4}>{t('fourWeek')}</option>
+                            <option value={5}>{t('fiveWeek')}</option>
                         </select>
                     </div>
                     {this.state.authorizationData !== null && (<Bar data={this.state.authorizationData}/>)}
@@ -220,16 +222,16 @@ class ChartsTab extends Component {
         	</div>
         	<div className="col-md-6">
         		<div className="card">
-			      <div className="card-header" data-target="#token" data-toggle="collapse">Token</div>
+			      <div className="card-header" data-target="#token" data-toggle="collapse">{t('tokenReportTitle')}</div>
 			      <div className="card-block collapse show" id="token">
                         <div className="form-group">
-                            <label>Select the number of weeks</label>
+                            <label>{t('selectNbWeeksTokenReport')}</label>
                             <select className="form-control" onChange={this.changeTokenDataNbWeeks} value={this.state.nbTokenNbWeeks}>
-                                <option value={1}>1 week</option>
-                                <option value={2}>2 weeks</option>
-                                <option value={3}>3 weeks</option>
-                                <option value={4}>4 weeks</option>
-                                <option value={5}>5 weeks</option>
+                                <option value={1}>{t('oneWeek')}</option>
+                                <option value={2}>{t('twoWeek')}</option>
+                                <option value={3}>{t('threeWeek')}</option>
+                                <option value={4}>{t('fourWeek')}</option>
+                                <option value={5}>{t('fiveWeek')}</option>
                             </select>
                         </div>
                         {this.state.tokenData !== null && (<Bar data={this.state.tokenData}/>)}
@@ -238,7 +240,7 @@ class ChartsTab extends Component {
         	</div>
         	<div className="col-md-12">
         		<div className="card">
-      				<div className="card-header" data-target="#errors" data-toggle="collapse">Errors</div>
+      				<div className="card-header" data-target="#errors" data-toggle="collapse">{t('simpleIdServerErrorsTitle')}</div>
       				<div className="card-block collapse show" id="errors">
                       <ReactTable
                         data={this.state.errorData}

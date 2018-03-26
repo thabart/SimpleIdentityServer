@@ -13,6 +13,19 @@ var config = (env) => {
 		path: path.join(__dirname, bundleOutputDir),
         publicPath: '/dist/'
 	  },
+	  plugins: [
+		new webpack.DefinePlugin({
+			'process.env': {
+				'IS_LOG_DISABLED' : process.env.IS_LOG_DISABLED,
+				'IS_TOOLS_DISABLED': process.env.IS_TOOLS_DISABLED,
+				'IS_RESOURCES_DISABLED': process.env.IS_RESOURCES_DISABLED,
+				'IS_CONNECTIONS_DISABLED': process.env.IS_CONNECTIONS_DISABLED,
+				'IS_SETTINGS_DISABLED': process.env.IS_SETTINGS_DISABLED,
+				'IS_CACHE_DISABLED': process.env.IS_CACHE_DISABLED,
+				'IS_MANAGE_DISABLED': process.env.IS_MANAGE_DISABLED
+			}
+		})
+	  ],
 	  module: {
 		loaders: [ 
 			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader', query: { presets: ['react', 'env'] } },

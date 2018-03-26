@@ -26,6 +26,13 @@ class Login extends Component {
             [name]: value
         });
     }
+
+    parseJwt(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    }
+
     /**
      * Authenticate the user with login and password.
      * @param {any} e
@@ -36,7 +43,17 @@ class Login extends Component {
         self.setState({
             isLoading: true
         });
+        const { t } = self.props;
         WebsiteService.authenticate(self.state.login, self.state.password).then(function (data) {
+            var payload = self.parseJwt(data.id_token);
+            if (!payload.role || payload.role !== 'administrator') {
+                self.setState({
+                    errorMessage: t('notAdministrator'),
+                    isLoading: false
+                });
+                return;
+            }
+
             SessionService.setSession(data);
             AppDispatcher.dispatch({
                 actionName: Constants.events.USER_LOGGED_IN

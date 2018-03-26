@@ -123,19 +123,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     break;
             }
 
-            switch (configuration.DataSource.EvtStoreDataSourceType)
-            {
-                case DbTypes.SQLSERVER:
-                    services.AddEventStoreSqlServer(configuration.DataSource.EvtStoreConnectionString);
-                    break;
-                case DbTypes.POSTGRES:
-                    services.AddEventStorePostgre(configuration.DataSource.EvtStoreConnectionString);
-                    break;
-                case DbTypes.INMEMORY:
-                    services.AddEventStoreInMemory();
-                    break;
-            }
-
             switch(configuration.Storage.Type)
             {
                 case CachingTypes.REDIS:
@@ -155,9 +142,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     services.AddUmaInMemoryStore();
                     break;
             }
-            
-            // 3. Add the default bus.
-            services.AddDefaultBus();
 
             // 3. Enable logging.
             var logger = new LoggerConfiguration()

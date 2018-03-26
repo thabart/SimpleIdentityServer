@@ -61,8 +61,8 @@ namespace SimpleIdentityServer.ResourceManager.Host.Controllers
             try
             {
                 grantedToken = await _identityServerClientFactory.CreateAuthSelector()
-                    .UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
-                    .UsePassword(jLogin.ToString(), jPassword.ToString(), "openid", "profile")
+                    .UseClientSecretPostAuth(_configuration["OpenId:ClientId"], _configuration["OpenId:ClientSecret"])
+                    .UsePassword(jLogin.ToString(), jPassword.ToString(), "openid", "profile", "role")
                     .ResolveAsync(wellKnownConfiguration);
             }
             catch (Exception ex)

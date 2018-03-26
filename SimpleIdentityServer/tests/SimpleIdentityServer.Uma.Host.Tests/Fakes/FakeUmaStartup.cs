@@ -19,11 +19,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.InMemory;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
@@ -56,7 +58,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
                 OpenIdWellKnownConfiguration = "http://localhost:5000/.well-known/uma2-configuration",
                 DataSource = new DataSourceOptions
                 {
-                    EvtStoreDataSourceType = DbTypes.INMEMORY,
                     OauthDbType = DbTypes.INMEMORY,
                     UmaDbType = DbTypes.INMEMORY                    
                 }
@@ -169,7 +170,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddInMemoryStores();
             services.AddUmaInMemoryStore();
 
-            services.AddDefaultBus();
+            services.AddEventStoreInMemory();
+            services.AddSimpleBusInMemory()
+                .AddEventStoreBus();
 
             // 3. Enable logging.
             services.AddLogging();

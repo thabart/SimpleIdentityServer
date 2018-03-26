@@ -20,7 +20,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleBus.InMemory;
 using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -53,11 +56,9 @@ namespace SimpleIdentityServer.Uma.Startup
                 {
                     IsOauthMigrated = true,
                     IsUmaMigrated = true,
-                    EvtStoreDataSourceType = DbTypes.SQLSERVER,
                     OauthDbType = DbTypes.SQLSERVER,
                     UmaDbType = DbTypes.SQLSERVER,
                     UmaConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                    EvtStoreConnectionString = "Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                     OauthConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
                 },
                 Elasticsearch = new ElasticsearchOptions
@@ -90,7 +91,8 @@ namespace SimpleIdentityServer.Uma.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddUmaHost(_umaHostConfiguration);
+            services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            services.AddSimpleBusInMemory().AddEventStoreBus().AddUmaHost(_umaHostConfiguration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

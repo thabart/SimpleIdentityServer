@@ -1,6 +1,6 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import { KibanaTab, OpenIdTab, UmaTab } from './logsTabs';
+import { ScimTab, OpenIdTab, UmaTab } from './logsTabs';
 import { withRouter } from 'react-router-dom';
 
 class Logs extends Component {
@@ -29,15 +29,15 @@ class Logs extends Component {
                     <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "openid")}>{t('openid')}</a>
                 </li>
                 <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "uma")}>{t('uma')}</a>
+                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "scim")}>{t('scim')}</a>
                 </li>
                 <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "kibana")}>{t('kibana')}</a>
+                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "uma")}>{t('uma')}</a>
                 </li>
             </ul>
             <div className="tab-content">
                 {self.state.tabName === 'openid' && (<OpenIdTab />) }
-                {self.state.tabName === 'uma' && (<UmaTab />) }
+                {self.state.tabName === 'scim' && (<ScimTab />) }
                 {self.state.tabName === 'kibana' && (<KibanaTab />) }
             </div>
         </div>);
@@ -46,7 +46,7 @@ class Logs extends Component {
     componentDidMount() {
         var self = this;
         var action = self.props.match.params.action;
-        if (!action || (action !== 'openid' && action !== 'uma' && action !== 'kibana')) {
+        if (!action || (action !== 'openid' && action !== 'uma' && action !== 'scim')) {
             action = 'openid';
         }
 

@@ -37,24 +37,25 @@ class Layout extends Component {
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
                         <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
-                        <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
-                        {(this.state.isLoggedIn && (
+                        {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
+                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
+                        )}                        
+                        {(!process.env.IS_RESOURCES_DISABLED && this.state.isLoggedIn && (
                             <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
                         ))}
-                        {(this.state.isLoggedIn && (
+                        {(!process.env.IS_CONNECTIONS_DISABLED && this.state.isLoggedIn && (
                             <li className="nav-item"><NavLink to="/connections" className="nav-link">{t('connectionsMenuItem')}</NavLink></li>
                         ))}
-                        <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
-                        {(this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
-                        ))}
-                        {(this.state.isLoggedIn && (
+                        {!process.env.IS_TOOLS_DISABLED && (
+                            <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
+                        )}
+                        {(this.state.isLoggedIn && !process.env.IS_SETTINGS_DISABLED && (
                             <li className="nav-item"><NavLink to="/settings" className="nav-link">{t('settingsMenuItem')}</NavLink></li>
                         ))}
-                        {(this.state.isLoggedIn && (
+                        {(this.state.isLoggedIn && !process.env.IS_CACHE_DISABLED && (
                             <li className="nav-item"><NavLink to="/cache" className="nav-link">{t('cacheMenuItem')}</NavLink></li>
                         ))}
-                        {(this.state.isLoggedIn && (
+                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                             <li className="nav-item"><NavLink to="/manage" className="nav-link">{t('manageMenuItem')}</NavLink></li>
                         ))}
                         {(this.state.isLoggedIn ? (
@@ -75,25 +76,26 @@ class Layout extends Component {
                     <div className="collapse navbar-collapse" id="collapseNavBar">
                         <ul className="navbar-nav mr-auto navbar-right">
                             <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
-                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/resources" className="nav-link">Resources</NavLink></li>
+                            {!process.env.IS_LOG_DISABLED  && this.state.isLoggedIn && (
+                                <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
+                            )}
+                            {(!process.env.IS_RESOURCES_DISABLED && this.state.isLoggedIn && (
+                                <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
                             ))}
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/connections" className="nav-link">Connections</NavLink></li>
+                            {(!process.env.IS_CONNECTIONS_DISABLED && this.state.isLoggedIn && (
+                                <li className="nav-item"><NavLink to="/connections" className="nav-link">{t('connectionsMenuItem')}</NavLink></li>
                             ))}
-                            <li className="nav-item"><NavLink to="/tools" className="nav-link">Tools</NavLink></li>
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/logs" className="nav-link">Logs</NavLink></li>
+                            {!process.env.IS_TOOLS_DISABLED && (
+                                <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
+                            )}
+                            {(this.state.isLoggedIn && !process.env.IS_SETTINGS_DISABLED && (
+                                <li className="nav-item"><NavLink to="/settings" className="nav-link">{t('settingsMenuItem')}</NavLink></li>
                             ))}
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/settings" className="nav-link">Settings</NavLink></li>
+                            {(this.state.isLoggedIn && !process.env.IS_CACHE_DISABLED && (
+                                <li className="nav-item"><NavLink to="/cache" className="nav-link">{t('cacheMenuItem')}</NavLink></li>
                             ))}
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/cache" className="nav-link">Cache</NavLink></li>
-                            ))}
-                            {(this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/manage" className="nav-link">Manage</NavLink></li>
+                            {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                                <li className="nav-item"><NavLink to="/manage" className="nav-link">{t('manageMenuItem')}</NavLink></li>
                             ))}
                             {(this.state.isLoggedIn ? (
                                 <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> Disconnect</a></li>
