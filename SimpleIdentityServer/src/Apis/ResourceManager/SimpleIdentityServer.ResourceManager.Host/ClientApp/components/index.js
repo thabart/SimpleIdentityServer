@@ -7,6 +7,7 @@ import Cache from './cache';
 import Manage from './manage';
 import Tools from './tools';
 import Resources from './resources';
+import ViewLog from './viewLog';
 
 exports.About = About;
 exports.Login = Login;
@@ -17,3 +18,4 @@ exports.Cache = Cache;
 exports.Manage = Manage;
 exports.Tools = Tools;
 exports.Resources = Resources;
+exports.ViewLog = ViewLog;
