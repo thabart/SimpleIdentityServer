@@ -1,16 +1,9 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import Constants from '../../../constants';
-import ReactTable from 'react-table'
 import moment from 'moment';
 import $ from 'jquery';
 import { Bar } from 'react-chartjs';
-
-const columns = [
-    { Header : 'Code', accessor: 'code' },
-    { Header : 'Message', accessor: 'message' },
-    { Header : 'Created on', accessor: 'created_on' }
-];
 
 class ChartsTab extends Component {
     constructor(props) {
@@ -202,60 +195,19 @@ class ChartsTab extends Component {
         return (<div className="row">
         	<div className="col-md-6">
         		<div className="card">
-			      <div className="card-header" data-target="#authorization" data-toggle="collapse">Authorization</div>
-			      <div className="card-block collapse show" id="authorization" style={{overflow: "hidden"}}>
-                    <div className="form-group">
-                        <label>{t('selectNbWeeksAuthReport')}</label>
-                        <select className="form-control" onChange={this.changeAuthorizationDataNbWeeks} value={this.state.nbAuthorizationDataWeeks}>
-                            <option value={1}>{t('oneWeek')}</option>
-                            <option value={2}>{t('twoWeek')}</option>
-                            <option value={3}>{t('threeWeek')}</option>
-                            <option value={4}>{t('fourWeek')}</option>
-                            <option value={5}>{t('fiveWeek')}</option>
-                        </select>
+                    <div className="header"><h4>{t('reportingAuthTitle')}</h4></div>
+			        <div className="body" style={{overflow: "hidden"}}>
+                        {this.state.authorizationData !== null && (<Bar data={this.state.authorizationData}/>)}
                     </div>
-                    {this.state.authorizationData !== null && (<Bar data={this.state.authorizationData}/>)}
-                  </div>
 		      	</div>
         	</div>
         	<div className="col-md-6">
         		<div className="card">
-			      <div className="card-header" data-target="#token" data-toggle="collapse">{t('tokenReportTitle')}</div>
-			      <div className="card-block collapse show" id="token">
-                        <div className="form-group">
-                            <label>{t('selectNbWeeksTokenReport')}</label>
-                            <select className="form-control" onChange={this.changeTokenDataNbWeeks} value={this.state.nbTokenNbWeeks}>
-                                <option value={1}>{t('oneWeek')}</option>
-                                <option value={2}>{t('twoWeek')}</option>
-                                <option value={3}>{t('threeWeek')}</option>
-                                <option value={4}>{t('fourWeek')}</option>
-                                <option value={5}>{t('fiveWeek')}</option>
-                            </select>
-                        </div>
-                        {this.state.tokenData !== null && (<Bar data={this.state.tokenData}/>)}
+			      <div className="header"><h4>{t('reportingTokenTitle')}</h4></div>
+			      <div className="body">
+                    {this.state.tokenData !== null && (<Bar data={this.state.tokenData}/>)}
 			      </div>
 		      	</div>
-        	</div>
-        	<div className="col-md-12">
-        		<div className="card">
-      				<div className="card-header" data-target="#errors" data-toggle="collapse">{t('simpleIdServerErrorsTitle')}</div>
-      				<div className="card-block collapse show" id="errors">
-                      <ReactTable
-                        data={this.state.errorData}
-                        loading={this.state.errorLoading}
-                        onFetchData={this.errorFetchData}
-                        pages={this.state.errorPages}
-                        columns={columns}
-                        defaultPageSize={10}
-                        manual={true}
-                        filterable={false}
-                        showPaginationTop={true}
-                        showPaginationBottom={false}
-                        sortable={false}
-                        className="-striped -highlight"
-                      />
-      				</div>
-        		</div>
         	</div>
         </div>);
     }

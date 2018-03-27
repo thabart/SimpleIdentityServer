@@ -172,64 +172,71 @@ class ScimTab extends Component {
     render() {
         var self = this;
         const { t } = self.props;
-        return (<div>
-            <h4>{t('scimLogsTitle')}</h4>
-            <Modal title="Event" ref="modal" onClose={self.onCloseModal}>
-                <Workflow ref="workflow" />
-                {self.state.payload && self.state.payload !== null && (
-                    <CodeMirror ref="code" onChange={self.changePayload} value={this.state.payload} options={{
-                        lineNumbers: true,
-                        mode: 'application/json',
-                        matchBrackets: true,                            
-                        autoCloseBrackets: true,
-                        lineWrapping: true,
-                    }} />
-                )}
-            </Modal>
-            <div className="card">
-                <div className="card-header">{t('scimLogsTitle')}</div>
-                <div className="card-block" style={{overflow: "hidden"}}>
-                      <ReactTable
-                        data={this.state.data}
-                        loading={this.state.loading}
-                        onFetchData={this.fetchData}
-                        pages={this.state.pages}
-                        columns={columns}
-                        defaultPageSize={10}
-                        manual={true}
-                        filterable={false}
-                        showPaginationTop={true}
-                        showPaginationBottom={false}
-                        sortable={false}
-                        getTrProps={(state, rowInfo, column, instance) => {
-                            return {
-                                onClick: function (e, handleOriginal) {
-                                    var selectedEvent = rowInfo.original;
-                                    self.displayEvent(selectedEvent);
+        return (<div className="row">
+            <div className="col-md-6">
+                <div className="card">
+                    <div className="header">
+                        <h4>{t('scimLogsTitle')}</h4>
+                    </div>
+                    <div className="body" style={{ overflow: "hidden" }}>
+                        <Modal title="Event" ref="modal" onClose={self.onCloseModal}>
+                            <Workflow ref="workflow" />
+                            {self.state.payload && self.state.payload !== null && (
+                                <CodeMirror ref="code" onChange={self.changePayload} value={this.state.payload} options={{
+                                    lineNumbers: true,
+                                    mode: 'application/json',
+                                    matchBrackets: true,
+                                    autoCloseBrackets: true,
+                                    lineWrapping: true,
+                                }} />
+                            )}
+                        </Modal>
+                        <ReactTable
+                            data={this.state.data}
+                            loading={this.state.loading}
+                            onFetchData={this.fetchData}
+                            pages={this.state.pages}
+                            columns={columns}
+                            defaultPageSize={10}
+                            manual={true}
+                            filterable={false}
+                            showPaginationTop={true}
+                            showPaginationBottom={false}
+                            sortable={false}
+                            getTrProps={(state, rowInfo, column, instance) => {
+                                return {
+                                    onClick: function (e, handleOriginal) {
+                                        var selectedEvent = rowInfo.original;
+                                        self.displayEvent(selectedEvent);
+                                    }
                                 }
-                            }
-                        }}
-                        className="-striped -highlight"
-                      />
+                            }}
+                            className="-striped -highlight"
+                        />
+                    </div>
                 </div>
             </div>
-            <div className="card">
-                <div className="card-header">{t('scimErrorsTitle')}</div>
-                <div className="card-block" style={{overflow: "hidden"}}>
-                      <ReactTable
-                        data={this.state.error}
-                        loading={this.state.errorLoading}
-                        onFetchData={this.fetchError}
-                        pages={this.state.errorPages}
-                        columns={errorColumns}
-                        defaultPageSize={10}
-                        manual={true}
-                        filterable={false}
-                        showPaginationTop={true}
-                        showPaginationBottom={false}
-                        sortable={false}
-                        className="-striped -highlight"
-                      />
+            <div className="col-md-6">
+                <div className="card">
+                    <div className="header">
+                        <h4>{t('scimErrorsTitle')}</h4>
+                    </div>
+                    <div className="body" style={{ overflow: "hidden" }}>
+                        <ReactTable
+                            data={this.state.error}
+                            loading={this.state.errorLoading}
+                            onFetchData={this.fetchError}
+                            pages={this.state.errorPages}
+                            columns={errorColumns}
+                            defaultPageSize={10}
+                            manual={true}
+                            filterable={false}
+                            showPaginationTop={true}
+                            showPaginationBottom={false}
+                            sortable={false}
+                            className="-striped -highlight"
+                        />                        
+                    </div>
                 </div>
             </div>
         </div>);

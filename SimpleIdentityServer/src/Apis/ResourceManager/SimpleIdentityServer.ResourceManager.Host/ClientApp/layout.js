@@ -32,7 +32,7 @@ class Layout extends Component {
     }
     render() {
         const { t } = this.props;
-        return (<div className="default">
+        return (<div className="blue">
             <nav className="navbar-static-side navbar left">
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
@@ -68,8 +68,8 @@ class Layout extends Component {
             </nav>
             <section id="wrapper">
                 { /* Navigation */ }
-                <nav className="navbar navbar-toggleable-md navbar-light">
-                    <a className="navbar-brand" href="#" id="uma-title">Uma</a>
+                <nav className="navbar navbar-toggleable-md">
+                    <a className="navbar-brand" href="#" id="uma-title">{t('websiteTitle')}</a>
                     <button type="button" className="navbar-toggler" data-toggle="collapse" data-target="#collapseNavBar">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -107,9 +107,7 @@ class Layout extends Component {
                 </nav>
                 { /* Display component */}
                 <section id="body">
-                    <div className="col-md-10 offset-md-1 cell">
-                        {this.props.children}
-                    </div>
+                    {this.props.children}
                 </section>
             </section>
         </div>);

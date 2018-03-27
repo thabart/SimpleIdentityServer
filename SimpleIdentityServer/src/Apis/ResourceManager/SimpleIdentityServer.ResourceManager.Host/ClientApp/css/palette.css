@@ -1,16 +1,71 @@
-﻿.default .identity-providers-selector .active {
-    border-color: #E36550;
+﻿.blue .navbar.left {
+    background-color: #fff;
+    box-shadow: 1px 0px 20px rgba(0,0,0,0.08);
 }
 
-.default .navbar.left li a:hover,
-.default .navbar.left li a.active {
-    background-color: #DE472E;
+.blue .navbar.left a {
+    color: #546e7a
 }
 
-.default .navbar.left a {
+.blue .navbar.left a:hover,
+.blue .navbar.left li a.active {
+    color: #00cfd1;
+}
+
+.blue .navbar {
+    background-color: #01d8da;
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.15);
+}
+
+.blue .navbar .nav-link {
     color: white;
 }
 
-.default .navbar.left {
-    background-color: #E36550;
+.blue .navbar .nav-link.active {
+    color: #dcd9d9;
+}
+
+.blue .block::before {
+    background-color: #01d8da;
+}
+
+.blue .block-header {
+    color: white;
+}
+
+.blue .card {
+    background: #fff;
+    margin-bottom: 30px;
+    border-radius: .1875rem;
+    box-shadow: none;
+    border: 0;
+}
+
+.blue .card .body {
+    padding: 20px;
+}
+
+.blue .container-fluid {
+    background-color: rgb(244,246,249);
+}
+
+.blue .nav-tabs {
+    border-bottom: 0;
+}
+
+.blue .nav-tabs .nav-link {
+    color: #888;
+}
+
+.blue .nav-tabs .nav-link:hover,
+.blue .nav-tabs .nav-link:active {
+    border: 1px solid #00cfd1 !important;
+}
+
+.card .header h4 {
+    color: #757575
+}
+
+.blue .card .header h4::before {
+    background: #00cfd1;
 }

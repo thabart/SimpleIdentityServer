@@ -9,8 +9,17 @@ class AuthorizationTab extends Component {
     render() {
         var self = this;
         const { t } = self.props;
-        return (<div>
-            <h4>{t('authorizationLogsTitle')}</h4>
+        return (<div className="row">
+            <div className="col-md-12">
+                <div className="card">
+                    <div className="header">
+                        <h4>{t('authorizationLogsTitle')}</h4>
+                    </div>
+                    <div className="body">
+
+                    </div>
+                </div>
+            </div>
         </div>);
     }
 }

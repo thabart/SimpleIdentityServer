@@ -23,22 +23,36 @@ class Logs extends Component {
     render() {
         var self = this;
         const { t } = self.props;
-        return (<div>
-            <ul className="nav nav-tabs">
-                <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "openid")}>{t('openid')}</a>
-                </li>
-                <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "scim")}>{t('scim')}</a>
-                </li>
-                <li className="nav-item">
-                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "authorization")}>{t('authorization')}</a>
-                </li>
-            </ul>
-            <div className="tab-content">
-                {self.state.tabName === 'openid' && (<OpenIdTab />) }
-                {self.state.tabName === 'scim' && (<ScimTab />) }
-                {self.state.tabName === 'authorization' && (<AuthorizationTab />) }
+        return (<div className="block">
+            <div className="block-header">
+                <h4>{t('logsTitle')}</h4>
+                <i>{t('logsShortDescription')}</i>
+            </div>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="card">
+                            <div className="body">
+                                <ul className="nav nav-tabs">
+                                    <li className="nav-item">
+                                        <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "openid")}>{t('openid')}</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "scim")}>{t('scim')}</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "authorization")}>{t('authorization')}</a>
+                                    </li>
+                                 </ul>
+                             </div>
+                        </div>
+                    </div>
+                    <div className="col-md-12">
+                        {self.state.tabName === 'openid' && (<OpenIdTab />)}
+                        {self.state.tabName === 'scim' && (<ScimTab />)}
+                        {self.state.tabName === 'authorization' && (<AuthorizationTab />)}
+                    </div>
+                </div>
             </div>
         </div>);
     }
