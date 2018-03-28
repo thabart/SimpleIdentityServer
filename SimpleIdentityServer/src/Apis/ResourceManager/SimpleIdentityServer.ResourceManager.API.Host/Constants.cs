@@ -17,7 +17,6 @@
 
         public static class ElFinderAuthPolRuleNames
         {
-            public const string Claims = "claims";
             public const string Id = "id";
             public const string OpenIdClients = "openidclients";
             public const string OpenIdClaims = "openidclaims";
@@ -90,6 +89,7 @@
             public const string Dirs = "dirs";
             public const string Read = "read";
             public const string Write = "write";
+            public const string HasSecurity = "has_security";
             public const string Locked = "locked";
             public const string Tmb = "tmb";
             public const string Alias = "alias";

@@ -745,7 +745,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                             claims.Add(claim);
                         }
 
-                        record.Add(Constants.ElFinderAuthPolRuleNames.Claims, claims);
+                        record.Add(Constants.ElFinderAuthPolRuleNames.OpenIdClaims, claims);
                         jArrPolicyRules.Add(record);
                     }
                 }
@@ -1163,7 +1163,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             return AssetResponse.Create(asset.Name, asset.Hash, Constants.VolumeId + "_", asset.Children.Any(), asset.ResourceParentHash,
-                asset.MimeType, new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked)).GetJson();
+                asset.MimeType, new AssetSecurity(asset.CanRead, asset.CanWrite, asset.IsLocked, asset.AuthorizationPolicies != null && asset.AuthorizationPolicies.Any())).GetJson();
         }
 
         private string GetWellKnownAuthConfigurationUrl()

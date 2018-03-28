@@ -5,16 +5,18 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
 {
     internal sealed class AssetSecurity
     {
-        public AssetSecurity(bool read, bool write, bool locked)
+        public AssetSecurity(bool read, bool write, bool locked, bool hasSecurity)
         {
             Read = read;
             Write = write;
             Locked = locked;
+            HasSecurity = hasSecurity;
         }
 
         public bool Read { get; private set; }
         public bool Write { get; private set; }
         public bool Locked { get; private set; }
+        public bool HasSecurity { get; private set; }
     }
 
     internal sealed class AssetResponse // https://github.com/Studio-42/elFinder/wiki/Client-Server-API-2.0#information-about-filedirectory
@@ -57,6 +59,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             result.Read = (assetSecurity.Read) ? 1 : 0;
             result.Write = (assetSecurity.Write) ? 1 : 0;
             result.Locked = (assetSecurity.Locked) ? 1 : 0;
+            result.HasSecurity = (assetSecurity.HasSecurity) ? 1 : 0;
             result.VolumeId = volumeId;
             result.Phash = pHash;
             result.Mime = mimeType;
@@ -113,6 +116,10 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         /// </summary>
         public int Locked { get; private set; }
         /// <summary>
+        /// (Number) has authorization policies.
+        /// </summary>
+        public int HasSecurity { get; set; }
+        /// <summary>
         /// (String) Only for images. Thumbnail file name, if file do not have thumbnail yet, but it can be generated than it must have value "1"
         /// </summary>
         public string Tmb { get; private set; }
@@ -141,6 +148,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             result.Add(Constants.ElFinderCwdResponseNames.Dirs, Dirs);
             result.Add(Constants.ElFinderCwdResponseNames.Read, Read);
             result.Add(Constants.ElFinderCwdResponseNames.Write, Write);
+            result.Add(Constants.ElFinderCwdResponseNames.HasSecurity, HasSecurity);
             result.Add(Constants.ElFinderCwdResponseNames.Locked, Locked);
             result.Add(Constants.ElFinderCwdResponseNames.Phash, Phash);
             result.Add(Constants.ElFinderCwdResponseNames.VolumeId, VolumeId);
