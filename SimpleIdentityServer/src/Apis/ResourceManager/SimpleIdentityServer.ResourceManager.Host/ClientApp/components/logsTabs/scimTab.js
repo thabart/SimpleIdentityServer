@@ -159,7 +159,8 @@ class ScimTab extends Component {
                 searchResult.content.forEach(function(log) {
                     var obj = {
                         message: '-',
-                        created_on: self.getDate(log.CreatedOn)
+                        created_on: self.getDate(log.CreatedOn),
+                        id: log.Id
                     };
                     if (log.Payload) {
                         var requestPayload = JSON.parse(log.Payload);
@@ -210,7 +211,7 @@ class ScimTab extends Component {
                                 return {
                                     onClick: function (e, handleOriginal) {
                                         var selectedEvent = rowInfo.original;
-                                        self.props.history.push("/viewlog/" + selectedEvent.aggregate_id);
+                                        self.props.history.push("/viewaggregate/" + selectedEvent.aggregate_id);
                                     }
                                 }
                             }}
@@ -246,6 +247,14 @@ class ScimTab extends Component {
                                 id: 'created_on',
                                 desc: true
                             }]}
+                            getTrProps={(state, rowInfo, column, instance) => {
+                                return {
+                                    onClick: function (e, handleOriginal) {
+                                        var selectedEvent = rowInfo.original;
+                                        self.props.history.push("/viewlog/" + selectedEvent.id);
+                                    }
+                                }
+                            }}
                         />                        
                     </div>
                 </div>

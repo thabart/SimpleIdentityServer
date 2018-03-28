@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "432fa75475aa68fef568"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "dd148cdcb2ae000a8d76"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -34282,6 +34282,10 @@ var _resources = __webpack_require__(209);
 
 var _resources2 = _interopRequireDefault(_resources);
 
+var _viewAggregate = __webpack_require__(365);
+
+var _viewAggregate2 = _interopRequireDefault(_viewAggregate);
+
 var _viewLog = __webpack_require__(219);
 
 var _viewLog2 = _interopRequireDefault(_viewLog);
@@ -34298,6 +34302,7 @@ exports.Manage = _manage2.default;
 exports.Tools = _tools2.default;
 exports.Resources = _resources2.default;
 exports.ViewLog = _viewLog2.default;
+exports.ViewAggregate = _viewAggregate2.default;
 
 /***/ }),
 /* 198 */
@@ -35438,9 +35443,10 @@ var LogsTab = function (_Component) {
                 if (searchResult.content) {
                     searchResult.content.forEach(function (log) {
                         var obj = {
-                            Code: '-',
-                            Message: '-',
-                            created_on: self.getDate(log.CreatedOn)
+                            code: '-',
+                            message: '-',
+                            created_on: self.getDate(log.CreatedOn),
+                            id: log.Id
                         };
                         if (log.Payload) {
                             var requestPayload = JSON.parse(log.Payload);
@@ -35515,7 +35521,7 @@ var LogsTab = function (_Component) {
                                     return {
                                         onClick: function onClick(e, handleOriginal) {
                                             var selectedEvent = rowInfo.original;
-                                            self.props.history.push("/viewlog/" + selectedEvent.aggregate_id);
+                                            self.props.history.push("/viewaggregate/" + selectedEvent.aggregate_id);
                                         }
                                     };
                                 },
@@ -35558,7 +35564,15 @@ var LogsTab = function (_Component) {
                                 defaultSorted: [{
                                     id: 'created_on',
                                     desc: true
-                                }]
+                                }],
+                                getTrProps: function getTrProps(state, rowInfo, column, instance) {
+                                    return {
+                                        onClick: function onClick(e, handleOriginal) {
+                                            var selectedEvent = rowInfo.original;
+                                            self.props.history.push("/viewlog/" + selectedEvent.id);
+                                        }
+                                    };
+                                }
                             })
                         )
                     )
@@ -35802,7 +35816,8 @@ var ScimTab = function (_Component) {
                     searchResult.content.forEach(function (log) {
                         var obj = {
                             message: '-',
-                            created_on: self.getDate(log.CreatedOn)
+                            created_on: self.getDate(log.CreatedOn),
+                            id: log.Id
                         };
                         if (log.Payload) {
                             var requestPayload = JSON.parse(log.Payload);
@@ -35869,7 +35884,7 @@ var ScimTab = function (_Component) {
                                     return {
                                         onClick: function onClick(e, handleOriginal) {
                                             var selectedEvent = rowInfo.original;
-                                            self.props.history.push("/viewlog/" + selectedEvent.aggregate_id);
+                                            self.props.history.push("/viewaggregate/" + selectedEvent.aggregate_id);
                                         }
                                     };
                                 },
@@ -35916,7 +35931,15 @@ var ScimTab = function (_Component) {
                                 defaultSorted: [{
                                     id: 'created_on',
                                     desc: true
-                                }]
+                                }],
+                                getTrProps: function getTrProps(state, rowInfo, column, instance) {
+                                    return {
+                                        onClick: function onClick(e, handleOriginal) {
+                                            var selectedEvent = rowInfo.original;
+                                            self.props.history.push("/viewlog/" + selectedEvent.id);
+                                        }
+                                    };
+                                }
                             })
                         )
                     )
@@ -36978,10 +37001,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactI18next = __webpack_require__(5);
 
-var _reactTable = __webpack_require__(39);
-
-var _reactTable2 = _interopRequireDefault(_reactTable);
-
 var _constants = __webpack_require__(11);
 
 var _constants2 = _interopRequireDefault(_constants);
@@ -37002,16 +37021,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var columns = [{ Header: 'Event', accessor: 'description' }, { Header: 'Created on', accessor: 'created_on' }, {
-    Header: 'Payload', accessor: 'payload', Cell: function Cell(row) {
-        return _react2.default.createElement(
-            'span',
-            { title: row.original.payload },
-            row.original.payload
-        );
-    }
-}];
-
 var ViewLog = function (_Component) {
     _inherits(ViewLog, _Component);
 
@@ -37020,52 +37029,31 @@ var ViewLog = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (ViewLog.__proto__ || Object.getPrototypeOf(ViewLog)).call(this, props));
 
-        _this.fetchData = _this.fetchData.bind(_this);
+        _this.refreshData = _this.refreshData.bind(_this);
         _this.state = {
-            data: [],
-            loading: true,
-            pages: null
+            id: null,
+            aggregateId: null,
+            description: null,
+            createdOn: null,
+            payload: null
         };
         return _this;
     }
 
     _createClass(ViewLog, [{
-        key: 'getDate',
-        value: function getDate(d) {
-            return (0, _moment2.default)(d).format('LLL');
-        }
-    }, {
-        key: 'fetchData',
-        value: function fetchData() {
+        key: 'refreshData',
+        value: function refreshData() {
             var self = this;
-            self.setState({
-                loading: true
-            });
-            var href = _constants2.default.eventSourceUrl + "/events/.search?filter=where$(AggregateId eq '" + self.props.match.params.id + "') orderby$on(Order),order(asc)";
+            var href = _constants2.default.eventSourceUrl + "/events/" + self.props.match.params.id;
             _jquery2.default.get(href).done(function (result) {
-                var data = [];
-                if (result.content && result.content.length > 0) {
-                    console.log(result.content);
-                    result.content.forEach(function (rec) {
-                        data.push({
-                            description: rec.Description,
-                            created_on: self.getDate(rec.CreatedOn),
-                            payload: rec.Payload
-                        });
-                    });
-                }
-
-                var pages = Math.round((result.totalResults + result.itemsPerPage - 1) / result.itemsPerPage);
                 self.setState({
-                    data: data,
-                    loading: false,
-                    pages: pages
+                    id: result.id,
+                    aggregateId: result.aggregate_id,
+                    description: result.description,
+                    createdOn: (0, _moment2.default)(result.createdOn).format('LLL'),
+                    payload: result.payload
                 });
-            }).fail(function () {
-                self.setState({
-                    loading: false
-                });
-            });
+            }).fail(function () {});
         }
     }, {
         key: 'render',
@@ -37082,12 +37070,12 @@ var ViewLog = function (_Component) {
                     _react2.default.createElement(
                         'h4',
                         null,
-                        t('aboutTitle')
+                        t('logTitle')
                     ),
                     _react2.default.createElement(
                         'i',
                         null,
-                        t('aboutShortDescription')
+                        t('logShortDescription')
                     )
                 ),
                 _react2.default.createElement(
@@ -37108,32 +37096,73 @@ var ViewLog = function (_Component) {
                                     _react2.default.createElement(
                                         'h4',
                                         null,
-                                        t('aggregateLogsTitle')
+                                        t('logDescription')
                                     )
                                 ),
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'body' },
-                                    _react2.default.createElement(_reactTable2.default, {
-                                        data: this.state.data,
-                                        loading: this.state.loading,
-                                        onFetchData: this.fetchData,
-                                        pages: this.state.pages,
-                                        columns: columns,
-                                        defaultPageSize: 10,
-                                        manual: true,
-                                        filterable: false,
-                                        showPaginationTop: true,
-                                        showPaginationBottom: false,
-                                        sortable: false,
-                                        className: '-striped -highlight'
-                                    })
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'form-group' },
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            t('id')
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', value: this.state.id })
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'form-group' },
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            t('aggregateId')
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', value: this.state.aggregateId })
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'form-group' },
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            t('description')
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', value: this.state.description })
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'form-group' },
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            t('createdOn')
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', value: this.state.createdOn })
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'form-group' },
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            t('payload')
+                                        ),
+                                        _react2.default.createElement('textarea', { className: 'form-control', value: this.state.payload })
+                                    )
                                 )
                             )
                         )
                     )
                 )
             );
+        }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.refreshData();
         }
     }]);
 
@@ -37573,6 +37602,7 @@ var routes = exports.routes = _react2.default.createElement(
     !undefined && _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/manage', component: _components.Manage }),
     !undefined && _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/tools/:action?', component: _components.Tools }),
     !undefined && _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/resources', component: _components.Resources }),
+    !undefined && _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/viewaggregate/:id', component: _components.ViewAggregate }),
     !undefined && _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/viewlog/:id', component: _components.ViewLog })
 );
 
@@ -82243,6 +82273,201 @@ module.exports = g;
 __webpack_require__(190);
 module.exports = __webpack_require__(189);
 
+
+/***/ }),
+/* 364 */,
+/* 365 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactI18next = __webpack_require__(5);
+
+var _reactRouterDom = __webpack_require__(9);
+
+var _reactTable = __webpack_require__(39);
+
+var _reactTable2 = _interopRequireDefault(_reactTable);
+
+var _constants = __webpack_require__(11);
+
+var _constants2 = _interopRequireDefault(_constants);
+
+var _jquery = __webpack_require__(2);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _moment = __webpack_require__(0);
+
+var _moment2 = _interopRequireDefault(_moment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var columns = [{ Header: 'Event', accessor: 'description' }, { Header: 'Created on', accessor: 'created_on' }, {
+    Header: 'Payload', accessor: 'payload', Cell: function Cell(row) {
+        return _react2.default.createElement(
+            'span',
+            { title: row.original.payload },
+            row.original.payload
+        );
+    }
+}];
+
+var ViewAggregate = function (_Component) {
+    _inherits(ViewAggregate, _Component);
+
+    function ViewAggregate(props) {
+        _classCallCheck(this, ViewAggregate);
+
+        var _this = _possibleConstructorReturn(this, (ViewAggregate.__proto__ || Object.getPrototypeOf(ViewAggregate)).call(this, props));
+
+        _this.fetchData = _this.fetchData.bind(_this);
+        _this.state = {
+            data: [],
+            loading: true,
+            pages: null
+        };
+        return _this;
+    }
+
+    _createClass(ViewAggregate, [{
+        key: 'getDate',
+        value: function getDate(d) {
+            return (0, _moment2.default)(d).format('LLL');
+        }
+    }, {
+        key: 'fetchData',
+        value: function fetchData() {
+            var self = this;
+            self.setState({
+                loading: true
+            });
+            var href = _constants2.default.eventSourceUrl + "/events/.search?filter=where$(AggregateId eq '" + self.props.match.params.id + "') orderby$on(Order),order(asc)";
+            _jquery2.default.get(href).done(function (result) {
+                var data = [];
+                if (result.content && result.content.length > 0) {
+                    result.content.forEach(function (rec) {
+                        data.push({
+                            description: rec.Description,
+                            id: rec.Id,
+                            created_on: self.getDate(rec.CreatedOn),
+                            payload: rec.Payload
+                        });
+                    });
+                }
+
+                var pages = Math.round((result.totalResults + result.itemsPerPage - 1) / result.itemsPerPage);
+                self.setState({
+                    data: data,
+                    loading: false,
+                    pages: pages
+                });
+            }).fail(function () {
+                self.setState({
+                    loading: false
+                });
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var self = this;
+            var t = self.props.t;
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'block' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'block-header' },
+                    _react2.default.createElement(
+                        'h4',
+                        null,
+                        t('logAggregateTitle')
+                    ),
+                    _react2.default.createElement(
+                        'i',
+                        null,
+                        t('logAggregateShortDescription')
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'container-fluid' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'row' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'col-md-12' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'card' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'header' },
+                                    _react2.default.createElement(
+                                        'h4',
+                                        null,
+                                        t('aggregateLogsTitle')
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'body' },
+                                    _react2.default.createElement(_reactTable2.default, {
+                                        data: this.state.data,
+                                        loading: this.state.loading,
+                                        onFetchData: this.fetchData,
+                                        pages: this.state.pages,
+                                        columns: columns,
+                                        defaultPageSize: 10,
+                                        manual: true,
+                                        filterable: false,
+                                        showPaginationTop: true,
+                                        showPaginationBottom: false,
+                                        sortable: false,
+                                        className: '-striped -highlight',
+                                        getTrProps: function getTrProps(state, rowInfo, column, instance) {
+                                            return {
+                                                onClick: function onClick(e, handleOriginal) {
+                                                    var selectedEvent = rowInfo.original;
+                                                    self.props.history.push("/viewlog/" + selectedEvent.id);
+                                                }
+                                            };
+                                        }
+                                    })
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return ViewAggregate;
+}(_react.Component);
+
+exports.default = (0, _reactI18next.translate)('common', { wait: process && !process.release })((0, _reactRouterDom.withRouter)(ViewAggregate));
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ })
 /******/ ]);

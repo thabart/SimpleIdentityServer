@@ -1,65 +1,37 @@
-﻿import React, { Component } from "react";
+import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import ReactTable from 'react-table'
 import Constants from '../constants';
 import $ from 'jquery';
 import moment from 'moment';
 
-const columns = [
-    { Header: 'Event', accessor: 'description' },
-    { Header: 'Created on', accessor: 'created_on' },
-    {
-        Header: 'Payload', accessor: 'payload', Cell: function (row) {
-            return (<span title={row.original.payload}>{row.original.payload}</span>);
-        }
-    }
-];
-
 class ViewLog extends Component {
     constructor(props) {
         super(props);
-        this.fetchData = this.fetchData.bind(this);
+        this.refreshData = this.refreshData.bind(this);
         this.state = {
-            data: [],
-            loading: true,
-            pages: null
+            id: null,
+            aggregateId: null,
+            description: null,
+            createdOn: null,
+            payload: null
         };
     }
 
-    getDate(d) {
-        return moment(d).format('LLL');
-    }
-
-    fetchData() {
+    refreshData() {
         var self = this;
-        self.setState({
-            loading: true
-        });
-        var href = Constants.eventSourceUrl + "/events/.search?filter=where$(AggregateId eq '" + self.props.match.params.id + "') orderby$on(Order),order(asc)";
+        var href = Constants.eventSourceUrl + "/events/" + self.props.match.params.id;
         $.get(href).done(function (result) {
-            var data = [];
-            if (result.content && result.content.length > 0) {
-                console.log(result.content);
-                result.content.forEach(function (rec) {
-                    data.push({
-                        description: rec.Description,
-                        created_on: self.getDate(rec.CreatedOn),
-                        payload: rec.Payload
-                    })
-                });
-            }
-
-            var pages = Math.round((result.totalResults + result.itemsPerPage - 1) / result.itemsPerPage);
             self.setState({
-                data: data,
-                loading: false,
-                pages: pages
+                id: result.id,
+                aggregateId: result.aggregate_id,
+                description: result.description,
+                createdOn: moment(result.createdOn).format('LLL'),
+                payload: result.payload
             });
         }).fail(function () {
-            self.setState({
-                loading: false
-            });
+
         });
+
     }
 
     render() {
@@ -67,35 +39,45 @@ class ViewLog extends Component {
         const { t } = self.props;
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('aboutTitle')}</h4>
-                <i>{t('aboutShortDescription')}</i>
+                <h4>{t('logTitle')}</h4>
+                <i>{t('logShortDescription')}</i>
             </div>
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="card">
-                            <div className="header"><h4>{t('aggregateLogsTitle')}</h4></div>
+                            <div className="header"><h4>{t('logDescription')}</h4></div>
                             <div className="body">
-                                <ReactTable
-                                    data={this.state.data}
-                                    loading={this.state.loading}
-                                    onFetchData={this.fetchData}
-                                    pages={this.state.pages}
-                                    columns={columns}
-                                    defaultPageSize={10}
-                                    manual={true}
-                                    filterable={false}
-                                    showPaginationTop={true}
-                                    showPaginationBottom={false}
-                                    sortable={false}
-                                    className="-striped -highlight"
-                                />
+                                <div className="form-group">
+                                    <label>{t('id')}</label>
+                                    <input type="text" className="form-control" value={this.state.id} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('aggregateId')}</label>
+                                    <input type="text" className="form-control" value={this.state.aggregateId} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('description')}</label>
+                                    <input type="text" className="form-control" value={this.state.description} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('createdOn')}</label>
+                                    <input type="text" className="form-control" value={this.state.createdOn} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('payload')}</label>
+                                    <textarea className="form-control" value={this.state.payload} />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>);
+    }
+
+    componentDidMount() {
+        this.refreshData();
     }
 }
 

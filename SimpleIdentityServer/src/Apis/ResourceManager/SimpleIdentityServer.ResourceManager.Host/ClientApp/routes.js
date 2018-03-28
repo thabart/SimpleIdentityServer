@@ -3,7 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { SessionService } from './services';
 
 import Layout from './layout';
-import { Login, About, Connections, Logs, Settings, Cache, Manage, Tools, Resources, ViewLog } from './components';
+import { Login, About, Connections, Logs, Settings, Cache, Manage, Tools, Resources, ViewAggregate, ViewLog } from './components';
 
 export const routes = (<Layout>
     <Route exact path='/' component={About} />
@@ -16,5 +16,6 @@ export const routes = (<Layout>
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/manage' component={Manage} />) }
     { !process.env.IS_TOOLS_DISABLED && (<Route exact path='/tools/:action?' component={Tools} />) }
     { !process.env.IS_RESOURCES_DISABLED && (<Route exact path='/resources' component={Resources} />)}
+    { !process.env.IS_LOG_DISABLED && (<Route exact path="/viewaggregate/:id" component={ViewAggregate} /> )}
     { !process.env.IS_LOG_DISABLED && (<Route exact path="/viewlog/:id" component={ViewLog} /> )}
 </Layout>);

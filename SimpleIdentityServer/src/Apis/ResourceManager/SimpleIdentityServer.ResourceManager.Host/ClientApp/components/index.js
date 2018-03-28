@@ -7,6 +7,7 @@ import Cache from './cache';
 import Manage from './manage';
 import Tools from './tools';
 import Resources from './resources';
+import ViewAggregate from './viewAggregate';
 import ViewLog from './viewLog';
 
 exports.About = About;
@@ -19,3 +20,4 @@ exports.Manage = Manage;
 exports.Tools = Tools;
 exports.Resources = Resources;
 exports.ViewLog = ViewLog;
+exports.ViewAggregate = ViewAggregate;
