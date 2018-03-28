@@ -1,4 +1,9 @@
-﻿.blue .navbar.left {
+﻿body.blue {
+    background-color: #f4f6f9;
+    font-size: 15px;
+}
+
+.blue .navbar.left {
     background-color: #fff;
     box-shadow: 1px 0px 20px rgba(0,0,0,0.08);
 }
@@ -43,10 +48,6 @@
 
 .blue .card .body {
     padding: 20px;
-}
-
-.blue .container-fluid {
-    background-color: rgb(244,246,249);
 }
 
 .blue .nav-tabs {

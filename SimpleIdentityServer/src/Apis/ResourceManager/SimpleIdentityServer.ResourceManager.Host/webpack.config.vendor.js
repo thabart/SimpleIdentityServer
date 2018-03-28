@@ -17,7 +17,7 @@ module.exports = (env) => {
             ]
         },
         entry: {
-            vendor: ['react', 'react-dom', 'react-router-dom', 'jquery', 'popper.js', 'bootstrap/dist/css/bootstrap.css', 'bootstrap', 'react-table/react-table.css', 'jquery-ui/themes/base/all.css', 'codemirror/lib/codemirror.css'],
+            vendor: ['react', 'react-dom', 'react-router-dom', 'jquery', 'popper.js', 'bootstrap/dist/css/bootstrap.css', 'bootstrap', 'react-table/react-table.css', 'jquery-ui/themes/base/all.css', 'codemirror/lib/codemirror.css', 'react-datepicker/dist/react-datepicker.css'],
         },
         output: {
             path: path.join(__dirname, 'wwwroot', 'dist'),

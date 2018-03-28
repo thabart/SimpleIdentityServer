@@ -5,17 +5,22 @@ import Constants from '../../../constants';
 import $ from 'jquery';
 import ReactTable from 'react-table'
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
 
 const columns = [
 	{ Header : 'Event', accessor: 'description' },
-    { Header: 'Client', accessor: 'client_id' },
-    { Header: 'Created on', accessor: 'created_on' }
+    { Header : 'Client', accessor: 'client_id', filterable: false, sortable: false },
+    { Header: 'Created on', accessor: 'created_on', Filter : ({filter, onChange}) => {
+        return (<div><span>afterDate</span><DatePicker selected={filter ? filter.value : moment()} onChange={onChange} withPortal /></div>)
+    } }
 ];
 
 const errorColumns = [
-    { Header: 'Code', accessor: 'code' },
-    { Header: 'Message', accessor: 'message' },
-    { Header: 'Created on', accessor: 'created_on' }
+    { Header: 'Code', accessor: 'code', filterable: false, sortable: false },
+    { Header: 'Message', accessor: 'message', filterable: false, sortable: false },
+    { Header: 'Created on', accessor: 'created_on', Filter : ({filter, onChange}) => {
+        return (<div><span>afterDate</span><DatePicker selected={filter ? filter.value : moment()} onChange={onChange} withPortal /></div>)
+    } }
 ];
 
 class LogsTab extends Component {
@@ -43,9 +48,67 @@ class LogsTab extends Component {
     		loading: true
     	});
 
+        var getColumnName = function(id) {
+            if (id === 'description') {
+                return 'Description';
+            }
+
+            if (id === 'created_on') {
+                return 'CreatedOn';
+            }
+
+            return null;
+        };
+
+        var getOrderName = function(desc) {
+            if(!desc) {
+                return "asc";
+            }
+
+            return "desc";
+        }
+
+        var getValue = function(filter) {
+            if (filter.id === 'created_on') {
+                return filter.value.format("YYYY-MM-DD");
+            }
+
+            return filter.value;
+        }
+
+        var getEqualitySign = function(filter) {
+            if (filter.id === 'created_on') {
+                return 'gt';
+            }
+
+            return 'co';
+        }
+
     	var url = Constants.eventSourceUrl;
     	var startIndex = state.page * state.pageSize;
-    	url += "/events/.search?filter=where$(Type eq 'simpleidserver' and Verbosity eq '0') join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) orderby$on(CreatedOn),order(desc)&startIndex="+startIndex+"&count="+state.pageSize;
+        var orderBy = "orderby$on(CreatedOn),order(desc)";
+        if (state.sorted && state.sorted.length > 0) {
+            var firstSort = state.sorted[0];
+            var columnName = getColumnName(firstSort.id);
+            var orderName = getOrderName(firstSort.desc);
+            orderBy = "orderby$on("+columnName+"),order("+orderName+")";
+        }
+
+        var filterValue = "Type eq 'simpleidserver' and Verbosity eq '0'";
+        if (state.filtered && state.filtered.length > 0) {
+            var conds = [];
+            state.filtered.forEach(function(filter) {
+                var columnName = getColumnName(filter.id);
+                var value = getValue(filter);
+                var equalitySign = getEqualitySign(filter);
+                var cond = columnName + " " + equalitySign + " '"+value + "'";
+                conds.push(cond);
+            });
+
+            filterValue = "Type eq 'simpleidserver' and Verbosity eq '0' and " + conds.join(' and ');
+        }
+
+    	url += "/events/.search?filter=where$("+filterValue+") join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) "+orderBy+"&startIndex="+startIndex+"&count="+state.pageSize;
     	$.get(url).done(function(searchResult) {
     		var data = [];
     		if (searchResult.content) {
@@ -56,13 +119,12 @@ class LogsTab extends Component {
     					aggregate_id: log.AggregateId,
                         client_id: '-'
     				};
-    				if (log.Payload) {
-    					var requestPayload = JSON.parse(log.Payload);
-    					if (requestPayload && requestPayload.ClientId) {
-    						obj['client_id'] = requestPayload.ClientId;
-    					}
-    				}
-
+                    if (log.Payload) {
+                        var requestPayload = JSON.parse(log.Payload);
+                        if (requestPayload && requestPayload.ClientId) {
+                            obj['client_id'] = requestPayload.ClientId;
+                        }
+                    }
     				data.push(obj);
     			});
     		}
@@ -88,7 +150,22 @@ class LogsTab extends Component {
 
         var url = Constants.eventSourceUrl;
         var startIndex = state.page * state.pageSize;
-        url += "/events/.search?filter=where$(Type eq 'simpleidserver' and Verbosity eq '1') orderby$on(CreatedOn),order(desc)&startIndex=" + startIndex + "&count=" + state.pageSize;
+        var orderBy = "orderby$on(CreatedOn),order(desc)";
+        if (state.sorted && state.sorted.length > 0) {
+            var firstSort = state.sorted[0];
+            if (!firstSort.desc) {
+                orderBy = "orderby$on(CreatedOn),order(asc)";
+            }
+        }
+
+        var filterValue = "Type eq 'simpleidserver' and Verbosity eq '1'";
+        if (state.filtered && state.filtered.length > 0) {
+            var firstFilter = state.filtered[0];
+            var value = firstFilter.value.format("YYYY-MM-DD");
+            filterValue = "Type eq 'simpleidserver' and Verbosity eq '1' and CreatedOn gt '" + value + "'";
+        }
+
+        url += "/events/.search?filter=where$("+filterValue+") "+orderBy+"&startIndex=" + startIndex + "&count=" + state.pageSize;
         $.get(url).done(function (searchResult) {
             var data = [];
             if (searchResult.content) {
@@ -143,10 +220,14 @@ class LogsTab extends Component {
                             columns={columns}
                             defaultPageSize={10}
                             manual={true}
-                            filterable={false}
+                            filterable={true}
+                            sortable={true}
                             showPaginationTop={true}
                             showPaginationBottom={false}
-                            sortable={false}
+                            defaultSorted={[{
+                                id: 'created_on',
+                                desc: true
+                            }]}
                             getTrProps={(state, rowInfo, column, instance) => {
                                 return {
                                     onClick: function (e, handleOriginal) {
@@ -174,11 +255,15 @@ class LogsTab extends Component {
                             columns={errorColumns}
                             defaultPageSize={10}
                             manual={true}
-                            filterable={false}
+                            filterable={true}
                             showPaginationTop={true}
                             showPaginationBottom={false}
-                            sortable={false}
+                            sortable={true}
                             className="-striped -highlight"
+                            defaultSorted={[{
+                                id: 'created_on',
+                                desc: true
+                            }]}
                             />
                     </div>
                 </div>

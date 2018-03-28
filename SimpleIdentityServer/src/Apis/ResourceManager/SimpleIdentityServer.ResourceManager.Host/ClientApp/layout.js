@@ -32,7 +32,7 @@ class Layout extends Component {
     }
     render() {
         const { t } = this.props;
-        return (<div className="blue">
+        return (<div>
             <nav className="navbar-static-side navbar left">
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
