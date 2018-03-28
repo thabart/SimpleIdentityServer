@@ -32,6 +32,8 @@ namespace SimpleIdentityServer.Uma.EF.Models
 
         public string PolicyId { get; set; }
 
+        public string OpenIdProvider { get; set; }
+
         public virtual Policy Policy { get; set; }
     }
 }

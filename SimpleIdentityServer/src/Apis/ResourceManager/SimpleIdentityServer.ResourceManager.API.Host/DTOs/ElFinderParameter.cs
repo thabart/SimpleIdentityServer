@@ -20,7 +20,9 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         Access,
         Perms,
         MkPerm,
-        OpenIdClients
+        OpenIdClients,
+        GetResource,
+        PatchResource
     }
     
     internal sealed class DeserializedElFinderParameter
@@ -65,11 +67,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             { Constants.ElFinderCommands.Access, ElFinderCommands.Access },
             { Constants.ElFinderCommands.Perms, ElFinderCommands.Perms },
             { Constants.ElFinderCommands.MkPerm, ElFinderCommands.MkPerm },
-            { Constants.ElFinderCommands.OpenIdClients, ElFinderCommands.OpenIdClients }
+            { Constants.ElFinderCommands.OpenIdClients, ElFinderCommands.OpenIdClients },
+            { Constants.ElFinderCommands.GetResource, ElFinderCommands.GetResource },
+            { Constants.ElFinderCommands.PatchResource, ElFinderCommands.PatchResource }
         };
 
         private ElFinderParameter(ElFinderCommands command, string target, IEnumerable<string> targets, bool tree, 
-            bool init, string name, string current, string source, string destination, bool cut, string q, JArray rules)
+            bool init, string name, string current, string source, string destination, bool cut, string q, JArray rules, IEnumerable<string> scopes)
         {
             Command = command;
             Target = target;
@@ -82,6 +86,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             Cut = cut;
             Q = q;
             Rules = rules;
+            Scopes = scopes;
         }
 
         public ElFinderCommands Command { get; private set; }
@@ -95,6 +100,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
         public string Destination { get; private set; }
         public bool Cut { get; private set; }
         public string Q { get; private set; }
+        public IEnumerable<string> Scopes { get; set; }
         public JArray Rules { get; private set; }
 
         public static DeserializedElFinderParameter Deserialize(JObject json)
@@ -184,9 +190,23 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.DTOs
             JToken jtRules;
             json.TryGetValue(Constants.ElFinderDtoNames.Rules, out jtRules);
 
+            JToken jScopes;
+            var scopes = new List<string>();
+            if (json.TryGetValue(Constants.ElFinderDtoNames.Scopes, out jScopes))
+            {
+                var jArrScopes = jScopes as JArray;
+                if (jArrScopes != null)
+                {
+                    foreach(var scope  in jArrScopes)
+                    {
+                        scopes.Add(scope.ToString());
+                    }
+                }
+            }
+
             return new DeserializedElFinderParameter(new ElFinderParameter(_mappingStrToEnumCmd[cmdStr], jtTarget == null ? null : jtTarget.ToString(), targets,
                 tree == 1, init == 1, name, jtCurrent == null ? null : jtCurrent.ToString(), jtSource == null ? null : jtSource.ToString(), jtDestination == null ? null : jtDestination.ToString(),
-                cut == 1, jtQ == null ? null : jtQ.ToString(), jtRules == null ? null : jtRules as JArray));
+                cut == 1, jtQ == null ? null : jtQ.ToString(), jtRules == null ? null : jtRules as JArray, scopes));
         }
     }
 }

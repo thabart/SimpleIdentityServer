@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "dd148cdcb2ae000a8d76"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "243498c3a9095a08983d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -35991,51 +35991,29 @@ var Manage = function (_Component) {
     }
 
     _createClass(Manage, [{
-        key: 'render',
+        key: "render",
         value: function render() {
             var self = this;
             var t = self.props.t;
 
             return _react2.default.createElement(
-                'div',
-                null,
+                "div",
+                { className: "block" },
                 _react2.default.createElement(
-                    'h4',
-                    null,
-                    t('manageTitle')
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'row' },
+                    "div",
+                    { className: "block-header" },
                     _react2.default.createElement(
-                        'div',
-                        { className: 'col-md-6' },
-                        _react2.default.createElement(
-                            'button',
-                            { className: 'btn btn-default' },
-                            t('exportSettings')
-                        )
+                        "h4",
+                        null,
+                        t('manageTitle')
                     ),
                     _react2.default.createElement(
-                        'div',
-                        { className: 'col-md-6' },
-                        _react2.default.createElement(
-                            'form',
-                            { className: 'form-group' },
-                            _react2.default.createElement(
-                                'label',
-                                null,
-                                t('importSettings')
-                            ),
-                            _react2.default.createElement('input', { type: 'file' }),
-                            _react2.default.createElement(
-                                'button',
-                                { className: 'btn btn-default' },
-                                t('upload')
-                            )
-                        )
+                        "i",
+                        null,
+                        t('manageShortDescription')
                     )
-                )
+                ),
+                _react2.default.createElement("div", { className: "container-fluid" })
             );
         }
     }]);
@@ -37254,6 +37232,8 @@ var _constants2 = _interopRequireDefault(_constants);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -37270,8 +37250,12 @@ var Layout = function (_Component) {
 
         _this._appDispatcher = null;
         _this.disconnect = _this.disconnect.bind(_this);
+        _this.toggleMenu = _this.toggleMenu.bind(_this);
         _this.state = {
-            isLoggedIn: false
+            isLoggedIn: false,
+            isOpenIdDisplayed: false,
+            isScimDisplayed: false,
+            isAuthDisplayed: false
         };
         return _this;
     }
@@ -37295,8 +37279,15 @@ var Layout = function (_Component) {
             this.props.history.push('/');
         }
     }, {
+        key: "toggleMenu",
+        value: function toggleMenu(evt, menu) {
+            evt.preventDefault();
+            this.setState(_defineProperty({}, menu, !this.state[menu]));
+        }
+    }, {
         key: "render",
         value: function render() {
+            var self = this;
             var t = this.props.t;
 
             return _react2.default.createElement(
@@ -37320,6 +37311,123 @@ var Layout = function (_Component) {
                                     t('aboutMenuItem')
                                 )
                             ),
+                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
+                                "li",
+                                { className: "nav-item" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { href: "#", className: "nav-link", onClick: function onClick(e) {
+                                            return self.toggleMenu(e, 'isOpenIdDisplayed');
+                                        } },
+                                    t('manageOpenId')
+                                ),
+                                this.state.isOpenIdDisplayed && _react2.default.createElement(
+                                    "ul",
+                                    { className: "nav sub-nav flex-column" },
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('openidClients')
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('openidScopes')
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('openidEndUsers')
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('openidConfigure')
+                                        )
+                                    )
+                                )
+                            ),
+                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
+                                "li",
+                                { className: "nav-item" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { href: "#", className: "nav-link", onClick: function onClick(e) {
+                                            return self.toggleMenu(e, 'isScimDisplayed');
+                                        } },
+                                    t('manageScim')
+                                ),
+                                this.state.isScimDisplayed && _react2.default.createElement(
+                                    "ul",
+                                    { className: "nav sub-nav flex-column" },
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('scimSchemas')
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('scimRessources')
+                                        )
+                                    )
+                                )
+                            ),
+                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
+                                "li",
+                                { className: "nav-item" },
+                                _react2.default.createElement(
+                                    "a",
+                                    { href: "#", className: "nav-link", onClick: function onClick(e) {
+                                            return self.toggleMenu(e, 'isAuthDisplayed');
+                                        } },
+                                    t('manageAuthServer')
+                                ),
+                                this.state.isAuthDisplayed && _react2.default.createElement(
+                                    "ul",
+                                    { className: "nav sub-nav flex-column" },
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('scimSchemas')
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        "li",
+                                        { className: "nav-item" },
+                                        _react2.default.createElement(
+                                            "a",
+                                            { href: "#", className: "nav-link" },
+                                            t('scimRessources')
+                                        )
+                                    )
+                                )
+                            ),
                             !undefined && this.state.isLoggedIn && _react2.default.createElement(
                                 "li",
                                 { className: "nav-item" },
@@ -37327,60 +37435,6 @@ var Layout = function (_Component) {
                                     _reactRouterDom.NavLink,
                                     { to: "/logs", className: "nav-link" },
                                     t('logsMenuItem')
-                                )
-                            ),
-                            !undefined && this.state.isLoggedIn && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/resources", className: "nav-link" },
-                                    t('resourcesMenuItem')
-                                )
-                            ),
-                            !undefined && this.state.isLoggedIn && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/connections", className: "nav-link" },
-                                    t('connectionsMenuItem')
-                                )
-                            ),
-                            !undefined && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/tools", className: "nav-link" },
-                                    t('toolsMenuItem')
-                                )
-                            ),
-                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/settings", className: "nav-link" },
-                                    t('settingsMenuItem')
-                                )
-                            ),
-                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/cache", className: "nav-link" },
-                                    t('cacheMenuItem')
-                                )
-                            ),
-                            this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                "li",
-                                { className: "nav-item" },
-                                _react2.default.createElement(
-                                    _reactRouterDom.NavLink,
-                                    { to: "/manage", className: "nav-link" },
-                                    t('manageMenuItem')
                                 )
                             ),
                             this.state.isLoggedIn ? _react2.default.createElement(
@@ -37417,110 +37471,6 @@ var Layout = function (_Component) {
                             "a",
                             { className: "navbar-brand", href: "#", id: "uma-title" },
                             t('websiteTitle')
-                        ),
-                        _react2.default.createElement(
-                            "button",
-                            { type: "button", className: "navbar-toggler", "data-toggle": "collapse", "data-target": "#collapseNavBar" },
-                            _react2.default.createElement("span", { className: "navbar-toggler-icon" })
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "collapse navbar-collapse", id: "collapseNavBar" },
-                            _react2.default.createElement(
-                                "ul",
-                                { className: "navbar-nav mr-auto navbar-right" },
-                                _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/about", className: "nav-link" },
-                                        t('aboutMenuItem')
-                                    )
-                                ),
-                                !undefined && this.state.isLoggedIn && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/logs", className: "nav-link" },
-                                        t('logsMenuItem')
-                                    )
-                                ),
-                                !undefined && this.state.isLoggedIn && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/resources", className: "nav-link" },
-                                        t('resourcesMenuItem')
-                                    )
-                                ),
-                                !undefined && this.state.isLoggedIn && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/connections", className: "nav-link" },
-                                        t('connectionsMenuItem')
-                                    )
-                                ),
-                                !undefined && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/tools", className: "nav-link" },
-                                        t('toolsMenuItem')
-                                    )
-                                ),
-                                this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/settings", className: "nav-link" },
-                                        t('settingsMenuItem')
-                                    )
-                                ),
-                                this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/cache", className: "nav-link" },
-                                        t('cacheMenuItem')
-                                    )
-                                ),
-                                this.state.isLoggedIn && !undefined && _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/manage", className: "nav-link" },
-                                        t('manageMenuItem')
-                                    )
-                                ),
-                                this.state.isLoggedIn ? _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        "a",
-                                        { href: "#", className: "nav-link", onClick: this.disconnect },
-                                        _react2.default.createElement("span", { className: "glyphicon glyphicon-user" }),
-                                        " Disconnect"
-                                    )
-                                ) : _react2.default.createElement(
-                                    "li",
-                                    { className: "nav-item" },
-                                    _react2.default.createElement(
-                                        _reactRouterDom.NavLink,
-                                        { to: "/login", className: "nav-link" },
-                                        _react2.default.createElement("span", { className: "glyphicon glyphicon-user" }),
-                                        " Connect"
-                                    )
-                                )
-                            )
                         )
                     ),
                     _react2.default.createElement(
@@ -42430,7 +42380,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".navbar.left {\r\n    margin-bottom: 0px;\r\n    padding: 0;\r\n}\r\n\r\n.navbar-static-side {\r\n    position: fixed;\r\n    width: 220px;\r\n}", ""]);
+exports.push([module.i, ".navbar.left {\r\n    margin-bottom: 0px;\r\n    padding: 0;\r\n}\r\n\r\n.navbar-static-side {\r\n    position: fixed;\r\n    width: 220px;\r\n}\r\n\r\n.nav .sub-nav li a {\r\n\tpadding-left: 40px;\r\n\tpadding-top: 7px;\r\n\tpadding-bottom: 7px;\r\n\tposition: relative;\r\n}\r\n\r\n.nav .sub-nav li a::before {\r\n\tcontent: '\\2192';\r\n    position: absolute;\r\n    left: 14px;\r\n    font-size: 12px;\r\n    color: #999;\r\n    top: 8px;\r\n}", ""]);
 
 // exports
 

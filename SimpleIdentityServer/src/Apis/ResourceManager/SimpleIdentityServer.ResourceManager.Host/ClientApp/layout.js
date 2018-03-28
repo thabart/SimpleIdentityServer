@@ -11,8 +11,12 @@ class Layout extends Component {
         super(props);
         this._appDispatcher = null;
         this.disconnect = this.disconnect.bind(this);
+        this.toggleMenu = this.toggleMenu.bind(this);
         this.state = {
-            isLoggedIn: false
+            isLoggedIn: false,
+            isOpenIdDisplayed: false,
+            isScimDisplayed: false,
+            isAuthDisplayed: false
         };
     }
     /**
@@ -30,34 +34,66 @@ class Layout extends Component {
         });
         this.props.history.push('/');
     }
+
+    toggleMenu(evt, menu) {  
+        evt.preventDefault();      
+        this.setState({
+            [menu]: !this.state[menu]
+        });
+    }
+
     render() {
+        var self = this;
         const { t } = this.props;
         return (<div>
             <nav className="navbar-static-side navbar left">
                 <div className="sidebar-collapse">
                     <ul className="nav flex-column">
                         <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
-                        {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
-                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
-                        )}                        
-                        {(!process.env.IS_RESOURCES_DISABLED && this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
-                        ))}
-                        {(!process.env.IS_CONNECTIONS_DISABLED && this.state.isLoggedIn && (
-                            <li className="nav-item"><NavLink to="/connections" className="nav-link">{t('connectionsMenuItem')}</NavLink></li>
-                        ))}
-                        {!process.env.IS_TOOLS_DISABLED && (
-                            <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
-                        )}
-                        {(this.state.isLoggedIn && !process.env.IS_SETTINGS_DISABLED && (
-                            <li className="nav-item"><NavLink to="/settings" className="nav-link">{t('settingsMenuItem')}</NavLink></li>
-                        ))}
-                        {(this.state.isLoggedIn && !process.env.IS_CACHE_DISABLED && (
-                            <li className="nav-item"><NavLink to="/cache" className="nav-link">{t('cacheMenuItem')}</NavLink></li>
+                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                            <li className="nav-item">
+                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isOpenIdDisplayed')}>{t('manageOpenId')}</a>
+                                {
+                                    this.state.isOpenIdDisplayed && (
+                                        <ul className="nav sub-nav flex-column">
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidClients')}</a></li>
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidScopes')}</a></li>
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidEndUsers')}</a></li>
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidConfigure')}</a></li>
+                                        </ul>
+                                    )
+                                }
+                            </li>
                         ))}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <li className="nav-item"><NavLink to="/manage" className="nav-link">{t('manageMenuItem')}</NavLink></li>
+                            <li className="nav-item">
+                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isScimDisplayed')}>{t('manageScim')}</a>
+                                {
+                                    this.state.isScimDisplayed && (
+                                        <ul className="nav sub-nav flex-column">
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimSchemas')}</a></li> 
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimRessources')}</a></li>                                            
+                                        </ul>
+                                    )
+                                }
+                            </li>
                         ))}
+                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                            <li className="nav-item">
+                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isAuthDisplayed')}>{t('manageAuthServer')}</a>
+                                {
+                                    this.state.isAuthDisplayed && (
+                                        <ul className="nav sub-nav flex-column">
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimSchemas')}</a></li> 
+                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimRessources')}</a></li>                                            
+                                        </ul>
+                                    )
+                                }
+                            </li>
+                        ))}
+                        {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
+                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
+                        )}
                         {(this.state.isLoggedIn ? (
                             <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> {t('disconnect')}</a></li>
                         ) : (
@@ -70,40 +106,6 @@ class Layout extends Component {
                 { /* Navigation */ }
                 <nav className="navbar navbar-toggleable-md">
                     <a className="navbar-brand" href="#" id="uma-title">{t('websiteTitle')}</a>
-                    <button type="button" className="navbar-toggler" data-toggle="collapse" data-target="#collapseNavBar">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="collapseNavBar">
-                        <ul className="navbar-nav mr-auto navbar-right">
-                            <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
-                            {!process.env.IS_LOG_DISABLED  && this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
-                            )}
-                            {(!process.env.IS_RESOURCES_DISABLED && this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/resources" className="nav-link">{t('resourcesMenuItem')}</NavLink></li>
-                            ))}
-                            {(!process.env.IS_CONNECTIONS_DISABLED && this.state.isLoggedIn && (
-                                <li className="nav-item"><NavLink to="/connections" className="nav-link">{t('connectionsMenuItem')}</NavLink></li>
-                            ))}
-                            {!process.env.IS_TOOLS_DISABLED && (
-                                <li className="nav-item"><NavLink to="/tools" className="nav-link">{t('toolsMenuItem')}</NavLink></li>
-                            )}
-                            {(this.state.isLoggedIn && !process.env.IS_SETTINGS_DISABLED && (
-                                <li className="nav-item"><NavLink to="/settings" className="nav-link">{t('settingsMenuItem')}</NavLink></li>
-                            ))}
-                            {(this.state.isLoggedIn && !process.env.IS_CACHE_DISABLED && (
-                                <li className="nav-item"><NavLink to="/cache" className="nav-link">{t('cacheMenuItem')}</NavLink></li>
-                            ))}
-                            {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                                <li className="nav-item"><NavLink to="/manage" className="nav-link">{t('manageMenuItem')}</NavLink></li>
-                            ))}
-                            {(this.state.isLoggedIn ? (
-                                <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> Disconnect</a></li>
-                            ) : (
-                                    <li className="nav-item"><NavLink to="/login" className="nav-link"><span className="glyphicon glyphicon-user"></span> Connect</NavLink></li>
-                            ))}
-                        </ul>
-                    </div>
                 </nav>
                 { /* Display component */}
                 <section id="body">

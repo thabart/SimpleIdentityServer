@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return policy == null ? null : policy.ToDomain();
         }
 
-#if NET46
+#if NET461
         public async Task<bool> BulkAdd(IEnumerable<Policy> parameter)
         {
             if (parameter == null)
@@ -78,6 +78,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             policyRuleDataTable.Columns.Add("PolicyId", typeof(string));
             policyRuleDataTable.Columns.Add("Scopes", typeof(string));
             policyRuleDataTable.Columns.Add("Script", typeof(string));
+            policyRuleDataTable.Columns.Add("OpenIdProvider", typeof(string));
             foreach(var record in parameter)
             {
                 var model = record.ToModel();
@@ -107,6 +108,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                         policyRuleRow["PolicyId"] = model.Id;
                         policyRuleRow["Scopes"] = rule.Scopes;
                         policyRuleRow["Script"] = rule.Script;
+                        policyRuleRow["OpenIdProvider"] = rule.OpenIdProvider;
                         policyRuleDataTable.Rows.Add(policyRuleRow);
                     }
                 }
@@ -213,6 +215,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                             rule.Script = ru.Script;
                             rule.ClientIdsAllowed = MappingExtensions.GetConcatenatedList(ru.ClientIdsAllowed);
                             rule.Scopes = MappingExtensions.GetConcatenatedList(ru.Scopes);
+                            rule.OpenIdProvider = ru.OpenIdProvider;
                             rule.Claims = JsonConvert.SerializeObject(ru.Claims == null ? new List<Claim>() : ru.Claims);
                             rulesNotToBeDeleted.Add(rule.Id);
                         }

@@ -51,6 +51,7 @@ namespace SimpleIdentityServer.Uma.Common
         public const string Scopes = "scopes";
         public const string Script = "script";
         public const string Claims = "claims";
+        public const string OpenIdProvider = "provider";
     }
 
     public static class PolicyNames

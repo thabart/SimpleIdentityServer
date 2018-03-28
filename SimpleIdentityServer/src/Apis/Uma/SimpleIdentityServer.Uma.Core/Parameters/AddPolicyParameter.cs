@@ -31,6 +31,7 @@ namespace SimpleIdentityServer.Uma.Core.Parameters
         public List<AddClaimParameter> Claims { get; set; }
         public bool IsResourceOwnerConsentNeeded { get; set; }
         public string Script { get; set; }
+        public string OpenIdProvider { get; set; }
     }
 
     public class AddPolicyParameter

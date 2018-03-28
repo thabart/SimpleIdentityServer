@@ -20,7 +20,8 @@
             public const string Claims = "claims";
             public const string Id = "id";
             public const string OpenIdClients = "openidclients";
-            public const string Scopes = "scopes";
+            public const string OpenIdClaims = "openidclaims";
+            public const string Permissions = "permissions";
         }
 
         public static class ElFinderDtoNames
@@ -37,6 +38,7 @@
             public const string Cut = "cut";
             public const string Q = "q";
             public const string Rules = "rules";
+            public const string Scopes = "scopes";
         }
 
         public static class ElFinderResponseNames
@@ -56,7 +58,16 @@
             public const string AuthRules = "authrules";
             public const string OpenIdClients = "openidclients";
             public const string OpenIdClaims = "openidclaims";
+            public const string Resource = "resource";
             public const string Permissions = "permissions";
+            public const string IdProviders = "idproviders";
+        }
+
+        public static class ElFinderIdProviderResponseNames
+        {
+            public const string Url = "url";
+            public const string Name = "name";
+            public const string Description = "description";
         }
 
         public static class ElFinderOptionNames
@@ -85,6 +96,15 @@
             public const string Thash = "thash";
             public const string Dim = "dim";
             public const string VolumeId = "volumeid";
+        }
+
+        public static class ElFinderResourceNames
+        {
+            public const string Id = "id";
+            public const string IconUri = "icon_uri";
+            public const string Name = "name";
+            public const string Scopes = "scopes";
+            public const string Type = "type";
         }
 
         public static class ElFinderUmaAuthorizationPolicyRuleNames
@@ -122,6 +142,9 @@
             public const string ErrUnknownCmd = "errUnknownCmd";
             public const string ErrTrgFolderNotFound = "errTrgFolderNotFound";
             public const string ErrOpen = "errOpen";
+            public const string ErrCreateResource = "errCreateResource";
+            public const string ErrNoResource = "errorNoResource";
+            public const string ErrUpdateResource = "errorUpdateResource";
         }
 
         public static class Errors
@@ -154,6 +177,8 @@
             public const string Perms = "perms";
             public const string MkPerm = "mkperm";
             public const string OpenIdClients = "openidclients";
+            public const string GetResource = "getresource";
+            public const string PatchResource = "patchresource";
         }
     }
 }

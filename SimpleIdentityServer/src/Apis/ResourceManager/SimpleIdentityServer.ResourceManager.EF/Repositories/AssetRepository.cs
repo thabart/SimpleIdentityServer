@@ -273,7 +273,6 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                         record.AuthPolicies.Add(new AssetAuthPolicy
                                         {
                                             AssetHash = record.Hash,
-                                            IsOwner = authPolicy.IsOwner,
                                             AuthPolicyId = authPolicy.AuthPolicyId
                                         });
                                     }
@@ -310,8 +309,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 CanWrite = asset.CanWrite,
                 AuthorizationPolicies = asset.AuthPolicies == null ? new List<AssetAggregateAuthPolicy>() : asset.AuthPolicies.Select(ap => new AssetAggregateAuthPolicy
                 {
-                    AuthPolicyId = ap.AuthPolicyId,
-                    IsOwner = ap.IsOwner
+                    AuthPolicyId = ap.AuthPolicyId
                 }).ToList(),
                 IsLocked = asset.IsLocked,
                 MimeType=  asset.MimeType,

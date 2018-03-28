@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Uma.Startup
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
-                    options.Listen(IPAddress.Loopback, 5443, listenOpts =>
+                    options.Listen(IPAddress.Loopback, 5445, listenOpts =>
                     {
                         listenOpts.UseHttps("Uma.pfx");
                     });

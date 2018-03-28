@@ -52,6 +52,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
         private static void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IAssetRepository, AssetRepository>();
+            serviceCollection.AddTransient<IIdProviderRepository, IdProviderRepository>();
         }
     }
 }

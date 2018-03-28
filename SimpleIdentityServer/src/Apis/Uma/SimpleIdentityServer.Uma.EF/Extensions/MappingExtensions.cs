@@ -84,7 +84,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetList(policyRule.Scopes),
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Script = policyRule.Script,
-                Claims = claims
+                Claims = claims,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 
@@ -152,7 +153,8 @@ namespace SimpleIdentityServer.Uma.EF.Extensions
                 Scopes = GetConcatenatedList(policyRule.Scopes),
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Script = policyRule.Script,
-                Claims = claims
+                Claims = claims,
+                OpenIdProvider=  policyRule.OpenIdProvider
             };
         }
 

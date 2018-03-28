@@ -255,7 +255,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult((JwsPayload)null));
 
             // ACT
@@ -320,7 +320,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {
@@ -390,7 +390,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new JwsPayload()));
 
             // ACT
@@ -457,7 +457,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(configurationUrl);
             var payload = new JwsPayload();
             payload.Add("role", new JArray("role3"));
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -524,7 +524,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 .Returns(configurationUrl);
             var payload = new JwsPayload();
             payload.Add("role", new string[] { "role3" });
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -589,7 +589,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             _parametersProviderStub.Setup(p => p.GetOpenIdConfigurationUrl())
                 .Returns(configurationUrl);
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {

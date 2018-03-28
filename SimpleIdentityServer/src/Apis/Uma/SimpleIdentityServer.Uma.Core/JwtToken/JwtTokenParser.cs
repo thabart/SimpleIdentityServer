@@ -26,33 +26,35 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
     public interface IJwtTokenParser
     {
-        Task<JwsPayload> UnSign(string jws);
+        Task<JwsPayload> UnSign(string jws, string openidUrl);
     }
 
     internal class JwtTokenParser : IJwtTokenParser
     {
         private readonly IJwsParser _jwsParser;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-        private readonly IParametersProvider _parametersProvider;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
         public JwtTokenParser(
             IJwsParser jwsParser,
             IIdentityServerClientFactory identityServerClientFactory,
-            IParametersProvider parametersProvider,
             IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
             _identityServerClientFactory = identityServerClientFactory;
-            _parametersProvider = parametersProvider;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
-        public async Task<JwsPayload> UnSign(string jws)
+        public async Task<JwsPayload> UnSign(string jws, string openidUrl)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
                 throw new ArgumentNullException(nameof(jws));
+            }
+
+            if (string.IsNullOrWhiteSpace(openidUrl))
+            {
+                throw new ArgumentNullException(nameof(openidUrl));
             }
 
             var protectedHeader = _jwsParser.GetHeader(jws);
@@ -62,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             }
 
             var jsonWebKeySet = await _identityServerClientFactory.CreateJwksClient()
-                .ResolveAsync(_parametersProvider.GetOpenIdConfigurationUrl())
+                .ResolveAsync(openidUrl)
                 .ConfigureAwait(false);
             var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
             if (jsonWebKeys == null ||

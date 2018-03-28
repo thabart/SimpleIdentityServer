@@ -18,6 +18,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
 
             AddAssets(resourceManagerContext);
             AddAssetAuthPolicies(resourceManagerContext);
+            AddIdProviders(resourceManagerContext);
             resourceManagerContext.SaveChanges();
         }
 
@@ -60,8 +61,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                        CanRead = true,
                        CanWrite = true,
                        CreateDateTime = DateTime.UtcNow,
-                       MimeType = Constants.MimeNames.Directory,
-                       ResourceId = "80596bfa-e2bb-4001-bb89-b95e413757ea",
+                       MimeType = Constants.MimeNames.Directory
                    },
                    new Asset
                    {
@@ -83,14 +83,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
         {
             if (!context.Assets.Any())
             {
-                context.AssetAuthPolicies.AddRange(new[]
+            }
+        }
+
+        private static void AddIdProviders(ResourceManagerDbContext context)
+        {
+            if (!context.IdProviders.Any())
+            {
+                context.IdProviders.AddRange(new[]
                 {
-                   new AssetAuthPolicy
-                   {
-                       AssetHash = HashHelper.GetHash("Root/Sub"),
-                       AuthPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a",
-                       IsOwner = true
-                   }
+                    new IdProvider
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "simple identity server",
+                        Name = "simpleidserver",
+                        OpenIdWellKnownUrl = "https://localhost:5443/.well-known/openid-configuration"
+                    }
                 });
             }
         }

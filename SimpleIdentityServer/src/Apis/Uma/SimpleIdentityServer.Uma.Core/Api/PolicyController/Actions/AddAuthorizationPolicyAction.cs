@@ -114,7 +114,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                     ClientIdsAllowed = ruleParameter.ClientIdsAllowed,
                     Scopes = ruleParameter.Scopes,
                     Script = ruleParameter.Script,
-                    Claims = claims
+                    Claims = claims,
+                    OpenIdProvider = ruleParameter.OpenIdProvider
                 });
             }
 

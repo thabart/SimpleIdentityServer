@@ -24,6 +24,7 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
+using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -56,8 +57,8 @@ namespace SimpleIdentityServer.Uma.Startup
                 {
                     IsOauthMigrated = true,
                     IsUmaMigrated = true,
-                    OauthDbType = DbTypes.SQLSERVER,
-                    UmaDbType = DbTypes.SQLSERVER,
+                    OauthDbType = DbTypes.INMEMORY,
+                    UmaDbType = DbTypes.INMEMORY,
                     UmaConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                     OauthConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
                 },
@@ -92,11 +93,19 @@ namespace SimpleIdentityServer.Uma.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
+                .AddOAuth2Introspection(opts =>
+                {
+                    opts.ClientId = "uma";
+                    opts.ClientSecret = "uma";
+                    opts.WellKnownConfigurationUrl = "https://localhost:5445/.well-known/uma2-configuration";
+                });
             services.AddSimpleBusInMemory().AddEventStoreBus().AddUmaHost(_umaHostConfiguration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseAuthentication();
             app.UseUmaHost(loggerFactory, _umaHostConfiguration);
             // Insert the data.
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())

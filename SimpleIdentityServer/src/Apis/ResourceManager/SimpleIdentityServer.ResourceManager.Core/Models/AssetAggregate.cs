@@ -6,7 +6,6 @@ namespace SimpleIdentityServer.ResourceManager.Core.Models
     public class AssetAggregateAuthPolicy
     {
         public string AuthPolicyId { get; set; }
-        public bool IsOwner { get; set; }
     }
 
     public class AssetAggregate

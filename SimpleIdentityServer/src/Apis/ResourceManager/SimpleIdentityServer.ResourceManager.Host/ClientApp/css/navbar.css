@@ -7,3 +7,19 @@
     position: fixed;
     width: 220px;
 }
+
+.nav .sub-nav li a {
+	padding-left: 40px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+	position: relative;
+}
+
+.nav .sub-nav li a::before {
+	content: '→';
+    position: absolute;
+    left: 14px;
+    font-size: 12px;
+    color: #999;
+    top: 8px;
+}
