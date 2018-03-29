@@ -86,8 +86,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Search:
                     return new OkObjectResult(await ExecuteSearch(deserializedParameter.ElFinderParameter));
-                case ElFinderCommands.Access:
-                    return new OkObjectResult(await ExecuteAccess(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.Perms:
                     return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter));
                 case ElFinderCommands.MkPerm:
@@ -293,6 +291,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             if (!await _assetRepository.Remove(targets))
             {
                 return new ErrorResponse(Constants.Errors.ErrRemoveAssets).GetJson();
+            }
+            
+            foreach(var asset in assets)
+            {
+                await Remove(asset);
             }
 
             var removed = new JArray(targets);
@@ -648,29 +651,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         #region UMA commands
 
         /// <summary>
-        /// Returns information on how to access to the resource.
-        /// </summary>
-        /// <param name="elFinderParameter"></param>
-        /// <returns></returns>
-        private async Task<JObject> ExecuteAccess(ElFinderParameter elFinderParameter)
-        {
-            if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
-            {
-                return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
-            }
-
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
-            if (asset == null)
-            {
-                return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
-            }
-
-            var jObj = new JObject();
-            jObj.Add(Constants.ElFinderResponseNames.Url, "http://localhost"); // TODO : Replace the url by the correct value.
-            return jObj;
-        }
-
-        /// <summary>
         /// Get the permissions of the target / UMA resource.
         /// </summary>
         /// <param name="elFinderParameter"></param>
@@ -838,7 +818,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             
             var authWellKnownConfigurationUrl = GetWellKnownAuthConfigurationUrl();
             var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
-            if (asset.AuthorizationPolicies == null || !asset.AuthorizationPolicies.Any()) // Add an authorization policy.
+            if ((asset.AuthorizationPolicies == null || !asset.AuthorizationPolicies.Any()) && authPolRules.Any()) // Add an authorization policy.
             {
                 AddPolicyResponse addPolicyResponse = await _identityServerUmaClientFactory.GetPolicyClient().AddByResolution(new PostPolicy
                 {
@@ -868,7 +848,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     return new ErrorResponse(Constants.ElFinderErrors.ErrUpdateResource).GetJson();
                 }
             }
-            else // Update the authorization policy.
+            else if (asset.AuthorizationPolicies != null && asset.AuthorizationPolicies.Any() && authPolRules.Any())// Update the authorization policy.
             {
                 var authPolicy = asset.AuthorizationPolicies.First();
                 await _identityServerUmaClientFactory.GetPolicyClient().UpdateByResolution(new PutPolicy
@@ -890,6 +870,18 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                         }
                     ).ToList()
                 }, authWellKnownConfigurationUrl, grantedToken.AccessToken);
+            }
+            else // Delete the authorization policy.
+            {
+                var authPolicy = asset.AuthorizationPolicies.First();
+                await _identityServerUmaClientFactory.GetPolicyClient().DeleteByResolution(
+                    authPolicy.AuthPolicyId, authWellKnownConfigurationUrl, grantedToken.AccessToken);
+                asset.AuthorizationPolicies.Clear();
+                var lstAssets = new List<AssetAggregate> { asset };
+                if (!await _assetRepository.Update(lstAssets))
+                {
+                    return new ErrorResponse(Constants.ElFinderErrors.ErrUpdateResource).GetJson();
+                }
             }
             
             var jObj = new JObject();
@@ -944,6 +936,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Patch the resource.
+        /// </summary>
+        /// <param name="elFinderParameter"></param>
+        /// <returns></returns>
         private async Task<JObject> ExecutePatchResource(ElFinderParameter elFinderParameter)
         {
             if (string.IsNullOrWhiteSpace(elFinderParameter.Target))
@@ -986,35 +983,23 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         #endregion
 
-        #region OPENID manager commands
-
-        /// <summary>
-        /// Get all the openid clients.
-        /// </summary>
-        /// <param name="elFinderParameter"></param>
-        /// <returns></returns>
-        private async Task<JObject> ExecuteOpenIdClients(ElFinderParameter elFinderParameter)
+        private async Task Remove(AssetAggregate asset)
         {
-            /*
-            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
-            var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
-            var jArr = new JArray();
-            foreach(var openIdClient in openIdClients)
+            if (asset == null)
             {
-                var jObj = new JObject();
-                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.ClientId, openIdClient.ClientId);
-                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.ClientName, openIdClient.ClientName);
-                jObj.Add(Constants.ElFinderOpenIdClientResponseNames.LogoUri, openIdClient.LogoUri);
-                jArr.Add(jObj);
+                throw new ArgumentNullException(nameof(asset));
             }
-            var result = new JObject();
-            result.Add(Constants.ElFinderResponseNames.OpenIdClients, jArr);
-            return result;
-            */
-            return null;
-        }
 
-        #endregion
+            var tasks = new List<Task<bool>>();
+            var authWellKnownConfigurationUrl = GetWellKnownAuthConfigurationUrl();
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
+            if (!string.IsNullOrWhiteSpace(asset.ResourceId))
+            {
+                tasks.Add(_identityServerUmaClientFactory.GetResourceSetClient().DeleteByResolution(asset.ResourceId, authWellKnownConfigurationUrl, grantedToken.AccessToken));
+            }
+
+            await Task.WhenAll(tasks);
+        }
 
         private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
         {

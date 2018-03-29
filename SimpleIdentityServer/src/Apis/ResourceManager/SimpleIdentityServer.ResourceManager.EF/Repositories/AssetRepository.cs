@@ -79,7 +79,12 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
             {
                 using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
                 {
-                    var asset = await context.Assets.Include(a => a.Parent).Include(a => a.AuthPolicies).Include(a => a.Children).ThenInclude(a => a.Children).FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
+                    var asset = await context.Assets
+                        .Include(a => a.Parent)
+                        .Include(a => a.AuthPolicies)
+                        .Include(a => a.Children).ThenInclude(a => a.Children)
+                        .Include(a => a.Children).ThenInclude(a => a.AuthPolicies)
+                        .FirstOrDefaultAsync(a => a.Hash == hash).ConfigureAwait(false);
                     if (asset == null)
                     {
                         return null;
@@ -268,6 +273,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                 record.CanRead = asset.CanRead;
                                 record.CanWrite = asset.CanWrite;
                                 record.IsLocked = asset.IsLocked;
+                                context.AssetAuthPolicies.RemoveRange(context.AssetAuthPolicies.Where(a => a.AssetHash == record.Hash));
                                 record.AuthPolicies = new List<AssetAuthPolicy>();
                                 if (asset.AuthorizationPolicies != null)
                                 {
