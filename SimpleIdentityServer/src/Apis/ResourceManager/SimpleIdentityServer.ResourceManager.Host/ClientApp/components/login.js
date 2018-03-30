@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-dom';
 import { translate } from 'react-i18next';
 import CubeLoading from './cubeLoading';
 
+import { TextField , RaisedButton } from 'material-ui';
+
 class Login extends Component {
     constructor(props) {
         super(props);
@@ -71,27 +73,35 @@ class Login extends Component {
     }
     render() {
         const { t } = this.props;
-        return (<div>
-            <h4>{t('loginTitle')}</h4>
-            {(this.state.isLoading ? (<CubeLoading />): (
-                <div>
-                    <form onSubmit={this.authenticate}>
-                        <div className="form-group">
-                            <input placeholder={t('login')} type="text" className="form-control" name="login" onChange={this.handleInputChange} />
+        return (<div className="block">
+            <div className="block-header">
+                <h4>{t('loginTitle')}</h4>
+            </div>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="card">
+                            <div className="body">
+                                <form onSubmit={this.authenticate}>
+                                    <div className="form-group">
+                                        <TextField hintText={t('loginHintText')} name="login" onChange={this.handleInputChange} fullWidth={true}/>
+                                    </div>
+                                    <div className="form-group">
+                                        <TextField hintText={t('passwordHintText')} name="password" type="password" onChange={this.handleInputChange} fullWidth={true}/>
+                                    </div>
+                                    <RaisedButton label={t('connect')} primary={true} type="submit" />
+                                </form>
+                                {(this.state.errorMessage !== null && (
+                                    <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
+                                        <strong>Danger !</strong> {this.state.errorMessage}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="form-group">
-                            <input placeholder={t('password')} type="password" className="form-control" name="password" onChange={this.handleInputChange} />
-                        </div>
-                        <button type="submit" className="btn btn-purple full-width">{t('connect')}</button>
-                    </form>
-                    {(this.state.errorMessage !== null && (
-                        <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
-                            <strong>Danger !</strong> {this.state.errorMessage}
-                        </div>
-                    ))}
+                    </div>
                 </div>
-            ))}
-         </div>);
+            </div>
+        </div>);
     }
 }
 

@@ -1,30 +1,34 @@
 ﻿import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import { SessionService } from './services';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
-import AppDispatcher from './appDispatcher';
 import Constants from './constants';
+import AppDispatcher from './appDispatcher';
+
+import { IconButton, RaisedButton, Drawer, SelectField, MenuItem } from 'material-ui';
+import { List, ListItem } from 'material-ui/List';
 
 class Layout extends Component {
     constructor(props) {
         super(props);
         this._appDispatcher = null;
         this.disconnect = this.disconnect.bind(this);
-        this.toggleMenu = this.toggleMenu.bind(this);
+        this.toggleValue = this.toggleValue.bind(this);
+        this.navigate = this.navigate.bind(this);
         this.state = {
             isLoggedIn: false,
-            isOpenIdDisplayed: false,
+            isOauthDisplayed: false,
             isScimDisplayed: false,
-            isAuthDisplayed: false
+            isAuthDisplayed: false,
+            isDrawerDisplayed: false
         };
     }
     /**
      * Disconnect the user.
      * @param {any} e
      */
-    disconnect(e) {
-        e.preventDefault();
+    disconnect() {
         SessionService.remove();
         this.setState({
             isLoggedIn: false
@@ -35,77 +39,93 @@ class Layout extends Component {
         this.props.history.push('/');
     }
 
-    toggleMenu(evt, menu) {  
-        evt.preventDefault();      
+    toggleValue(menu) {    
         this.setState({
             [menu]: !this.state[menu]
         });
     }
 
+    navigate(href) {
+        this.props.history.push(href);
+    }
     render() {
         var self = this;
         const { t } = this.props;
         return (<div>
+            <Drawer width={300} docked={false} onRequestChange={(open) => self.setState({
+                isDrawerDisplayed: open
+            })} openSecondary={true} open={this.state.isDrawerDisplayed}>
+                <div style={{padding: "20px"}}>
+                    <ul className="nav nav-tabs">
+                        <li className="nav-item"><a href="#" className="nav-link">{t('yourPreferences')}</a></li>
+                    </ul>
+                    <div>
+                        <div className="form-group">
+                            <span>{t('selectedPreferredOpenIdProvider')}</span>
+                            <SelectField>
+                                <MenuItem primaryText="firstOpenIdProvider"></MenuItem>
+                                <MenuItem primaryText="secondOpenIdProvider"></MenuItem>
+                            </SelectField>
+                        </div>
+                        <div className="form-group">
+                            <span>{t('selectPreferredAuthorizationServer')}</span>
+                            <SelectField>
+                                <MenuItem primaryText="firstAuthServer"></MenuItem>
+                                <MenuItem primaryText="secondAuthServer"></MenuItem>
+                            </SelectField>
+                        </div>
+                        <RaisedButton label={t('saveChanges')} primary={true} />
+                    </div>
+                </div>
+            </Drawer>
             <nav className="navbar-static-side navbar left">
                 <div className="sidebar-collapse">
-                    <ul className="nav flex-column">
-                        <li className="nav-item"><NavLink to="/about" className="nav-link">{t('aboutMenuItem')}</NavLink></li>
+                    <List>
+                        {/* About menu item */}
+                        <ListItem primaryText={t('aboutMenuItem')} onClick={() => self.navigate('/about')} />
+                        {/* Openid menu item */}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <li className="nav-item">
-                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isOpenIdDisplayed')}>{t('manageOpenId')}</a>
-                                {
-                                    this.state.isOpenIdDisplayed && (
-                                        <ul className="nav sub-nav flex-column">
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidClients')}</a></li>
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidScopes')}</a></li>
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidEndUsers')}</a></li>
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('openidConfigure')}</a></li>
-                                        </ul>
-                                    )
-                                }
-                            </li>
+                            <ListItem primaryText={t('manageOpenidServers')} nestedItems={[
+                                <ListItem primaryText={t('resourceOwners')} />,
+                                <ListItem primaryText={t('openidClients')} />,
+                                <ListItem primaryText={t('openidScopes')} />
+                            ]} />
                         ))}
+                        {/* Authorisation server */}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <li className="nav-item">
-                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isScimDisplayed')}>{t('manageScim')}</a>
-                                {
-                                    this.state.isScimDisplayed && (
-                                        <ul className="nav sub-nav flex-column">
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimSchemas')}</a></li> 
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimRessources')}</a></li>                                            
-                                        </ul>
-                                    )
-                                }
-                            </li>
+                            <ListItem primaryText={t('manageAuthServers')} nestedItems={[
+                                <ListItem primaryText={t('oauthClients')} onClick={() => self.navigate('/oauthclients')} />,    
+                                <ListItem primaryText={t('oauthScopes')} />,    
+                                <ListItem primaryText={t('resources')} />                               
+                            ]} />
                         ))}
+                        {/* SCIM server */}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <li className="nav-item">
-                                <a href="#" className="nav-link" onClick={(e) => self.toggleMenu(e, 'isAuthDisplayed')}>{t('manageAuthServer')}</a>
-                                {
-                                    this.state.isAuthDisplayed && (
-                                        <ul className="nav sub-nav flex-column">
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimSchemas')}</a></li> 
-                                            <li className="nav-item"><a href="#" className="nav-link">{t('scimRessources')}</a></li>                                            
-                                        </ul>
-                                    )
-                                }
-                            </li>
-                        ))}
+                            <ListItem primaryText={t('manageScimServers')} nestedItems={[
+                                <ListItem primaryText={t('scimSchemas')} />,
+                                <ListItem primaryText={t('scimResources')} />
+                            ]} />
+                         ))}
+                        {/* Logs */}         
                         {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
-                            <li className="nav-item"><NavLink to="/logs" className="nav-link">{t('logsMenuItem')}</NavLink></li>
+                            <ListItem primaryText={t('logsMenuItem')} onClick={() => self.navigate('/logs')} />
                         )}
+                        {/* Connect or disconnect */}
                         {(this.state.isLoggedIn ? (
-                            <li className="nav-item"><a href="#" className="nav-link" onClick={this.disconnect}><span className="glyphicon glyphicon-user"></span> {t('disconnect')}</a></li>
+                            <ListItem primaryText={t('disconnectMenuItem')} onClick={() => self.disconnect()} />
                         ) : (
-                                <li className="nav-item"><NavLink to="/login" className="nav-link"><span className="glyphicon glyphicon-user"></span> {t('connect')}</NavLink></li>
+                            <ListItem primaryText={t('connectMenuItem')} onClick={() => self.navigate('/login')} />
                         ))}
-                    </ul>
+                    </List>
                 </div>
             </nav>
             <section id="wrapper">
                 { /* Navigation */ }
                 <nav className="navbar navbar-toggleable-md">
                     <a className="navbar-brand" href="#" id="uma-title">{t('websiteTitle')}</a>
+                    <ul className="navbar-nav mr-auto">
+                    </ul>
+                    {this.state.isLoggedIn && (<IconButton iconClassName="material-icons" onClick={() => self.toggleValue('isDrawerDisplayed')}>&#xE8B8;</IconButton>)}
                 </nav>
                 { /* Display component */}
                 <section id="body">
