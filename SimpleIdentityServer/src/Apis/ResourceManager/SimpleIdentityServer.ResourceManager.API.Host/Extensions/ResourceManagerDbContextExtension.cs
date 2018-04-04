@@ -1,4 +1,5 @@
 ﻿using SimpleIdentityServer.ResourceManager.API.Host.Helpers;
+using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.EF;
 using SimpleIdentityServer.ResourceManager.EF.Models;
 using System;
@@ -97,7 +98,33 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                         CreateDateTime = DateTime.UtcNow,
                         Description = "simple identity server",
                         Name = "simpleidserver",
-                        Url = "https://localhost:5443/.well-known/openid-configuration"
+                        Url = "https://localhost:5443/.well-known/openid-configuration",
+                        Type = (int)EndpointTypes.OPENID,
+                        ClientId = "",
+                        ClientSecret = "",
+                        ManagerUrl = ""
+                    },
+                    new Endpoint
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "authorization server",
+                        Name = "authserver",
+                        Url = "https://localhost:5445/.well-known/uma2-configuration",
+                        Type = (int)EndpointTypes.AUTH,
+                        ClientId = "",
+                        ClientSecret = "",
+                        ManagerUrl = ""
+                    },
+                    new Endpoint
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "scim server",
+                        Name = "scimserver",
+                        Url = "http://localhost:60001/ServiceProviderConfig",
+                        Type = (int)EndpointTypes.SCIM,
+                        ClientId = "",
+                        ClientSecret = "",
+                        ManagerUrl = ""
                     }
                 });
             }

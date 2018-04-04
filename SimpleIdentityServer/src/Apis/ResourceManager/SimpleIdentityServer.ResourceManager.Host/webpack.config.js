@@ -7,6 +7,7 @@ var config = (env) => {
   const isDevBuild = !(env && env.prod);
   var baseUrl = process.env.BASE_URL;
   var evtUrl = process.env.EVT_SOURCE_URL;
+  var apiUrl = process.env.API_URL;
   if (!baseUrl) {
 	baseUrl = '"http://localhost:64950"';
   }
@@ -15,7 +16,10 @@ var config = (env) => {
 	evtUrl = '"http://localhost:5000"';
   }
   
-  console.log(baseUrl);
+  if (!apiUrl) {
+	  apiUrl = '"http://localhost:5001"';
+  }
+  
   return [{	  
       context: __dirname + "/ClientApp",
       entry: { 'main': __dirname + "/ClientApp/main.js" },
@@ -35,7 +39,8 @@ var config = (env) => {
 				'IS_CACHE_DISABLED': process.env.IS_CACHE_DISABLED,
 				'IS_MANAGE_DISABLED': process.env.IS_MANAGE_DISABLED,
 				'BASE_URL': baseUrl,
-				'EVT_SOURCE_URL': evtUrl
+				'EVT_SOURCE_URL': evtUrl,
+				'API_URL': apiUrl
 			}
 		})
 	  ],

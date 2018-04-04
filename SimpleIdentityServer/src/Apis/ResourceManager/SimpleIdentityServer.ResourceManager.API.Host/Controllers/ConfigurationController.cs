@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using System.Net.Http;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 {
-    public class HomeController : Controller
+    [Route(Constants.RouteNames.ConfigurationController)]
+    public class ConfigurationController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Get()
         {
             var json = new JObject();
             json.Add("version", "2.1");

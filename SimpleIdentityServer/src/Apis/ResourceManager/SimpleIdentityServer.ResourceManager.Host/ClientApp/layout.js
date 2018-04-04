@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { SessionService } from './services';
 import { withRouter, Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
+import { EndpointService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
@@ -16,12 +17,16 @@ class Layout extends Component {
         this.disconnect = this.disconnect.bind(this);
         this.toggleValue = this.toggleValue.bind(this);
         this.navigate = this.navigate.bind(this);
+        this.refresh = this.refresh.bind(this);
         this.state = {
             isLoggedIn: false,
             isOauthDisplayed: false,
             isScimDisplayed: false,
             isAuthDisplayed: false,
-            isDrawerDisplayed: false
+            isDrawerDisplayed: false,
+            openidEndpoints: [],
+            authEndpoints: [],
+            scimEndpoints: []
         };
     }
     /**
@@ -48,9 +53,47 @@ class Layout extends Component {
     navigate(href) {
         this.props.history.push(href);
     }
+
+    /**
+    * Refresh the settings menu.
+    */
+    refresh() {
+        var self = this;
+        EndpointService.getAll().then(function(endpoints) {
+            self.setState({
+                authEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 0; }),
+                openidEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 1; }),
+                scimEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 2; })
+            });
+        }).catch(function() {
+
+        });
+    }
+
     render() {
         var self = this;
         const { t } = this.props;
+        var openidEndpoints = [];
+        var authEndpoints = [];
+        var scimEndpoints = [];
+        if (self.state.openidEndpoints) {
+            self.state.openidEndpoints.forEach(function(openidEndpoint) {
+                openidEndpoints.push((<MenuItem key={openidEndpoint.name} primaryText={openidEndpoint.description}></MenuItem>));
+            });
+        }
+
+        if (self.state.authEndpoints) {
+            self.state.authEndpoints.forEach(function(authEndpoint) {
+                authEndpoints.push((<MenuItem key={authEndpoint.name} primaryText={authEndpoint.description}></MenuItem>));
+            });
+        }
+
+        if (self.state.scimEndpoints) {
+            self.state.scimEndpoints.forEach(function(scimEndpoint) {
+                scimEndpoints.push((<MenuItem key={scimEndpoint.name} primaryText={scimEndpoint.description}></MenuItem>))
+            });
+        }
+
         return (<div>
             <Drawer width={300} docked={false} onRequestChange={(open) => self.setState({
                 isDrawerDisplayed: open
@@ -63,15 +106,19 @@ class Layout extends Component {
                         <div className="form-group">
                             <span>{t('selectedPreferredOpenIdProvider')}</span>
                             <SelectField>
-                                <MenuItem primaryText="firstOpenIdProvider"></MenuItem>
-                                <MenuItem primaryText="secondOpenIdProvider"></MenuItem>
+                                {openidEndpoints}
                             </SelectField>
                         </div>
                         <div className="form-group">
                             <span>{t('selectPreferredAuthorizationServer')}</span>
                             <SelectField>
-                                <MenuItem primaryText="firstAuthServer"></MenuItem>
-                                <MenuItem primaryText="secondAuthServer"></MenuItem>
+                                {authEndpoints}
+                            </SelectField>
+                        </div>
+                        <div className="form-group">
+                            <span>{t('selectPreferredScimServer')}</span>
+                            <SelectField>
+                                {scimEndpoints}
                             </SelectField>
                         </div>
                         <RaisedButton label={t('saveChanges')} primary={true} />
@@ -134,10 +181,12 @@ class Layout extends Component {
             </section>
         </div>);
     }
+
     componentDidMount() {
         var self = this;
+        var isLoggedIn = !SessionService.isExpired();
         self.setState({
-            isLoggedIn: !SessionService.isExpired()
+            isLoggedIn: isLoggedIn
         });
         self._appDispatcher = AppDispatcher.register(function (payload) {
             switch (payload.actionName) {
@@ -145,10 +194,15 @@ class Layout extends Component {
                     self.setState({
                         isLoggedIn: true
                     });
+                    self.refresh();
                     break;
             }
         });
+        if (isLoggedIn) {
+            self.refresh();
+        }
     }
+
     componentWillUnmount() {
         AppDispatcher.unregister(this._appDispatcher);
     }

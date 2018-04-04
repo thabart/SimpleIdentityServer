@@ -65,7 +65,10 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                                     Description = idProvider.Description,
                                     Name = idProvider.Name,
                                     Url = idProvider.Url,
-                                    Type = (int)idProvider.Type
+                                    Type = (int)idProvider.Type,
+                                    ClientId = idProvider.ClientId,
+                                    ClientSecret = idProvider.ClientSecret,
+                                    ManagerUrl = idProvider.ManagerUrl
                                 };
 
                                 context.Endpoints.Add(record);
@@ -120,9 +123,45 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                         endpoints = endpoints.Where(e => e.Type == (int)parameter.Type.Value);
                     }
 
-                    return endpoints.Select(i => GetIdProvider(i));
+                    return await endpoints.Select(i => GetIdProvider(i)).ToListAsync().ConfigureAwait(false);
                 }
             }
+        }
+
+        public async Task<bool> Remove(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
+            bool result = false;
+            using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ResourceManagerDbContext>())
+                {
+                    using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
+                    {
+                        try
+                        {
+                            var record = await context.Endpoints.FirstOrDefaultAsync(e => e.Url == url);
+                            if (record != null)
+                            {
+                                context.Endpoints.Remove(record);
+                                await context.SaveChangesAsync().ConfigureAwait(false);
+                                transaction.Commit();
+                                result = true;
+                            }
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         private static EndpointAggregate GetIdProvider(Endpoint idProvider)
@@ -133,7 +172,10 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                 Description = idProvider.Description,
                 Url = idProvider.Url,
                 Name = idProvider.Name,
-                Type = (EndpointTypes)idProvider.Type
+                Type = (EndpointTypes)idProvider.Type,
+                ClientId = idProvider.ClientId,
+                ClientSecret = idProvider.ClientSecret,
+                ManagerUrl = idProvider.ManagerUrl
             };
         }
     }

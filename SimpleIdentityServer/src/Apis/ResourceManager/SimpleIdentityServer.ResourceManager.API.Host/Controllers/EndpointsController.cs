@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.ResourceManager.API.Host.DTOs;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
@@ -66,7 +65,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return null;
+            var result = await _endpointRepository.Get(id);
+            if (result == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(ToJson(result));
         }
 
         [HttpDelete("{id}")]
@@ -77,6 +82,25 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
+            if (!await _endpointRepository.Remove(id))
+            {
+                return this.GetError(Constants.Errors.ErrRemoveEndpoint, HttpStatusCode.InternalServerError);
+            }
+
+            return new OkResult();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            // Check the url is a correct well-known configuration.
+            // Check the manager url is correct.
+            // Check the client id + secret are correct.
             return null;
         }
 
@@ -90,16 +114,26 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var jArr = new JArray();
             foreach(var endpoint in endpoints)
             {
-                var jObj = new JObject();
-                jObj.Add(Constants.EndpointNames.CreateDateTime, endpoint.CreateDateTime);
-                jObj.Add(Constants.EndpointNames.Description, endpoint.Description);
-                jObj.Add(Constants.EndpointNames.Name, endpoint.Name);
-                jObj.Add(Constants.EndpointNames.Type, (int)endpoint.Type);
-                jObj.Add(Constants.EndpointNames.Url, endpoint.Url);
-                jArr.Add(jObj);
+                jArr.Add(ToJson(endpoint));
             }
 
             return jArr;
+        }
+
+        private static JObject ToJson(EndpointAggregate endpoint)
+        {
+            if (endpoint == null)
+            {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.EndpointNames.CreateDateTime, endpoint.CreateDateTime);
+            jObj.Add(Constants.EndpointNames.Description, endpoint.Description);
+            jObj.Add(Constants.EndpointNames.Name, endpoint.Name);
+            jObj.Add(Constants.EndpointNames.Type, (int)endpoint.Type);
+            jObj.Add(Constants.EndpointNames.Url, endpoint.Url);
+            return jObj;
         }
     }
 }

@@ -9,6 +9,10 @@
         {
             public const string ElFinterController = "elfinder";
             public const string EndpointsController = "endpoints";
+            public const string ConfigurationController = "configuration";
+            public const string ClientsController = "clients";
+            public const string ScopesController = "scopes";
+            public const string ResourceOwnersController = "resourceowners";
         }
 
         public static class MimeNames
@@ -169,6 +173,7 @@
             public const string ErrCutAsset = "an error occured while trying to cut the asset(s)";
             public const string ErrRemoveAssets = "an error occured while trying to remove the asset(s)";
             public const string ErrTargetsNotFound = "some targets don't exist";
+            public const string ErrRemoveEndpoint = "an error occured while trying to remove the endpoint(s)";
         }
 
         public static class ElFinderCommands
