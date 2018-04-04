@@ -27,7 +27,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
-        private readonly IIdProviderRepository _idProviderRepository;
+        private readonly IEndpointRepository _endpointRepository;
         private readonly IStorageHelper _storageHelper;
         private const string _authKnownConfigurationName = "Auth:WellKnownConfiguration";
         private const string _clientIdConfigurationName = "Auth:ClientId";
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         public ElFinderController(IAssetRepository assetRepository, IConfiguration configuration, IStorageHelper storageHelper,
             IOpenIdManagerClientFactory openIdManagerClientFactory, IIdentityServerClientFactory identityServerClientFactory,
-            IIdentityServerUmaClientFactory identityServerUmaClientFactory, IIdProviderRepository idProviderRepository)
+            IIdentityServerUmaClientFactory identityServerUmaClientFactory, IEndpointRepository endpointRepository)
         {
             _assetRepository = assetRepository;
             _configuration = configuration;
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             _openIdManagerClientFactory = openIdManagerClientFactory;
             _identityServerClientFactory = identityServerClientFactory;
             _identityServerUmaClientFactory = identityServerUmaClientFactory;
-            _idProviderRepository = idProviderRepository;
+            _endpointRepository = endpointRepository;
         }
 
         [HttpPost]
@@ -689,12 +689,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 }
             }
 
-            var idProviders = await _idProviderRepository.GetAll();
+            var idProviders = await _endpointRepository.Search(new SearchEndpointsParameter { Type = EndpointTypes.OPENID });
             var jArrIdProviders = new JArray();
             foreach (var idProvider in idProviders)
             {
                 var jObjIdProvider = new JObject();
-                jObjIdProvider.Add(Constants.ElFinderIdProviderResponseNames.Url, idProvider.OpenIdWellKnownUrl);
+                jObjIdProvider.Add(Constants.ElFinderIdProviderResponseNames.Url, idProvider.Url);
                 jObjIdProvider.Add(Constants.ElFinderIdProviderResponseNames.Description, idProvider.Description);
                 jObjIdProvider.Add(Constants.ElFinderIdProviderResponseNames.Name, idProvider.Name);
                 jArrIdProviders.Add(jObjIdProvider);

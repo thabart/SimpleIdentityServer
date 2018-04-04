@@ -88,16 +88,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
 
         private static void AddIdProviders(ResourceManagerDbContext context)
         {
-            if (!context.IdProviders.Any())
+            if (!context.Endpoints.Any())
             {
-                context.IdProviders.AddRange(new[]
+                context.Endpoints.AddRange(new[]
                 {
-                    new IdProvider
+                    new Endpoint
                     {
                         CreateDateTime = DateTime.UtcNow,
                         Description = "simple identity server",
                         Name = "simpleidserver",
-                        OpenIdWellKnownUrl = "https://localhost:5443/.well-known/openid-configuration"
+                        Url = "https://localhost:5443/.well-known/openid-configuration"
                     }
                 });
             }

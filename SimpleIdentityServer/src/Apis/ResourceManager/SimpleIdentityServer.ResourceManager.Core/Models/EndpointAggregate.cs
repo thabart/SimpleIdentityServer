@@ -2,11 +2,19 @@
 
 namespace SimpleIdentityServer.ResourceManager.Core.Models
 {
-    public class IdProviderAggregate
+    public enum EndpointTypes
     {
-        public string OpenIdWellKnownUrl { get; set; }
+        AUTH,
+        OPENID,
+        SCIM
+    }
+
+    public class EndpointAggregate
+    {
+        public string Url { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public EndpointTypes Type { get; set; }
         public DateTime CreateDateTime { get; set; }
     }
 }

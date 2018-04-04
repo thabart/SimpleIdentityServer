@@ -4,15 +4,26 @@
     {
         public const string VolumeId = "rm";
         public const char PathSeparator = '/';
+
         public static class RouteNames
         {
             public const string ElFinterController = "elfinder";
+            public const string EndpointsController = "endpoints";
         }
 
         public static class MimeNames
         {
             public const string Directory = "directory";
             public const string TextPlain = "text/plain";
+        }
+
+        public static class EndpointNames
+        {
+            public const string Url = "url";
+            public const string Name = "name";
+            public const string Description = "description";
+            public const string Type = "type";
+            public const string CreateDateTime = "create_datetime";
         }
 
         public static class ElFinderAuthPolRuleNames

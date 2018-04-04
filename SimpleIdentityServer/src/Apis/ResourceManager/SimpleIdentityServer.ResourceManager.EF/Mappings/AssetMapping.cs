@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using SimpleIdentityServer.ResourceManager.EF.Models;
 
 namespace SimpleIdentityServer.ResourceManager.EF.Mappings
