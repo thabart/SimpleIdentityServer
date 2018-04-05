@@ -34,5 +34,12 @@ namespace SimpleIdentityServer.Manager.Client
             public const string LogoUri = "logo_uri";
             public const string ClientName = "client_name";
         }
+
+        public static class SearchClientResponseNames
+        {
+            public const string Content = "content";
+            public const string StartIndex = "start_index";
+            public const string Count = "count";
+        }
     }
 }

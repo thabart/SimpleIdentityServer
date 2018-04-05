@@ -47,12 +47,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             var result = new List<OpenIdClientResponse>();
             foreach(JObject rec in jArr)
             {
-                result.Add(new OpenIdClientResponse
-                {
-                    ClientId = rec.GetValue(Constants.GetClientsResponseNames.ClientId).ToString(),
-                    ClientName = rec.GetValue(Constants.GetClientsResponseNames.ClientName).ToString(),
-                    LogoUri = rec.GetValue(Constants.GetClientsResponseNames.LogoUri).ToString()
-                });
+                result.Add(OpenIdClientResponse.ToClient(rec));
             }
 
             return result;

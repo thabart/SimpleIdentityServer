@@ -16,6 +16,18 @@
             public const string ResourceOwnersController = "resourceowners";
         }
 
+        public static class SearchClientNames
+        {
+            public const string ClientIds = "client_ids";
+            public const string ClientNames = "client_names";
+        }
+
+        public static class SearchNames
+        {
+            public const string StartIndex = "start_index";
+            public const string Count = "count";
+        }
+
         public static class MimeNames
         {
             public const string Directory = "directory";

@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
 using SimpleIdentityServer.Manager.Host.DTOs.Responses;
@@ -60,6 +61,20 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             return new OkObjectResult(result);
         }
 
+        [HttpPost(".search")]
+        [Authorize("manager")]
+        public async Task<ActionResult> Search([FromBody] JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            var parameter = jObj.ToSearchClientParameter();
+            var result = await _clientActions.Search(parameter);
+            return new OkObjectResult(result.ToDto());
+        }
+
         [HttpGet("{id}")]
         [Authorize("manager")]
         public async Task<ActionResult> Get(string id)
@@ -83,7 +98,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 return new NotFoundResult();
             }
 
-            var response = result.ToClientResponseDto();
+            var response = result.ToDto();
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
             return new OkObjectResult(response);
         }

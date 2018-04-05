@@ -27,6 +27,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 {
     public interface IClientActions
     {
+        Task<SearchClientResult> Search(SearchClientParameter parameter);
         Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients();
         Task<SimpleIdentityServer.Core.Models.Client> GetClient(string clientId);
         Task<bool> DeleteClient(string clientId);
@@ -36,6 +37,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
 
     public class ClientActions : IClientActions
     {
+        private readonly ISearchClientsAction _searchClientsAction;
         private readonly IGetClientsAction _getClientsAction;
         private readonly IGetClientAction _getClientAction;
         private readonly IRemoveClientAction _removeClientAction;
@@ -43,17 +45,24 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
         private readonly IRegisterClientAction _registerClientAction;
 
         public ClientActions(
+            ISearchClientsAction searchClientsAction,
             IGetClientsAction getClientsAction,
             IGetClientAction getClientAction,
             IRemoveClientAction removeClientAction,
             IUpdateClientAction updateClientAction,
             IRegisterClientAction registerClientAction)
         {
+            _searchClientsAction = searchClientsAction;
             _getClientsAction = getClientsAction;
             _getClientAction = getClientAction;
             _removeClientAction = removeClientAction;
             _updateClientAction = updateClientAction;
             _registerClientAction = registerClientAction;
+        }
+
+        public Task<SearchClientResult> Search(SearchClientParameter parameter)
+        {
+            return _searchClientsAction.Execute(parameter);
         }
         
         public Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients()

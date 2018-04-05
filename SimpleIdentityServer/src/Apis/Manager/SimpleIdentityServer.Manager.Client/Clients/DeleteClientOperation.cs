@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Manager.Client.DTOs.Responses;
-using SimpleIdentityServer.Manager.Client.Factories;
+﻿using SimpleIdentityServer.Manager.Client.Factories;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;

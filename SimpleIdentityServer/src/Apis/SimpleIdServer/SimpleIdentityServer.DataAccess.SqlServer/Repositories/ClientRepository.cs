@@ -15,7 +15,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.DataAccess.SqlServer.Models;
 using SimpleIdentityServer.Logging;
@@ -45,6 +47,39 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
         #endregion
 
         #region Public methods
+
+        public async Task<SearchClientResult> Search(SearchClientParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Client> clients = _context.Clients;
+            if (parameter.ClientIds != null && parameter.ClientIds.Any())
+            {
+                clients = clients.Where(c => parameter.ClientIds.Contains(c.ClientId));
+            }
+
+            if (parameter.ClientNames != null && parameter.ClientNames.Any())
+            {
+                clients = clients.Where(c => parameter.ClientNames.Any(n => n.Contains(c.ClientName)));
+            }
+
+            var nbResult = await clients.CountAsync().ConfigureAwait(false);
+            clients = clients.OrderBy(c => c.ClientId);
+            if (parameter.IsPagingEnabled)
+            {
+                clients = clients.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchClientResult
+            {
+                Content = await clients.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
+        }
 
         public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
         {
@@ -325,7 +360,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
 
             return true;
         }
-
+        
         #endregion
 
         #region Private static methods

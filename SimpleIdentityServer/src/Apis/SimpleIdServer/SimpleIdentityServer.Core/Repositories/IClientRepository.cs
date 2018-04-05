@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,6 +23,7 @@ namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IClientRepository
     {
+        Task<SearchClientResult> Search(SearchClientParameter parameter);
         Task<Models.Client> GetClientByIdAsync(string clientId);
         Task<IEnumerable<Models.Client>> GetAllAsync();
         Task<bool> UpdateAsync(Models.Client client);

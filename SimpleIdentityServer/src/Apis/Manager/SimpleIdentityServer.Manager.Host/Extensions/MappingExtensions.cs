@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
 using SimpleIdentityServer.Manager.Host.DTOs.Requests;
@@ -30,7 +32,70 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     public static class MappingExtensions
     {
         #region To parameters
-    
+
+        public static SearchClientParameter ToSearchClientParameter(this JObject jObj)
+        {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
+            var result = new SearchClientParameter();
+            JToken jClientIds;
+            if (jObj.TryGetValue(Constants.SearchClientNames.ClientIds, out jClientIds))
+            {
+                var jArrClientIds = jClientIds as JArray;
+                if (jArrClientIds != null)
+                {
+                    var clientIds = new List<string>();
+                    foreach (var cid in jArrClientIds)
+                    {
+                        clientIds.Add(cid.ToString());
+                    }
+
+                    result.ClientIds = clientIds;
+                }
+            }
+
+            JToken jClientNames;
+            if (jObj.TryGetValue(Constants.SearchClientNames.ClientNames, out jClientNames))
+            {
+                var jArrClientNames = jClientNames as JArray;
+                if (jArrClientNames != null)
+                {
+                    var clientNames = new List<string>();
+                    foreach (var cName in jArrClientNames)
+                    {
+                        clientNames.Add(cName.ToString());
+                    }
+
+                    result.ClientNames = clientNames;
+                }
+            }
+
+            JToken jStartIndex;
+            if (jObj.TryGetValue(Constants.SearchNames.StartIndex, out jStartIndex))
+            {
+                int startIndex;
+                if (int.TryParse(jStartIndex.ToString(), out startIndex))
+                {
+                    result.StartIndex = startIndex;
+                }
+            }
+
+            JToken jCount;
+            if (jObj.TryGetValue(Constants.SearchNames.NbResults, out jCount))
+            {
+                int count;
+                if (int.TryParse(jCount.ToString(), out count))
+                {
+                    result.Count = count;
+                }
+            }
+
+            return result;
+        }
+
         public static ResourceOwner ToParameter(this ResourceOwnerResponse request)
         {
             var claims = new List<Claim>();
@@ -362,6 +427,29 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To DTOs
 
+        public static JObject ToDto(this SearchClientResult parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var result = new JObject();
+            result.Add(Constants.SearchNames.NbResults, parameter.TotalResults);
+            result.Add(Constants.SearchNames.StartIndex, parameter.StartIndex);
+            var jArr = new JArray();
+            if (parameter.Content != null)
+            {
+                foreach (var record in parameter.Content)
+                {
+                    jArr.Add(JObject.FromObject(record.ToDto()));
+                }
+            }
+
+            result.Add(Constants.SearchNames.Content, jArr);
+            return result;
+        }
+
         public static JwsInformationResponse ToDto(this JwsInformationResult jwsInformationResult)
         {
             return new JwsInformationResponse
@@ -381,7 +469,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             return new ExportResponse
             {
-                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToClientResponseDto())
+                Clients = export.Clients == null ? null : export.Clients.Select(c => c.ToDto())
             };
         }
 
@@ -391,16 +479,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 IsContentJws = jweInformationResult.IsContentJws,
                 Content = jweInformationResult.Content
-            };
-        }
-
-        public static ClientInformationResponse ToDto(this SimpleIdentityServer.Core.Models.Client client)
-        {
-            return new ClientInformationResponse
-            {
-                ClientId = client.ClientId,
-                ClientName = client.ClientName,
-                LogoUri = client.LogoUri
             };
         }
 
@@ -418,7 +496,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ClientResponse ToClientResponseDto(this SimpleIdentityServer.Core.Models.Client client)
+        public static ClientResponse ToDto(this SimpleIdentityServer.Core.Models.Client client)
         {
             IEnumerable<ResponseClientSecret> secrets = null;
             if (client.Secrets != null)
@@ -500,7 +578,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To List of DTOs
 
-        public static List<ClientInformationResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Models.Client> clients)
+        public static List<ClientResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Models.Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
         }

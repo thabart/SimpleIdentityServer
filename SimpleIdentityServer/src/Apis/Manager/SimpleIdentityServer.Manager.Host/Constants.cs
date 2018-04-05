@@ -30,6 +30,19 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Configuration = ".well-known/openidmanager-configuration";
         }
 
+        public static class SearchClientNames
+        {
+            public const string ClientIds = "client_ids";
+            public const string ClientNames = "client_names";
+        }
+
+        public static class SearchNames
+        {
+            public const string StartIndex = "start_index";
+            public const string Content = "content";
+            public const string NbResults = "count";
+        }
+
         public static class ConfigurationNames
         {
             public const string JwsEndpoint = "jws_endpoint";

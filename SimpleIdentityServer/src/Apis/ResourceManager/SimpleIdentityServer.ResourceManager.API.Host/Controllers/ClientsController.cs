@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Manager.Client;
+using SimpleIdentityServer.Manager.Client.DTOs.Parameters;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.API.Host.Stores;
@@ -8,6 +9,7 @@ using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -83,6 +85,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
+            var parameter = ToSearchParameter(jObj);
             return null;
         }
 
@@ -153,6 +156,64 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             jObj.Add(Constants.ClientNames.ClientName, client.ClientName);
             jObj.Add(Constants.ClientNames.LogoUri, client.LogoUri);
             return jObj;
+        }
+
+        private static SearchClientParameter ToSearchParameter(JObject jObj)
+        {
+            var parameter = new SearchClientParameter();
+            JToken jStartIndex,
+                jCount,
+                jClientIds,
+                jClientNames;
+            if (jObj.TryGetValue(Constants.SearchClientNames.ClientNames, out jClientNames))
+            {
+                var jArrClientNames = jClientNames as JArray;
+                if (jArrClientNames != null)
+                {
+                    var names = new List<string>();
+                    foreach (var name in jArrClientNames)
+                    {
+                        names.Add(name.ToString());
+                    }
+
+                    parameter.ClientNames = names;
+                }
+            }
+
+            if (jObj.TryGetValue(Constants.SearchClientNames.ClientIds, out jClientIds))
+            {
+                var jArrClientIds = jClientIds as JArray;
+                if (jArrClientIds != null)
+                {
+                    var ids = new List<string>();
+                    foreach (var id in jArrClientIds)
+                    {
+                        ids.Add(id.ToString());
+                    }
+
+                    parameter.ClientIds = ids;
+                }
+            }
+
+            if (jObj.TryGetValue(Constants.SearchNames.StartIndex, out jStartIndex))
+            {
+                int startIndex;
+                if (int.TryParse(jStartIndex.ToString(), out startIndex))
+                {
+                    parameter.StartIndex = startIndex;
+                }
+            }
+
+            if (jObj.TryGetValue(Constants.SearchNames.Count, out jCount))
+            {
+                int count;
+                if (int.TryParse(jCount.ToString(), out count))
+                {
+                    parameter.Count = count;
+                }
+            }
+
+            return parameter;
         }
     }
 }

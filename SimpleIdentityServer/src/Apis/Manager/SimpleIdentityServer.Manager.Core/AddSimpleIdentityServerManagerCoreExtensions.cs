@@ -51,6 +51,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IGetClientsAction, GetClientsAction>();
             serviceCollection.AddTransient<IGetClientAction, GetClientAction>();
             serviceCollection.AddTransient<IRemoveClientAction, RemoveClientAction>();
+            serviceCollection.AddTransient<ISearchClientsAction, SearchClientsAction>();
             serviceCollection.AddTransient<IUpdateClientAction, UpdateClientAction>();
             serviceCollection.AddTransient<IScopeActions, ScopeActions>();
             serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
