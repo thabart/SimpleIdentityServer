@@ -26,6 +26,7 @@ using SimpleIdentityServer.ResourceManager.EF;
 using WebApiContrib.Core.Storage.InMemory;
 using System;
 using SimpleIdentityServer.Uma.Client;
+using SimpleIdentityServer.ResourceManager.API.Host.Stores;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host
 {
@@ -82,6 +83,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
             serviceCollection.AddOpenIdManagerClient();
             serviceCollection.AddIdServerClient();
             serviceCollection.AddUmaClient();
+            serviceCollection.AddSingleton<ITokenStore, TokenStore>();
             WebApiContrib.Core.Storage.ServiceCollectionExtensions.AddStorage(serviceCollection, opts => opts.UseInMemory());
             serviceCollection.AddSingleton<IConfiguration>(Configuration);
         }

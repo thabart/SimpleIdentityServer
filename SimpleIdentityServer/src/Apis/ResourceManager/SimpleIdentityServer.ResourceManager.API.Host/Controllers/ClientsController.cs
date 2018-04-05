@@ -1,19 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Manager.Client;
+using SimpleIdentityServer.Manager.Client.DTOs.Responses;
+using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
+using SimpleIdentityServer.ResourceManager.API.Host.Stores;
+using SimpleIdentityServer.ResourceManager.Core.Models;
+using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 {
-    [Route(Constants.RouteNames.ConfigurationController)]
-    public class ClientsController
+    [Route(Constants.RouteNames.ClientsController)]
+    public class ClientsController : Controller
     {
         private readonly IEndpointRepository _endpointRepository;
+        private readonly ITokenStore _tokenStore;
+        private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
 
-        public ClientsController(IEndpointRepository endpointRepository)
+        public ClientsController(IEndpointRepository endpointRepository, ITokenStore tokenStore,
+            IOpenIdManagerClientFactory openIdManagerClientFactory)
         {
             _endpointRepository = endpointRepository;
+            _tokenStore = tokenStore;
+            _openIdManagerClientFactory = openIdManagerClientFactory;
         }
 
         [HttpGet("openid/{id}/{url?}")]
@@ -24,7 +37,30 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return null;
+            var endpoint = await GetEndpoint(url, EndpointTypes.OPENID);
+            if (endpoint == null)
+            {
+                return this.GetError(Constants.Errors.ErrNoEndpoint, HttpStatusCode.InternalServerError);
+            }
+
+            if (string.IsNullOrWhiteSpace(endpoint.AuthUrl) || string.IsNullOrWhiteSpace(endpoint.ClientId) || string.IsNullOrWhiteSpace(endpoint.ClientSecret))
+            {
+                return this.GetError(Constants.Errors.ErrAuthNotConfigured, HttpStatusCode.InternalServerError);
+            }
+
+            if (string.IsNullOrWhiteSpace(endpoint.ManagerUrl))
+            {
+                return this.GetError(Constants.Errors.ErrManagerApiNotConfigured, HttpStatusCode.InternalServerError);
+            }
+
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { "manager" });
+            var client = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGet(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
+            if (client == null || client.ContainsError)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(ToJson(client));
         }
 
         [HttpDelete("openid/{id}/{url?}")]
@@ -82,6 +118,41 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             return null;
+        }
+
+        private async Task<EndpointAggregate> GetEndpoint(string url, EndpointTypes type)
+        {
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                var endpoint = await _endpointRepository.Get(url);
+                return endpoint;
+            }
+
+            var endpoints = await _endpointRepository.Search(new SearchEndpointsParameter
+            {
+                Type = type
+            });
+            if (endpoints == null || !endpoints.Any())
+            {
+                return null;
+            }
+
+            var minOrder = endpoints.Min(e => e.Order);
+            return endpoints.First(e => e.Order == minOrder);
+        }
+
+        private static JObject ToJson(OpenIdClientResponse client)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ClientNames.ClientId, client.ClientId);
+            jObj.Add(Constants.ClientNames.ClientName, client.ClientName);
+            jObj.Add(Constants.ClientNames.LogoUri, client.LogoUri);
+            return jObj;
         }
     }
 }

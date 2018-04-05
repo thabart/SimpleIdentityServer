@@ -98,22 +98,25 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                         CreateDateTime = DateTime.UtcNow,
                         Description = "simple identity server",
                         Name = "simpleidserver",
-                        Url = "https://localhost:5443/.well-known/openid-configuration",
+                        Url = "http://localhost:60000/.well-known/openid-configuration",
                         Type = (int)EndpointTypes.OPENID,
-                        ClientId = "",
-                        ClientSecret = "",
-                        ManagerUrl = ""
+                        Manager = new EndpointManager
+                        {
+                            AuthUrl = "http://localhost:60004/.well-known/uma2-configuration",
+                            ClientId = "ResourceServer",
+                            ClientSecret = "LW46am54neU/[=Su",
+                            ManagerUrl = "http://localhost:60003/.well-known/openidmanager-configuration",
+                        },
+                        Order = 1
                     },
                     new Endpoint
                     {
                         CreateDateTime = DateTime.UtcNow,
                         Description = "authorization server",
                         Name = "authserver",
-                        Url = "https://localhost:5445/.well-known/uma2-configuration",
+                        Url = "http://localhost:60004/.well-known/uma2-configuration",
                         Type = (int)EndpointTypes.AUTH,
-                        ClientId = "",
-                        ClientSecret = "",
-                        ManagerUrl = ""
+                        Order = 1
                     },
                     new Endpoint
                     {
@@ -122,9 +125,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                         Name = "scimserver",
                         Url = "http://localhost:60001/ServiceProviderConfig",
                         Type = (int)EndpointTypes.SCIM,
-                        ClientId = "",
-                        ClientSecret = "",
-                        ManagerUrl = ""
+                        Order = 1
                     }
                 });
             }

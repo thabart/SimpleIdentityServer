@@ -18,8 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
@@ -71,14 +69,12 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             // 2. Register all the dependencies.
             serviceCollection.AddSimpleIdentityServerCore();
             serviceCollection.AddSimpleIdentityServerManagerCore();
-            serviceCollection.AddConfigurationClient();
-            serviceCollection.AddIdServerClient();
             // 3. Register the dependencies to run the authentication.
             serviceCollection.AddAuthentication();
             // 4. Add authorization policies
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy("manager", policy => policy.RequireClaim("scope", "openid_manager"));
+                options.AddPolicy("manager", policy => policy.RequireClaim("scope", "manager"));
             });
             // 5. Add JWT parsers.
             serviceCollection.AddSimpleIdentityServerJwt();

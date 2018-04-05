@@ -23,7 +23,6 @@ namespace SimpleIdentityServer.Manager.Host.Startup
     {
         public static void Main(string[] args)
         {
-            // To launch the application : dotnet run --server.urls=http://*:5000
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
@@ -31,7 +30,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
                 .UseKestrel()
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()
-                .UseUrls(args)
+                .UseUrls("http://*:60003")
                 .Build();
             host.Run();
         }

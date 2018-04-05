@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Configurations;
@@ -59,11 +60,19 @@ namespace SimpleIdentityServer.Scim.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
+                .AddOAuth2Introspection(opts =>
+                {
+                    opts.ClientId = "Scim";
+                    opts.ClientSecret = "~V*nH{q4;qL/=8+Z";
+                    opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
+                });
             services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;").AddSimpleBusInMemory().AddEventStoreBus().AddScim(_configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseAuthentication();
             app.UseScimHost(loggerFactory, _configuration);
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

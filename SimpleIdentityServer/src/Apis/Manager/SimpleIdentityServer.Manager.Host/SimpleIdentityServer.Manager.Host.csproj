@@ -10,8 +10,6 @@
     <ProjectReference Include="..\..\..\Lib\Serilog\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Manager.Core\SimpleIdentityServer.Manager.Core.csproj" />
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
-    <ProjectReference Include="..\..\Configuration\SimpleIdentityServer.Configuration.Client\SimpleIdentityServer.Configuration.Client.csproj" />
-    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

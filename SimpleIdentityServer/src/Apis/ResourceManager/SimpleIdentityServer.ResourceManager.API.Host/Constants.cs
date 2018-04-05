@@ -2,6 +2,7 @@
 {
     internal static class Constants
     {
+        public const string AuthUrl = "http://localhost:60005";
         public const string VolumeId = "rm";
         public const char PathSeparator = '/';
 
@@ -19,6 +20,13 @@
         {
             public const string Directory = "directory";
             public const string TextPlain = "text/plain";
+        }
+
+        public static class ClientNames
+        {
+            public const string ClientId = "client_id";
+            public const string ClientName = "name";
+            public const string LogoUri = "logo_uri";
         }
 
         public static class EndpointNames
@@ -174,6 +182,9 @@
             public const string ErrRemoveAssets = "an error occured while trying to remove the asset(s)";
             public const string ErrTargetsNotFound = "some targets don't exist";
             public const string ErrRemoveEndpoint = "an error occured while trying to remove the endpoint(s)";
+            public const string ErrNoEndpoint = "no endpoint";
+            public const string ErrAuthNotConfigured = "authorization server is not configured";
+            public const string ErrManagerApiNotConfigured = "manager API is not configured";
         }
 
         public static class ElFinderCommands

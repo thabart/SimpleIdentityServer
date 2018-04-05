@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.EventStore.Startup
                 .Build();
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls(args)
+                .UseUrls("http://*:60002")
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

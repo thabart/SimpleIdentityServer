@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Manager.Host.Extensions;
+using SimpleIdentityServer.OAuth2Introspection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
@@ -43,9 +44,6 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             Configuration = builder.Build();
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            var introspectionUrl = Configuration["OpenId:IntrospectUrl"];
-            var clientId = Configuration["OpenId:ClientId"];
-            var clientSecret = Configuration["OpenId:ClientSecret"];
             _options = new ManagerOptions
             {
                  Logging = new LoggingOptions
@@ -60,12 +58,6 @@ namespace SimpleIdentityServer.Manager.Host.Startup
                          IsEnabled = isLogFileEnabled,
                          PathFormat = Configuration["Log:File:PathFormat"]
                      }
-                 },
-                 Introspection = new IntrospectOptions
-                 {
-                     IntrospectionUrl = introspectionUrl,
-                     ClientId = clientId,
-                     ClientSecret = clientSecret
                  }
             };
         }
@@ -111,6 +103,14 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
             // 3. Configure the manager
             services.AddSimpleIdentityServerManager(_options);
+            // 4. Configure the authentication.
+            services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
+                .AddOAuth2Introspection(opts =>
+                {
+                    opts.ClientId = Configuration["Auth:ClientId"];
+                    opts.ClientSecret = Configuration["Auth:ClientSecret"];
+                    opts.WellKnownConfigurationUrl = Configuration["Auth:WellKnownConfiguration"];
+                });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -129,6 +129,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
                 }
             }
 
+            app.UseAuthentication();
             app.UseSimpleIdentityServerManager(loggerFactory, _options);
         }
     }

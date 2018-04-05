@@ -77,9 +77,15 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = (await _clientActions.GetClient(id)).ToClientResponseDto();
+            var result = await _clientActions.GetClient(id);
+            if (result == null)
+            {
+                return new NotFoundResult();
+            }
+
+            var response = result.ToClientResponseDto();
             await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
-            return new OkObjectResult(result);
+            return new OkObjectResult(response);
         }
 
         [HttpDelete("{id}")]

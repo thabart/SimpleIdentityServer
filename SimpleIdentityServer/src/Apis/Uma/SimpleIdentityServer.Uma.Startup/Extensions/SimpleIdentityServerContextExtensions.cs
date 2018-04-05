@@ -45,7 +45,15 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         Name = "uma_protection",
                         Description = "Access to UMA permission, resource set",
                         IsOpenIdScope = false,
-                        IsDisplayedInConsent = true,
+                        IsDisplayedInConsent = false,
+                        Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "manager",
+                        Description = "Access to the manager",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = false,
                         Type = ScopeType.ProtectedApi
                     }
                 });
@@ -118,35 +126,6 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.native
                     },
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client which need to access to the permission endpoint.
-                    {
-                        ClientId = "resource_server",
-                        ClientSecrets = new List<ClientSecret>
-                        {
-                            new ClientSecret
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Type = SecretTypes.SharedSecret,
-                                Value = "resource_server"
-                            }
-                        },
-                        ClientName = "Resource server",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
-                        PolicyUri = "http://openid.net",
-                        TosUri = "http://openid.net",
-                        ApplicationType = ApplicationTypes.native,
-                        ClientScopes = new List<ClientScope>
-                        {
-                            new ClientScope
-                            {
-                                ScopeName=  "uma_protection"
-                            }
-                        },
-                        GrantTypes = "3",
-                        ResponseTypes = "1",
-                        IdTokenSignedResponseAlg = "RS256",
-                    },
                     new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client which needs to access to the token edp (grant_type = uma_ticket)
                     {
                         ClientId = "client",
@@ -167,6 +146,69 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         ApplicationType = ApplicationTypes.native,
                         GrantTypes = "5",
                         ResponseTypes = "1"
+                    },
+                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client which need to access to the permission endpoint.
+                    {
+                        ClientId = "ResourceServer",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "LW46am54neU/[=Su"
+                            }
+                        },
+                        ClientName = "Resource server",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.native,
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName=  "uma_protection"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "manager"
+                            }
+                        },
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                    },
+                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "OpenIdManager",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "Ex9'^s@?ADXX9nP_"
+                            }
+                        },
+                        ClientName = "Manager",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post
+                    },
+                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    {
+                        ClientId = "Scim",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "~V*nH{q4;qL/=8+Z"
+                            }
+                        },
+                        ClientName = "SCIM",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post
                     }
                 });
             }

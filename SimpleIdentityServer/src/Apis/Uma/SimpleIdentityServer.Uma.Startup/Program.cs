@@ -29,14 +29,9 @@ namespace SimpleIdentityServer.Uma.Startup
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Loopback, 5445, listenOpts =>
-                    {
-                        listenOpts.UseHttps("Uma.pfx");
-                    });
-                })
+                .UseKestrel()
                 // .UseConfiguration(configuration)
+                .UseUrls("http://*:60004")
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

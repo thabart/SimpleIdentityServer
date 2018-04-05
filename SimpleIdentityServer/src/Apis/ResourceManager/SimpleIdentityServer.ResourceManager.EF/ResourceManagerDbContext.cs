@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
         {
             modelBuilder.AddAssetMapping()
                 .AddAssetAuthPolicyMapping()
+                .AddEndpointManagerMapping()
                 .AddEndpointMapping();
             base.OnModelCreating(modelBuilder);
         }

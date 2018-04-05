@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />

@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseConfiguration(configuration)
-                .UseUrls(args)
+                .UseUrls("http://*:60005")
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

@@ -34,11 +34,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            if (options.Introspection == null)
-            {
-                throw new ArgumentNullException(nameof(options.Introspection));
-            }
             
             // 1. Use log.
             loggerFactory.AddSerilog();

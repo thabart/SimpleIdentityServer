@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.EventStore.Handler\SimpleIdentityServer.Scim.EventStore.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Handler\SimpleIdentityServer.Scim.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />

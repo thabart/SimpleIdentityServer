@@ -15,12 +15,8 @@
 #endregion
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using System.Net;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -33,14 +29,9 @@ namespace SimpleIdentityServer.Startup
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Loopback, 5443, listenOpts =>
-                    {
-                        listenOpts.UseHttps("SimpleIdServer.pfx");
-                    });
-                })
+                .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://*:60000")
                 // .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();

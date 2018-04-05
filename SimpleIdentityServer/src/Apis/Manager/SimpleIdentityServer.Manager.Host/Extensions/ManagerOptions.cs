@@ -18,13 +18,6 @@ using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
-    public class IntrospectOptions
-    {
-        public string IntrospectionUrl { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-    }
-
     public sealed class LoggingOptions
     {
         public FileLogOptions FileLogOptions { get; set; }
@@ -86,10 +79,6 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         /// Enable or disable the developer mode
         /// </summary>
         public bool IsDeveloperModeEnabled { get; set; }
-        /// <summary>
-        /// Configure the introspection options.
-        /// </summary>
-        public IntrospectOptions Introspection { get; set; }
         /// <summary>
         /// Configure the SERILOG logging.
         /// </summary>
