@@ -19,6 +19,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
     [Route(Constants.RouteNames.ClientsController)]
     public class ClientsController : Controller
     {
+        private const string _scopeName = "manager";
         private readonly IEndpointRepository _endpointRepository;
         private readonly ITokenStore _tokenStore;
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
@@ -32,31 +33,57 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         }
 
         [HttpGet("openid/{id}/{url?}")]
-        public async Task<IActionResult> GetOpenidClient(string id, string url)
+        public Task<IActionResult> GetOpenidClient(string id, string url)
+        {
+            return GetClient(id, url, EndpointTypes.OPENID);
+        }
+
+        [HttpDelete("openid/{id}/{url?}")]
+        public Task<IActionResult> DeleteOpenidClient(string id, string url)
+        {
+            return DeleteClient(id, url, EndpointTypes.OPENID);
+        }
+
+        [HttpPost("openid/.search")]
+        public Task<IActionResult> SearchOpenidClients([FromBody] JObject jObj)
+        {
+            return SearchClients(jObj, EndpointTypes.OPENID);
+        }
+
+        [HttpGet("auth/{id}/{url?}")]
+        public Task<IActionResult> GetAuthClient(string id, string url)
+        {
+            return GetClient(id, url, EndpointTypes.AUTH);
+        }
+
+        [HttpDelete("auth/{id}/{url?}")]
+        public Task<IActionResult> DeleteAuthClient(string id, string url)
+        {
+            return DeleteClient(id, url, EndpointTypes.AUTH);
+        }
+
+        [HttpPost("auth/.search")]
+        public Task<IActionResult> SearchAuthClients([FromBody] JObject jObj)
+        {
+            return SearchClients(jObj, EndpointTypes.AUTH);
+        }
+
+        private async Task<IActionResult> GetClient(string id, string url, EndpointTypes type)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var endpoint = await GetEndpoint(url, EndpointTypes.OPENID);
-            if (endpoint == null)
+            var endpoint = await TryGetEndpoint(url, type);
+            if (endpoint.Value != null)
             {
-                return this.GetError(Constants.Errors.ErrNoEndpoint, HttpStatusCode.InternalServerError);
+                return endpoint.Value;
             }
 
-            if (string.IsNullOrWhiteSpace(endpoint.AuthUrl) || string.IsNullOrWhiteSpace(endpoint.ClientId) || string.IsNullOrWhiteSpace(endpoint.ClientSecret))
-            {
-                return this.GetError(Constants.Errors.ErrAuthNotConfigured, HttpStatusCode.InternalServerError);
-            }
-
-            if (string.IsNullOrWhiteSpace(endpoint.ManagerUrl))
-            {
-                return this.GetError(Constants.Errors.ErrManagerApiNotConfigured, HttpStatusCode.InternalServerError);
-            }
-
-            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { "manager" });
-            var client = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGet(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var client = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGet(new Uri(edp.ManagerUrl), id, grantedToken.AccessToken);
             if (client == null || client.ContainsError)
             {
                 return new NotFoundResult();
@@ -65,20 +92,44 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return new OkObjectResult(ToJson(client));
         }
 
-        [HttpDelete("openid/{id}/{url?}")]
-        public async Task<IActionResult> DeleteOpenidClient(string id, string url)
+        private async Task<IActionResult> DeleteClient(string id, string url, EndpointTypes type)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return null;
+            var endpoint = await TryGetEndpoint(url, type);
+            if (endpoint.Value != null)
+            {
+                return endpoint.Value;
+            }
 
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolvedDelete(new Uri(edp.ManagerUrl), id, grantedToken.AccessToken);
+            if (result.ContainsError)
+            {
+                var error = result.Error;
+                if (error == null)
+                {
+                    error = new ErrorResponse
+                    {
+                        Code = Constants.ErrorCodes.InternalError,
+                        Message = Constants.Errors.ErrDeleteClient
+                    };
+                }
+
+                return new JsonResult(ToJson(error))
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
+            return new OkObjectResult(result);
         }
 
-        [HttpPost("openid/.search")]
-        public async Task<IActionResult> SearchOpenidClients([FromBody] JObject jObj)
+        private async Task<IActionResult> SearchClients([FromBody] JObject jObj, EndpointTypes type)
         {
             if (jObj == null)
             {
@@ -86,41 +137,55 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             var parameter = ToSearchParameter(jObj);
-            return null;
-        }
-
-        [HttpGet("auth/{id}/{url?}")]
-        public async Task<IActionResult> GetAuthClient(string id, string url)
-        {
-            if (string.IsNullOrWhiteSpace(id))
+            var endpoint = await TryGetEndpoint(parameter.Url, type);
+            if (endpoint.Value != null)
             {
-                throw new ArgumentNullException(nameof(id));
+                return endpoint.Value;
             }
 
-            return null;
-        }
-
-        [HttpDelete("auth/{id}/{url?}")]
-        public async Task<IActionResult> DeleteAuthClient(string id, string url)
-        {
-            if (string.IsNullOrWhiteSpace(id))
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveSearch(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            if (result.ContainsError)
             {
-                throw new ArgumentNullException(nameof(id));
+                var error = result.Error;
+                if (error == null)
+                {
+                    error = new ErrorResponse
+                    {
+                        Code = Constants.ErrorCodes.InternalError,
+                        Message = Constants.Errors.ErrSearchClients
+                    };
+                }
+
+                return new JsonResult(ToJson(error))
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
 
-            return null;
-
+            return new OkObjectResult(result);
         }
 
-        [HttpPost("auth/.search")]
-        public async Task<IActionResult> SearchAuthClients([FromBody] JObject jObj)
+        private async Task<KeyValuePair<EndpointAggregate, IActionResult>> TryGetEndpoint(string url, EndpointTypes type)
         {
-            if (jObj == null)
+            var endpoint = await GetEndpoint(url, EndpointTypes.OPENID);
+            if (endpoint == null)
             {
-                throw new ArgumentNullException(nameof(jObj));
+                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrNoEndpoint, HttpStatusCode.InternalServerError));
             }
 
-            return null;
+            if (string.IsNullOrWhiteSpace(endpoint.AuthUrl) || string.IsNullOrWhiteSpace(endpoint.ClientId) || string.IsNullOrWhiteSpace(endpoint.ClientSecret))
+            {
+                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrAuthNotConfigured, HttpStatusCode.InternalServerError));
+            }
+
+            if (string.IsNullOrWhiteSpace(endpoint.ManagerUrl))
+            {
+                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrManagerApiNotConfigured, HttpStatusCode.InternalServerError));
+            }
+
+            return new KeyValuePair<EndpointAggregate, IActionResult>(endpoint, null);
         }
 
         private async Task<EndpointAggregate> GetEndpoint(string url, EndpointTypes type)
@@ -144,6 +209,42 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return endpoints.First(e => e.Order == minOrder);
         }
 
+        private static JObject ToJson(ErrorResponse errorResponse)
+        {
+            if (errorResponse == null)
+            {
+                throw new ArgumentNullException(nameof(errorResponse));
+            }
+
+            var jObj = new JObject();
+            jObj.Add(Constants.ErrorDtoNames.Code, errorResponse.Code);
+            jObj.Add(Constants.ErrorDtoNames.Message, errorResponse.Message);
+            return jObj;
+        }
+
+        private static JObject ToJson(SearchClientResponse searchClientResponse)
+        {
+            if (searchClientResponse == null)
+            {
+                throw new ArgumentNullException(nameof(searchClientResponse));
+            }
+
+            var jObj = new JObject();
+            var clients = new JArray();
+            if (searchClientResponse.Content != null)
+            {
+                foreach(var client in searchClientResponse.Content)
+                {
+                    clients.Add(ToJson(client));
+                }
+            }
+
+            jObj.Add(Constants.SearchNames.Content, clients);
+            jObj.Add(Constants.SearchNames.StartIndex, searchClientResponse.StartIndex);
+            jObj.Add(Constants.SearchNames.Count, searchClientResponse.NbResults);
+            return jObj;
+        }
+
         private static JObject ToJson(OpenIdClientResponse client)
         {
             if (client == null)
@@ -160,11 +261,17 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         private static SearchClientParameter ToSearchParameter(JObject jObj)
         {
+            if (jObj == null)
+            {
+                throw new ArgumentNullException(nameof(jObj));
+            }
+
             var parameter = new SearchClientParameter();
             JToken jStartIndex,
                 jCount,
                 jClientIds,
-                jClientNames;
+                jClientNames,
+                jUrl;
             if (jObj.TryGetValue(Constants.SearchClientNames.ClientNames, out jClientNames))
             {
                 var jArrClientNames = jClientNames as JArray;
@@ -211,6 +318,11 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 {
                     parameter.Count = count;
                 }
+            }
+
+            if (jObj.TryGetValue(Constants.SearchNames.Url, out jUrl))
+            {
+                parameter.Url = jUrl.ToString();
             }
 
             return parameter;

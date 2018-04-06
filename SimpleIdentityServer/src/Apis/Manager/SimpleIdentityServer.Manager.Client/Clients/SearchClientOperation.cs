@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
                 ErrorResponse resp = null;
                 if (rec != null)
                 {
-                    ErrorResponse.ToError(rec);
+                    resp = ErrorResponse.ToError(rec);
                 }
 
                 return new SearchClientResponse(resp);

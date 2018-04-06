@@ -10,7 +10,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 {
     public interface IGetAllClientsOperation
     {
-        Task<IEnumerable<OpenIdClientResponse>> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
+        Task<GetAllClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
     }
 
     internal sealed class GetAllClientsOperation : IGetAllClientsOperation
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IEnumerable<OpenIdClientResponse>> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
+        public async Task<GetAllClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -41,16 +41,41 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
 
             var httpResult = await httpClient.SendAsync(request);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch(HttpRequestException)
+            {
+                ErrorResponse resp = null;
+                var rec = JObject.Parse(content);
+                if (rec != null)
+                {
+                    resp = ErrorResponse.ToError(rec);
+                }
+
+                return new GetAllClientResponse(resp);
+            }
+            catch(Exception)
+            {
+                return new GetAllClientResponse
+                {
+                    ContainsError = true
+                };
+            }
+
             var jArr = JArray.Parse(content);
             var result = new List<OpenIdClientResponse>();
-            foreach(JObject rec in jArr)
+            foreach (JObject rec in jArr)
             {
                 result.Add(OpenIdClientResponse.ToClient(rec));
             }
 
-            return result;
+            return new GetAllClientResponse
+            {
+                Content = result
+            };
         }
     }
 }

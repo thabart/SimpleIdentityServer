@@ -26,6 +26,8 @@
         {
             public const string StartIndex = "start_index";
             public const string Count = "count";
+            public const string Url = "url";
+            public const string Content = "content";
         }
 
         public static class MimeNames
@@ -168,6 +170,8 @@
         public static class ErrorDtoNames
         {
             public const string Error = "error";
+            public const string Code = "code";
+            public const string Message = "message";
         }
 
         public static class ElFinderErrors
@@ -180,6 +184,11 @@
             public const string ErrCreateResource = "errCreateResource";
             public const string ErrNoResource = "errorNoResource";
             public const string ErrUpdateResource = "errorUpdateResource";
+        }
+
+        public static class ErrorCodes
+        {
+            public const string InternalError = "internal_error";
         }
 
         public static class Errors
@@ -197,6 +206,8 @@
             public const string ErrNoEndpoint = "no endpoint";
             public const string ErrAuthNotConfigured = "authorization server is not configured";
             public const string ErrManagerApiNotConfigured = "manager API is not configured";
+            public const string ErrDeleteClient = "an error occured while trying to remove the client(s)";
+            public const string ErrSearchClients = "an error occured while trying to search the client(s)";
         }
 
         public static class ElFinderCommands

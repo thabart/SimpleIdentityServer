@@ -1,4 +1,6 @@
-﻿using SimpleIdentityServer.Manager.Client.Factories;
+﻿using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Manager.Client.DTOs.Responses;
+using SimpleIdentityServer.Manager.Client.Factories;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,7 +9,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 {
     public interface IDeleteClientOperation
     {
-        Task<bool> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
+        Task<BaseResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
     }
 
     internal sealed class DeleteClientOperation : IDeleteClientOperation
@@ -19,7 +21,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
+        public async Task<BaseResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -38,9 +40,35 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
 
             var httpResult = await httpClient.SendAsync(request);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return true;
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch(HttpRequestException)
+            {
+                ErrorResponse resp = null;
+                var rec = JObject.Parse(content);
+                if (rec != null)
+                {
+                    resp = ErrorResponse.ToError(rec);
+                }
+
+                return new BaseResponse
+                {
+                    ContainsError = true,
+                    Error = resp
+                };                
+            }
+            catch(Exception)
+            {
+                return new BaseResponse
+                {
+                    ContainsError = true
+                };
+            }
+
+            return new BaseResponse();
         }
     }
 }

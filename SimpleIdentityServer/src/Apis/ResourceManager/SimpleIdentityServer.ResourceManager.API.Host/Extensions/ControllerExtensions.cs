@@ -9,7 +9,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
         public static IActionResult GetError(this Controller controller, string description, HttpStatusCode httpStatusCode)
         {
             var jObj = new JObject();
-            jObj.Add(Constants.ErrorDtoNames.Error, description);
+            jObj.Add(Constants.ErrorDtoNames.Code, Constants.ErrorCodes.InternalError);
+            jObj.Add(Constants.ErrorDtoNames.Message, description);
             return new JsonResult(jObj)
             {
                 StatusCode = (int)httpStatusCode

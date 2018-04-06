@@ -13,6 +13,7 @@ namespace SimpleIdentityServer.Manager.Client.DTOs.Parameters
             Count = 500;
         }
 
+        public string Url { get; set; }
         public IEnumerable<string> ClientIds { get; set; }
         public IEnumerable<string> ClientNames { get; set; }
         public bool IsPagingEnabled { get; set; }
