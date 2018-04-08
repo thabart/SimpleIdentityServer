@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Manager.Client.DTOs.Parameters;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.Manager.Client.Factories;
+using SimpleIdentityServer.Manager.Common.Requests;
+using SimpleIdentityServer.Manager.Common.Responses;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -12,7 +13,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 {
     public interface ISearchClientOperation
     {
-        Task<SearchClientResponse> ExecuteAsync(Uri clientsUri, SearchClientParameter parameter, string authorizationHeaderValue = null);
+        Task<SearchClientResponse> ExecuteAsync(Uri clientsUri, SearchClientsRequest parameter, string authorizationHeaderValue = null);
     }
 
     internal sealed class SearchClientOperation : ISearchClientOperation
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<SearchClientResponse> ExecuteAsync(Uri clientsUri, SearchClientParameter parameter, string authorizationHeaderValue = null)
+        public async Task<SearchClientResponse> ExecuteAsync(Uri clientsUri, SearchClientsRequest parameter, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -54,12 +55,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
             catch (HttpRequestException)
             {
-                ErrorResponse resp = null;
-                if (rec != null)
-                {
-                    resp = ErrorResponse.ToError(rec);
-                }
-
+                var resp = JsonConvert.DeserializeObject<ErrorResponse>(content);
                 return new SearchClientResponse(resp);
             }
             catch (Exception)
@@ -70,7 +66,10 @@ namespace SimpleIdentityServer.Manager.Client.Clients
                 };
             }
 
-            return SearchClientResponse.ToSearchClientResponse(rec);
+            return new SearchClientResponse
+            {
+                Content = JsonConvert.DeserializeObject<SearchClientsResponse>(content)
+            };
         }
     }
 }

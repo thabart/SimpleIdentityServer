@@ -33,6 +33,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
         private Mock<IRemoveClientAction> _removeClientActionStub;
         private Mock<IUpdateClientAction> _updateClientActionStub;
         private Mock<IRegisterClientAction> _registerClientActionStub;
+        private Mock<ISearchClientsAction> _searchClientsStub;
+
         private IClientActions _clientActions;
 
         [Fact]
@@ -120,7 +122,8 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients
             _removeClientActionStub = new Mock<IRemoveClientAction>();
             _updateClientActionStub = new Mock<IUpdateClientAction>();
             _registerClientActionStub = new Mock<IRegisterClientAction>();
-            _clientActions = new ClientActions(_getClientsActionStub.Object,
+            _searchClientsStub = new Mock<ISearchClientsAction>();
+            _clientActions = new ClientActions(_searchClientsStub.Object, _getClientsActionStub.Object,
                 _getClientActionStub.Object,
                 _removeClientActionStub.Object,
                 _updateClientActionStub.Object,

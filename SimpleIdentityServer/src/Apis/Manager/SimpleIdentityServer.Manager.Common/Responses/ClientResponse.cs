@@ -18,25 +18,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Responses
 {
-    [DataContract]
-    public enum ResponseClientSecretTypes
-    {
-        SharedSecret,
-        X509Thumbprint,
-        X509Name
-    }
-
     [DataContract]
     public class ResponseClientSecret
     {
         [DataMember(Name = Constants.ClientSecretNames.Type)]
         [JsonConverter(typeof(StringEnumConverter))]
-        public ResponseClientSecretTypes Type { get; set; }
+        public ClientSecretTypes Type { get; set; }
         [DataMember(Name = Constants.ClientSecretNames.Value)]
         public string Value { get; set; }
     }

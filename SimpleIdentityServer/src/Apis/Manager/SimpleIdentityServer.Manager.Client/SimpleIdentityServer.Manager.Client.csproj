@@ -23,6 +23,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
+  
+  <ItemGroup>  
+    <ProjectReference Include="..\SimpleIdentityServer.Manager.Common\SimpleIdentityServer.Manager.Common.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Net.Http" />

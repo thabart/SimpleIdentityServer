@@ -1,4 +1,6 @@
-﻿namespace SimpleIdentityServer.Manager.Client.DTOs.Responses
+﻿using SimpleIdentityServer.Manager.Common.Responses;
+
+namespace SimpleIdentityServer.Manager.Client.DTOs.Responses
 {
     public class BaseResponse
     {

@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.Manager.Client.Factories;
+using SimpleIdentityServer.Manager.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -48,14 +50,8 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
             catch(HttpRequestException)
             {
-                ErrorResponse resp = null;
-                var rec = JObject.Parse(content);
-                if (rec != null)
-                {
-                    resp = ErrorResponse.ToError(rec);
-                }
-
-                return new GetAllClientResponse(resp);
+                var rec = JsonConvert.DeserializeObject<ErrorResponse>(content);
+                return new GetAllClientResponse(rec);
             }
             catch(Exception)
             {
@@ -66,10 +62,14 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
 
             var jArr = JArray.Parse(content);
-            var result = new List<OpenIdClientResponse>();
+            var result = new List<ClientResponse>();
             foreach (JObject rec in jArr)
             {
-                result.Add(OpenIdClientResponse.ToClient(rec));
+                var client = JsonConvert.DeserializeObject<ClientResponse>(rec.ToString());
+                if (client != null)
+                {
+                    result.Add(client);
+                }
             }
 
             return new GetAllClientResponse

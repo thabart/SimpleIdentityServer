@@ -208,6 +208,8 @@
             public const string ErrManagerApiNotConfigured = "manager API is not configured";
             public const string ErrDeleteClient = "an error occured while trying to remove the client(s)";
             public const string ErrSearchClients = "an error occured while trying to search the client(s)";
+            public const string ErrInsertClient = "an error occured while trying to insert the client";
+            public const string ErrUpdateClient = "an error occured while trying to update the client";
         }
 
         public static class ElFinderCommands

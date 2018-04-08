@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SimpleIdentityServer.Manager.Common.Responses;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Client.DTOs.Responses
 {
@@ -12,6 +13,6 @@ namespace SimpleIdentityServer.Manager.Client.DTOs.Responses
             ContainsError = true;
         }
 
-        public IEnumerable<OpenIdClientResponse> Content { get; set; }
+        public IEnumerable<ClientResponse> Content { get; set; }
     }
 }

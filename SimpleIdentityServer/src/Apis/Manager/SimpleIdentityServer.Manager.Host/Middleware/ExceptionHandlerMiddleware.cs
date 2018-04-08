@@ -16,9 +16,9 @@
 
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using System;
 using System.Net;
 using System.Threading.Tasks;

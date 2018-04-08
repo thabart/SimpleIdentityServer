@@ -14,14 +14,13 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Manager.Common.Requests;
+using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using SimpleIdentityServer.Manager.Core.Results;
-using SimpleIdentityServer.Manager.Host.DTOs.Requests;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,67 +32,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         #region To parameters
 
-        public static SearchClientParameter ToSearchClientParameter(this JObject jObj)
+        public static SearchClientParameter ToSearchClientParameter(this SearchClientsRequest parameter)
         {
-            if (jObj == null)
+            if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(jObj));
+                throw new ArgumentNullException(nameof(parameter));
             }
-
-            var result = new SearchClientParameter();
-            JToken jClientIds;
-            if (jObj.TryGetValue(Constants.SearchClientNames.ClientIds, out jClientIds))
+            return new SearchClientParameter
             {
-                var jArrClientIds = jClientIds as JArray;
-                if (jArrClientIds != null)
-                {
-                    var clientIds = new List<string>();
-                    foreach (var cid in jArrClientIds)
-                    {
-                        clientIds.Add(cid.ToString());
-                    }
-
-                    result.ClientIds = clientIds;
-                }
-            }
-
-            JToken jClientNames;
-            if (jObj.TryGetValue(Constants.SearchClientNames.ClientNames, out jClientNames))
-            {
-                var jArrClientNames = jClientNames as JArray;
-                if (jArrClientNames != null)
-                {
-                    var clientNames = new List<string>();
-                    foreach (var cName in jArrClientNames)
-                    {
-                        clientNames.Add(cName.ToString());
-                    }
-
-                    result.ClientNames = clientNames;
-                }
-            }
-
-            JToken jStartIndex;
-            if (jObj.TryGetValue(Constants.SearchNames.StartIndex, out jStartIndex))
-            {
-                int startIndex;
-                if (int.TryParse(jStartIndex.ToString(), out startIndex))
-                {
-                    result.StartIndex = startIndex;
-                }
-            }
-
-            JToken jCount;
-            if (jObj.TryGetValue(Constants.SearchNames.NbResults, out jCount))
-            {
-                int count;
-                if (int.TryParse(jCount.ToString(), out count))
-                {
-                    result.Count = count;
-                }
-            }
-
-            return result;
+                ClientIds = parameter.ClientIds,
+                ClientNames = parameter.ClientNames,
+                Count = parameter.NbResults,
+                StartIndex = parameter.StartIndex
+            };
         }
 
         public static ResourceOwner ToParameter(this ResourceOwnerResponse request)
@@ -180,7 +131,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 IsExposed = scopeResponse.IsExposed,
                 IsOpenIdScope = scopeResponse.IsOpenIdScope,
                 Name = scopeResponse.Name,
-                Type = scopeResponse.Type,
+                Type = (ScopeType)(int)scopeResponse.Type,
                 Claims = scopeResponse.Claims
             };
         }
@@ -427,27 +378,19 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To DTOs
 
-        public static JObject ToDto(this SearchClientResult parameter)
+        public static SearchClientsResponse ToDto(this SearchClientResult parameter)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var result = new JObject();
-            result.Add(Constants.SearchNames.NbResults, parameter.TotalResults);
-            result.Add(Constants.SearchNames.StartIndex, parameter.StartIndex);
-            var jArr = new JArray();
-            if (parameter.Content != null)
+            return new SearchClientsResponse
             {
-                foreach (var record in parameter.Content)
-                {
-                    jArr.Add(JObject.FromObject(record.ToDto()));
-                }
-            }
-
-            result.Add(Constants.SearchNames.Content, jArr);
-            return result;
+                StartIndex = parameter.StartIndex,
+                TotalResults = parameter.TotalResults,
+                Content = parameter.Content == null ? new List<ClientResponse>() : parameter.Content.Select(c => ToDto(c))
+            };
         }
 
         public static JwsInformationResponse ToDto(this JwsInformationResult jwsInformationResult)
@@ -491,7 +434,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
             return new ResponseClientSecret
             {
-                Type = (ResponseClientSecretTypes)secret.Type,
+                Type = secret.Type,
                 Value = secret.Value
             };
         }
@@ -556,7 +499,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Password = resourceOwner.Password,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
                 Claims = claims,
-                TwoFactorAuthentication = (DTOs.Responses.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
+                TwoFactorAuthentication = (Common.Responses.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
             };
         }
 
@@ -570,7 +513,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 IsExposed = scope.IsExposed,
                 IsOpenIdScope = scope.IsOpenIdScope,
                 Name = scope.Name,
-                Type = scope.Type
+                Type = (ScopeResponseType)(int)scope.Type
             };
         }
 

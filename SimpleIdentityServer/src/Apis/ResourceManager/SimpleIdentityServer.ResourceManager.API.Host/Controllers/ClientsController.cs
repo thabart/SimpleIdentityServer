@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Manager.Client;
-using SimpleIdentityServer.Manager.Client.DTOs.Parameters;
-using SimpleIdentityServer.Manager.Client.DTOs.Responses;
+using SimpleIdentityServer.Manager.Common.Requests;
+using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.API.Host.Stores;
 using SimpleIdentityServer.ResourceManager.Core.Models;
@@ -44,10 +44,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return DeleteClient(id, url, EndpointTypes.OPENID);
         }
 
-        [HttpPost("openid/.search")]
-        public Task<IActionResult> SearchOpenidClients([FromBody] JObject jObj)
+        [HttpPost("openid/.search/{url?}")]
+        public Task<IActionResult> SearchOpenidClients([FromBody] SearchClientsRequest request, string url)
         {
-            return SearchClients(jObj, EndpointTypes.OPENID);
+            return SearchClients(request, EndpointTypes.OPENID, url);
+        }
+
+        [HttpPost("openid/{url?}")]
+        public Task<IActionResult> AddOpenidClient([FromBody] ClientResponse request, string url)
+        {
+            return AddClient(request, EndpointTypes.OPENID, url);
+        }
+
+        [HttpPut("openid/{url?}")]
+        public Task<IActionResult> UpdateOpenidClient([FromBody] UpdateClientRequest request, string url)
+        {
+            return UpdateClient(request, EndpointTypes.OPENID, url);
         }
 
         [HttpGet("auth/{id}/{url?}")]
@@ -63,9 +75,21 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         }
 
         [HttpPost("auth/.search")]
-        public Task<IActionResult> SearchAuthClients([FromBody] JObject jObj)
+        public Task<IActionResult> SearchAuthClients([FromBody] SearchClientsRequest request, string url)
         {
-            return SearchClients(jObj, EndpointTypes.AUTH);
+            return SearchClients(request, EndpointTypes.AUTH, url);
+        }
+
+        [HttpPost("auth/{url?}")]
+        public Task<IActionResult> AddAuthClient([FromBody] ClientResponse request, string url)
+        {
+            return AddClient(request, EndpointTypes.AUTH, url);
+        }
+
+        [HttpPut("openid/{url?}")]
+        public Task<IActionResult> UpdateAuthdClient([FromBody] UpdateClientRequest request, string url)
+        {
+            return UpdateClient(request, EndpointTypes.AUTH, url);
         }
 
         private async Task<IActionResult> GetClient(string id, string url, EndpointTypes type)
@@ -89,7 +113,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(ToJson(client));
+            return new OkObjectResult(JsonConvert.SerializeObject(client.Content).ToString());
         }
 
         private async Task<IActionResult> DeleteClient(string id, string url, EndpointTypes type)
@@ -120,7 +144,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     };
                 }
 
-                return new JsonResult(ToJson(error))
+                return new JsonResult(JsonConvert.SerializeObject(error))
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
@@ -129,15 +153,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return new OkObjectResult(result);
         }
 
-        private async Task<IActionResult> SearchClients([FromBody] JObject jObj, EndpointTypes type)
+        private async Task<IActionResult> SearchClients(SearchClientsRequest parameter, EndpointTypes type, string url)
         {
-            if (jObj == null)
+            if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(jObj));
+                throw new ArgumentNullException(nameof(parameter));
             }
 
-            var parameter = ToSearchParameter(jObj);
-            var endpoint = await TryGetEndpoint(parameter.Url, type);
+            var endpoint = await TryGetEndpoint(url, type);
             if (endpoint.Value != null)
             {
                 return endpoint.Value;
@@ -158,13 +181,87 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     };
                 }
 
-                return new JsonResult(ToJson(error))
+                return new JsonResult(JsonConvert.SerializeObject(error))
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
 
             return new OkObjectResult(result);
+        }
+
+        private async Task<IActionResult> AddClient(ClientResponse parameter, EndpointTypes type, string url)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var endpoint = await TryGetEndpoint(url, type);
+            if (endpoint.Value != null)
+            {
+                return endpoint.Value;
+            }
+
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveAdd(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            if (result.ContainsError)
+            {
+                var error = result.Error;
+                if (error == null)
+                {
+                    error = new ErrorResponse
+                    {
+                        Code = Constants.ErrorCodes.InternalError,
+                        Message = Constants.Errors.ErrInsertClient
+                    };
+                }
+
+                return new JsonResult(JsonConvert.SerializeObject(error))
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
+            return new OkResult();
+        }
+
+        private async Task<IActionResult> UpdateClient(UpdateClientRequest parameter, EndpointTypes type, string url)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var endpoint = await TryGetEndpoint(url, type);
+            if (endpoint.Value != null)
+            {
+                return endpoint.Value;
+            }
+
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveUpdate(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            if (result.ContainsError)
+            {
+                var error = result.Error;
+                if (error == null)
+                {
+                    error = new ErrorResponse
+                    {
+                        Code = Constants.ErrorCodes.InternalError,
+                        Message = Constants.Errors.ErrUpdateClient
+                    };
+                }
+
+                return new JsonResult(JsonConvert.SerializeObject(error))
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
+            return new OkResult();
         }
 
         private async Task<KeyValuePair<EndpointAggregate, IActionResult>> TryGetEndpoint(string url, EndpointTypes type)
@@ -207,125 +304,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
             var minOrder = endpoints.Min(e => e.Order);
             return endpoints.First(e => e.Order == minOrder);
-        }
-
-        private static JObject ToJson(ErrorResponse errorResponse)
-        {
-            if (errorResponse == null)
-            {
-                throw new ArgumentNullException(nameof(errorResponse));
-            }
-
-            var jObj = new JObject();
-            jObj.Add(Constants.ErrorDtoNames.Code, errorResponse.Code);
-            jObj.Add(Constants.ErrorDtoNames.Message, errorResponse.Message);
-            return jObj;
-        }
-
-        private static JObject ToJson(SearchClientResponse searchClientResponse)
-        {
-            if (searchClientResponse == null)
-            {
-                throw new ArgumentNullException(nameof(searchClientResponse));
-            }
-
-            var jObj = new JObject();
-            var clients = new JArray();
-            if (searchClientResponse.Content != null)
-            {
-                foreach(var client in searchClientResponse.Content)
-                {
-                    clients.Add(ToJson(client));
-                }
-            }
-
-            jObj.Add(Constants.SearchNames.Content, clients);
-            jObj.Add(Constants.SearchNames.StartIndex, searchClientResponse.StartIndex);
-            jObj.Add(Constants.SearchNames.Count, searchClientResponse.NbResults);
-            return jObj;
-        }
-
-        private static JObject ToJson(OpenIdClientResponse client)
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            var jObj = new JObject();
-            jObj.Add(Constants.ClientNames.ClientId, client.ClientId);
-            jObj.Add(Constants.ClientNames.ClientName, client.ClientName);
-            jObj.Add(Constants.ClientNames.LogoUri, client.LogoUri);
-            return jObj;
-        }
-
-        private static SearchClientParameter ToSearchParameter(JObject jObj)
-        {
-            if (jObj == null)
-            {
-                throw new ArgumentNullException(nameof(jObj));
-            }
-
-            var parameter = new SearchClientParameter();
-            JToken jStartIndex,
-                jCount,
-                jClientIds,
-                jClientNames,
-                jUrl;
-            if (jObj.TryGetValue(Constants.SearchClientNames.ClientNames, out jClientNames))
-            {
-                var jArrClientNames = jClientNames as JArray;
-                if (jArrClientNames != null)
-                {
-                    var names = new List<string>();
-                    foreach (var name in jArrClientNames)
-                    {
-                        names.Add(name.ToString());
-                    }
-
-                    parameter.ClientNames = names;
-                }
-            }
-
-            if (jObj.TryGetValue(Constants.SearchClientNames.ClientIds, out jClientIds))
-            {
-                var jArrClientIds = jClientIds as JArray;
-                if (jArrClientIds != null)
-                {
-                    var ids = new List<string>();
-                    foreach (var id in jArrClientIds)
-                    {
-                        ids.Add(id.ToString());
-                    }
-
-                    parameter.ClientIds = ids;
-                }
-            }
-
-            if (jObj.TryGetValue(Constants.SearchNames.StartIndex, out jStartIndex))
-            {
-                int startIndex;
-                if (int.TryParse(jStartIndex.ToString(), out startIndex))
-                {
-                    parameter.StartIndex = startIndex;
-                }
-            }
-
-            if (jObj.TryGetValue(Constants.SearchNames.Count, out jCount))
-            {
-                int count;
-                if (int.TryParse(jCount.ToString(), out count))
-                {
-                    parameter.Count = count;
-                }
-            }
-
-            if (jObj.TryGetValue(Constants.SearchNames.Url, out jUrl))
-            {
-                parameter.Url = jUrl.ToString();
-            }
-
-            return parameter;
         }
     }
 }

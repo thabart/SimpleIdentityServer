@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.Manager.Client.Factories;
+using SimpleIdentityServer.Manager.Common.Responses;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +11,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 {
     public interface IGetClientOperation
     {
-        Task<OpenIdClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
+        Task<GetClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null);
     }
 
     internal sealed class GetClientOperation : IGetClientOperation
@@ -21,7 +23,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<OpenIdClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
+        public async Task<GetClientResponse> ExecuteAsync(Uri clientsUri, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -48,23 +50,22 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
             catch(HttpRequestException)
             {
-                ErrorResponse resp = null;
-                if (rec != null)
-                {
-                    ErrorResponse.ToError(rec);
-                }
-
-                return new OpenIdClientResponse(resp);
+                var err = JsonConvert.DeserializeObject<ErrorResponse>(content);
+                return new GetClientResponse(err);
             }
             catch(Exception)
             {
-                return new OpenIdClientResponse
+                return new GetClientResponse
                 {
                     ContainsError = true
                 };
             }
 
-            return OpenIdClientResponse.ToClient(rec);
+            var client = JsonConvert.DeserializeObject<ClientResponse>(content);
+            return new GetClientResponse
+            {
+                Content = client
+            };
         }
     }
 }

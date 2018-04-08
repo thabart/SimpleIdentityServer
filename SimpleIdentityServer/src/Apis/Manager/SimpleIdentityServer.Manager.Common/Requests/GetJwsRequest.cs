@@ -14,23 +14,17 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Requests
 {
     [DataContract]
-    public class JwsInformationResponse
+    public sealed class GetJwsRequest
     {
-        [DataMember(Name = Constants.JwsInformationResponseNames.Header)]
-        public JwsProtectedHeader Header { get; set; }
+        [DataMember(Name = Constants.GetJwsRequestNames.Jws)]
+        public string Jws { get; set; }
 
-        [DataMember(Name = Constants.JwsInformationResponseNames.Payload)]
-        public JwsPayload Payload { get; set; }
-
-        [DataMember(Name = Constants.JwsInformationResponseNames.JsonWebKey)]
-        public Dictionary<string, object> JsonWebKey { get; set; }
+        [DataMember(Name = Constants.GetJwsRequestNames.Url)]
+        public string Url { get; set; }
     }
 }

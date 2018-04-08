@@ -44,6 +44,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptograph
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2Introspection", "src\Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj", "{466B4887-E3D1-4A32-BE47-F08F69CD8948}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Client", "src\Apis\Manager\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj", "{FF64F100-9639-49E7-A1CC-09D004735FBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,12 @@ Global
 		{466B4887-E3D1-4A32-BE47-F08F69CD8948}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{466B4887-E3D1-4A32-BE47-F08F69CD8948}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{466B4887-E3D1-4A32-BE47-F08F69CD8948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF64F100-9639-49E7-A1CC-09D004735FBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +145,7 @@ Global
 		{1C42D034-BFF4-4352-88E3-E55DC6139B19} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
 		{4EC41BCA-80EF-4E2D-A0AC-5F97AFF7DC11} = {1C42D034-BFF4-4352-88E3-E55DC6139B19}
 		{466B4887-E3D1-4A32-BE47-F08F69CD8948} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
+		{FF64F100-9639-49E7-A1CC-09D004735FBF} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA28E198-EBC9-4C87-B84F-439D80617DC3}

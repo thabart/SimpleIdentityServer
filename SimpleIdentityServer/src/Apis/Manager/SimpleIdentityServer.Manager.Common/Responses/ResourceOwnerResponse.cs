@@ -19,7 +19,7 @@ using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Responses
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum TwoFactorAuthentications

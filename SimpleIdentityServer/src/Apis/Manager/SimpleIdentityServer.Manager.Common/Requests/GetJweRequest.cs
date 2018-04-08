@@ -16,27 +16,18 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Requests
 {
     [DataContract]
-    public class ClientInformationResponse
-    {        
-        /// <summary>
-        /// Gets or sets the client identifier.
-        /// </summary>
-        [DataMember(Name = Constants.ClientNames.ClientId)]
-        public string ClientId { get; set; }
+    public class GetJweRequest
+    {
+        [DataMember(Name = Constants.GetJweRequestNames.Jwe)]
+        public string Jwe { get; set; }
 
-        /// <summary>
-        /// Gets or sets the client name
-        /// </summary>
-        [DataMember(Name = Constants.ClientNames.ClientName)]
-        public string ClientName { get; set; }
+        [DataMember(Name = Constants.GetJweRequestNames.Url)]
+        public string Url { get; set; }
 
-        /// <summary>
-        /// Gets or sets the logo uri
-        /// </summary>
-        [DataMember(Name = Constants.ClientNames.LogoUri)]
-        public string LogoUri { get; set; }
+        [DataMember(Name = Constants.GetJweRequestNames.Password)]
+        public string Password { get; set; }
     }
 }

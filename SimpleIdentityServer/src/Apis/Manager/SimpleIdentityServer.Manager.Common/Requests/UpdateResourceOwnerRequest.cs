@@ -14,20 +14,18 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
+namespace SimpleIdentityServer.Manager.Common
 {
     [DataContract]
-    public class GetJweRequest
+    public class UpdateResourceOwnerRequest
     {
-        [DataMember(Name = Constants.GetJweRequestNames.Jwe)]
-        public string Jwe { get; set; }
+        [DataMember(Name = Constants.UpdateResourceOwnerRequestNames.Subject)]
+        public string Subject { get; set; }
 
-        [DataMember(Name = Constants.GetJweRequestNames.Url)]
-        public string Url { get; set; }
-
-        [DataMember(Name = Constants.GetJweRequestNames.Password)]
-        public string Password { get; set; }
+        [DataMember(Name = Constants.UpdateResourceOwnerRequestNames.Roles)]
+        public List<string> Roles { get; set; }
     }
 }

@@ -19,7 +19,7 @@ using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Requests
+namespace SimpleIdentityServer.Manager.Common.Requests
 {
     [DataContract]
     public class UpdateClientRequest

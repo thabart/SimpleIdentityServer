@@ -66,6 +66,8 @@ namespace SimpleIdentityServer.Manager.Client
             serviceCollection.AddTransient<IGetClientOperation, GetClientOperation>();
             serviceCollection.AddTransient<IDeleteClientOperation, DeleteClientOperation>();
             serviceCollection.AddTransient<ISearchClientOperation, SearchClientOperation>();
+            serviceCollection.AddTransient<IUpdateClientOperation, UpdateClientOperation>();
+            serviceCollection.AddTransient<IAddClientOperation, AddClientOperation>();
         }
     }
 }

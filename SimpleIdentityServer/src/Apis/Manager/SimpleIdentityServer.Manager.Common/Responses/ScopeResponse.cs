@@ -14,12 +14,17 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Responses
 {
+    public enum ScopeResponseType
+    {
+        ProtectedApi,
+        ResourceOwner
+    }
+
     [DataContract]
     public class ScopeResponse
     {
@@ -39,7 +44,7 @@ namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
         public bool IsExposed { get; set; }
 
         [DataMember(Name = Constants.ScopeResponseNames.Type)]
-        public ScopeType Type { get; set; }
+        public ScopeResponseType Type { get; set; }
 
         [DataMember(Name = Constants.ScopeResponseNames.Claims)]
         public List<string> Claims { get; set; }

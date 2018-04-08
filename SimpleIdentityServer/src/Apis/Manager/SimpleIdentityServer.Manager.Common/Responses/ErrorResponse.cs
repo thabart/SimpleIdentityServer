@@ -16,15 +16,15 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Manager.Host.DTOs.Responses
+namespace SimpleIdentityServer.Manager.Common.Responses
 {
     [DataContract]
-    public class JweInformationResponse
+    public class ErrorResponse
     {
-        [DataMember(Name = Constants.JweInformationResponseNames.Content)]
-        public string Content { get; set; }
+        [DataMember(Name = Constants.ErrorResponseNames.Code)]
+        public string Code { get; set; }
 
-        [DataMember(Name = Constants.JweInformationResponseNames.IsContentJws)]
-        public bool IsContentJws { get; set; }
+        [DataMember(Name = Constants.ErrorResponseNames.Message)]
+        public string Message { get; set; }
     }
 }

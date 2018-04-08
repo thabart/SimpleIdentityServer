@@ -17,10 +17,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Manager.Common.Requests;
+using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
-using SimpleIdentityServer.Manager.Host.DTOs.Requests;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -63,14 +62,14 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
 
         [HttpPost(".search")]
         [Authorize("manager")]
-        public async Task<ActionResult> Search([FromBody] JObject jObj)
+        public async Task<ActionResult> Search([FromBody] SearchClientsRequest request)
         {
-            if (jObj == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(jObj));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            var parameter = jObj.ToSearchClientParameter();
+            var parameter = request.ToSearchClientParameter();
             var result = await _clientActions.Search(parameter);
             return new OkObjectResult(result.ToDto());
         }

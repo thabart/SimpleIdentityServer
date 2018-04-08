@@ -17,9 +17,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Manager.Common.Requests;
+using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners;
-using SimpleIdentityServer.Manager.Host.DTOs.Requests;
-using SimpleIdentityServer.Manager.Host.DTOs.Responses;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using System;
 using System.Threading.Tasks;
