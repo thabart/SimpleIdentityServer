@@ -17,20 +17,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.DataAccess.SqlServer;
 using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Store.Redis;
 using System;
 
 namespace SimpleIdentityServer.Host
@@ -67,38 +61,11 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            if (options == null) {
+            if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
-            }           
-
-            if (options.Logging == null)
-            {
-                throw new ArgumentNullException(nameof(options.Logging));
-            }
-
-            if (options.DataSource == null)
-            {
-                throw new ArgumentNullException(nameof(options.DataSource));
-            }
-
-            switch(options.DataSource.OpenIdDataSourceType)
-            {
-                case DataSourceTypes.SqlServer:
-                    serviceCollection.AddSimpleIdentityServerSqlServer(options.DataSource.OpenIdConnectionString);
-                    break;
-                case DataSourceTypes.SqlLite:
-                    serviceCollection.AddSimpleIdentityServerSqlLite(options.DataSource.OpenIdConnectionString);
-                    break;
-                case DataSourceTypes.Postgre:
-                    serviceCollection.AddSimpleIdentityServerPostgre(options.DataSource.OpenIdConnectionString);
-                    break;
-                case DataSourceTypes.InMemory:
-                    serviceCollection.AddSimpleIdentityServerInMemory();
-                    break;
-                default:
-                    throw new ArgumentException($"the data source '{options.DataSource.OpenIdDataSourceType}' type is not supported");
-            }
-
+            }   
+            /*
             switch(options.Storage.Type)
             {
                 case CachingTypes.Redis:
@@ -112,7 +79,7 @@ namespace SimpleIdentityServer.Host
                     serviceCollection.AddInMemoryStores();
                     break;
             }
-            
+            */
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 options);
@@ -170,7 +137,6 @@ namespace SimpleIdentityServer.Host
             serviceCollection
                 .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)
-                .AddTransient<ICertificateStore, CertificateStore>()
                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                 .AddTransient<IActionResultParser, ActionResultParser>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
@@ -192,10 +158,10 @@ namespace SimpleIdentityServer.Host
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()
-                // .AddConfigurationClient()
                 .AddIdServerLogging()
                 .AddDataProtection();
 
+            /*
             // Configure SeriLog pipeline
             Func<LogEvent, bool> serilogFilter = (e) =>
             {
@@ -207,7 +173,6 @@ namespace SimpleIdentityServer.Host
                     e.Level == LogEventLevel.Error ||
                     e.Level == LogEventLevel.Fatal;
             };
-
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
@@ -233,6 +198,7 @@ namespace SimpleIdentityServer.Host
             Log.Logger = log;
             services.AddLogging();
             services.AddSingleton<ILogger>(log);
+            */
         }
     }
 }
