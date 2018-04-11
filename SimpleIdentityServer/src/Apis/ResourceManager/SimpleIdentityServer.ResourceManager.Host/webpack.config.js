@@ -13,11 +13,11 @@ var config = (env) => {
   }
   
   if (!evtUrl) {
-	evtUrl = '"http://localhost:5000"';
+	evtUrl = '"http://localhost:60002"';
   }
   
   if (!apiUrl) {
-	  apiUrl = '"http://localhost:5001"';
+      apiUrl = '"http://localhost:60005"';
   }
   
   return [{	  

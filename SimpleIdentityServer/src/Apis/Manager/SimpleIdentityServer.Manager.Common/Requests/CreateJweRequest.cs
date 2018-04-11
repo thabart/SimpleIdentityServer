@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Jwt;
 using System.Runtime.Serialization;
 
@@ -22,21 +23,27 @@ namespace SimpleIdentityServer.Manager.Common.Requests
     [DataContract]
     public class CreateJweRequest
     {
+        [JsonProperty(Constants.CreateJweRequestNames.Jws)]
         [DataMember(Name = Constants.CreateJweRequestNames.Jws)]
         public string Jws { get; set; }
 
+        [JsonProperty(Constants.CreateJweRequestNames.Url)]
         [DataMember(Name = Constants.CreateJweRequestNames.Url)]
         public string Url { get; set; }
 
+        [JsonProperty(Constants.CreateJweRequestNames.Kid)]
         [DataMember(Name = Constants.CreateJweRequestNames.Kid)]
         public string Kid { get; set; }
 
+        [JsonProperty(Constants.CreateJweRequestNames.Alg)]
         [DataMember(Name = Constants.CreateJweRequestNames.Alg)]
         public JweAlg Alg { get; set; }
 
+        [JsonProperty(Constants.CreateJweRequestNames.Enc)]
         [DataMember(Name = Constants.CreateJweRequestNames.Enc)]
         public JweEnc Enc { get; set; }
 
+        [JsonProperty(Constants.CreateJweRequestNames.Password)]
         [DataMember(Name = Constants.CreateJweRequestNames.Password)]
         public string Password { get; set; }
     }

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Common.Requests
@@ -21,9 +22,11 @@ namespace SimpleIdentityServer.Manager.Common.Requests
     [DataContract]
     public sealed class GetJwsRequest
     {
+        [JsonProperty(Constants.GetJwsRequestNames.Jws)]
         [DataMember(Name = Constants.GetJwsRequestNames.Jws)]
         public string Jws { get; set; }
 
+        [JsonProperty(Constants.GetJwsRequestNames.Url)]
         [DataMember(Name = Constants.GetJwsRequestNames.Url)]
         public string Url { get; set; }
     }

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Common.Responses
@@ -21,9 +22,11 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [DataContract]
     public class ErrorResponse
     {
+        [JsonProperty(Constants.ErrorResponseNames.Code)]
         [DataMember(Name = Constants.ErrorResponseNames.Code)]
         public string Code { get; set; }
 
+        [JsonProperty(Constants.ErrorResponseNames.Message)]
         [DataMember(Name = Constants.ErrorResponseNames.Message)]
         public string Message { get; set; }
     }

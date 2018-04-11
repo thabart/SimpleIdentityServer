@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Common.Requests
@@ -21,9 +22,11 @@ namespace SimpleIdentityServer.Manager.Common.Requests
     [DataContract]
     public class AddResourceOwnerRequest
     {
+        [JsonProperty(Constants.AddResourceOwnerRequestNames.Subject)]
         [DataMember(Name = Constants.AddResourceOwnerRequestNames.Subject)]
         public string Subject { get; set; }
 
+        [JsonProperty(Constants.AddResourceOwnerRequestNames.Password)]
         [DataMember(Name = Constants.AddResourceOwnerRequestNames.Password)]
         public string Password { get; set; }
     }

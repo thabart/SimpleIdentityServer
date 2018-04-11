@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -22,6 +23,7 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [DataContract]
     public class ExportResponse
     {
+        [JsonProperty(Constants.ExportResponseNames.Clients)]
         [DataMember(Name = Constants.ExportResponseNames.Clients)]
         public IEnumerable<ClientResponse> Clients { get; set; }
     }

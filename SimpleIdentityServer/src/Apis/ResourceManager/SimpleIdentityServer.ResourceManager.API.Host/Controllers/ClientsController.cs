@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return DeleteClient(id, url, EndpointTypes.AUTH);
         }
 
-        [HttpPost("auth/.search")]
+        [HttpPost("auth/.search/{url?}")]
         public Task<IActionResult> SearchAuthClients([FromBody] SearchClientsRequest request, string url)
         {
             return SearchClients(request, EndpointTypes.AUTH, url);
@@ -149,8 +149,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
-
-            return new OkObjectResult(result);
+            
+            return new OkResult();
         }
 
         private async Task<IActionResult> SearchClients(SearchClientsRequest parameter, EndpointTypes type, string url)
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 };
             }
 
-            return new OkObjectResult(result);
+            return new OkObjectResult(result.Content);
         }
 
         private async Task<IActionResult> AddClient(ClientResponse parameter, EndpointTypes type, string url)

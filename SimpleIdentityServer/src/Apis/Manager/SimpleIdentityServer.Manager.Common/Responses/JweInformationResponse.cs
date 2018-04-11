@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Manager.Common.Responses
@@ -21,9 +22,11 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [DataContract]
     public class JweInformationResponse
     {
+        [JsonProperty(Constants.JweInformationResponseNames.Content)]
         [DataMember(Name = Constants.JweInformationResponseNames.Content)]
         public string Content { get; set; }
 
+        [JsonProperty(Constants.JweInformationResponseNames.IsContentJws)]
         [DataMember(Name = Constants.JweInformationResponseNames.IsContentJws)]
         public bool IsContentJws { get; set; }
     }

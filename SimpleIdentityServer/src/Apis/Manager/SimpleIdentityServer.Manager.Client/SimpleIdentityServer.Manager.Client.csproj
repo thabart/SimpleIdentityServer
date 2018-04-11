@@ -9,14 +9,8 @@
 
   <ItemGroup>
     <Compile Remove="DTOs\Requests\**" />
-    <Compile Remove="ResourceOwners\**" />
-    <Compile Remove="Scopes\**" />
     <EmbeddedResource Remove="DTOs\Requests\**" />
-    <EmbeddedResource Remove="ResourceOwners\**" />
-    <EmbeddedResource Remove="Scopes\**" />
     <None Remove="DTOs\Requests\**" />
-    <None Remove="ResourceOwners\**" />
-    <None Remove="Scopes\**" />
   </ItemGroup>
 
   <ItemGroup>

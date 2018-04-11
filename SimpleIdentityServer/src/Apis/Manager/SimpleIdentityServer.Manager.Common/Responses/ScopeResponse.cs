@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -28,24 +29,31 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [DataContract]
     public class ScopeResponse
     {
+        [JsonProperty(Constants.ScopeResponseNames.Name)]
         [DataMember(Name = Constants.ScopeResponseNames.Name)]
         public string Name { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.Description)]
         [DataMember(Name = Constants.ScopeResponseNames.Description)]
         public string Description { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.IsDisplayedInConsent)]
         [DataMember(Name = Constants.ScopeResponseNames.IsDisplayedInConsent)]
         public bool IsDisplayedInConsent { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.IsOpenIdScope)]
         [DataMember(Name = Constants.ScopeResponseNames.IsOpenIdScope)]
         public bool IsOpenIdScope { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.IsExposed)]
         [DataMember(Name = Constants.ScopeResponseNames.IsExposed)]
         public bool IsExposed { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.Type)]
         [DataMember(Name = Constants.ScopeResponseNames.Type)]
         public ScopeResponseType Type { get; set; }
 
+        [JsonProperty(Constants.ScopeResponseNames.Claims)]
         [DataMember(Name = Constants.ScopeResponseNames.Claims)]
         public List<string> Claims { get; set; }
     }

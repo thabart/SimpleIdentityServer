@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
 using System.Collections.Generic;
@@ -24,12 +25,15 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [DataContract]
     public class JwsInformationResponse
     {
+        [JsonProperty(Constants.JwsInformationResponseNames.Header)]
         [DataMember(Name = Constants.JwsInformationResponseNames.Header)]
         public JwsProtectedHeader Header { get; set; }
 
+        [JsonProperty(Constants.JwsInformationResponseNames.Payload)]
         [DataMember(Name = Constants.JwsInformationResponseNames.Payload)]
         public JwsPayload Payload { get; set; }
 
+        [JsonProperty(Constants.JwsInformationResponseNames.JsonWebKey)]
         [DataMember(Name = Constants.JwsInformationResponseNames.JsonWebKey)]
         public Dictionary<string, object> JsonWebKey { get; set; }
     }

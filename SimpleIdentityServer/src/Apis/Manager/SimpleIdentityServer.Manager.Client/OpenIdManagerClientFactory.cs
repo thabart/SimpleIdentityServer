@@ -19,6 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Manager.Client.Configuration;
 using SimpleIdentityServer.Manager.Client.Clients;
 using SimpleIdentityServer.Manager.Client.Factories;
+using SimpleIdentityServer.Manager.Client.Scopes;
+using SimpleIdentityServer.Manager.Client.ResourceOwners;
 
 namespace SimpleIdentityServer.Manager.Client
 {
@@ -26,6 +28,7 @@ namespace SimpleIdentityServer.Manager.Client
     {
         IConfigurationClient GetConfigurationClient();
         IOpenIdClients GetOpenIdsClient();
+        IScopeClient GetScopesClient();
     }
 
     internal sealed class OpenIdManagerClientFactory : IOpenIdManagerClientFactory
@@ -51,11 +54,19 @@ namespace SimpleIdentityServer.Manager.Client
             return configurationClient;
         }
 
+        public IScopeClient GetScopesClient()
+        {
+            var scopesClient = (IScopeClient)_serviceProvider.GetService(typeof(IScopeClient));
+            return scopesClient;
+        }
+
         private static void RegisterDependencies(IServiceCollection serviceCollection)
         {
             // Register clients
             serviceCollection.AddTransient<IOpenIdClients, OpenIdClients>();
             serviceCollection.AddTransient<IConfigurationClient, ConfigurationClient>();
+            serviceCollection.AddTransient<IScopeClient, ScopeClient>();
+            serviceCollection.AddTransient<IResourceOwnerClient, ResourceOwnerClient>();
             
             // Regsiter factories
             serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
@@ -68,6 +79,16 @@ namespace SimpleIdentityServer.Manager.Client
             serviceCollection.AddTransient<ISearchClientOperation, SearchClientOperation>();
             serviceCollection.AddTransient<IUpdateClientOperation, UpdateClientOperation>();
             serviceCollection.AddTransient<IAddClientOperation, AddClientOperation>();
+            serviceCollection.AddTransient<IAddScopeOperation, AddScopeOperation>();
+            serviceCollection.AddTransient<IDeleteScopeOperation, DeleteScopeOperation>();
+            serviceCollection.AddTransient<IGetAllScopesOperation, GetAllScopesOperation>();
+            serviceCollection.AddTransient<IGetScopeOperation, GetScopeOperation>();
+            serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
+            serviceCollection.AddTransient<IAddResourceOwnerOperation, AddResourceOwnerOperation>();
+            serviceCollection.AddTransient<IDeleteResourceOwnerOperation, DeleteResourceOwnerOperation>();
+            serviceCollection.AddTransient<IGetAllResourceOwnersOperation, GetAllResourceOwnersOperation>();
+            serviceCollection.AddTransient<IGetResourceOwnerOperation, GetResourceOwnerOperation>();
+            serviceCollection.AddTransient<IUpdateResourceOwnerOperation, UpdateResourceOwnerOperation>();
         }
     }
 }

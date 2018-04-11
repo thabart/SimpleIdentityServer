@@ -24,29 +24,37 @@ namespace SimpleIdentityServer.Manager.Common.Responses
     [JsonConverter(typeof(StringEnumConverter))]
     public enum TwoFactorAuthentications
     {
+        [JsonProperty(Constants.TwoFactorAuthenticationNames.None)]
         [EnumMember(Value = Constants.TwoFactorAuthenticationNames.None)]
         None,
+        [JsonProperty(Constants.TwoFactorAuthenticationNames.Email)]
         [EnumMember(Value = Constants.TwoFactorAuthenticationNames.Email)]
         Email,
+        [JsonProperty(Constants.TwoFactorAuthenticationNames.Sms)]
         [EnumMember(Value = Constants.TwoFactorAuthenticationNames.Sms)]
         Sms
     }
 
     [DataContract]
     public class ResourceOwnerResponse
-    {       
+    {
+        [JsonProperty(Constants.ResourceOwnerResponseNames.Login)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Login)]
         public string Login { get; set; }
 
+        [JsonProperty(Constants.ResourceOwnerResponseNames.Password)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Password)]
         public string Password { get; set; }
-        
+
+        [JsonProperty(Constants.ResourceOwnerResponseNames.IsLocalAccount)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.IsLocalAccount)]
         public bool IsLocalAccount { get; set; }
 
+        [JsonProperty(Constants.ResourceOwnerResponseNames.TwoFactorAuthentication)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.TwoFactorAuthentication)]
         public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
 
+        [JsonProperty(Constants.ResourceOwnerResponseNames.Claims)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Claims)]
         public List<KeyValuePair<string, string>> Claims { get; set; }
     }
