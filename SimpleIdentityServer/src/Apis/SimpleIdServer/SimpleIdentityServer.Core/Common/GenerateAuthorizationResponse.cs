@@ -29,6 +29,9 @@ using SimpleIdentityServer.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Stores;
+using System.Linq;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Common
 {
@@ -190,6 +193,12 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.StateName, authorizationParameter.State);
             }
 
+            var sessionState = GetSessionState(authorizationParameter.ClientId, claimsPrincipal);
+            if (sessionState != null)
+            {
+                actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.SessionState, sessionState);
+            }
+
             if (authorizationParameter.ResponseMode == ResponseMode.form_post)
             {
                 actionResult.Type = TypeActionResult.RedirectToAction;
@@ -214,6 +223,37 @@ namespace SimpleIdentityServer.Core.Common
 
             _simpleIdentityServerEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
+        }
+
+        private string GetSessionState(string clientId, ClaimsPrincipal claimsPrincipal)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                return null;
+            }
+
+            if (claimsPrincipal == null || !claimsPrincipal.Identity.IsAuthenticated)
+            {
+                return null;
+            }
+
+            var sessionId = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == Constants.SESSION_ID);
+            if (sessionId == null)
+            {
+                return null;
+            }
+
+            var sessionState = string.Empty;
+            var originUrl = "issuer"; // TODO : Get the BASE URL.
+            var salt = Guid.NewGuid().ToString();
+            var bytes = Encoding.UTF8.GetBytes(clientId + originUrl + sessionId + salt);
+            byte[] hash;
+            using (var sha = SHA256.Create())
+            {
+                hash = sha.ComputeHash(bytes);
+            }
+
+            return Convert.ToBase64String(hash) + "." + salt;
         }
 
         /// <summary>

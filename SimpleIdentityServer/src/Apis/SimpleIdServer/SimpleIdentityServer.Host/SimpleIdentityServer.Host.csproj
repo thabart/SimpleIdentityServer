@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Views\**;wwwroot\css\**;wwwroot\lib\**;wwwroot\img\**;wwwroot\fonts\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <None Remove="Views\CheckSession.html" />
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>

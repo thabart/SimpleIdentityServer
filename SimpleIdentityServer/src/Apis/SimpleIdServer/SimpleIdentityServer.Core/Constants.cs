@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.Core
 {
     public static class Constants
     {
+        public const string SESSION_ID = "session_id";
+
         #region Standard definitions
         
         // Open-Id Provider Authentication Policy Extension 1.0
@@ -51,6 +53,7 @@ namespace SimpleIdentityServer.Core
             public static string AccessTokenName = "access_token";
             public static string AuthorizationCodeName = "code";
             public static string StateName = "state";
+            public static string SessionState = "session_state";
         }
 
         // Standard authentication policies.

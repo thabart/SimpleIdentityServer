@@ -533,7 +533,9 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task SetLocalCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Constants.CookieName);
+            var cls = claims.ToList();
+            cls.Add(new Claim(Core.Constants.SESSION_ID, Guid.NewGuid().ToString()));
+            var identity = new ClaimsIdentity(cls, Constants.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext, Constants.CookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
             {

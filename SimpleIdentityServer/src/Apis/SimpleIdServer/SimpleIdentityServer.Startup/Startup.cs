@@ -76,6 +76,8 @@ namespace SimpleIdentityServer.Startup
             var storeType = Configuration["Store:Database"];
             var openIdType = Configuration["Db:OpenIdType"];
             var evtStoreType = Configuration["Db:EvtStoreType"];
+            _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
+            /*
             if (string.Equals(openIdType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlServer;
@@ -95,6 +97,7 @@ namespace SimpleIdentityServer.Startup
             {
                 _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
             }
+            */
 
             if (string.Equals(storeType, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {

@@ -26,8 +26,8 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
 using System.Net.Http;
@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
     [Route(Constants.EndPoints.Authorization)]
     public class AuthorizationController : Controller
     {
+        private const string SESSION_ID = "session_id";
         private readonly IAuthorizationActions _authorizationActions;
         private readonly IDataProtector _dataProtector;
         private readonly IEncoder _encoder;
@@ -120,7 +121,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
             return null;
         }
-        
+
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)
         {
             var jwsToken = token;
