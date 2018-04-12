@@ -26,7 +26,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.Services
+namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
     public class TwilioOptions
     {
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(user.Claims));
             }
 
-            var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
+            var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == "phone_number");
             if (phoneNumberClaim == null)
             {
                 throw new ArgumentException("the phone number is missing");

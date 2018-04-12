@@ -1400,7 +1400,7 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:5443/User/Callback"
+                        RedirectionUrls = "http://localhost:60000/User/Callback"
                     },
                     new Models.Client // Resource manager API.
                     {

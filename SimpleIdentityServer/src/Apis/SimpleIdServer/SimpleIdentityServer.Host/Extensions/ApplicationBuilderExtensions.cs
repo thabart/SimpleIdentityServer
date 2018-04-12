@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
@@ -48,7 +47,6 @@ namespace SimpleIdentityServer.Host
             ILoggerFactory loggerFactory) 
         {
             UseSimpleIdentityServer(app, options);
-            loggerFactory.AddSerilog();
         }
 
         public static void UseSimpleIdentityServer(
@@ -64,11 +62,8 @@ namespace SimpleIdentityServer.Host
             {
                 SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
             });
-            // 1. Configure the IUrlHelper extension
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);
-
-            // 2. Protect against IFRAME attack
             app.UseXFrame();
         }
     }

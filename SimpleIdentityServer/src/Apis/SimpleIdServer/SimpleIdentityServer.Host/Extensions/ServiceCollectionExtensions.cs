@@ -26,6 +26,7 @@ using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
@@ -65,21 +66,7 @@ namespace SimpleIdentityServer.Host
             {
                 throw new ArgumentNullException(nameof(options));
             }   
-            /*
-            switch(options.Storage.Type)
-            {
-                case CachingTypes.Redis:
-                    serviceCollection.AddRedisStores((opts) =>
-                    {
-                        opts.Configuration = options.Storage.ConnectionString;
-                        opts.InstanceName = options.Storage.InstanceName;
-                    }, options.Storage.Port);
-                    break;
-                case CachingTypes.InMemory:
-                    serviceCollection.AddInMemoryStores();
-                    break;
-            }
-            */
+
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 options);
@@ -125,15 +112,19 @@ namespace SimpleIdentityServer.Host
                 serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
             }
 
-            if (options.TwoFactorServiceStore == null)
+            var twoFactorServiceStore = new TwoFactorServiceStore();
+            if (options.TwoFactorAuthentications != null)
             {
-                serviceCollection.AddTransient<ITwoFactorServiceStore, TwoFactorServiceStore>();
-            }
-            else
-            {
-                serviceCollection.AddSingleton<ITwoFactorServiceStore>(options.TwoFactorServiceStore);
+                foreach(var twoFactorAuthentication in options.TwoFactorAuthentications)
+                {
+                    if (twoFactorAuthentication.TwoFactorAuthType != Core.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
+                    {
+                        twoFactorServiceStore.Add(twoFactorAuthentication.TwoFactorAuthenticationService);
+                    }
+                }
             }
 
+            serviceCollection.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
             serviceCollection
                 .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)

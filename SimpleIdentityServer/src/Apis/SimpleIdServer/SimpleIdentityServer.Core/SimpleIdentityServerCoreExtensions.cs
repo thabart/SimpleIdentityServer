@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddInMemoryStores(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddInMemoryStorage(this IServiceCollection serviceCollection)
         {
             if (serviceCollection == null)
             {

@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,12 @@ namespace SimpleIdentityServer.Host
     {
         public Type Publisher { get; set; }
         public IEnumerable<Type> Handlers { get; set; }
+    }
+
+    public class TwoFactorAuthenticationOptions
+    {
+        public ITwoFactorAuthenticationService TwoFactorAuthenticationService { get; set; }
+        public TwoFactorAuthentications TwoFactorAuthType { get; set; }
     }
 
     public class IdentityServerOptions
@@ -73,6 +80,6 @@ namespace SimpleIdentityServer.Host
         /// <summary>
         /// Store the two factor authentication methods.
         /// </summary>
-        public ITwoFactorServiceStore TwoFactorServiceStore { get; set; }
+        public IEnumerable<TwoFactorAuthenticationOptions> TwoFactorAuthentications { get; set; }
     }
 }

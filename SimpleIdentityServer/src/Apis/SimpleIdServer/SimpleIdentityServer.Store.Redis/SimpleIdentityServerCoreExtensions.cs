@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Store.Redis
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddRedisStores(this IServiceCollection serviceCollection, Action<RedisCacheOptions> callback, int port = 6379)
+        public static IServiceCollection AddRedisStorage(this IServiceCollection serviceCollection, Action<RedisCacheOptions> callback, int port = 6379)
         {
             if (serviceCollection == null)
             {
@@ -39,10 +39,10 @@ namespace SimpleIdentityServer.Store.Redis
 
             var options = new RedisCacheOptions();
             callback(options);
-            return AddRedisStores(serviceCollection, options, port);
+            return AddRedisStorage(serviceCollection, options, port);
         }
 
-        public static IServiceCollection AddRedisStores(this IServiceCollection serviceCollection, RedisCacheOptions options, int port = 6379)
+        public static IServiceCollection AddRedisStorage(this IServiceCollection serviceCollection, RedisCacheOptions options, int port = 6379)
         {
             if (serviceCollection == null)
             {
