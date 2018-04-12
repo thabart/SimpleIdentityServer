@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Startup
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
         {
             var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServer(connectionString);
+            services.AddEventStoreSqlServerEF(connectionString);
             services.AddSimpleBusInMemory();
             services.AddEventStoreBusHandler();
         }

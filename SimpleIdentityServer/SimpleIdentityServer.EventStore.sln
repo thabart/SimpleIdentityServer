@@ -21,6 +21,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Tests", "tests\SimpleIdentityServer.EventStore.Tests\SimpleIdentityServer.EventStore.Tests.csproj", "{268A8EEB-2296-4061-8AEB-D3BB0DD88049}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.InMemory", "src\Apis\EventStore\SimpleIdentityServer.EventStore.InMemory\SimpleIdentityServer.EventStore.InMemory.csproj", "{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Postgre", "src\Apis\EventStore\SimpleIdentityServer.EventStore.Postgre\SimpleIdentityServer.EventStore.Postgre.csproj", "{884E05C3-5518-4C58-82CF-7A3908E181B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Sqlite", "src\Apis\EventStore\SimpleIdentityServer.EventStore.Sqlite\SimpleIdentityServer.EventStore.Sqlite.csproj", "{A9567195-DF29-41F0-B9BD-FC4E0314DFBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.SqlServer", "src\Apis\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj", "{B3EEA40E-9905-4BC8-92B7-0593876D872E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +55,22 @@ Global
 		{268A8EEB-2296-4061-8AEB-D3BB0DD88049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{268A8EEB-2296-4061-8AEB-D3BB0DD88049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{268A8EEB-2296-4061-8AEB-D3BB0DD88049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{884E05C3-5518-4C58-82CF-7A3908E181B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{884E05C3-5518-4C58-82CF-7A3908E181B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{884E05C3-5518-4C58-82CF-7A3908E181B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{884E05C3-5518-4C58-82CF-7A3908E181B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9567195-DF29-41F0-B9BD-FC4E0314DFBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9567195-DF29-41F0-B9BD-FC4E0314DFBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9567195-DF29-41F0-B9BD-FC4E0314DFBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9567195-DF29-41F0-B9BD-FC4E0314DFBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3EEA40E-9905-4BC8-92B7-0593876D872E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3EEA40E-9905-4BC8-92B7-0593876D872E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3EEA40E-9905-4BC8-92B7-0593876D872E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3EEA40E-9905-4BC8-92B7-0593876D872E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +81,10 @@ Global
 		{0C992244-87B9-4F6D-813A-4F22E4F7849D} = {F0B324F6-8AC2-4B24-8BC2-7BC8F52BB99F}
 		{449CF4C9-F8CF-4306-94B0-995075F079FD} = {C843B91D-0469-4419-A8CD-D05D7A2AB706}
 		{268A8EEB-2296-4061-8AEB-D3BB0DD88049} = {E89FAC70-07D1-4AAF-89D4-787EFEAEDB38}
+		{510E9C3B-EE3C-4550-BD0E-DE32FA6B4B8B} = {F0B324F6-8AC2-4B24-8BC2-7BC8F52BB99F}
+		{884E05C3-5518-4C58-82CF-7A3908E181B1} = {F0B324F6-8AC2-4B24-8BC2-7BC8F52BB99F}
+		{A9567195-DF29-41F0-B9BD-FC4E0314DFBF} = {F0B324F6-8AC2-4B24-8BC2-7BC8F52BB99F}
+		{B3EEA40E-9905-4BC8-92B7-0593876D872E} = {F0B324F6-8AC2-4B24-8BC2-7BC8F52BB99F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B634F5C1-5B2B-4583-B1EF-0E5356BA4A4C}
