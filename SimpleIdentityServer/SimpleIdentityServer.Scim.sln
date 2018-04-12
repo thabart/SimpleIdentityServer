@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{E69071DD-4007-4333-950E-0988517E5426}"
 EndProject
@@ -56,6 +56,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.EF", "src\Apis\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj", "{973E426A-533A-48C8-9E02-2B35C8359019}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2Introspection", "src\Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj", "{E7F60B77-472E-4234-ACC1-B53E7868D781}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Db.EF.InMemory", "src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF.InMemory\SimpleIdentityServer.Scim.Db.EF.InMemory.csproj", "{83EF9D36-B732-40A7-BDAE-F4AF27427782}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Db.EF.Postgre", "src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF.Postgre\SimpleIdentityServer.Scim.Db.EF.Postgre.csproj", "{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Db.EF.Sqlite", "src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF.Sqlite\SimpleIdentityServer.Scim.Db.EF.Sqlite.csproj", "{84FE43C9-F004-47F3-8FFC-C2DC70640D7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Db.EF.SqlServer", "src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF.SqlServer\SimpleIdentityServer.Scim.Db.EF.SqlServer.csproj", "{5CE059F3-4575-48EF-85D4-51B7EC9DA725}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +147,22 @@ Global
 		{E7F60B77-472E-4234-ACC1-B53E7868D781}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7F60B77-472E-4234-ACC1-B53E7868D781}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7F60B77-472E-4234-ACC1-B53E7868D781}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83EF9D36-B732-40A7-BDAE-F4AF27427782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83EF9D36-B732-40A7-BDAE-F4AF27427782}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83EF9D36-B732-40A7-BDAE-F4AF27427782}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83EF9D36-B732-40A7-BDAE-F4AF27427782}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84FE43C9-F004-47F3-8FFC-C2DC70640D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84FE43C9-F004-47F3-8FFC-C2DC70640D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84FE43C9-F004-47F3-8FFC-C2DC70640D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84FE43C9-F004-47F3-8FFC-C2DC70640D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CE059F3-4575-48EF-85D4-51B7EC9DA725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE059F3-4575-48EF-85D4-51B7EC9DA725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CE059F3-4575-48EF-85D4-51B7EC9DA725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CE059F3-4575-48EF-85D4-51B7EC9DA725}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +190,10 @@ Global
 		{64226294-AC1B-4750-9D78-73F9EA113388} = {5888BFD3-25DF-45E7-8C3B-F518B0F9118E}
 		{973E426A-533A-48C8-9E02-2B35C8359019} = {5888BFD3-25DF-45E7-8C3B-F518B0F9118E}
 		{E7F60B77-472E-4234-ACC1-B53E7868D781} = {E69071DD-4007-4333-950E-0988517E5426}
+		{83EF9D36-B732-40A7-BDAE-F4AF27427782} = {3F10F403-8B8F-4995-A41C-BDB3B2A14742}
+		{0BC23ED0-C93F-41A7-81C3-E15196AB8D9F} = {3F10F403-8B8F-4995-A41C-BDB3B2A14742}
+		{84FE43C9-F004-47F3-8FFC-C2DC70640D7D} = {3F10F403-8B8F-4995-A41C-BDB3B2A14742}
+		{5CE059F3-4575-48EF-85D4-51B7EC9DA725} = {3F10F403-8B8F-4995-A41C-BDB3B2A14742}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
