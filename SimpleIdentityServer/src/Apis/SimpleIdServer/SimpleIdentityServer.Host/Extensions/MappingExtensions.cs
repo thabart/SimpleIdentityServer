@@ -43,11 +43,13 @@ namespace SimpleIdentityServer.Host.Extensions
                 Nonce = request.Nonce,
                 Prompt = request.Prompt,
                 RedirectUrl = request.RedirectUri,
-                ResponseMode  = request.ResponseMode == null ? Core.Parameters.ResponseMode.None : (Core.Parameters.ResponseMode)request.ResponseMode,
+                ResponseMode = request.ResponseMode == null ? Core.Parameters.ResponseMode.None : (Core.Parameters.ResponseMode)request.ResponseMode,
                 ResponseType = request.ResponseType,
                 Scope = request.Scope,
                 State = request.State,
-                UiLocales = request.UiLocales
+                UiLocales = request.UiLocales,
+                OriginUrl = request.OriginUrl,
+                SessionId = request.SessionId
             };
 
             if (!string.IsNullOrWhiteSpace(request.ProcessId))

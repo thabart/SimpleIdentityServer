@@ -193,7 +193,7 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.StateName, authorizationParameter.State);
             }
 
-            var sessionState = GetSessionState(authorizationParameter.ClientId, claimsPrincipal);
+            var sessionState = GetSessionState(authorizationParameter.ClientId, authorizationParameter.OriginUrl, authorizationParameter.SessionId);
             if (sessionState != null)
             {
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.SessionState, sessionState);
@@ -225,26 +225,24 @@ namespace SimpleIdentityServer.Core.Common
                actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 
-        private string GetSessionState(string clientId, ClaimsPrincipal claimsPrincipal)
+        private string GetSessionState(string clientId, string originUrl, string sessionId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 return null;
             }
 
-            if (claimsPrincipal == null || !claimsPrincipal.Identity.IsAuthenticated)
+            if (string.IsNullOrWhiteSpace(originUrl))
             {
                 return null;
             }
 
-            var sessionId = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == Constants.SESSION_ID);
-            if (sessionId == null)
+            if (string.IsNullOrWhiteSpace(sessionId))
             {
                 return null;
             }
 
             var sessionState = string.Empty;
-            var originUrl = "issuer"; // TODO : Get the BASE URL.
             var salt = Guid.NewGuid().ToString();
             var bytes = Encoding.UTF8.GetBytes(clientId + originUrl + sessionId + salt);
             byte[] hash;
@@ -253,7 +251,24 @@ namespace SimpleIdentityServer.Core.Common
                 hash = sha.ComputeHash(bytes);
             }
 
-            return Convert.ToBase64String(hash) + "." + salt;
+            var hex = ToHexString(hash);
+            return hex.Base64Encode() + "==." + salt;
+        }
+
+        public static string ToHexString(IEnumerable<byte> arr)
+        {
+            if (arr == null)
+            {
+                throw new ArgumentNullException(nameof(arr));
+            }
+
+            var sb = new StringBuilder();
+            foreach (var s in arr)
+            {
+                sb.Append(s.ToString("x2"));
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

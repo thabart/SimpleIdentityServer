@@ -165,6 +165,10 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string ClientId { get; set; }
         [DataMember(Name = EventResponseNames.AggregateId)]
         public string ProcessId { get; set; }
+        [DataMember(Name = "origin_url")]
+        public string OriginUrl { get; set; }
+        [DataMember(Name = "session_id")]
+        public string SessionId { get; set; }
         public string GetQueryString()
         {
             var serializer = new ParamSerializer();

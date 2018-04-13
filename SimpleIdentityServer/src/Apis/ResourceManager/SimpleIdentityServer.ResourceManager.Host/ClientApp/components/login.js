@@ -13,6 +13,7 @@ class Login extends Component {
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.authenticate = this.authenticate.bind(this);
+        this.externalAuthenticate = this.externalAuthenticate.bind(this);
         this.state = {
             login           : null,
             password        : null,
@@ -71,6 +72,72 @@ class Login extends Component {
             });
         });
     }
+
+    /**
+    * External authentication.
+    */
+    externalAuthenticate() {
+        var getParameterByName = function (name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        };        
+        const {t} = this.props;
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        // TODO : Externalize this dependency.
+        var url = "http://localhost:60000/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri=http://localhost:64950/callback&response_type=id_token token&client_id=ResourceManagerClientId&nonce=nonce&response_mode=query";
+        var w = window.open(url, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');        
+        var interval = setInterval(function () {
+            if (w.closed) {
+                clearInterval(interval);
+                return;
+            }
+
+            var href = w.location.href;
+            var idToken = getParameterByName('id_token', href);
+            var accessToken = getParameterByName('access_token', href);
+            var sessionState = getParameterByName('session_state', href);
+            if (!idToken && !accessToken && !sessionState) {
+                return;
+            }
+
+            sessionState = sessionState.replace(' ', '+');
+            var payload = self.parseJwt(idToken);
+            if (!payload.role || payload.role !== 'administrator') {
+                self.setState({
+                    errorMessage: t('notAdministrator'),
+                    isLoading: false
+                });
+                clearInterval(interval);
+                w.close();
+                return;
+            }
+
+            var session = {
+                token: accessToken,
+                id_token: idToken,
+                sessionState: sessionState
+            };
+            SessionService.setSession(session);
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_IN
+            });
+            self.props.history.push('/');
+            self.setState({
+                isLoading: false
+            });
+            clearInterval(interval);
+            w.close();
+        });
+    }
+
     render() {
         const { t } = this.props;
         return (<div className="block">
@@ -91,6 +158,7 @@ class Login extends Component {
                                     </div>
                                     <RaisedButton label={t('connect')} primary={true} type="submit" />
                                 </form>
+                                <RaisedButton label={t('externalConnect')} primary={true} onClick={this.externalAuthenticate} />
                                 {(this.state.errorMessage !== null && (
                                     <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
                                         <strong>Danger !</strong> {this.state.errorMessage}

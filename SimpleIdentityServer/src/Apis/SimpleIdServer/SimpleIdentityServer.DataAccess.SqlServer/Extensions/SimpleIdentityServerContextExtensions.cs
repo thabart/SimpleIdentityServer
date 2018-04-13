@@ -1258,11 +1258,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                                 ScopeName = "website_api"
                             }
                         },
-                        GrantTypes = "4",
+                        GrantTypes = "1,4",
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://website/callback"
+                        RedirectionUrls = "http://localhost:64950/callback"
                     },
                     // Visual studio extension
                     new Models.Client

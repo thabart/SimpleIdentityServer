@@ -75,10 +75,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorCodes.InvalidRequestCode,
                     ErrorDescriptions.RequestIsNotValid);
             }
-            
+
+            var originUrl = GetOriginUrl();
+            var sessionId = GetSessionId();
             var serializer = new ParamSerializer();
             var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
+            authorizationRequest.OriginUrl = originUrl;
+            authorizationRequest.SessionId = sessionId;
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
             var parameter = authorizationRequest.ToParameter();
             var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
@@ -120,6 +124,28 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             return null;
+        }
+
+        private string GetOriginUrl()
+        {
+            if (!Request.Headers.ContainsKey("Referer"))
+            {
+                return null;
+            }
+
+            var referer = Request.Headers["Referer"];
+            var uri = new Uri(referer);
+            return $"{uri.Scheme}://{uri.Authority}";
+        }
+
+        private string GetSessionId()
+        {
+            if (!Request.Cookies.ContainsKey(Core.Constants.SESSION_ID))
+            {
+                return Guid.NewGuid().ToString();
+            }
+
+            return Request.Cookies[Core.Constants.SESSION_ID].ToString();
         }
 
         private async Task<AuthorizationRequest> GetAuthorizationRequestFromJwt(string token, string clientId)

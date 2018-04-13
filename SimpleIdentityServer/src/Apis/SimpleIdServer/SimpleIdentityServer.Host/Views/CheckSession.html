@@ -1,5 +1,6 @@
 ﻿<html>
     <head>
+        <script id='cookie-name' type='application/json'>{cookieName}</script>
         <script type="text/javascript">
             'use strict';
             var Sha256 = {};
@@ -105,15 +106,64 @@
                 return btoa(hash);
             }
 
-            function getSessionStateResult(e) {
-                var clientId = e.data.split[' '][0];
-                var sessionState = e.data.split[' '][1];
-                var salt = e.data.split['.'][1];
+            function getSessionId() {
+                if (!document.cookie) {
+                    return null;
+                }
 
+                var cookieElt = document.getElementById('cookie-name');
+                if (!cookieElt) {
+                    return null;
+                }
+
+                var cookieName = cookieElt.textContent.trim();
+                var cookies = document.cookie.split(';');
+                var cookieValue = null;
+                cookies.forEach(function (cookie) {
+                    var splittedCookie = cookie.split('=');
+                    if (splittedCookie[0] === cookieName) {
+                        cookieValue = splittedCookie[1];
+                    }
+                });
+                
+                return cookieValue;
             }
 
-            window.addEventListener("message", function (e) {
+            function getSessionStateResult(originUrl, message) {
+                if (!message || !originUrl) {
+                    return "error";
+                }
+                
+                var splittedMessage = message.split(' ');
+                if (splittedMessage.length !== 2) {
+                    return "error";
+                }
 
+                var clientId = splittedMessage[0];
+                var sessionState = splittedMessage[1];
+                var splittedSessionState = sessionState.split('.');
+                if (splittedSessionState.length != 2) {
+                    return "error";
+                } 
+
+                var salt = splittedSessionState[1];
+                var sessionId = getSessionId();
+                if (!sessionId) {
+                    return "error";
+                }
+
+                var newSessionState = hash(clientId + originUrl + sessionId + salt) + "." + salt;
+                if (sessionState != newSessionState) {
+                    return "changed";
+                }
+
+                return "unchanged";
+
+            }
+            
+            window.addEventListener("message", function (e) {
+                var result = getSessionStateResult(e.origin, e.data);
+                e.source.postMessage(result, e.origin);
             }, false);
         </script>
     </head>

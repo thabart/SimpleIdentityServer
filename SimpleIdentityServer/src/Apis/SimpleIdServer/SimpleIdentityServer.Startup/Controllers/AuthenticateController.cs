@@ -91,6 +91,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         
         public async Task<ActionResult> Logout()
         {
+            HttpContext.Response.Cookies.Delete(Core.Constants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, Constants.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             return RedirectToAction("Index", "Authenticate");
         }
@@ -146,7 +147,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
                 if (resourceOwner.TwoFactorAuthentication == Core.Models.TwoFactorAuthentications.NONE)
                 {
-                    await SetLocalCookie(claims);
+                    await SetLocalCookie(claims, Guid.NewGuid().ToString());
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
                     return RedirectToAction("Index", "User");
                 }
@@ -198,7 +199,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             var claims = await _authenticateActions.LoginCallback(authenticatedUser);
 
             // 2. Set cookie
-            await SetLocalCookie(claims);
+            await SetLocalCookie(claims, Guid.NewGuid().ToString());
             await _authenticationService.SignOutAsync(HttpContext, Constants.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
 
             // 3. Redirect to the profile
@@ -288,7 +289,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 4. Authenticate the resource owner
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
-            await SetLocalCookie(authenticatedUser.Claims);
+            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
             return RedirectToAction("Index", "User");
         }
         
@@ -366,7 +367,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie
-                await SetLocalCookie(actionResult.Claims);
+                await SetLocalCookie(actionResult.Claims, request.SessionId);
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
                 // 6. Redirect the user agent
@@ -469,7 +470,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             // 7. Store claims into new cookie
             if (actionResult.ActionResult != null)
             {
-                await SetLocalCookie(actionResult.Claims);
+                await SetLocalCookie(actionResult.Claims, authorizationRequest.SessionId);
                 await _authenticationService.SignOutAsync(HttpContext, Constants.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
                 await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
@@ -531,10 +532,13 @@ namespace SimpleIdentityServer.Startup.Controllers
             ViewBag.Translations = translations;
         }
 
-        private async Task SetLocalCookie(IEnumerable<Claim> claims)
+        private async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)
         {
             var cls = claims.ToList();
-            cls.Add(new Claim(Core.Constants.SESSION_ID, Guid.NewGuid().ToString()));
+            HttpContext.Response.Cookies.Append(Core.Constants.SESSION_ID, sessionId, new CookieOptions
+            {
+                HttpOnly = false
+            });
             var identity = new ClaimsIdentity(cls, Constants.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext, Constants.CookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties

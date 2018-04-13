@@ -33,6 +33,8 @@ using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Stores;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {
@@ -49,6 +51,43 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         private Mock<IClientHelper> _clientHelperFake;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private IGenerateAuthorizationResponse _generateAuthorizationResponse;
+
+        public static string ToHexString(IEnumerable<byte> arr)
+        {
+            if (arr == null)
+            {
+                throw new ArgumentNullException(nameof(arr));
+            }
+
+            var sb = new StringBuilder();
+            foreach (var s in arr)
+            {
+                sb.Append(s.ToString("x2"));
+            }
+
+            return sb.ToString();
+        }
+
+        [Fact]
+        public void WhenGenerateSessionState()
+        {
+            // 0cb582e736597d717f0f6b34b987ea5ad0a6a82c1294fa37e2d75a444da782aa
+            // 0cb582e736597d717f0f6b34b987ea5ad0a6a82c1294fa37e2d75a444da782aa
+            const string clientId = "ResourceManagerClientId";
+            const string originUrl = "http://localhost:64950";
+            const string sessionId = "d95d6ea3-36f5-4ccd-886a-d469210f8e33";
+            const string salt = "a781f21b-a9e0-4b84-90ed-2dc4535ac927";
+            var bytes = Encoding.UTF8.GetBytes(clientId + originUrl + sessionId + salt);
+            byte[] hash;
+            using (var sha = SHA256.Create())
+            {
+                hash = sha.ComputeHash(bytes);
+            }
+
+            var hashed = ToHexString(hash);
+            var b = hashed.Base64Encode();
+            string s = "";
+        }
 
         [Fact]
         public async Task When_Passing_No_Action_Result_Then_Exception_Is_Thrown()

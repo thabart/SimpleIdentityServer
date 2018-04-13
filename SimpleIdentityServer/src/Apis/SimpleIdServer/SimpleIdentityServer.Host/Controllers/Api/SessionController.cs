@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Host.Extensions;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,12 +11,25 @@ namespace SimpleIdentityServer.Host.Controllers.Api
 {
     public class SessionController : Controller
     {
+        private readonly IAuthenticationService _authenticationService;
+        private readonly AuthenticateOptions _authenticateOptions;
+
+        public SessionController(IAuthenticationService authenticationService,
+            AuthenticateOptions authenticateOptions)
+        {
+            _authenticationService = authenticationService;
+            _authenticateOptions = authenticateOptions;
+        }
+
         [HttpGet(Constants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
-            // 1. GET THE USER.
-            // 2. GET THE SESSION ID & INSERT IT INTO THE HTML.
-            // 3. RETURNS THE SESSION ID.
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
+            {
+                return;
+            }
+
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "SimpleIdentityServer.Host.Views.CheckSession.html";
             string html;
@@ -24,7 +40,8 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                     html = reader.ReadToEnd();
                 }
             }
-            
+
+            html = html.Replace("{cookieName}", Core.Constants.SESSION_ID);
             Response.ContentType = "text/html; charset=UTF-8";
             var payload = Encoding.UTF8.GetBytes(html);
             await Response.Body.WriteAsync(payload, 0, payload.Length);

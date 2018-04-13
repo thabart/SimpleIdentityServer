@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Host
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);
 
             // 2. Protect against IFRAME attack
-            app.UseXFrame();
+            // app.UseXFrame();
 
             // 3. Migrate OpenId database.
             if (options.DataSource.IsOpenIdDataMigrated)

@@ -179,5 +179,7 @@ namespace SimpleIdentityServer.Core.Parameters
         public CodeChallengeMethods? CodeChallengeMethod { get; set; } 
         public string ProcessId { get; set; }
         public int ProcessOrder { get; set; }
+        public string OriginUrl { get; set; }
+        public string SessionId { get; set; }
     }
 }

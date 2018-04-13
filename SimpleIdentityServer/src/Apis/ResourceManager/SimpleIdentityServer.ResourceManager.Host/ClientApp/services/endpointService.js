@@ -10,7 +10,7 @@ module.exports = {
 			$.get(Constants.apiUrl + '/endpoints').then(function(data) {
 				resolve(data);
 			}).fail(function(e) {
-				rejet(e);
+				reject(e);
 			});
 		});
 	},

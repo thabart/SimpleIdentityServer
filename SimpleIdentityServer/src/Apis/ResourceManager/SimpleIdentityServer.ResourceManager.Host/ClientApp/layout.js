@@ -14,10 +14,14 @@ class Layout extends Component {
     constructor(props) {
         super(props);
         this._appDispatcher = null;
+        this._sessionFrame = null;
+        this._checkSessionInterval = null;
         this.disconnect = this.disconnect.bind(this);
         this.toggleValue = this.toggleValue.bind(this);
         this.navigate = this.navigate.bind(this);
         this.refresh = this.refresh.bind(this);
+        this.startCheckSession = this.startCheckSession.bind(this);
+        this.stopCheckSession = this.stopCheckSession.bind(this);
         this.state = {
             isLoggedIn: false,
             isOauthDisplayed: false,
@@ -68,6 +72,36 @@ class Layout extends Component {
         }).catch(function() {
 
         });
+    }
+
+    startCheckSession() {
+        var self = this;
+        if (self._checkSessionInterval) {
+            return;
+        }
+
+        var evt = window.addEventListener("message", function(e) {
+            if (e.data !== 'unchanged') {
+                console.log('disconnect');
+                // DISCONNECT THE USER.
+            }
+        }, false);
+        var originUrl = window.location.protocol + "//" + window.location.host;
+        var win = self._sessionFrame.contentWindow;
+        self._checkSessionInterval = setInterval(function() {
+            var message = "ResourceManagerClientId "+SessionService.getSession().sessionState;
+            win.postMessage(message, "http://localhost:60000");
+        }, 3*1000);
+    }
+
+    stopCheckSession() {
+        var self = this;
+        if (!self._checkSessionInterval) {
+            return;
+        }
+
+        clearInterval(self._checkSessionInterval);
+        self._checkSessionInterval = null;
     }
 
     render() {
@@ -179,6 +213,10 @@ class Layout extends Component {
                     {this.props.children}
                 </section>
             </section>
+            { this.state.isLoggedIn && (<div>
+                    <iframe ref={(elt) => { self._sessionFrame = elt; self.startCheckSession(); }} id="session-frame" src="http://localhost:60000/check_session" style={{display: "none"}} /> 
+                </div>
+            )}
         </div>);
     }
 

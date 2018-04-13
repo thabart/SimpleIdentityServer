@@ -41,6 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// </summary>
         /// <param name="authorizationParameter">Authorization code grant type parameter.</param>
         /// <param name="claimsPrincipal"></param>
+        /// <param name="originUrl"></param>
         /// <returns>Action result.</returns>
         Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
