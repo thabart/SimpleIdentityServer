@@ -15,81 +15,13 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
-    public sealed class LoggingOptions
-    {
-        public LoggingOptions()
-        {
-            FileLogOptions = new FileLogOptions();
-            ElasticsearchOptions = new ElasticsearchOptions();
-        }
-
-        public FileLogOptions FileLogOptions { get; set; }
-        public ElasticsearchOptions ElasticsearchOptions { get; set; }
-    }
-
-    public sealed class FileLogOptions
-    {
-        public FileLogOptions()
-        {
-            IsEnabled = false;
-            PathFormat = "log-{Date}.txt";
-        }
-
-        public bool IsEnabled { get; set; }
-        public string PathFormat { get; set; }
-    }
-
-    public sealed class ElasticsearchOptions
-    {
-        public ElasticsearchOptions()
-        {
-            IsEnabled = false;
-            Url = "http://localhost:9200";
-        }
-
-        public bool IsEnabled { get; set; }
-        public string Url { get; set; }
-    }
-
-    public enum DataSourceTypes
-    {
-        SqlServer,
-        SqlLite,
-        Postgre,
-        InMemory
-    }
-
-    public enum CachingTypes
-    {
-        InMemory,
-        Redis
-    }
-
-    public sealed class DataSourceOptions
-    {
-        public DataSourceOptions()
-        {
-            IsOpenIdDataMigrated = true;
-            OpenIdDataSourceType = DataSourceTypes.InMemory;
-        }
-
-        public bool IsOpenIdDataMigrated { get; set; }
-        /// <summary>
-        /// Choose the type of your DataSource
-        /// </summary>
-        public DataSourceTypes OpenIdDataSourceType { get; set; }
-        /// <summary>
-        /// Connection string
-        /// </summary>
-        public string OpenIdConnectionString { get; set; }
-    }
-
     public class AuthenticateOptions
     {
         public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -107,17 +39,10 @@ namespace SimpleIdentityServer.Host
         public IEnumerable<Type> Handlers { get; set; }
     }
 
-    public class CachingOptions
+    public class TwoFactorAuthenticationOptions
     {
-        public CachingOptions()
-        {
-            Type = CachingTypes.InMemory;
-        }
-
-        public CachingTypes Type;
-        public string ConnectionString { get; set; }
-        public string InstanceName { get; set; }
-        public int Port { get; set; }
+        public ITwoFactorAuthenticationService TwoFactorAuthenticationService { get; set; }
+        public TwoFactorAuthentications TwoFactorAuthType { get; set; }
     }
 
     public class IdentityServerOptions
@@ -126,27 +51,8 @@ namespace SimpleIdentityServer.Host
         {
             Authenticate = new AuthenticateOptions();
             Scim = new ScimOptions();
-            Logging = new LoggingOptions();
-            DataSource = new DataSourceOptions();
-            Storage = new CachingOptions();
         }
 
-        /// <summary>
-        /// Get or sets the storage options.
-        /// </summary>
-        public CachingOptions Storage { get; set; }
-        /// <summary>
-        /// Enable or disable the developer mode
-        /// </summary>
-        public bool IsDeveloperModeEnabled { get; set; }
-        /// <summary>
-        /// Configure the data source.
-        /// </summary>
-        public DataSourceOptions DataSource { get; set; }
-        /// <summary>
-        /// Configure the SERILOG logging.
-        /// </summary>
-        public LoggingOptions Logging { get; set; }
         /// <summary>
         /// Configure authentication.
         /// </summary>
@@ -174,6 +80,6 @@ namespace SimpleIdentityServer.Host
         /// <summary>
         /// Store the two factor authentication methods.
         /// </summary>
-        public ITwoFactorServiceStore TwoFactorServiceStore { get; set; }
+        public IEnumerable<TwoFactorAuthenticationOptions> TwoFactorAuthentications { get; set; }
     }
 }

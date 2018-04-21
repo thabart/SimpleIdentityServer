@@ -15,8 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -476,7 +476,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
             {
                 context.Clients.AddRange(new[]
                 {
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "client",
                         ClientName = "client",
@@ -518,7 +518,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "basic_client",
                         ClientName = "basic_client",
@@ -548,7 +548,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "post_client",
                         ClientName = "post_client",
@@ -578,7 +578,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "jwt_client",
                         ClientName = "jwt_client",
@@ -613,7 +613,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             sharedCtx.ModelEncryptionKey
                         }
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "private_key_client",
                         ClientName = "private_key_client",
@@ -644,7 +644,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         RedirectionUrls = "https://localhost:4200/callback",
                         JwksUri = "http://localhost:5000/jwks_client"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "authcode_client",
                         ClientName = "authcode_client",
@@ -678,7 +678,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:5000/callback"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "implicit_client",
                         ClientName = "implicit_client",
@@ -712,7 +712,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:5000/callback"
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "pkce_client",
                         ClientName = "pkce_client",
@@ -747,7 +747,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         RedirectionUrls = "http://localhost:5000/callback",
                         RequirePkce = true
                     },
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "hybrid_client",
                         ClientName = "hybrid_client",
@@ -782,7 +782,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         RedirectionUrls = "http://localhost:5000/callback"
                     },
                     // Certificate test client.
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "certificate_client",
                         ClientName = "Certificate test client",
@@ -816,7 +816,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.native
                     },
                     // Client credentials + stateless access token.
-                    new DataAccess.SqlServer.Models.Client
+                    new EF.Models.Client
                     {
                         ClientId = "stateless_client",
                         ClientName = "Stateless client",

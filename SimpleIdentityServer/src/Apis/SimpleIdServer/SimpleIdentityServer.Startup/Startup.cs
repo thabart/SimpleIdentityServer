@@ -19,48 +19,34 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using SimpleBus.InMemory;
+using SimpleIdentityServer.Core;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.Extensions;
+using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.Services;
-using WebApiContrib.Core.Storage;
-using WebApiContrib.Core.Storage.InMemory;
+using System;
 
 namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
-        private const string SQLSERVER_NAME = "SQLSERVER";
-        private const string SQLITE_NAME = "SQLITE";
-        private const string POSTGRE_NAME = "POSTGRE";
-        private const string REDIS_NAME = "REDIS";
-        private const string INMEMORY_NAME = "INMEMORY";
-
         private IdentityServerOptions _options;
         public IConfigurationRoot Configuration { get; set; }
 
         public Startup(IHostingEnvironment env)
         {
-            // Load all the configuration information from the "json" file & the environment variables.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            var twoFactorServiceStore = new TwoFactorServiceStore();
             _options = new IdentityServerOptions
             {
-                IsDeveloperModeEnabled = false,
-                DataSource = new DataSourceOptions
-                {
-                    IsOpenIdDataMigrated = true
-                },
-                Logging = new LoggingOptions
-                {
-                    ElasticsearchOptions = new ElasticsearchOptions(),
-                    FileLogOptions = new FileLogOptions()
-                },
                 Authenticate = new AuthenticateOptions
                 {
                     CookieName = Constants.CookieName
@@ -69,123 +55,26 @@ namespace SimpleIdentityServer.Startup
                 {
                     IsEnabled = true,
                     EndPoint = "http://localhost:5555/"
-                },
-                TwoFactorServiceStore = twoFactorServiceStore
-            };
-
-            var storeType = Configuration["Store:Database"];
-            var openIdType = Configuration["Db:OpenIdType"];
-            var evtStoreType = Configuration["Db:EvtStoreType"];
             _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
             /*
-            if (string.Equals(openIdType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlServer;
-                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
-            }
-            else if (string.Equals(openIdType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.SqlLite;
-                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
-            }
-            else if (string.Equals(openIdType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.Postgre;
-                _options.DataSource.OpenIdConnectionString = Configuration["Db:OpenIdConnectionString"];
-            }
-            else
-            {
-                _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
-            }
             */
-
-            if (string.Equals(storeType, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                _options.Storage.Type = CachingTypes.Redis;
-                _options.Storage.ConnectionString = Configuration["Store:ConnectionString"];
-                _options.Storage.InstanceName = Configuration["Store:InstanceName"];
-                var port = Configuration["Store:Port"];
-                int portNumber;
-                if (!int.TryParse(port, out portNumber))
-                {
-                    portNumber = 6379;
                 }
-
-                _options.Storage.Port = portNumber;
-            }
-            else
-            {
-                _options.Storage.Type = CachingTypes.InMemory;
-            }
-
-            bool isLogFileEnabled,
-                isElasticSearchEnabled;
-            if (bool.TryParse(Configuration["Log:File:Enabled"], out isLogFileEnabled))
-            {
-                _options.Logging.FileLogOptions.IsEnabled = isLogFileEnabled;
-                if (isLogFileEnabled)
-                {
-                    _options.Logging.FileLogOptions.PathFormat = Configuration["Log:File:PathFormat"];
-                }
-            }
-            
-            if (bool.TryParse(Configuration["Log:Elasticsearch:Enabled"], out isElasticSearchEnabled))
-            {
-                _options.Logging.ElasticsearchOptions.IsEnabled = isElasticSearchEnabled;
-                if (isElasticSearchEnabled)
-                {
-                    _options.Logging.ElasticsearchOptions.Url = Configuration["Log:Elasticsearch:Url"];
-                }
-            }
+            };
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cachingDatabase = Configuration["Caching:Database"];
-            if (string.IsNullOrWhiteSpace(cachingDatabase))
-            {
-                cachingDatabase = INMEMORY_NAME;
-            }
-
-            // 1. Configure the caching
-            if (string.Equals(cachingDatabase, REDIS_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                services.AddStorage(opt => opt.UseRedis(o =>
-                {
-                    o.Configuration = Configuration["Caching:ConnectionString"];
-                    o.InstanceName = Configuration["Caching:InstanceName"];
-                }));
-            }
-            else if (string.Equals(cachingDatabase, INMEMORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                services.AddStorage(opt => opt.UseInMemory());
-            }
-
-            var evtStoreType = Configuration["Db:EvtStoreType"];
-            if (string.Equals(evtStoreType, SQLSERVER_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                services.AddEventStoreSqlServer(Configuration["Db:EvtStoreConnectionString"]);
-            }
-            else if (string.Equals(evtStoreType, SQLITE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                services.AddEventStoreSqlLite(Configuration["Db:EvtStoreConnectionString"]);
-            }
-            else if (string.Equals(evtStoreType, POSTGRE_NAME, System.StringComparison.CurrentCultureIgnoreCase))
-            {
-                services.AddEventStorePostgre(Configuration["Db:EvtStoreConnectionString"]);
-            }
-            else
-            {
-                services.AddEventStoreInMemory();
-            }
-
             // 2. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
 
             // 3. Configure Simple identity server
-            services.AddSimpleBusInMemory().AddEventStoreBus().AddSimpleIdentityServer(_options);
+            ConfigureEventStoreSqlServerBus(services);
+            ConfigureOauthRepositorySqlServer(services);
+            ConfigureStorageInMemory(services);
+            ConfigureLogging(services);
+            services.AddSimpleIdentityServer(_options);
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)
@@ -214,6 +103,48 @@ namespace SimpleIdentityServer.Startup
                     return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == Constants.CookieName;
                 }));
             });
+        }
+
+        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        {
+            var connectionString = Configuration["Db:EvtStoreConnectionString"];
+            services.AddEventStoreSqlServerEF(connectionString);
+            services.AddSimpleBusInMemory();
+            services.AddEventStoreBusHandler();
+        }
+
+        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
+        {
+            var connectionString = Configuration["Db:OpenIdConnectionString"];
+            services.AddOAuthSqlServerEF(connectionString);
+        }
+
+        private void ConfigureStorageInMemory(IServiceCollection services)
+        {
+            services.AddInMemoryStorage();
+        }
+
+        private void ConfigureLogging(IServiceCollection services)
+        {
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
+                .CreateLogger();
+            Log.Logger = log;
+            services.AddLogging();
+            services.AddSingleton<Serilog.ILogger>(log);
         }
 
         public void Configure(IApplicationBuilder app,
@@ -257,6 +188,18 @@ namespace SimpleIdentityServer.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            UseSerilogLogging(loggerFactory);
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                simpleIdentityServerContext.Database.EnsureCreated();
+                simpleIdentityServerContext.EnsureSeedData();
+            }
+        }
+
+        private void UseSerilogLogging(ILoggerFactory logger)
+        {
+            logger.AddSerilog();
         }
     }
 }

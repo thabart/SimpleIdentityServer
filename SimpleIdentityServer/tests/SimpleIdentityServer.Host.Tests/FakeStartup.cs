@@ -26,7 +26,8 @@ using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.DataAccess.SqlServer;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host.Tests.Extensions;
@@ -55,24 +56,6 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _options = new IdentityServerOptions
             {
-
-                IsDeveloperModeEnabled = false,
-                DataSource = new DataSourceOptions
-                {
-                    OpenIdDataSourceType = DataSourceTypes.InMemory,
-                    IsOpenIdDataMigrated = false
-                },
-                Logging = new LoggingOptions
-                {
-                    ElasticsearchOptions = new ElasticsearchOptions
-                    {
-                        IsEnabled = false
-                    },
-                    FileLogOptions = new FileLogOptions
-                    {
-                        IsEnabled = false
-                    }
-                },
                 Authenticate = new AuthenticateOptions
                 {
                     CookieName = DefaultSchema
@@ -163,11 +146,11 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerLogging()
                 .AddLogging()
-                .AddSimpleIdentityServerInMemory()
+                .AddOAuthInMemoryEF()
                 .AddSimpleBusInMemory()
                 .AddEventStoreInMemory()
-                .AddEventStoreBus()
-                .AddInMemoryStores();
+                .AddEventStoreBusHandler()
+                .AddInMemoryStorage();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }
 

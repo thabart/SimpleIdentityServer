@@ -42,13 +42,13 @@ namespace SimpleIdentityServer.Host.Tests
                 Use = Use.Sig,
                 SerializedKey = serializedRsa,
             };
-            ModelSignatureKey = new DataAccess.SqlServer.Models.JsonWebKey
+            ModelSignatureKey = new EF.Models.JsonWebKey
             {
-                Alg = DataAccess.SqlServer.Models.AllAlg.RS256,
+                Alg = EF.Models.AllAlg.RS256,
                 KeyOps = "2,3",
                 Kid = "11",
-                Kty = DataAccess.SqlServer.Models.KeyType.RSA,
-                Use = DataAccess.SqlServer.Models.Use.Sig,
+                Kty = EF.Models.KeyType.RSA,
+                Use = EF.Models.Use.Sig,
                 SerializedKey = serializedRsa,
             };
             EncryptionKey = new JsonWebKey
@@ -64,22 +64,22 @@ namespace SimpleIdentityServer.Host.Tests
                 Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            ModelEncryptionKey = new DataAccess.SqlServer.Models.JsonWebKey
+            ModelEncryptionKey = new EF.Models.JsonWebKey
             {
-                Alg = DataAccess.SqlServer.Models.AllAlg.RSA1_5,
+                Alg = EF.Models.AllAlg.RSA1_5,
                 KeyOps = "2,3",
                 Kid = "10",
-                Kty = DataAccess.SqlServer.Models.KeyType.RSA,
-                Use = DataAccess.SqlServer.Models.Use.Enc,
+                Kty = EF.Models.KeyType.RSA,
+                Use = EF.Models.Use.Enc,
                 SerializedKey = serializedRsa,
             };
             HttpClientFactory = new FakeHttpClientFactory();
         }
 
         public JsonWebKey EncryptionKey { get; }
-        public DataAccess.SqlServer.Models.JsonWebKey ModelEncryptionKey { get; }
+        public EF.Models.JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
-        public DataAccess.SqlServer.Models.JsonWebKey ModelSignatureKey { get; }
+        public EF.Models.JsonWebKey ModelSignatureKey { get; }
         public FakeHttpClientFactory HttpClientFactory { get; }
     }
 }

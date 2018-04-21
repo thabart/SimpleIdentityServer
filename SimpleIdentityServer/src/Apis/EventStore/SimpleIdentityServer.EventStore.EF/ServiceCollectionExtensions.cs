@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.EventStore.EF.Parsers;
@@ -26,64 +24,16 @@ namespace SimpleIdentityServer.EventStore.EF
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStoreSqlServer(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddEventStoreRepositories(this IServiceCollection serviceCollection)
         {
             if (serviceCollection == null)
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkSqlServer()
-                .AddDbContext<EventStoreContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Transient);
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddEventStoreSqlLite(this IServiceCollection serviceCollection, string connectionString)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkSqlite()
-                .AddDbContext<EventStoreContext>(options => options.UseSqlite(connectionString), ServiceLifetime.Transient);
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddEventStorePostgre(this IServiceCollection serviceCollection, string connectionString)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkNpgsql()
-                .AddDbContext<EventStoreContext>(options =>
-                    options.UseNpgsql(connectionString), ServiceLifetime.Transient);
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddEventStoreInMemory(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkInMemoryDatabase()
-                .AddDbContext<EventStoreContext>((options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))), ServiceLifetime.Transient);
-            return serviceCollection;
-        }
-
-
-        private static void RegisterServices(IServiceCollection serviceCollection)
-        {
             serviceCollection.AddTransient<IEventAggregateRepository, EventAggregateRepository>();
             serviceCollection.AddTransient<IFilterParser, FilterParser>();
+            return serviceCollection;
         }
     }
 }

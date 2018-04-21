@@ -36,51 +36,58 @@ namespace SimpleIdentityServer.OAuth2Introspection
             }
 
             var factory = new IdentityServerClientFactory();
-            var introspectionResult = await factory.CreateAuthSelector()
-                .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
-                .Introspect(token, TokenType.AccessToken)
-                .ResolveAsync(Options.WellKnownConfigurationUrl);
-            if (!introspectionResult.Active)
+            try
+            {
+                var introspectionResult = await factory.CreateAuthSelector()
+                    .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
+                    .Introspect(token, TokenType.AccessToken)
+                    .ResolveAsync(Options.WellKnownConfigurationUrl);
+                if (!introspectionResult.Active)
+                {
+                    return AuthenticateResult.NoResult();
+                }
+
+                var claims = new List<Claim>
+                {
+                    new Claim(Core.Jwt.Constants.StandardClaimNames.ExpirationTime, introspectionResult.Expiration.ToString()),
+                    new Claim(Core.Jwt.Constants.StandardClaimNames.Iat, introspectionResult.IssuedAt.ToString())
+                };
+
+                if (!string.IsNullOrWhiteSpace(introspectionResult.Subject))
+                {
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Subject));
+                }
+
+                if (!string.IsNullOrWhiteSpace(introspectionResult.ClientId))
+                {
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.ClientId, introspectionResult.ClientId));
+                }
+
+                if (!string.IsNullOrWhiteSpace(introspectionResult.Issuer))
+                {
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Issuer, introspectionResult.Issuer));
+                }
+
+                if (introspectionResult.Scope != null)
+                {
+                    foreach (var scope in introspectionResult.Scope)
+                    {
+                        claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Scopes, scope));
+                    }
+                }
+
+                var claimsIdentity = new ClaimsIdentity(claims, OAuth2IntrospectionOptions.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                var authenticationTicket = new AuthenticationTicket(
+                                                 claimsPrincipal,
+                                                 new AuthenticationProperties(),
+                                                 OAuth2IntrospectionOptions.AuthenticationScheme);
+                return AuthenticateResult.Success(authenticationTicket);
+            }
+            catch(Exception)
             {
                 return AuthenticateResult.NoResult();
             }
-
-            var claims = new List<Claim>
-            {
-                new Claim(Core.Jwt.Constants.StandardClaimNames.ExpirationTime, introspectionResult.Expiration.ToString()),
-                new Claim(Core.Jwt.Constants.StandardClaimNames.Iat, introspectionResult.IssuedAt.ToString())
-            };
-
-            if (!string.IsNullOrWhiteSpace(introspectionResult.Subject))
-            {
-                claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Subject));
-            }
-
-            if (!string.IsNullOrWhiteSpace(introspectionResult.ClientId))
-            {
-                claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.ClientId, introspectionResult.ClientId));
-            }
-
-            if (!string.IsNullOrWhiteSpace(introspectionResult.Issuer))
-            {
-                claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Issuer, introspectionResult.Issuer));
-            }
-
-            if (introspectionResult.Scope != null)
-            {
-                foreach(var scope in introspectionResult.Scope)
-                {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Scopes, scope));
-                }
-            }
-
-            var claimsIdentity = new ClaimsIdentity(claims, OAuth2IntrospectionOptions.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var authenticationTicket = new AuthenticationTicket(
-                                             claimsPrincipal,
-                                             new AuthenticationProperties(),
-                                             OAuth2IntrospectionOptions.AuthenticationScheme);
-            return AuthenticateResult.Success(authenticationTicket);
         }
     }
 }

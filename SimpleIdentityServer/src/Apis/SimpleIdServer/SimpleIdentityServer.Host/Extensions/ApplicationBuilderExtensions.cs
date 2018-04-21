@@ -18,9 +18,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using System;
@@ -50,7 +47,6 @@ namespace SimpleIdentityServer.Host
             ILoggerFactory loggerFactory) 
         {
             UseSimpleIdentityServer(app, options);
-            loggerFactory.AddSerilog();
         }
 
         public static void UseSimpleIdentityServer(
@@ -62,40 +58,13 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.DataSource == null)
+            app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                throw new ArgumentNullException(nameof(options.DataSource));
-            }
-
-            if (options.IsDeveloperModeEnabled)
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
-                {
-                    SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
-                });
-            }
-
-            // 1. Configure the IUrlHelper extension
+                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
+            });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);
-
-            // 2. Protect against IFRAME attack
             // app.UseXFrame();
-
-            // 3. Migrate OpenId database.
-            if (options.DataSource.IsOpenIdDataMigrated)
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                    simpleIdentityServerContext.Database.EnsureCreated();
-                    simpleIdentityServerContext.EnsureSeedData();
-                }
-            }
         }
     }
 }
