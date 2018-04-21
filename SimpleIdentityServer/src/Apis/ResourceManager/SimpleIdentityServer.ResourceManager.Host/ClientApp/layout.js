@@ -82,8 +82,7 @@ class Layout extends Component {
 
         var evt = window.addEventListener("message", function(e) {
             if (e.data !== 'unchanged') {
-                console.log('disconnect');
-                // DISCONNECT THE USER.
+                self.disconnect();
             }
         }, false);
         var originUrl = window.location.protocol + "//" + window.location.host;

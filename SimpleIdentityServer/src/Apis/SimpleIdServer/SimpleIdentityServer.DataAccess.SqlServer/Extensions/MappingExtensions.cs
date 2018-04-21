@@ -198,6 +198,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                 RequestUris = GetList(client.RequestUris),
                 RedirectionUrls = GetList(client.RedirectionUrls),
                 Contacts = GetList(client.Contacts),
+                PostLogoutRedirectUris = GetList(client.PostLogoutRedirectUris),
                 AllowedScopes = scopes,
                 JsonWebKeys = jsonWebKeys,
                 GrantTypes = grantTypes,

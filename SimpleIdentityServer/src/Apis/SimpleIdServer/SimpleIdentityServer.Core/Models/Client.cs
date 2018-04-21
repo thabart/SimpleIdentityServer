@@ -243,5 +243,10 @@ namespace SimpleIdentityServer.Core.Models
         /// Client require PKCE.
         /// </summary>
         public bool RequirePkce { get; set; }
+
+        /// <summary>
+        /// Get or sets the post logout redirect uris.
+        /// </summary>
+        public List<string> PostLogoutRedirectUris { get; set; }
     }
 }

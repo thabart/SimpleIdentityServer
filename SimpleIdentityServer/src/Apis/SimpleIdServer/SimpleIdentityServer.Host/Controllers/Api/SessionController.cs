@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Serializers;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Host.Extensions;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Controllers.Api
@@ -13,12 +15,17 @@ namespace SimpleIdentityServer.Host.Controllers.Api
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly AuthenticateOptions _authenticateOptions;
+        private readonly IClientRepository _clientRepository;
+        private readonly IJwtParser _jwtParser;
 
         public SessionController(IAuthenticationService authenticationService,
-            AuthenticateOptions authenticateOptions)
+            AuthenticateOptions authenticateOptions, IClientRepository clientRepository,
+            IJwtParser jwtParser)
         {
             _authenticationService = authenticationService;
             _authenticateOptions = authenticateOptions;
+            _clientRepository = clientRepository;
+            _jwtParser = jwtParser;
         }
 
         [HttpGet(Constants.EndPoints.CheckSession)]
@@ -27,32 +34,86 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
+                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
                 return;
             }
 
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "SimpleIdentityServer.Host.Views.CheckSession.html";
-            string html;
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html", (html) =>
             {
-                using (var reader = new StreamReader(stream))
+                return html.Replace("{cookieName}", Core.Constants.SESSION_ID);
+            });
+        }
+
+        [HttpGet(Constants.EndPoints.EndSession)]
+        public async Task RevokeSession()
+        {
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
+            {
+                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
+                return;
+            }
+
+            var url = Constants.EndPoints.EndSessionCallback;
+            if (Request.QueryString.HasValue)
+            {
+                url = $"{url}{Request.QueryString.Value}";
+            }
+
+            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.RevokeSession.html", (html) =>
+            {
+                return html.Replace("{endSessionCallbackUrl}", url);
+            });
+        }
+
+        [HttpGet(Constants.EndPoints.EndSessionCallback)]
+        public async Task RevokeSessionCallback()
+        {
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
+            {
+                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
+                return;
+            }
+
+            var query = Request.Query;
+            var serializer = new ParamSerializer();
+            RevokeSessionRequest request = null;
+            if (query != null)
+            {
+                request = serializer.Deserialize<RevokeSessionRequest>(query);
+            }
+            
+            Response.Cookies.Delete(Core.Constants.SESSION_ID);
+            Response.Cookies.Delete(_authenticateOptions.CookieName);
+            if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
+            {
+                var jws = await _jwtParser.UnSignAsync(request.IdTokenHint);
+                if (jws != null)
                 {
-                    html = reader.ReadToEnd();
+                    var claim = jws.FirstOrDefault(c => c.Key == Core.Jwt.Constants.StandardClaimNames.Azp);
+                    if (!claim.Equals(default(KeyValuePair<string, object>)) && claim.Value != null)
+                    {
+                        var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString());
+                        if (client != null)
+                        {
+                            if (client.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
+                            {
+                                var redirectUrl = request.PostLogoutRedirectUri;
+                                if (!string.IsNullOrWhiteSpace(request.State))
+                                {
+                                    redirectUrl = $"{redirectUrl}?state={request.State}";
+                                }
+
+                                Response.Redirect(redirectUrl);
+                                return;
+                            }
+                        }
+                    }
                 }
             }
 
-            html = html.Replace("{cookieName}", Core.Constants.SESSION_ID);
-            Response.ContentType = "text/html; charset=UTF-8";
-            var payload = Encoding.UTF8.GetBytes(html);
-            await Response.Body.WriteAsync(payload, 0, payload.Length);
-        }
-
-        [HttpHead(Constants.EndPoints.EndSession)]
-        public async Task RevokeSession()
-        {
-            // 1. GET THE USER.
-            // 2. RETRIEVES THE PARAMETER (id_token_type + post_logout_red + state).
-            // 3. DISPLAY VIEW (are-you sure to logout ?)
+            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.RevokeSessionCallback.html");
         }
     }
 }

@@ -147,6 +147,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     connectedClient.RequestObjectEncryptionEnc = client.RequestObjectEncryptionEnc;
                     connectedClient.RequestObjectSigningAlg = client.RequestObjectSigningAlg;
                     connectedClient.RequestUris = ConcatListOfStrings(client.RequestUris);
+                    connectedClient.PostLogoutRedirectUris = ConcatListOfStrings(client.PostLogoutRedirectUris);
                     connectedClient.RequireAuthTime = client.RequireAuthTime;
                     connectedClient.ResponseTypes = responseTypes;
                     connectedClient.SectorIdentifierUri = client.SectorIdentifierUri;
@@ -306,6 +307,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         RequestUris = ConcatListOfStrings(client.RequestUris),
                         RedirectionUrls = ConcatListOfStrings(client.RedirectionUrls),
                         Contacts = ConcatListOfStrings(client.Contacts),
+                        PostLogoutRedirectUris = ConcatListOfStrings(client.PostLogoutRedirectUris),
                         ClientScopes = scopes,
                         JsonWebKeys = jsonWebKeys,
                         GrantTypes = grantTypes,

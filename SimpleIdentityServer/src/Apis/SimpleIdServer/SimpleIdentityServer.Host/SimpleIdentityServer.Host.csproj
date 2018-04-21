@@ -20,8 +20,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Views\**;wwwroot\css\**;wwwroot\lib\**;wwwroot\img\**;wwwroot\fonts\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
     <None Remove="Views\CheckSession.html" />
+    <None Remove="Views\RevokeSession.html" />
+    <None Remove="Views\RevokeSessionCallback.html" />
+    <None Remove="Views\UserNotConnected.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\CheckSession.html" />
+    <EmbeddedResource Include="Views\UserNotConnected.html" />
+    <EmbeddedResource Include="Views\RevokeSessionCallback.html" />
+    <EmbeddedResource Include="Views\RevokeSession.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>

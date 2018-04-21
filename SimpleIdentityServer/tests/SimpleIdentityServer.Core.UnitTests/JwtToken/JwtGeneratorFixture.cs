@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.Audiences.Count() > 1);
+            Assert.True(result.Audiences.Count() == 1);
             Assert.True(result.Azp == clientId);
         }
 
@@ -229,7 +229,6 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             Assert.True(result.ContainsKey(Jwt.Constants.StandardClaimNames.ExpirationTime));
             Assert.True(result.ContainsKey(Jwt.Constants.StandardClaimNames.Iat));
             Assert.True(result.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject) == subject);
-            Assert.True(result.Audiences.Contains(issuerName));
         }
 
         #endregion

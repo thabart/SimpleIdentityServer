@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     ErrorDescriptions.RequestIsNotValid);
             }
 
-            var originUrl = GetOriginUrl();
+            var originUrl = this.GetOriginUrl();
             var sessionId = GetSessionId();
             var serializer = new ParamSerializer();
             var authorizationRequest = serializer.Deserialize<AuthorizationRequest>(query);
@@ -124,18 +124,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             return null;
-        }
-
-        private string GetOriginUrl()
-        {
-            if (!Request.Headers.ContainsKey("Referer"))
-            {
-                return null;
-            }
-
-            var referer = Request.Headers["Referer"];
-            var uri = new Uri(referer);
-            return $"{uri.Scheme}://{uri.Authority}";
         }
 
         private string GetSessionId()

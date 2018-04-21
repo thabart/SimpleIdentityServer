@@ -192,6 +192,11 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Models
         /// Gets or sets if the client will use SCIM protocol to access user information.
         /// </summary>
         public bool ScimProfile { get; set; }
+        
+        /// <summary>
+        /// Get or sets the post logout redirect uris.
+        /// </summary>
+        public string PostLogoutRedirectUris { get; set; }
 
         /// <summary>
         /// Client requires PKCE.

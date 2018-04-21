@@ -21,7 +21,10 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.Parsers;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 using ResponseMode = SimpleIdentityServer.Core.Parameters.ResponseMode;
@@ -30,6 +33,46 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class ControllerExtensions
     {
+        public static string GetOriginUrl(this Controller controller)
+        {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+            
+            if (!controller.Request.Headers.ContainsKey("Referer"))
+            {
+                return null;
+            }
+
+            var referer = controller.Request.Headers["Referer"];
+            var uri = new Uri(referer);
+            return $"{uri.Scheme}://{uri.Authority}";
+        }
+
+        public static Task DisplayInternalHtml(this Controller controller, string resourceName, Func<string, string> manipulateHtmlCallback = null)
+        {
+            if (controller == null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            if (string.IsNullOrWhiteSpace(resourceName))
+            {
+                throw new ArgumentNullException(nameof(resourceName));
+            }
+            
+            var html = GetHtml(resourceName);
+            if (manipulateHtmlCallback != null)
+            {
+                html = manipulateHtmlCallback(html);
+            }
+
+            controller.Response.ContentType = "text/html; charset=UTF-8";
+            var payload = Encoding.UTF8.GetBytes(html);
+            return controller.Response.Body.WriteAsync(payload, 0, payload.Length);
+        }
+
         public static ActionResult CreateRedirectionFromActionResult(
             this Controller controller,
             Core.Results.ActionResult actionResult,
@@ -101,6 +144,21 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             return uri.ToString();
+        }
+        
+        private static string GetHtml(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string html;
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    html = reader.ReadToEnd();
+                }
+            }
+
+            return html;
         }
     }
 }

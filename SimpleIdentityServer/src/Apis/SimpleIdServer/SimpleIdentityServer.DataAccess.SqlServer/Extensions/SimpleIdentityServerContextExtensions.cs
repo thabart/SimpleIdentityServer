@@ -1262,7 +1262,8 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://localhost:64950/callback"
+                        RedirectionUrls = "http://localhost:64950/callback",
+                        PostLogoutRedirectUris = "http://localhost:64950/end_session"
                     },
                     // Visual studio extension
                     new Models.Client
