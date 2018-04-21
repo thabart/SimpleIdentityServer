@@ -12,7 +12,6 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.authenticate = this.authenticate.bind(this);
         this.externalAuthenticate = this.externalAuthenticate.bind(this);
         this.state = {
             login           : null,
@@ -37,43 +36,6 @@ class Login extends Component {
     }
 
     /**
-     * Authenticate the user with login and password.
-     * @param {any} e
-     */
-    authenticate(e) {
-        e.preventDefault();
-        var self = this;
-        self.setState({
-            isLoading: true
-        });
-        const { t } = self.props;
-        WebsiteService.authenticate(self.state.login, self.state.password).then(function (data) {
-            var payload = self.parseJwt(data.id_token);
-            if (!payload.role || payload.role !== 'administrator') {
-                self.setState({
-                    errorMessage: t('notAdministrator'),
-                    isLoading: false
-                });
-                return;
-            }
-
-            SessionService.setSession(data);
-            AppDispatcher.dispatch({
-                actionName: Constants.events.USER_LOGGED_IN
-            });
-            self.props.history.push('/');
-            self.setState({
-                isLoading: false
-            });
-        }).catch(function (e) {
-            self.setState({
-                errorMessage: e.responseJSON.error_description,
-                isLoading: false
-            });
-        });
-    }
-
-    /**
     * External authentication.
     */
     externalAuthenticate() {
@@ -91,7 +53,7 @@ class Login extends Component {
         self.setState({
             isLoading: true
         });
-        // TODO : Externalize this dependency.
+        // TODO : Resolve this url.
         var url = "http://localhost:60000/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri=http://localhost:64950/callback&response_type=id_token token&client_id=ResourceManagerClientId&nonce=nonce&response_mode=query";
         var w = window.open(url, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');        
         var interval = setInterval(function () {
@@ -149,16 +111,7 @@ class Login extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="body">
-                                <form onSubmit={this.authenticate}>
-                                    <div className="form-group">
-                                        <TextField hintText={t('loginHintText')} name="login" onChange={this.handleInputChange} fullWidth={true}/>
-                                    </div>
-                                    <div className="form-group">
-                                        <TextField hintText={t('passwordHintText')} name="password" type="password" onChange={this.handleInputChange} fullWidth={true}/>
-                                    </div>
-                                    <RaisedButton label={t('connect')} primary={true} type="submit" />
-                                </form>
-                                <RaisedButton label={t('externalConnect')} primary={true} onClick={this.externalAuthenticate} />
+                                <RaisedButton label={t('connect')} primary={true} onClick={this.externalAuthenticate} />
                                 {(this.state.errorMessage !== null && (
                                     <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
                                         <strong>Danger !</strong> {this.state.errorMessage}

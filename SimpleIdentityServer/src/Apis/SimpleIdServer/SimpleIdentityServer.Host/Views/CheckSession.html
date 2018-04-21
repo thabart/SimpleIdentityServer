@@ -162,7 +162,13 @@
             }
             
             window.addEventListener("message", function (e) {
-                var result = getSessionStateResult(e.origin, e.data);
+                var result = "error";
+                try {
+                    result = getSessionStateResult(e.origin, e.data);
+                } catch (e) {
+
+                }
+                
                 e.source.postMessage(result, e.origin);
             }, false);
         </script>

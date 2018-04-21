@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsKey(Jwt.Constants.StandardResourceOwnerClaimNames.Subject));
-            Assert.True(result.Audiences.Count() == 1);
+            Assert.True(result.Audiences.Count() > 1);
             Assert.True(result.Azp == clientId);
         }
 

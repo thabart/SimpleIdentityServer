@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "63800ed8e65c66fffeaa"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "7f756e8bccba7a6cb726"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -49627,7 +49627,6 @@ var Login = function (_Component) {
         var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
 
         _this.handleInputChange = _this.handleInputChange.bind(_this);
-        _this.authenticate = _this.authenticate.bind(_this);
         _this.externalAuthenticate = _this.externalAuthenticate.bind(_this);
         _this.state = {
             login: null,
@@ -49655,47 +49654,6 @@ var Login = function (_Component) {
         }
 
         /**
-         * Authenticate the user with login and password.
-         * @param {any} e
-         */
-
-    }, {
-        key: 'authenticate',
-        value: function authenticate(e) {
-            e.preventDefault();
-            var self = this;
-            self.setState({
-                isLoading: true
-            });
-            var t = self.props.t;
-
-            _services.WebsiteService.authenticate(self.state.login, self.state.password).then(function (data) {
-                var payload = self.parseJwt(data.id_token);
-                if (!payload.role || payload.role !== 'administrator') {
-                    self.setState({
-                        errorMessage: t('notAdministrator'),
-                        isLoading: false
-                    });
-                    return;
-                }
-
-                _services.SessionService.setSession(data);
-                _appDispatcher2.default.dispatch({
-                    actionName: _constants2.default.events.USER_LOGGED_IN
-                });
-                self.props.history.push('/');
-                self.setState({
-                    isLoading: false
-                });
-            }).catch(function (e) {
-                self.setState({
-                    errorMessage: e.responseJSON.error_description,
-                    isLoading: false
-                });
-            });
-        }
-
-        /**
         * External authentication.
         */
 
@@ -49717,7 +49675,7 @@ var Login = function (_Component) {
             self.setState({
                 isLoading: true
             });
-            // TODO : Externalize this dependency.
+            // TODO : Resolve this url.
             var url = "http://localhost:60000/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri=http://localhost:64950/callback&response_type=id_token token&client_id=ResourceManagerClientId&nonce=nonce&response_mode=query";
             var w = window.open(url, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
             var interval = setInterval(function () {
@@ -49795,22 +49753,7 @@ var Login = function (_Component) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'body' },
-                                    _react2.default.createElement(
-                                        'form',
-                                        { onSubmit: this.authenticate },
-                                        _react2.default.createElement(
-                                            'div',
-                                            { className: 'form-group' },
-                                            _react2.default.createElement(_materialUi.TextField, { hintText: t('loginHintText'), name: 'login', onChange: this.handleInputChange, fullWidth: true })
-                                        ),
-                                        _react2.default.createElement(
-                                            'div',
-                                            { className: 'form-group' },
-                                            _react2.default.createElement(_materialUi.TextField, { hintText: t('passwordHintText'), name: 'password', type: 'password', onChange: this.handleInputChange, fullWidth: true })
-                                        ),
-                                        _react2.default.createElement(_materialUi.RaisedButton, { label: t('connect'), primary: true, type: 'submit' })
-                                    ),
-                                    _react2.default.createElement(_materialUi.RaisedButton, { label: t('externalConnect'), primary: true, onClick: this.externalAuthenticate }),
+                                    _react2.default.createElement(_materialUi.RaisedButton, { label: t('connect'), primary: true, onClick: this.externalAuthenticate }),
                                     this.state.errorMessage !== null && _react2.default.createElement(
                                         'div',
                                         { className: 'alert alert-danger alert-dismissable', style: { marginTop: '5px' } },
@@ -52408,14 +52351,21 @@ var Layout = function (_Component) {
     _createClass(Layout, [{
         key: "disconnect",
         value: function disconnect() {
-            _services.SessionService.remove();
-            this.setState({
-                isLoggedIn: false
+            // TODO : Resolve this url.
+            var url = "http://localhost:60000/end_session?post_logout_redirect_uri=http://localhost:64950/end_session&id_token_hint=" + _services.SessionService.getSession().id_token;
+            var w = window.open(url, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
+            var interval = setInterval(function () {
+                if (w.closed) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                var href = w.location.href;
+                if (href === "http://localhost:64950/end_session") {
+                    clearInterval(interval);
+                    w.close();
+                }
             });
-            _appDispatcher2.default.dispatch({
-                actionName: _constants2.default.events.USER_LOGGED_OUT
-            });
-            this.props.history.push('/');
         }
     }, {
         key: "toggleValue",
@@ -52460,13 +52410,29 @@ var Layout = function (_Component) {
 
             var evt = window.addEventListener("message", function (e) {
                 if (e.data !== 'unchanged') {
-                    self.disconnect();
+                    _services.SessionService.remove();
+                    console.log(e.data);
+                    self.setState({
+                        isLoggedIn: false
+                    });
+                    _appDispatcher2.default.dispatch({
+                        actionName: _constants2.default.events.USER_LOGGED_OUT
+                    });
+                    self.props.history.push('/');
                 }
             }, false);
             var originUrl = window.location.protocol + "//" + window.location.host;
-            var win = self._sessionFrame.contentWindow;
             self._checkSessionInterval = setInterval(function () {
-                var message = "ResourceManagerClientId " + _services.SessionService.getSession().sessionState;
+                var session = _services.SessionService.getSession();
+                var message = "ResourceManagerClientId ";
+                if (session) {
+                    message += session.sessionState;
+                } else {
+                    session += "tmp";
+                }
+
+                var win = self._sessionFrame.contentWindow;
+                // TODO : Externalize the client_id & openid url.
                 win.postMessage(message, "http://localhost:60000");
             }, 3 * 1000);
         }

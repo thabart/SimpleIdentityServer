@@ -55,9 +55,6 @@ namespace SimpleIdentityServer.Startup
                 {
                     IsEnabled = true,
                     EndPoint = "http://localhost:5555/"
-            _options.DataSource.OpenIdDataSourceType = DataSourceTypes.InMemory;
-            /*
-            */
                 }
             };
         }

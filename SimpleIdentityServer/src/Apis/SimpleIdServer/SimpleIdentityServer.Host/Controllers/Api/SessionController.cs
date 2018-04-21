@@ -31,13 +31,6 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         [HttpGet(Constants.EndPoints.CheckSession)]
         public async Task CheckSession()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
-            if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
-            {
-                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
-                return;
-            }
-
             await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html", (html) =>
             {
                 return html.Replace("{cookieName}", Core.Constants.SESSION_ID);
@@ -85,7 +78,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
             
             Response.Cookies.Delete(Core.Constants.SESSION_ID);
-            Response.Cookies.Delete(_authenticateOptions.CookieName);
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
             {
                 var jws = await _jwtParser.UnSignAsync(request.IdTokenHint);

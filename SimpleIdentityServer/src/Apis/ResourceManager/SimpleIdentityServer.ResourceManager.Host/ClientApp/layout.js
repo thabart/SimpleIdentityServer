@@ -38,14 +38,21 @@ class Layout extends Component {
      * @param {any} e
      */
     disconnect() {
-        SessionService.remove();
-        this.setState({
-            isLoggedIn: false
+        // TODO : Resolve this url.
+        var url = "http://localhost:60000/end_session?post_logout_redirect_uri=http://localhost:64950/end_session&id_token_hint="+ SessionService.getSession().id_token;
+        var w = window.open(url, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=400,height=400');
+        var interval = setInterval(function() {
+            if (w.closed) {
+                clearInterval(interval);
+                return;
+            }
+
+            var href = w.location.href;
+            if (href === "http://localhost:64950/end_session") {                
+                clearInterval(interval);
+                w.close();
+            }
         });
-        AppDispatcher.dispatch({
-            actionName: Constants.events.USER_LOGGED_OUT
-        });
-        this.props.history.push('/');
     }
 
     toggleValue(menu) {    
@@ -82,13 +89,29 @@ class Layout extends Component {
 
         var evt = window.addEventListener("message", function(e) {
             if (e.data !== 'unchanged') {
-                self.disconnect();
+                SessionService.remove();
+                console.log(e.data);
+                self.setState({
+                    isLoggedIn: false
+                });
+                AppDispatcher.dispatch({
+                    actionName: Constants.events.USER_LOGGED_OUT
+                });
+                self.props.history.push('/');
             }
         }, false);
         var originUrl = window.location.protocol + "//" + window.location.host;
-        var win = self._sessionFrame.contentWindow;
-        self._checkSessionInterval = setInterval(function() {
-            var message = "ResourceManagerClientId "+SessionService.getSession().sessionState;
+        self._checkSessionInterval = setInterval(function() { 
+            var session = SessionService.getSession();
+            var message = "ResourceManagerClientId ";
+            if (session) {
+                message += session.sessionState;
+            } else {
+                session += "tmp";
+            }
+
+            var win = self._sessionFrame.contentWindow;
+            // TODO : Externalize the client_id & openid url.
             win.postMessage(message, "http://localhost:60000");
         }, 3*1000);
     }
