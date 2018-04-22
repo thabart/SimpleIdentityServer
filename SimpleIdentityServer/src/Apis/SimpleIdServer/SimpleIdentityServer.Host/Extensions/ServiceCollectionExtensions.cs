@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
     {
-        public static IServiceCollection AddSimpleIdentityServer(
+        public static IServiceCollection AddOpenIdApi(
             this IServiceCollection serviceCollection,
             Action<IdentityServerOptions> optionsCallback)
         {
@@ -48,12 +48,12 @@ namespace SimpleIdentityServer.Host
             
             var options = new IdentityServerOptions();
             optionsCallback(options);
-            serviceCollection.AddSimpleIdentityServer(
+            serviceCollection.AddOpenIdApi(
                 options);
             return serviceCollection;
         }
         
-        public static IServiceCollection AddSimpleIdentityServer(
+        public static IServiceCollection AddOpenIdApi(
             this IServiceCollection serviceCollection,
             IdentityServerOptions options)
         {
@@ -136,7 +136,23 @@ namespace SimpleIdentityServer.Host
 
             return serviceCollection;
         }
-                
+   
+        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services)
+        {
+            /*
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                var embeddedFileProvider = new EmbeddedFileProvider(typeof(BookOfTheMonkViewComponent).GetTypeInfo().Assembly);
+                var compositeFileProvider = new CompositeFileProvider(
+                    embeddedFileProvider,
+                    options.FileProvider);
+                options.FileProvider = compositeFileProvider;
+            }
+            */
+            // CONFIGURE AUTHENTICATION + CONSENT + FORM
+            return services;
+        }
+
         /// <summary>
         /// Add all the dependencies needed to run Simple Identity Server
         /// </summary>

@@ -62,6 +62,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Website\" />
+  </ItemGroup>
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <DefineConstants>$(DefineConstants);NET</DefineConstants>
   </PropertyGroup>
