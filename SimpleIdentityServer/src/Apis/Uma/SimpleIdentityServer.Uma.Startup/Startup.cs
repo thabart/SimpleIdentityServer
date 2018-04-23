@@ -28,8 +28,9 @@ using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
+using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.EF;
-using SimpleIdentityServer.Uma.EF.SqlServer;
+using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
@@ -60,7 +61,8 @@ namespace SimpleIdentityServer.Uma.Startup
         {
             ConfigureEventStoreSqlServerBus(services);
             ConfigureOauthRepositorySqlServer(services);
-            ConfigureUmaSqlServer(services);
+            ConfigureUmaInMemoryEF(services);
+            ConfigureUmaInMemoryStore(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
             ConfigureCaching(services);
@@ -87,10 +89,15 @@ namespace SimpleIdentityServer.Uma.Startup
             services.AddOAuthSqlServerEF(connectionString);
         }
 
-        private void ConfigureUmaSqlServer(IServiceCollection services)
+        private void ConfigureUmaInMemoryEF(IServiceCollection services)
         {
-            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddUmaSqlServerEF(connectionString);
+            // var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            services.AddUmaInMemoryEF();
+        }
+
+        private void ConfigureUmaInMemoryStore(IServiceCollection services)
+        {
+            services.AddUmaInMemoryStore();
         }
 
         private void ConfigureStorageInMemory(IServiceCollection services)

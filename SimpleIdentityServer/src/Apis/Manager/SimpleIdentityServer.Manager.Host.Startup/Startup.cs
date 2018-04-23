@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Manager.Host.Startup
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
-            var connectionString = "Data Source=.;Initial Catalog=SimpleIdentityServer;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             services.AddOAuthSqlServerEF(connectionString);
         }
 

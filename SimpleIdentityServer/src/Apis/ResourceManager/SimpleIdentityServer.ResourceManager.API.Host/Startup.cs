@@ -27,6 +27,7 @@ using WebApiContrib.Core.Storage.InMemory;
 using System;
 using SimpleIdentityServer.Uma.Client;
 using SimpleIdentityServer.ResourceManager.API.Host.Stores;
+using SimpleIdentityServer.ResourceManager.EF.InMemory;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host
 {
@@ -50,7 +51,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
             services.AddMvc();
-            services.AddResourceManagerInMemory();
+            services.AddResourceManagerInMemoryEF();
             RegisterServices(services);
         }
 

@@ -31,7 +31,7 @@
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Handler\SimpleIdentityServer.Handler.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Uma.EF.SqlServer\SimpleIdentityServer.Uma.EF.SqlServer.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.EF.InMemory\SimpleIdentityServer.Uma.EF.InMemory.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
     <ProjectReference Include="..\..\..\Lib\Serilog\Serilog.Sinks.ElasticSearch\Serilog.Sinks.ElasticSearch.csproj" />
