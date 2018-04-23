@@ -15,9 +15,9 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Startup.ViewModels;
+using SimpleIdentityServer.Host.ViewModels;
 
-namespace SimpleIdentityServer.Startup.Controllers
+namespace SimpleIdentityServer.Host.Controllers.Website
 {
     public class FormController : Controller
     {

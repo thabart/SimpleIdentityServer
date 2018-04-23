@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.InMemory\SimpleIdentityServer.EventStore.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EF.InMemory\SimpleIdentityServer.EF.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EF\SimpleIdentityServer.EF.csproj" />

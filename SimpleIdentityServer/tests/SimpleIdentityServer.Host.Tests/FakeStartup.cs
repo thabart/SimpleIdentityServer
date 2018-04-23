@@ -28,8 +28,8 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
-using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
+using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
@@ -102,13 +102,10 @@ namespace SimpleIdentityServer.Host.Tests
                 context.EnsureSeedData(_context);
             }
 
-            app.UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
-            // 2. Use static files.
-            app.UseStaticFiles();
             // 4. Use simple identity server.
-            app.UseSimpleIdentityServer(_options);
+            app.UseOpenIdApi(_options);
             // 5. Client JWKS endpoint
             app.Map("/jwks_client", a =>
             {
@@ -148,7 +145,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddLogging()
                 .AddOAuthInMemoryEF()
                 .AddSimpleBusInMemory()
-                .AddEventStoreInMemory()
+                .AddEventStoreInMemoryEF()
                 .AddEventStoreBusHandler()
                 .AddInMemoryStorage();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);

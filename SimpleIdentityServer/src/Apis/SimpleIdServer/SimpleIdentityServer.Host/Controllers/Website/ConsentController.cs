@@ -28,13 +28,13 @@ using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Startup.ViewModels;
+using SimpleIdentityServer.Host.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Startup.Controllers
+namespace SimpleIdentityServer.Host.Controllers.Website
 {
     [Authorize("Connected")]
     public class ConsentController : BaseController
@@ -54,7 +54,8 @@ namespace SimpleIdentityServer.Startup.Controllers
             IEventAggregateRepository eventAggregateRepository,
             IAuthenticationService authenticationService,
             IUserActions usersAction,
-            IPayloadSerializer payloadSerializer) : base(authenticationService, usersAction)
+            IPayloadSerializer payloadSerializer,
+            AuthenticateOptions authenticateOptions) : base(authenticationService, usersAction, authenticateOptions)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -96,7 +97,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
                 authenticatedUser);
             await LogConsentAccepted(actionResult, parameter.ProcessId);

@@ -22,7 +22,10 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
@@ -44,7 +47,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public UserController(
             IUserActions userActions,
             ITranslationManager translationManager,
-            IAuthenticationService authenticationService) : base(authenticationService, userActions)
+            IAuthenticationService authenticationService, AuthenticateOptions options) : base(authenticationService, userActions, options)
         {
             _userActions = userActions;
             _translationManager = translationManager;

@@ -20,10 +20,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Authenticate\Index.cshtml" />
+    <None Remove="Views\Authenticate\OpenId.cshtml" />
+    <None Remove="Views\Authenticate\SendCode.cshtml" />
     <None Remove="Views\CheckSession.html" />
+    <None Remove="Views\Consent\Index.cshtml" />
+    <None Remove="Views\Form\Index.cshtml" />
     <None Remove="Views\RevokeSession.html" />
     <None Remove="Views\RevokeSessionCallback.html" />
     <None Remove="Views\UserNotConnected.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Authenticate\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Authenticate\OpenId.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Authenticate\SendCode.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Consent\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\Form\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +54,12 @@
     <EmbeddedResource Include="Views\UserNotConnected.html" />
     <EmbeddedResource Include="Views\RevokeSessionCallback.html" />
     <EmbeddedResource Include="Views\RevokeSession.html" />
+    <EmbeddedResource Include="Views\**\*.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\Consent\Index.cshtml" />
+    <EmbeddedResource Remove="Views\Form\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +82,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.3" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
@@ -60,10 +91,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Website\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">

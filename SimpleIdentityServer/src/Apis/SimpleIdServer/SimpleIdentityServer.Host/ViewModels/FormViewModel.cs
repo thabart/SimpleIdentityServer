@@ -14,12 +14,14 @@
 // limitations under the License.
 #endregion
 
-namespace SimpleIdentityServer.Startup.ViewModels
+namespace SimpleIdentityServer.Host.ViewModels
 {
-    public class CallbackViewModel
+    public class FormViewModel
     {
-        public string IdentityToken { get; set; }
+        public string IdToken { get; set; }
         public string AccessToken { get; set; }
+        public string AuthorizationCode { get; set; }
         public string State { get; set; }
+        public string RedirectUri { get; set; }
     }
 }

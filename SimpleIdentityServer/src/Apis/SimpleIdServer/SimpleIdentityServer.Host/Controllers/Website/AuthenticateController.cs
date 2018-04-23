@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.FileProviders;
 using SimpleBus.Core;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
@@ -33,9 +34,8 @@ using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Startup.Extensions;
-using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -43,7 +43,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Startup.Controllers
+namespace SimpleIdentityServer.Host.Controllers.Website
 {
     public class AuthenticateController : BaseController
     {
@@ -73,7 +73,8 @@ namespace SimpleIdentityServer.Startup.Controllers
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IUserActions userActions,
-            IPayloadSerializer payloadSerializer) : base(authenticationService, userActions)
+            IPayloadSerializer payloadSerializer,
+            AuthenticateOptions authenticateOptions) : base(authenticationService, userActions, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -92,7 +93,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(Core.Constants.SESSION_ID);
-            await _authenticationService.SignOutAsync(HttpContext, Constants.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             return RedirectToAction("Index", "Authenticate");
         }
                 
@@ -195,12 +196,12 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 1. Check if the user exists and insert it
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.ExternalCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
             var claims = await _authenticateActions.LoginCallback(authenticatedUser);
 
             // 2. Set cookie
             await SetLocalCookie(claims, Guid.NewGuid().ToString());
-            await _authenticationService.SignOutAsync(HttpContext, Constants.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
 
             // 3. Redirect to the profile
             return RedirectToAction("Index", "User");
@@ -447,7 +448,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }            
             
             // 4. Check if the user is authenticated
-            var authenticatedUser = await this.GetAuthenticatedUserExternal();
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
             if (authenticatedUser == null ||
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity)) {
@@ -471,7 +472,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             if (actionResult.ActionResult != null)
             {
                 await SetLocalCookie(actionResult.Claims, authorizationRequest.SessionId);
-                await _authenticationService.SignOutAsync(HttpContext, Constants.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+                await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
                 await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
@@ -539,9 +540,9 @@ namespace SimpleIdentityServer.Startup.Controllers
             {
                 HttpOnly = false
             });
-            var identity = new ClaimsIdentity(cls, Constants.CookieName);
+            var identity = new ClaimsIdentity(cls, _authenticateOptions.CookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext, Constants.CookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
+            await _authenticationService.SignInAsync(HttpContext, _authenticateOptions.CookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
             {
                 ExpiresUtc = DateTime.UtcNow.AddDays(7),
                 IsPersistent = false

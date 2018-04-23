@@ -14,19 +14,22 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Configuration;
+using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
@@ -72,6 +75,48 @@ namespace SimpleIdentityServer.Host
                 options);
             return serviceCollection;
         }
+   
+        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services, IHostingEnvironment hosting, IdentityServerOptions idOpts)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (hosting == null)
+            {
+                throw new ArgumentNullException(nameof(hosting));
+            }
+
+            if (idOpts == null)
+            {
+                throw new ArgumentNullException(nameof(idOpts));
+            }
+
+            var assembly = typeof(AuthenticateController).Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(compositeProvider);
+            });
+
+            services.AddSingleton<IFileProvider>(compositeProvider);
+            services.AddMvc().AddApplicationPart(assembly);
+            return services;
+        }
+
+        private static void ConfigureSimpleIdentityServer(
+            IServiceCollection services,
+            IdentityServerOptions options)
+        {
+            services.AddSimpleIdentityServerCore()
+                .AddSimpleIdentityServerJwt()
+                .AddHostIdentityServer(options)
+                .AddIdServerClient()
+                .AddIdServerLogging()
+                .AddDataProtection();
+        }
 
         public static IServiceCollection AddHostIdentityServer(this IServiceCollection serviceCollection, IdentityServerOptions options)
         {
@@ -115,7 +160,7 @@ namespace SimpleIdentityServer.Host
             var twoFactorServiceStore = new TwoFactorServiceStore();
             if (options.TwoFactorAuthentications != null)
             {
-                foreach(var twoFactorAuthentication in options.TwoFactorAuthentications)
+                foreach (var twoFactorAuthentication in options.TwoFactorAuthentications)
                 {
                     if (twoFactorAuthentication.TwoFactorAuthType != Core.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
                     {
@@ -134,78 +179,14 @@ namespace SimpleIdentityServer.Host
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddDataProtection();
 
+            serviceCollection.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
+                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == options.Authenticate.CookieName;
+                }));
+            });
+
             return serviceCollection;
-        }
-   
-        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services)
-        {
-            /*
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                var embeddedFileProvider = new EmbeddedFileProvider(typeof(BookOfTheMonkViewComponent).GetTypeInfo().Assembly);
-                var compositeFileProvider = new CompositeFileProvider(
-                    embeddedFileProvider,
-                    options.FileProvider);
-                options.FileProvider = compositeFileProvider;
-            }
-            */
-            // CONFIGURE AUTHENTICATION + CONSENT + FORM
-            return services;
-        }
-
-        /// <summary>
-        /// Add all the dependencies needed to run Simple Identity Server
-        /// </summary>
-        /// <param name="services"></param>
-        private static void ConfigureSimpleIdentityServer(
-            IServiceCollection services,
-            IdentityServerOptions options)
-        {
-            services.AddSimpleIdentityServerCore()
-                .AddSimpleIdentityServerJwt()
-                .AddHostIdentityServer(options)
-                .AddIdServerClient()
-                .AddIdServerLogging()
-                .AddDataProtection();
-
-            /*
-            // Configure SeriLog pipeline
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            if (options.Logging.FileLogOptions != null &&
-                options.Logging.FileLogOptions.IsEnabled)
-            {
-                logger.WriteTo.RollingFile(options.Logging.FileLogOptions.PathFormat);
-            }
-
-            if (options.Logging.ElasticsearchOptions != null &&
-                options.Logging.ElasticsearchOptions.IsEnabled)
-            {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(options.Logging.ElasticsearchOptions.Url))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = "simpleidserver-{0:yyyy.MM.dd}"
-                });
-            }
-        
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
-            services.AddLogging();
-            services.AddSingleton<ILogger>(log);
-            */
         }
     }
 }

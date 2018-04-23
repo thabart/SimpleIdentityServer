@@ -83,12 +83,6 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERTS
             Assert.NotNull(result);
             Assert.NotEmpty(result.AccessToken);
-            /*
-            Assert.NotNull(claims);
-            Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject].ToString() == "administrator");
-            Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimId].ToString() == "id");
-            Assert.True(claims[Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation].ToString() == "http://localhost:5555/Users/id");
-            */
         }
 
         [Fact]

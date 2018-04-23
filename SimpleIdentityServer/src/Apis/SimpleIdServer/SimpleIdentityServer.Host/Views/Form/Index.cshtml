@@ -4,7 +4,7 @@
 
 @using SimpleIdentityServer.Core;
 
-@model SimpleIdentityServer.Startup.ViewModels.FormViewModel
+@model SimpleIdentityServer.Host.ViewModels.FormViewModel
 
 <form method="post" action="@Model.RedirectUri" id="form">
     @if (!string.IsNullOrWhiteSpace(Model.State))

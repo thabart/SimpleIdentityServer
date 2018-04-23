@@ -15,18 +15,23 @@
 #endregion
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Startup.ViewModels
+namespace SimpleIdentityServer.Host.ViewModels
 {
-    public class ConsentViewModel
+    public class AuthorizeOpenIdViewModel
     {
-        public string Id { get; set; }
-        public string ClientDisplayName { get; set; }
-        public ICollection<string> AllowedScopeDescriptions { get; set; }
-        public ICollection<string> AllowedIndividualClaims { get; set; }
-        public string LogoUri { get; set; }
-        public string PolicyUri { get; set; }
-        public string TosUri { get; set; }
+        public AuthorizeOpenIdViewModel()
+        {
+            IdProviders = new List<IdProviderViewModel>();
+        }
+
         public string Code { get; set; }
+        [Required(ErrorMessage = "the user name is required")]
+        public string UserName { get; set; }
+        [Required(ErrorMessage = "the password is required")]
+        public string Password { get; set; }
+        public bool IsChecked { get; set; }
+        public List<IdProviderViewModel> IdProviders { get; set; }
     }
 }

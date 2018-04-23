@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.DTOs.Response;
+using SimpleIdentityServer.Host.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,34 @@ namespace SimpleIdentityServer.Host.Extensions
 {
     public static class MappingExtensions
     {
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            return new LocalAuthenticationParameter
+            {
+                UserName = viewModel.UserName,
+                Password = viewModel.Password
+            };
+        }
+
+        public static LocalAuthenticationParameter ToParameter(this AuthorizeOpenIdViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            return new LocalAuthenticationParameter
+            {
+                UserName = viewModel.UserName,
+                Password = viewModel.Password
+            };
+        }
+
         public static AuthorizationParameter ToParameter(this AuthorizationRequest request)
         {
             var result = new AuthorizationParameter

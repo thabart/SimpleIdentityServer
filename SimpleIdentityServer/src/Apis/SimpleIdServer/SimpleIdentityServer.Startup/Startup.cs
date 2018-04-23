@@ -26,7 +26,6 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using System;
@@ -36,6 +35,7 @@ namespace SimpleIdentityServer.Startup
     public class Startup
     {
         private IdentityServerOptions _options;
+        private IHostingEnvironment _env;
         public IConfigurationRoot Configuration { get; set; }
 
         public Startup(IHostingEnvironment env)
@@ -49,7 +49,8 @@ namespace SimpleIdentityServer.Startup
             {
                 Authenticate = new AuthenticateOptions
                 {
-                    CookieName = Constants.CookieName
+                    CookieName = Constants.CookieName,
+                    ExternalCookieName = Constants.ExternalCookieName
                 },
                 Scim = new ScimOptions
                 {
@@ -57,6 +58,7 @@ namespace SimpleIdentityServer.Startup
                     EndPoint = "http://localhost:5555/"
                 }
             };
+            _env = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -71,7 +73,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            services.AddSimpleIdentityServer(_options);
+            services.AddOpenIdApi(_options);
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)
@@ -92,14 +94,7 @@ namespace SimpleIdentityServer.Startup
                     opts.LoginPath = "/Authenticate";
                 });
             // 5. Configure MVC
-            services.AddMvc();
-            // 6. Add authentication dependencies & configure it.
-            services.AddAuthorization(opts =>
-            {
-                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == Constants.CookieName;
-                }));
-            });
+            services.AddAuthenticationWebsite(_env, _options);
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -150,13 +145,12 @@ namespace SimpleIdentityServer.Startup
         {
             //1 . Enable CORS.
             app.UseCors("AllowAll");
-            app.UseAuthentication();
             // 2. Use static files.
             app.UseStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable SimpleIdentityServer
-            app.UseSimpleIdentityServer(_options, loggerFactory);
+            app.UseOpenIdApi(_options, loggerFactory);
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {

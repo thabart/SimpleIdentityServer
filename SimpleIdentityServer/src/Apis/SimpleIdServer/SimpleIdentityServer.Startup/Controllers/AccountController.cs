@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.Account;
 using SimpleIdentityServer.Core.WebSite.User;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Startup.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -29,7 +31,8 @@ namespace SimpleIdentityServer.Startup.Controllers
     {
         private readonly IAccountActions _accountActions;
 
-        public AccountController(IAccountActions accountActions, IAuthenticationService authenticationService, IUserActions userActions) : base(authenticationService, userActions)
+        public AccountController(IAccountActions accountActions, IAuthenticationService authenticationService, IUserActions userActions, AuthenticateOptions options) 
+            : base(authenticationService, userActions, options)
         {
             _accountActions = accountActions;
         }

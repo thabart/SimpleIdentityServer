@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Host
     public class AuthenticateOptions
     {
         public string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
+        public string ExternalCookieName = "SimpleIdServer-OpenId-External";
     }
 
     public class ScimOptions

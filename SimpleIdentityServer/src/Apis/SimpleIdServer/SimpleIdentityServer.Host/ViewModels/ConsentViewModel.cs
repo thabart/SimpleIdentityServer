@@ -14,14 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Startup.ViewModels
+namespace SimpleIdentityServer.Host.ViewModels
 {
-    public class CodeViewModel
+    public class ConsentViewModel
     {
-        [Required]
-        [Display(Name = "Code")]
+        public string Id { get; set; }
+        public string ClientDisplayName { get; set; }
+        public ICollection<string> AllowedScopeDescriptions { get; set; }
+        public ICollection<string> AllowedIndividualClaims { get; set; }
+        public string LogoUri { get; set; }
+        public string PolicyUri { get; set; }
+        public string TosUri { get; set; }
         public string Code { get; set; }
     }
 }
