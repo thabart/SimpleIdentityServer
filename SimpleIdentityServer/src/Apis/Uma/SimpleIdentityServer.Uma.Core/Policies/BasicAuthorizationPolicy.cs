@@ -33,13 +33,11 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
-        private readonly IParametersProvider _parametersProvider;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJwtTokenParser _jwtTokenParser;
         
-        public BasicAuthorizationPolicy(IParametersProvider parametersProvider, IIdentityServerClientFactory identityServerClientFactory, IJwtTokenParser jwtTokenParser)
+        public BasicAuthorizationPolicy(IIdentityServerClientFactory identityServerClientFactory, IJwtTokenParser jwtTokenParser)
         {
-            _parametersProvider = parametersProvider;
             _identityServerClientFactory = identityServerClientFactory;
             _jwtTokenParser = jwtTokenParser;
         }
@@ -126,7 +124,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             };
         }
 
-        private AuthorizationPolicyResult GetNeedInfoResult(List<Claim> claims)
+        private AuthorizationPolicyResult GetNeedInfoResult(List<Claim> claims, string openidConfigurationUrl)
         {
             var requestingPartyClaims = new Dictionary<string, object>();
             var requiredClaims = new List<Dictionary<string, string>>();
@@ -141,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                         Constants.ErrorDetailNames.ClaimFriendlyName, claim.Type
                     },
                     {
-                        Constants.ErrorDetailNames.ClaimIssuer, _parametersProvider.GetOpenIdConfigurationUrl()
+                        Constants.ErrorDetailNames.ClaimIssuer, openidConfigurationUrl
                     }
                 });
             }
@@ -171,7 +169,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             if (claimTokenParameter == null || claimTokenParameter.Format != Constants.IdTokenType)
             {
-                return GetNeedInfoResult(authorizationPolicy.Claims);
+                return GetNeedInfoResult(authorizationPolicy.Claims, authorizationPolicy.OpenIdProvider);
             }
 
             var idToken = claimTokenParameter.Token;

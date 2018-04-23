@@ -65,14 +65,12 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
         private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
         {
-            var parametersProvider = new ParametersProvider(configuration.OpenIdWellKnownConfiguration);
             services.AddSimpleIdServerUmaCore()
                 .AddSimpleIdentityServerCore()
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerClient();
             services.AddIdServerLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
-            services.AddSingleton<IParametersProvider>(parametersProvider);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
             if (configuration.AuthenticateResourceOwner == null)

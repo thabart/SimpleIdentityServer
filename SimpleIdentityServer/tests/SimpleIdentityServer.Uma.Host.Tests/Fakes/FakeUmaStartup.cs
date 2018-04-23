@@ -55,10 +55,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 
         public FakeUmaStartup(SharedContext context)
         {
-            _configuration = new UmaHostConfiguration
-            {
-                OpenIdWellKnownConfiguration = "http://localhost:5000/.well-known/uma2-configuration"
-            };
+            _configuration = new UmaHostConfiguration();
             _context = context;
         }
 
@@ -101,10 +98,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             {
                 throw new ArgumentNullException(nameof(app));
             }
-
-            // 1. Display status code page.
-            app.UseStatusCodePages();
-            // 2. Insert seed data
+            
+            // 1. Insert seed data
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
@@ -153,21 +148,21 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
         {
             // 1. Add CORE.
-            var parametersProvider = new ParametersProvider(configuration.OpenIdWellKnownConfiguration);
             services.AddSimpleIdServerUmaCore()
                 .AddSimpleIdentityServerCore()
                 .AddSimpleIdentityServerJwt();
-
-            services.AddConcurrency(opt => opt.UseInMemory());
 
             // 2. Register DB & stores.
             services.AddUmaInMemoryEF();
             services.AddOAuthInMemoryEF();
             services.AddUmaInMemoryStore();
+            services.AddInMemoryStorage();
 
             services.AddEventStoreInMemoryEF();
             services.AddSimpleBusInMemory()
                 .AddEventStoreBusHandler();
+
+            services.AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();
@@ -179,7 +174,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            services.AddSingleton<IParametersProvider>(parametersProvider);
             services.AddTransient<IIdentityServerClientFactory, FakeIdentityServerClientFactory>();
         }
     }

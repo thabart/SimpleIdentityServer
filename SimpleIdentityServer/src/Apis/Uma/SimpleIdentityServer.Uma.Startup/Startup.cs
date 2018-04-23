@@ -34,6 +34,8 @@ using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
 using System;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Uma.Startup
 {
@@ -49,10 +51,7 @@ namespace SimpleIdentityServer.Uma.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            _umaHostConfiguration = new UmaHostConfiguration // TH : The settings must come from the appsettings.json.
-            {
-                OpenIdWellKnownConfiguration = "https://localhost:5443/.well-known/openid-configuration"
-            };
+            _umaHostConfiguration = new UmaHostConfiguration();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -64,12 +63,13 @@ namespace SimpleIdentityServer.Uma.Startup
             ConfigureUmaSqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
+            ConfigureCaching(services);
             services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
                 .AddOAuth2Introspection(opts =>
                 {
                     opts.ClientId = "uma";
                     opts.ClientSecret = "uma";
-                    opts.WellKnownConfigurationUrl = "https://localhost:5445/.well-known/uma2-configuration";
+                    opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
                 });
             services.AddUmaHost(_umaHostConfiguration);
         }
@@ -96,6 +96,11 @@ namespace SimpleIdentityServer.Uma.Startup
         private void ConfigureStorageInMemory(IServiceCollection services)
         {
             services.AddInMemoryStorage();
+        }
+
+        private void ConfigureCaching(IServiceCollection services)
+        {
+            services.AddConcurrency(opt => opt.UseInMemory());
         }
 
         private void ConfigureLogging(IServiceCollection services)

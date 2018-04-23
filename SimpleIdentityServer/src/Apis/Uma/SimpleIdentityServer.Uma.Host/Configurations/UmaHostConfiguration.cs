@@ -21,10 +21,6 @@ namespace SimpleIdentityServer.Uma.Host.Configurations
     public class UmaHostConfiguration
     {
         /// <summary>
-        /// Get or set the OPENID well known configuration.
-        /// </summary>
-        public string OpenIdWellKnownConfiguration { get; set; }
-        /// <summary>
         /// Service used to authenticate the resource owner.
         /// </summary>
         public Type AuthenticateResourceOwner { get; set; }

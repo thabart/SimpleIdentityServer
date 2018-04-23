@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Other Layer", "01. Other Layer", "{A70EBAB2-FCB5-491F-822F-76AB632B4F0C}"
 EndProject
@@ -112,6 +112,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.SqlServer", "src\Apis\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj", "{787C152A-A379-458C-8D22-F9739BF34396}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.InMemory", "src\Apis\EventStore\SimpleIdentityServer.EventStore.InMemory\SimpleIdentityServer.EventStore.InMemory.csproj", "{0413C7E2-943C-4B9E-824E-A9ABADC1C480}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Core", "src\Apis\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj", "{53DEA854-AA31-47B5-92C8-E55D4233F940}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -275,6 +277,10 @@ Global
 		{0413C7E2-943C-4B9E-824E-A9ABADC1C480}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0413C7E2-943C-4B9E-824E-A9ABADC1C480}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0413C7E2-943C-4B9E-824E-A9ABADC1C480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DEA854-AA31-47B5-92C8-E55D4233F940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DEA854-AA31-47B5-92C8-E55D4233F940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DEA854-AA31-47B5-92C8-E55D4233F940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DEA854-AA31-47B5-92C8-E55D4233F940}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -329,6 +335,7 @@ Global
 		{F6EAE516-28F1-4117-942F-566F1D96F2BC} = {BCD83D5A-35FE-4898-96B9-F568E8F8C934}
 		{787C152A-A379-458C-8D22-F9739BF34396} = {F6EAE516-28F1-4117-942F-566F1D96F2BC}
 		{0413C7E2-943C-4B9E-824E-A9ABADC1C480} = {F6EAE516-28F1-4117-942F-566F1D96F2BC}
+		{53DEA854-AA31-47B5-92C8-E55D4233F940} = {21AF6C2D-853A-45FB-B27D-0BCD22501EDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C267BB78-A51A-4C90-8C7E-807BDE249284}
