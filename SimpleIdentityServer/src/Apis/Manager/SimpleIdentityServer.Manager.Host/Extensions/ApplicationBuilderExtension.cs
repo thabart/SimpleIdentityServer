@@ -16,7 +16,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Host.Middleware;
 using System;
@@ -35,18 +34,14 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
             
-            // 1. Use log.
-            loggerFactory.AddSerilog();
-            // 2. Display status code page.
-            applicationBuilder.UseStatusCodePages();
-            // 3. Enable CORS
+            // 1. Enable CORS
             applicationBuilder.UseCors("AllowAll");
-            // 4. Enable custom exception handler
+            // 2. Enable custom exception handler
             applicationBuilder.UseSimpleIdentityServerManagerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 ManagerEventSource = (IManagerEventSource)applicationBuilder.ApplicationServices.GetService(typeof(IManagerEventSource))
             });
-            // 5. Launch ASP.NET API
+            // 3. Launch ASP.NET API
             applicationBuilder.UseMvc(routes =>
             {
                 routes.MapRoute(

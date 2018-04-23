@@ -9,10 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.EF.SqlServer\SimpleIdentityServer.EF.SqlServer.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Manager.Host\SimpleIdentityServer.Manager.Host.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.DataAccess.SqlServer\SimpleIdentityServer.DataAccess.SqlServer.csproj" />
-    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
   </ItemGroup>
 
@@ -20,6 +21,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.2" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="1.0.0" />
+    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

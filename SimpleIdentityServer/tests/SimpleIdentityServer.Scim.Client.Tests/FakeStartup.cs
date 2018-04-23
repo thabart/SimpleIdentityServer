@@ -20,9 +20,11 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Scim.Client.Tests.Extensions;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
+using SimpleIdentityServer.Scim.Db.EF.InMemory;
 using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Controllers;
 using System.Reflection;
@@ -35,9 +37,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInMemoryDb();
             services.AddConcurrency(opt => opt.UseInMemory());
-            services.AddEventStoreInMemory().AddSimpleBusInMemory().AddEventStoreBus().AddScim();
+            services.AddScimInMemoryEF();
+            services.AddEventStoreInMemoryEF();
+            services.AddSimpleBusInMemory();
+            services.AddEventStoreBusHandler();
+            services.AddScim();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {

@@ -18,71 +18,8 @@ using SimpleIdentityServer.Core.Services;
 
 namespace SimpleIdentityServer.Manager.Host.Extensions
 {
-    public sealed class LoggingOptions
-    {
-        public FileLogOptions FileLogOptions { get; set; }
-
-        public ElasticsearchOptions ElasticsearchOptions { get; set; }
-    }
-
-    public sealed class FileLogOptions
-    {
-        #region Constructor
-
-        public FileLogOptions()
-        {
-            PathFormat = "log-{Date}.txt";
-        }
-
-        #endregion
-
-        #region Properties
-
-        public bool IsEnabled { get; set; }
-
-        public string PathFormat { get; set; }
-
-        #endregion
-    }
-
-    public sealed class ElasticsearchOptions
-    {
-        #region Constructor
-
-        public ElasticsearchOptions()
-        {
-            Url = "http://localhost:9200";
-        }
-
-        #endregion
-
-        #region Properties
-
-        public bool IsEnabled { get; set; }
-
-        public string Url { get; set; }
-
-        #endregion
-    }
-
-    public enum DataSourceTypes
-    {
-        SqlServer,
-        SqlLite,
-        Postgre,
-        InMemory
-    }
-
     public class ManagerOptions
     {
-        /// <summary>
-        /// Enable or disable the developer mode
-        /// </summary>
-        public bool IsDeveloperModeEnabled { get; set; }
-        /// <summary>
-        /// Configure the SERILOG logging.
-        /// </summary>
-        public LoggingOptions Logging { get; set; }
         /// <summary>
         /// Service used to encrypt the password (for the client).
         /// </summary>

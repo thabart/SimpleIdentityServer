@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Scim.Core
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScim(this IServiceCollection services)
+        public static IServiceCollection AddScimCore(this IServiceCollection services)
         {
             if (services == null)
             {

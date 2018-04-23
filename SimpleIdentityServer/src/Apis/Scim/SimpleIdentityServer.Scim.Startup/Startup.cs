@@ -20,21 +20,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Scim.Db.EF;
+using SimpleIdentityServer.Scim.Db.EF.InMemory;
 using SimpleIdentityServer.Scim.EventStore.Handler;
-using SimpleIdentityServer.Scim.Host.Configurations;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Startup.Extensions;
+using WebApiContrib.Core.Concurrency;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
 
     public class Startup
     {
-        private ScimConfiguration _configuration;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -43,17 +43,6 @@ namespace SimpleIdentityServer.Scim.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            _configuration = new ScimConfiguration
-            {
-                DataSource = new DbOptions
-                {
-                    Type = DbTypes.INMEMORY
-                },
-                Caching = new CachingOptions
-                {
-                    Type = CachingTypes.INMEMORY
-                }
-            };
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -67,16 +56,39 @@ namespace SimpleIdentityServer.Scim.Startup
                     opts.ClientSecret = "~V*nH{q4;qL/=8+Z";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
                 });
-            services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;").AddSimpleBusInMemory().AddEventStoreBus().AddScim(_configuration);
+            ConfigureEventStoreSqlServerBus(services);
+            ConfigureScimRepository(services);
+            ConfigureCachingInMemory(services);
+            services.AddScim();
+        }
+
+        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        {
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;");
+            services.AddSimpleBusInMemory();
+            services.AddEventStoreBusHandler();
+        }
+
+        private void ConfigureScimRepository(IServiceCollection services)
+        {
+            services.AddScimInMemoryEF();
+        }
+
+        private void ConfigureCachingInMemory(IServiceCollection services)
+        {
+            services.AddConcurrency(opt => opt.UseInMemory());
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
             app.UseAuthentication();
-            app.UseScimHost(loggerFactory, _configuration);
+            app.UseStatusCodePages();
+            app.UseScimHost();
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
+                scimDbContext.Database.EnsureCreated();
                 scimDbContext.EnsureSeedData();
             }
         }

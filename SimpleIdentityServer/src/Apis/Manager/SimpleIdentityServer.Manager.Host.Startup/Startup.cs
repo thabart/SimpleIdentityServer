@@ -19,12 +19,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.SqlServer.Extensions;
+using Serilog;
+using Serilog.Events;
+using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.Manager.Host.Extensions;
 using SimpleIdentityServer.OAuth2Introspection;
+using System;
 using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage;
 using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Manager.Host.Startup
@@ -44,63 +45,16 @@ namespace SimpleIdentityServer.Manager.Host.Startup
             Configuration = builder.Build();
             var isLogFileEnabled = bool.Parse(Configuration["Log:File:Enabled"]);
             var isElasticSearchEnabled = bool.Parse(Configuration["Log:Elasticsearch:Enabled"]);
-            _options = new ManagerOptions
-            {
-                 Logging = new LoggingOptions
-                 {
-                     ElasticsearchOptions = new ElasticsearchOptions
-                     {
-                         IsEnabled = isElasticSearchEnabled,
-                         Url = Configuration["Log:Elasticsearch:Url"]
-                     },
-                     FileLogOptions = new FileLogOptions
-                     {
-                         IsEnabled = isLogFileEnabled,
-                         PathFormat = Configuration["Log:File:PathFormat"]
-                     }
-                 }
-            };
+            _options = new ManagerOptions();
         }
 
         public IConfigurationRoot Configuration { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cachingType = Configuration["Caching:Type"];
-            var databaseType = Configuration["Db:Type"];
-
-            // 1. Configure the caching
-            if (cachingType == "REDIS")
-            {
-                services.AddConcurrency(opt => opt.UseRedis(o =>
-                {
-                    o.Configuration = Configuration["Caching:ConnectionString"];
-                    o.InstanceName = Configuration["Caching:InstanceName"];
-                }));
-            }
-            else
-            {
-                services.AddConcurrency(opt => opt.UseInMemory());
-            }
-            
-            // 2. Configure database
-            if (databaseType == "SQLITE")
-            {
-                services.AddSimpleIdentityServerSqlLite(Configuration["Db:ConnectionString"]);
-            }
-            else if (databaseType == "POSTGRE")
-            {
-                services.AddSimpleIdentityServerPostgre(Configuration["Db:ConnectionString"]);
-            }
-            else if (databaseType == "SQLSERVER")
-            {
-                services.AddSimpleIdentityServerSqlServer(Configuration["Db:ConnectionString"]);
-            }
-            else
-            {
-                services.AddSimpleIdentityServerInMemory();
-            }
-
+            ConfigureOauthRepositorySqlServer(services);
+            ConfigureCaching(services);
+            ConfigureLogging(services);
             // 3. Configure the manager
             services.AddSimpleIdentityServerManager(_options);
             // 4. Configure the authentication.
@@ -113,22 +67,44 @@ namespace SimpleIdentityServer.Manager.Host.Startup
                 });
         }
 
+        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
+        {
+            var connectionString = "Data Source=.;Initial Catalog=SimpleIdentityServer;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            services.AddOAuthSqlServerEF(connectionString);
+        }
+
+        private void ConfigureCaching(IServiceCollection services)
+        {
+            services.AddConcurrency(opt => opt.UseInMemory());
+        }
+
+        private void ConfigureLogging(IServiceCollection services)
+        {
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
+                .CreateLogger();
+            Log.Logger = log;
+            services.AddLogging();
+            services.AddSingleton<Serilog.ILogger>(log);
+        }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
-
-            var databaseType = Configuration["Caching:Type"];
-            if (databaseType != "SQLITE" && databaseType != "POSTGRE" && databaseType != "SQLSERVER") // 1. Populate some fake data.
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                    simpleIdentityServerContext.Database.EnsureCreated();
-                    simpleIdentityServerContext.EnsureSeedData();
-                }
-            }
-
+            loggerFactory.AddSerilog();
+            app.UseStatusCodePages();
             app.UseAuthentication();
             app.UseSimpleIdentityServerManager(loggerFactory, _options);
         }

@@ -20,12 +20,16 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj" />
     <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
+    <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.InMemory\SimpleIdentityServer.EventStore.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF.InMemory\SimpleIdentityServer.Scim.Db.EF.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.EventStore.Handler\SimpleIdentityServer.Scim.EventStore.Handler.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Handler\SimpleIdentityServer.Scim.Handler.csproj" />
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
     <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
     <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
+    <ProjectReference Include="..\..\src\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
   </ItemGroup>  
 
   <ItemGroup>

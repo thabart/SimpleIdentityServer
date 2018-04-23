@@ -20,34 +20,17 @@
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF\SimpleIdentityServer.Scim.Db.EF.csproj" />
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
-    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
-    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.Redis\WebApiContrib.Core.Storage.Redis.csproj" />
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
-	<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="1.0.0" />
-    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

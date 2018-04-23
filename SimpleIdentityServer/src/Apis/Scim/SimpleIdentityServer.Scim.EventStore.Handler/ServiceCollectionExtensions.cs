@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.Scim.EventStore.Handler
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStoreBus(this IServiceCollection services, IEnumerable<Type> handlers = null)
+        public static IServiceCollection AddEventStoreBusHandler(this IServiceCollection services, IEnumerable<Type> handlers = null)
         {
             if (services == null)
             {

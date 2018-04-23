@@ -11,45 +11,34 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Concurrency\WebApiContrib.Core.Concurrency.csproj" />
+    <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
+    <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.InMemory\SimpleIdentityServer.Scim.Db.EF.InMemory.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.EventStore.Handler\SimpleIdentityServer.Scim.EventStore.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Handler\SimpleIdentityServer.Scim.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
-	<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />  
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Web" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
