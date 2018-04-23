@@ -14,14 +14,13 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Uma.Startup.Extensions;
 
 namespace SimpleIdentityServer.Uma.Startup.Extensions
 {
@@ -107,7 +106,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
             {
                 context.Clients.AddRange(new[]
                 {
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client needed to introspect the access_token.
+                    new SimpleIdentityServer.EF.Models.Client // Configure the client needed to introspect the access_token.
                     {
                         ClientId = "uma",
                         ClientSecrets = new List<ClientSecret>
@@ -126,7 +125,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.native
                     },
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client which needs to access to the token edp (grant_type = uma_ticket)
+                    new SimpleIdentityServer.EF.Models.Client // Configure the client which needs to access to the token edp (grant_type = uma_ticket)
                     {
                         ClientId = "client",
                         ClientSecrets = new List<ClientSecret>
@@ -147,7 +146,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         GrantTypes = "5",
                         ResponseTypes = "1"
                     },
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client // Configure the client which need to access to the permission endpoint.
+                    new SimpleIdentityServer.EF.Models.Client // Configure the client which need to access to the permission endpoint.
                     {
                         ClientId = "ResourceServer",
                         ClientSecrets = new List<ClientSecret>
@@ -180,7 +179,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                     },
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    new SimpleIdentityServer.EF.Models.Client
                     {
                         ClientId = "OpenIdManager",
                         ClientSecrets = new List<ClientSecret>
@@ -195,7 +194,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         ClientName = "Manager",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post
                     },
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    new SimpleIdentityServer.EF.Models.Client
                     {
                         ClientId = "Scim",
                         ClientSecrets = new List<ClientSecret>

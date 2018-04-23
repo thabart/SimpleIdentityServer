@@ -23,13 +23,15 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.EventStore.Handler;
+using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.EF;
+using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Controllers;
@@ -55,12 +57,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
         {
             _configuration = new UmaHostConfiguration
             {
-                OpenIdWellKnownConfiguration = "http://localhost:5000/.well-known/uma2-configuration",
-                DataSource = new DataSourceOptions
-                {
-                    OauthDbType = DbTypes.INMEMORY,
-                    UmaDbType = DbTypes.INMEMORY                    
-                }
+                OpenIdWellKnownConfiguration = "http://localhost:5000/.well-known/uma2-configuration"
             };
             _context = context;
         }
@@ -164,15 +161,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddConcurrency(opt => opt.UseInMemory());
 
             // 2. Register DB & stores.
-            services.AddSimpleIdServerUmaInMemory();
-            services.AddSimpleIdentityServerInMemory();
-            services.AddEventStoreInMemory();
-            services.AddInMemoryStores();
+            services.AddUmaInMemoryEF();
+            services.AddOAuthInMemoryEF();
             services.AddUmaInMemoryStore();
 
-            services.AddEventStoreInMemory();
+            services.AddEventStoreInMemoryEF();
             services.AddSimpleBusInMemory()
-                .AddEventStoreBus();
+                .AddEventStoreBusHandler();
 
             // 3. Enable logging.
             services.AddLogging();

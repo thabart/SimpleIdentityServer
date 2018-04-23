@@ -21,7 +21,9 @@ using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+#if NET461
 using System.Data.SqlClient;
+#endif
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,7 +38,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             _context = context;
         }
 
-#if NET46
+#if NET461
         public async Task<bool> BulkAdd(IEnumerable<ResourceSet> parameter)
         {
             if (parameter == null)

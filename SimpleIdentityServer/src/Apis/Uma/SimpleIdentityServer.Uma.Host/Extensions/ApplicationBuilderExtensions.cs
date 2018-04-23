@@ -17,9 +17,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
@@ -39,37 +36,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
-            }
-
-            if (loggerFactory != null)
-            {
-                loggerFactory.AddSerilog();
-            }
-
-            // 1. Display status code page.
-            app.UseStatusCodePages();
-            // 2. Enable OAUTH authentication.
-            // 3. Insert seed data
-            if (configuration.DataSource.IsUmaMigrated)
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                    try
-                    {
-                        simpleIdServerUmaContext.Database.EnsureCreated();
-                    }
-                    catch (Exception) { }
-                }
-            }
-
-            if (configuration.DataSource.IsOauthMigrated)
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-                {
-                    var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                    simpleIdentityServerContext.Database.EnsureCreated();
-                }
             }
 
             // 4. Enable CORS

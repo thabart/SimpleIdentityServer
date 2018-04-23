@@ -27,13 +27,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 Use = Use.Sig,
                 SerializedKey = serializedRsa,
             };
-            ModelSignatureKey = new DataAccess.SqlServer.Models.JsonWebKey
+            ModelSignatureKey = new SimpleIdentityServer.EF.Models.JsonWebKey
             {
-                Alg = DataAccess.SqlServer.Models.AllAlg.RS256,
+                Alg = SimpleIdentityServer.EF.Models.AllAlg.RS256,
                 KeyOps = "0,1",
                 Kid = "11",
-                Kty = DataAccess.SqlServer.Models.KeyType.RSA,
-                Use = DataAccess.SqlServer.Models.Use.Sig,
+                Kty = SimpleIdentityServer.EF.Models.KeyType.RSA,
+                Use = SimpleIdentityServer.EF.Models.Use.Sig,
                 SerializedKey = serializedRsa,
             };
             EncryptionKey = new JsonWebKey
@@ -49,22 +49,22 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            ModelEncryptionKey = new DataAccess.SqlServer.Models.JsonWebKey
+            ModelEncryptionKey = new SimpleIdentityServer.EF.Models.JsonWebKey
             {
-                Alg = DataAccess.SqlServer.Models.AllAlg.RSA1_5,
+                Alg = SimpleIdentityServer.EF.Models.AllAlg.RSA1_5,
                 KeyOps = "2,3",
                 Kid = "10",
-                Kty = DataAccess.SqlServer.Models.KeyType.RSA,
-                Use = DataAccess.SqlServer.Models.Use.Enc,
+                Kty = SimpleIdentityServer.EF.Models.KeyType.RSA,
+                Use = SimpleIdentityServer.EF.Models.Use.Enc,
                 SerializedKey = serializedRsa,
             };
             HttpClientFactory = FakeHttpClientFactory.Instance;
         }
 
         public JsonWebKey EncryptionKey { get; }
-        public DataAccess.SqlServer.Models.JsonWebKey ModelEncryptionKey { get; }
+        public SimpleIdentityServer.EF.Models.JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
-        public DataAccess.SqlServer.Models.JsonWebKey ModelSignatureKey { get; }
+        public SimpleIdentityServer.EF.Models.JsonWebKey ModelSignatureKey { get; }
         public FakeHttpClientFactory HttpClientFactory { get; }
     }
 }

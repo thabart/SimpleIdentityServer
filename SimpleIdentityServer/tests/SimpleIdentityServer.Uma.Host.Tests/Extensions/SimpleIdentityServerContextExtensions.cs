@@ -1,5 +1,5 @@
-﻿using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.DataAccess.SqlServer.Models;
+﻿using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -313,7 +313,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Extensions
                 context.Clients.AddRange(new[]
                 {
                     // Resource server.
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    new SimpleIdentityServer.EF.Models.Client
                     {
                         ClientId = "resource_server",
                         ClientName = "Resource server",
@@ -345,7 +345,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Extensions
                         ApplicationType = ApplicationTypes.native
                     },
                     // Anonymous.
-                    new SimpleIdentityServer.DataAccess.SqlServer.Models.Client
+                    new SimpleIdentityServer.EF.Models.Client
                     {
                         ClientId = "anonymous",
                         ClientName = "Anonymous",

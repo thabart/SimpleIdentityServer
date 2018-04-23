@@ -14,9 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Repositories;
@@ -25,64 +22,17 @@ using System;
 namespace SimpleIdentityServer.Uma.EF
 {
     public static class SimpleIdServerUmaExtensions
-    {
-        public static IServiceCollection AddSimpleIdServerUmaSqlServer(
-            this IServiceCollection serviceCollection,
-            string connectionString)
+    {        
+        public static IServiceCollection AddUmaRepositories(this IServiceCollection serviceCollection)
         {
             if (serviceCollection == null)
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkSqlServer()
-                .AddDbContext<SimpleIdServerUmaContext>(options => options.UseSqlServer(connectionString));
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddSimpleIdServerUmaPostgresql(
-            this IServiceCollection serviceCollection,
-            string connectionString)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkNpgsql()
-                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseNpgsql(connectionString));
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddSimpleIdServerUmaInMemory(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            RegisterServices(serviceCollection);
-            serviceCollection.AddEntityFrameworkInMemoryDatabase()
-                            .AddDbContext<SimpleIdServerUmaContext>(options => options.UseInMemoryDatabase().ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
-            return serviceCollection;
-        }
-        
-        private static void RegisterServices(IServiceCollection serviceCollection)
-        {
             serviceCollection.AddTransient<IResourceSetRepository, ResourceSetRepository>();
             serviceCollection.AddTransient<IPolicyRepository, PolicyRepository>();
+            return serviceCollection;
         }
     }
 }

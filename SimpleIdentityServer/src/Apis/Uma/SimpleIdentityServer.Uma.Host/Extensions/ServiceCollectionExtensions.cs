@@ -16,29 +16,18 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.Logging;
-using SimpleIdentityServer.Store.Redis;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
-using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
-using SimpleIdentityServer.Uma.Store.Redis;
 using System;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -81,102 +70,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 .AddSimpleIdentityServerCore()
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerClient();
-
-            // 1. Enable caching.
-            if (configuration.ResourceCaching.Type == CachingTypes.REDIS)
-            {
-                services.AddConcurrency(opt => opt.UseRedis(o =>
-                {
-                    o.Configuration = configuration.ResourceCaching.ConnectionString;
-                    o.InstanceName = configuration.ResourceCaching.InstanceName;
-                }));
-            }
-            else
-            {
-                services.AddConcurrency(opt => opt.UseInMemory());
-            }
-
-            // 2. Enable database.
-            switch(configuration.DataSource.UmaDbType)
-            {
-                case DbTypes.SQLSERVER:
-                    services.AddSimpleIdServerUmaSqlServer(configuration.DataSource.UmaConnectionString);
-                    break;
-                case DbTypes.POSTGRES:
-                    services.AddSimpleIdServerUmaPostgresql(configuration.DataSource.UmaConnectionString);
-                    break;
-                case DbTypes.INMEMORY:
-                    services.AddSimpleIdServerUmaInMemory();
-                    break;
-            }
-
-            switch (configuration.DataSource.OauthDbType)
-            {
-                case DbTypes.SQLSERVER:
-                    services.AddSimpleIdentityServerSqlServer(configuration.DataSource.OauthConnectionString);
-                    break;
-                case DbTypes.POSTGRES:
-                    services.AddSimpleIdentityServerPostgre(configuration.DataSource.OauthConnectionString);
-                    break;
-                case DbTypes.INMEMORY:
-                    services.AddSimpleIdentityServerInMemory();
-                    break;
-            }
-
-            switch(configuration.Storage.Type)
-            {
-                case CachingTypes.REDIS:
-                    services.AddRedisStores((opts) =>
-                    {
-                        opts.Configuration = configuration.Storage.ConnectionString;
-                        opts.InstanceName = configuration.Storage.InstanceName;
-                    }, configuration.Storage.Port);
-                    services.AddUmaRedisStore((opts) =>
-                    {
-                        opts.Configuration = configuration.Storage.ConnectionString;
-                        opts.InstanceName = configuration.Storage.InstanceName;
-                    }, configuration.Storage.Port);
-                    break;
-                case CachingTypes.INMEMORY:
-                    services.AddInMemoryStores();
-                    services.AddUmaInMemoryStore();
-                    break;
-            }
-
-            // 3. Enable logging.
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            if (configuration.FileLog.IsEnabled)
-            {
-                logger.WriteTo.RollingFile(configuration.FileLog.PathFormat);
-            }
-
-            if (configuration.Elasticsearch.IsEnabled)
-            {
-                logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration.Elasticsearch.Url))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = "umaserver-{0:yyyy.MM.dd}",
-                    TemplateName = "uma-events-template"
-                });
-            }
-
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
-            services.AddLogging();
             services.AddIdServerLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IParametersProvider>(parametersProvider);

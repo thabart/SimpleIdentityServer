@@ -20,15 +20,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.DataAccess.SqlServer;
-using SimpleIdentityServer.EventStore.EF;
+using SimpleIdentityServer.Core;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Uma.EF;
+using SimpleIdentityServer.Uma.EF.SqlServer;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
+using System;
 
 namespace SimpleIdentityServer.Uma.Startup
 {
@@ -46,45 +51,7 @@ namespace SimpleIdentityServer.Uma.Startup
             Configuration = builder.Build();
             _umaHostConfiguration = new UmaHostConfiguration // TH : The settings must come from the appsettings.json.
             {
-                OpenIdWellKnownConfiguration = "https://localhost:5443/.well-known/openid-configuration",
-                AuthorizationServer = new OauthOptions
-                {
-                    ClientId = "uma",
-                    ClientSecret = "uma",
-                    IntrospectionEndpoints = "https://localhost:5445/introspect"
-                },
-                DataSource = new DataSourceOptions
-                {
-                    IsOauthMigrated = true,
-                    IsUmaMigrated = true,
-                    OauthDbType = DbTypes.INMEMORY,
-                    UmaDbType = DbTypes.INMEMORY,
-                    UmaConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                    OauthConnectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
-                },
-                Elasticsearch = new ElasticsearchOptions
-                {
-                    IsEnabled = false
-                },
-                FileLog = new FileLogsOptions
-                {
-                    IsEnabled = true,
-                    PathFormat = "log-{Date}.txt"
-                },
-                Storage = new CachingOptions
-                {
-                    Type = CachingTypes.INMEMORY,
-                    ConnectionString = "localhost",
-                    InstanceName = "UmaInstance",
-                    Port = 6379
-                },
-                ResourceCaching = new CachingOptions
-                {
-                    Type = CachingTypes.REDIS,
-                    ConnectionString = "localhost",
-                    InstanceName = "UmaInstance",
-                    Port = 6379
-                }
+                OpenIdWellKnownConfiguration = "https://localhost:5443/.well-known/openid-configuration"
             };
         }
 
@@ -92,7 +59,11 @@ namespace SimpleIdentityServer.Uma.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddEventStoreSqlServer("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            ConfigureEventStoreSqlServerBus(services);
+            ConfigureOauthRepositorySqlServer(services);
+            ConfigureUmaSqlServer(services);
+            ConfigureStorageInMemory(services);
+            ConfigureLogging(services);
             services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
                 .AddOAuth2Introspection(opts =>
                 {
@@ -100,25 +71,80 @@ namespace SimpleIdentityServer.Uma.Startup
                     opts.ClientSecret = "uma";
                     opts.WellKnownConfigurationUrl = "https://localhost:5445/.well-known/uma2-configuration";
                 });
-            services.AddSimpleBusInMemory().AddEventStoreBus().AddUmaHost(_umaHostConfiguration);
+            services.AddUmaHost(_umaHostConfiguration);
+        }
+
+        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        {
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            services.AddSimpleBusInMemory();
+            services.AddEventStoreBusHandler();
+        }
+
+        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
+        {
+            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            services.AddOAuthSqlServerEF(connectionString);
+        }
+
+        private void ConfigureUmaSqlServer(IServiceCollection services)
+        {
+            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            services.AddUmaSqlServerEF(connectionString);
+        }
+
+        private void ConfigureStorageInMemory(IServiceCollection services)
+        {
+            services.AddInMemoryStorage();
+        }
+
+        private void ConfigureLogging(IServiceCollection services)
+        {
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var ctx = e.Properties["SourceContext"];
+                var contextValue = ctx.ToString()
+                    .TrimStart('"')
+                    .TrimEnd('"');
+                return contextValue.StartsWith("SimpleIdentityServer") ||
+                    e.Level == LogEventLevel.Error ||
+                    e.Level == LogEventLevel.Fatal;
+            };
+            var logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.ColoredConsole();
+            var log = logger.Filter.ByIncludingOnly(serilogFilter)
+                .CreateLogger();
+            Log.Logger = log;
+            services.AddLogging();
+            services.AddSingleton<Serilog.ILogger>(log);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAuthentication();
             app.UseUmaHost(loggerFactory, _umaHostConfiguration);
+            UseSerilogLogging(loggerFactory);
             // Insert the data.
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
+                simpleIdServerUmaContext.Database.EnsureCreated();
                 simpleIdServerUmaContext.EnsureSeedData();
             }
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                simpleIdentityServerContext.Database.EnsureCreated();
                 simpleIdentityServerContext.EnsureSeedData();
             }
+        }
+
+        private void UseSerilogLogging(ILoggerFactory logger)
+        {
+            logger.AddSerilog();
         }
     }
 }

@@ -22,7 +22,9 @@ using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+#if NET461
 using System.Data.SqlClient;
+#endif
 using System.Linq;
 using System.Threading.Tasks;
 
