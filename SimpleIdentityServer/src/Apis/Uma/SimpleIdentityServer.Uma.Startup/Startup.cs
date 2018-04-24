@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Startup
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False", null);
             services.AddSimpleBusInMemory();
             services.AddEventStoreBusHandler();
         }
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Uma.Startup
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
             var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddOAuthSqlServerEF(connectionString);
+            services.AddOAuthSqlServerEF(connectionString, null);
         }
 
         private void ConfigureUmaInMemoryEF(IServiceCollection services)

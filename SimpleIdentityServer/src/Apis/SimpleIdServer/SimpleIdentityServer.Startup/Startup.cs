@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Startup
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
         {
             var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServerEF(connectionString);
+            services.AddEventStoreSqlServerEF(connectionString, null);
             services.AddSimpleBusInMemory();
             services.AddEventStoreBusHandler();
         }
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Startup
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
             var connectionString = Configuration["Db:OpenIdConnectionString"];
-            services.AddOAuthSqlServerEF(connectionString);
+            services.AddOAuthSqlServerEF(connectionString, null);
         }
 
         private void ConfigureStorageInMemory(IServiceCollection services)

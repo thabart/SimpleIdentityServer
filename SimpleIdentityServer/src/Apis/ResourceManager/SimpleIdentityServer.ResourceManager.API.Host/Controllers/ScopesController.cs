@@ -318,7 +318,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         private async Task<KeyValuePair<EndpointAggregate, IActionResult>> TryGetEndpoint(string url, EndpointTypes type)
         {
-            var endpoint = await GetEndpoint(url, EndpointTypes.OPENID);
+            var endpoint = await GetEndpoint(url, type);
             if (endpoint == null)
             {
                 return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrNoEndpoint, HttpStatusCode.InternalServerError));

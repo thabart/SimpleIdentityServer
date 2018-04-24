@@ -8,6 +8,9 @@ import Resources from './resources';
 import ViewAggregate from './viewAggregate';
 import ViewLog from './viewLog';
 import OAuthClients from './oauthClients';
+import OpenidClients from './openidClients';
+import OAuthScopes from './oauthScopes';
+import OpenidScopes from './openidScopes';
 
 exports.About = About;
 exports.Login = Login;
@@ -19,3 +22,6 @@ exports.Resources = Resources;
 exports.ViewLog = ViewLog;
 exports.ViewAggregate = ViewAggregate;
 exports.OAuthClients = OAuthClients;
+exports.OpenidClients = OpenidClients;
+exports.OAuthScopes = OAuthScopes;
+exports.OpenidScopes = OpenidScopes;

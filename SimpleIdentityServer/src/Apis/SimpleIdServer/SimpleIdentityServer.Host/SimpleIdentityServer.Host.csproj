@@ -58,11 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="Views\Consent\Index.cshtml" />
-    <EmbeddedResource Remove="Views\Form\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>

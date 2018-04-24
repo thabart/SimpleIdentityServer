@@ -190,15 +190,15 @@ class Layout extends Component {
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                             <ListItem primaryText={t('manageOpenidServers')} nestedItems={[
                                 <ListItem primaryText={t('resourceOwners')} />,
-                                <ListItem primaryText={t('openidClients')} />,
-                                <ListItem primaryText={t('openidScopes')} />
+                                <ListItem primaryText={t('openidClients')} onClick={() => self.navigate('/openidclients')} />, 
+                                <ListItem primaryText={t('openidScopes')} onClick={() => self.navigate('/openidscopes')} />
                             ]} />
                         ))}
                         {/* Authorisation server */}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                             <ListItem primaryText={t('manageAuthServers')} nestedItems={[
-                                <ListItem primaryText={t('oauthClients')} onClick={() => self.navigate('/oauthclients')} />,    
-                                <ListItem primaryText={t('oauthScopes')} />,    
+                                <ListItem primaryText={t('oauthClients')} onClick={() => self.navigate('/authclients')} />,    
+                                <ListItem primaryText={t('oauthScopes')} onClick={() => self.navigate('/authscopes')} />,    
                                 <ListItem primaryText={t('resources')} />                               
                             ]} />
                         ))}
