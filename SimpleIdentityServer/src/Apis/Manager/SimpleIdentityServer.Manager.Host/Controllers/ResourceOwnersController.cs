@@ -122,5 +122,18 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
             return new NoContentResult();
         }
+
+        [HttpPost(".search")]
+        [Authorize("manager")]
+        public async Task<ActionResult> Search([FromBody] SearchResourceOwnersRequest searchResourceOwnersRequest)
+        {
+            if (searchResourceOwnersRequest == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceOwnersRequest));
+            }
+
+            var result = await _resourceOwnerActions.Search(searchResourceOwnersRequest.ToParameter());
+            return new OkObjectResult(result.ToDto());
+        }
     }
 }

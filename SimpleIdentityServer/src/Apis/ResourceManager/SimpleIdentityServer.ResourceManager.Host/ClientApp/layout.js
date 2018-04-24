@@ -189,7 +189,7 @@ class Layout extends Component {
                         {/* Openid menu item */}
                         {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                             <ListItem primaryText={t('manageOpenidServers')} nestedItems={[
-                                <ListItem primaryText={t('resourceOwners')} />,
+                                <ListItem primaryText={t('resourceOwners')} onClick={() => self.navigate('/resourceowners')} />, 
                                 <ListItem primaryText={t('openidClients')} onClick={() => self.navigate('/openidclients')} />, 
                                 <ListItem primaryText={t('openidScopes')} onClick={() => self.navigate('/openidscopes')} />
                             ]} />

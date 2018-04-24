@@ -3,7 +3,8 @@ import { Route, Redirect } from 'react-router-dom';
 import { SessionService } from './services';
 
 import Layout from './layout';
-import { Login, About, Connections, Logs, Settings, Cache, Manage, Tools, Resources, ViewAggregate, ViewLog, OAuthClients, OpenidClients, OAuthScopes, OpenidScopes } from './components';
+import { Login, About, Connections, Logs, Settings, Cache, Manage, Tools, Resources, ViewAggregate, ViewLog,
+ OAuthClients, OpenidClients, OAuthScopes, OpenidScopes, ResourceOwners } from './components';
 
 export const routes = (<Layout>
     <Route exact path='/' component={About} />
@@ -18,6 +19,7 @@ export const routes = (<Layout>
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/openidclients' component={OpenidClients} />) }
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/authscopes' component={OAuthScopes} />) }
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/openidscopes' component={OpenidScopes} />) }
+    { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/resourceowners' component={ResourceOwners} />) }
     { !process.env.IS_TOOLS_DISABLED && (<Route exact path='/tools/:action?' component={Tools} />) }
     { !process.env.IS_RESOURCES_DISABLED && (<Route exact path='/resources' component={Resources} />)}
     { !process.env.IS_LOG_DISABLED && (<Route exact path="/viewaggregate/:id" component={ViewAggregate} /> )}

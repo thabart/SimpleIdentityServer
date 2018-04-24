@@ -15,11 +15,11 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Manager.Core.Parameters;
-using System.Collections.Generic;
-using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
-using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.WebSite.Account.Actions;
+using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
@@ -31,6 +31,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         Task<ICollection<ResourceOwner>> GetResourceOwners();
         Task<bool> Delete(string subject);
         Task Add(AddUserParameter parameter);
+        Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter);
     }
 
     internal class ResourceOwnerActions : IResourceOwnerActions
@@ -40,19 +41,22 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         private readonly IUpdateResourceOwnerAction _updateResourceOwnerAction;
         private readonly IDeleteResourceOwnerAction _deleteResourceOwnerAction;
         private readonly IAddResourceOwnerAction _addResourceOwnerAction;
+        private readonly ISearchResourceOwnersAction _searchResourceOwnersAction;
 
         public ResourceOwnerActions(
             IGetResourceOwnerAction getResourceOwnerAction,
             IGetResourceOwnersAction getResourceOwnersAction,
             IUpdateResourceOwnerAction updateResourceOwnerAction,
             IDeleteResourceOwnerAction deleteResourceOwnerAction,
-            IAddResourceOwnerAction addResourceOwnerAction)
+            IAddResourceOwnerAction addResourceOwnerAction,
+            ISearchResourceOwnersAction searchResourceOwnersAction)
         {
             _getResourceOwnerAction = getResourceOwnerAction;
             _getResourceOwnersAction = getResourceOwnersAction;
             _updateResourceOwnerAction = updateResourceOwnerAction;
             _deleteResourceOwnerAction = deleteResourceOwnerAction;
             _addResourceOwnerAction = addResourceOwnerAction;
+            _searchResourceOwnersAction = searchResourceOwnersAction;
         }
         
         public Task<ResourceOwner> GetResourceOwner(string subject)
@@ -78,6 +82,11 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners
         public Task Add(AddUserParameter parameter)
         {
             return _addResourceOwnerAction.Execute(parameter);
+        }
+
+        public Task<SearchResourceOwnerResult> Search(SearchResourceOwnerParameter parameter)
+        {
+            return _searchResourceOwnersAction.Execute(parameter);
         }
     }
 }

@@ -80,6 +80,16 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
+        public static SearchResourceOwnerParameter ToParameter(this SearchResourceOwnersRequest request)
+        {
+            return new SearchResourceOwnerParameter
+            {
+                Count = request.NbResults,
+                StartIndex = request.StartIndex,
+                Subjects = request.Subjects
+            };
+        }
+
         public static AddUserParameter ToParameter(this AddResourceOwnerRequest request)
         {
             return new AddUserParameter
@@ -405,6 +415,21 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 StartIndex = parameter.StartIndex,
                 TotalResults = parameter.TotalResults,
                 Content = parameter.Content == null ? new List<ScopeResponse>() : parameter.Content.Select(c => ToDto(c))
+            };
+        }
+
+        public static SearchResourceOwnersResponse ToDto(this SearchResourceOwnerResult parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            return new SearchResourceOwnersResponse
+            {
+                StartIndex = parameter.StartIndex,
+                TotalResults = parameter.TotalResults,
+                Content = parameter.Content == null ? new List<ResourceOwnerResponse>() : parameter.Content.Select(c => ToDto(c))
             };
         }
 

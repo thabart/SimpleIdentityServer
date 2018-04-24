@@ -70,6 +70,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IExportAction, ExportAction>();
             serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
             serviceCollection.AddTransient<IImportAction, ImportAction>();
+            serviceCollection.AddTransient<ISearchResourceOwnersAction, SearchResourceOwnersAction>();
             return serviceCollection;
         }
     }

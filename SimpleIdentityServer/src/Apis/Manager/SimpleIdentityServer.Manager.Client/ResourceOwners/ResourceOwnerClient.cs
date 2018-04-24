@@ -15,6 +15,7 @@ namespace SimpleIdentityServer.Manager.Client.ResourceOwners
         Task<BaseResponse> ResolvedDelete(Uri wellKnownConfigurationUri, string resourceOwnerId, string authorizationHeaderValue = null);
         Task<GetAllResourceOwnersResponse> GetAll(Uri resourceOwnerUri, string authorizationHeaderValue = null);
         Task<GetAllResourceOwnersResponse> ResolveGetAll(Uri wellKnownConfigurationUri, string authorizationHeaderValue = null);
+        Task<SearchResourceOwnerResponse> ResolveSearch(Uri wellKnownConfigurationUri, SearchResourceOwnersRequest searchResourceOwnersRequest, string authorizationHeaderValue = null);
     }
 
     internal sealed class ResourceOwnerClient : IResourceOwnerClient
@@ -25,10 +26,12 @@ namespace SimpleIdentityServer.Manager.Client.ResourceOwners
         private readonly IGetResourceOwnerOperation _getResourceOwnerOperation;
         private readonly IUpdateResourceOwnerOperation _updateResourceOwnerOperation;
         private readonly IConfigurationClient _configurationClient;
+        private readonly ISearchResourceOwnersOperation _searchResourceOwnersOperation;
 
         public ResourceOwnerClient(IAddResourceOwnerOperation addResourceOwnerOperation, IDeleteResourceOwnerOperation deleteResourceOwnerOperation,
             IGetAllResourceOwnersOperation getAllResourceOwnersOperation, IGetResourceOwnerOperation getResourceOwnerOperation,
-            IUpdateResourceOwnerOperation updateResourceOwnerOperation, IConfigurationClient configurationClient)
+            IUpdateResourceOwnerOperation updateResourceOwnerOperation, IConfigurationClient configurationClient,
+            ISearchResourceOwnersOperation searchResourceOwnersOperation)
         {
             _addResourceOwnerOperation = addResourceOwnerOperation;
             _deleteResourceOwnerOperation = deleteResourceOwnerOperation;
@@ -36,6 +39,7 @@ namespace SimpleIdentityServer.Manager.Client.ResourceOwners
             _getResourceOwnerOperation = getResourceOwnerOperation;
             _updateResourceOwnerOperation = updateResourceOwnerOperation;
             _configurationClient = configurationClient;
+            _searchResourceOwnersOperation = searchResourceOwnersOperation;
         }
 
         public async Task<BaseResponse> ResolveAdd(Uri wellKnownConfigurationUri, AddResourceOwnerRequest request, string authorizationHeaderValue = null)
@@ -71,6 +75,12 @@ namespace SimpleIdentityServer.Manager.Client.ResourceOwners
         {
             var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri);
             return await GetAll(new Uri(configuration.ResourceOwnersEndpoint), authorizationHeaderValue);
+        }
+
+        public async Task<SearchResourceOwnerResponse> ResolveSearch(Uri wellKnownConfigurationUri, SearchResourceOwnersRequest searchResourceOwnersRequest, string authorizationHeaderValue = null)
+        {
+            var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri);
+            return await _searchResourceOwnersOperation.ExecuteAsync(new Uri(configuration.ResourceOwnersEndpoint + "/.search"), searchResourceOwnersRequest, authorizationHeaderValue);
         }
     }
 }

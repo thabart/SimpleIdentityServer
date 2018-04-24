@@ -29,6 +29,7 @@ namespace SimpleIdentityServer.Manager.Client
         IConfigurationClient GetConfigurationClient();
         IOpenIdClients GetOpenIdsClient();
         IScopeClient GetScopesClient();
+        IResourceOwnerClient GetResourceOwnerClient();
     }
 
     internal sealed class OpenIdManagerClientFactory : IOpenIdManagerClientFactory
@@ -52,6 +53,12 @@ namespace SimpleIdentityServer.Manager.Client
         {
             var configurationClient = (IOpenIdClients)_serviceProvider.GetService(typeof(IOpenIdClients));
             return configurationClient;
+        }
+
+        public IResourceOwnerClient GetResourceOwnerClient()
+        {
+            var resourceOwnerClient = (IResourceOwnerClient)_serviceProvider.GetService(typeof(IResourceOwnerClient));
+            return resourceOwnerClient;
         }
 
         public IScopeClient GetScopesClient()
@@ -90,6 +97,7 @@ namespace SimpleIdentityServer.Manager.Client
             serviceCollection.AddTransient<IGetResourceOwnerOperation, GetResourceOwnerOperation>();
             serviceCollection.AddTransient<IUpdateResourceOwnerOperation, UpdateResourceOwnerOperation>();
             serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
+            serviceCollection.AddTransient<ISearchResourceOwnersOperation, SearchResourceOwnersOperation>();
         }
     }
 }

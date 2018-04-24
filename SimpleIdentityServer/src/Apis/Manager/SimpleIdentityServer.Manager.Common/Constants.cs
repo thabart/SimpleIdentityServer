@@ -2,6 +2,10 @@
 {
     public static class Constants
     {
+        public static class SearchResourceOwnerNames
+        {
+            public const string Subjects = "subjects";
+        }
         public static class SearchResponseNames
         {
             public const string Content = "content";

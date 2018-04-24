@@ -210,6 +210,8 @@
             public const string ErrSearchClients = "an error occured while trying to search the client(s)";
             public const string ErrInsertClient = "an error occured while trying to insert the client";
             public const string ErrUpdateClient = "an error occured while trying to update the client";
+            public const string ErrDeleteRo = "an error occured while trying to remove the resource owner(s)";
+            public const string ErrSearchRos = "an error occured while trying to search the resource owner(s)";
         }
 
         public static class ElFinderCommands
