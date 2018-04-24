@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.EventStore.EF;
 using System;
@@ -7,7 +8,7 @@ namespace SimpleIdentityServer.EF.SqlServer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStoreSqlServerEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddEventStoreSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback)
         {
             if (serviceCollection == null)
             {
@@ -22,7 +23,7 @@ namespace SimpleIdentityServer.EF.SqlServer
             serviceCollection.AddEventStoreRepositories();
             serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<EventStoreContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, callback));
             return serviceCollection;
         }
     }

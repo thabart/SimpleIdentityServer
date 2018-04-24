@@ -15,7 +15,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
@@ -215,6 +217,34 @@ namespace SimpleIdentityServer.EF.Repositories
 
                 return true;
             }
+        }
+
+        public async Task<SearchScopeResult> Search(SearchScopesParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Models.Scope> scopes = _context.Scopes;
+            if (parameter.ScopeNames != null && parameter.ScopeNames.Any())
+            {
+                scopes = scopes.Where(c => parameter.ScopeNames.Any(n => n.Contains(c.Name)));
+            }
+
+            var nbResult = await scopes.CountAsync().ConfigureAwait(false);
+            scopes = scopes.OrderBy(c => c.Name);
+            if (parameter.IsPagingEnabled)
+            {
+                scopes = scopes.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchScopeResult
+            {
+                Content = await scopes.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
         }
     }
 }

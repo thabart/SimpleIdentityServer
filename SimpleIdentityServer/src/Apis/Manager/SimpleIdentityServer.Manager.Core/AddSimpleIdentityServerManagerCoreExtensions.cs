@@ -68,6 +68,7 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<IUpdateScopeOperation, UpdateScopeOperation>();
             serviceCollection.AddTransient<IManageActions, ManageActions>();
             serviceCollection.AddTransient<IExportAction, ExportAction>();
+            serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
             serviceCollection.AddTransient<IImportAction, ImportAction>();
             return serviceCollection;
         }

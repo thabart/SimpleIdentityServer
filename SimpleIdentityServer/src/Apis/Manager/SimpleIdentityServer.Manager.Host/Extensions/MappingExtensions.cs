@@ -32,6 +32,21 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
     {
         #region To parameters
 
+        public static SearchScopesParameter ToSearchScopesParameter(this SearchScopesRequest parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            return new SearchScopesParameter
+            {
+                Count = parameter.NbResults,
+                ScopeNames = parameter.ScopeNames,
+                StartIndex = parameter.StartIndex
+            };
+        }
+
         public static SearchClientParameter ToSearchClientParameter(this SearchClientsRequest parameter)
         {
             if (parameter == null)
@@ -377,6 +392,21 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
         #endregion
 
         #region To DTOs
+
+        public static SearchScopesResponse ToDto(this SearchScopeResult parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            return new SearchScopesResponse
+            {
+                StartIndex = parameter.StartIndex,
+                TotalResults = parameter.TotalResults,
+                Content = parameter.Content == null ? new List<ScopeResponse>() : parameter.Content.Select(c => ToDto(c))
+            };
+        }
 
         public static SearchClientsResponse ToDto(this SearchClientResult parameter)
         {

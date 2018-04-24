@@ -1,5 +1,7 @@
-﻿using SimpleIdentityServer.Manager.Client.Configuration;
+﻿using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Manager.Client.Configuration;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
+using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using System;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ namespace SimpleIdentityServer.Manager.Client.Scopes
         Task<BaseResponse> ResolvedDelete(Uri wellKnownConfigurationUri, string scopeId, string authorizationHeaderValue = null);
         Task<GetAllScopesResponse> GetAll(Uri scopesUri, string authorizationHeaderValue = null);
         Task<GetAllScopesResponse> ResolveGetAll(Uri wellKnownConfigurationUri, string authorizationHeaderValue = null);
+        Task<SearchScopeResponse> ResolveSearch(Uri wellKnownConfigurationUri, SearchScopesRequest searchScopesParameter, string authorizationHeaderValue = null);
     }
 
     internal sealed class ScopeClient : IScopeClient
@@ -24,9 +27,10 @@ namespace SimpleIdentityServer.Manager.Client.Scopes
         private readonly IGetScopeOperation _getScopeOperation;
         private readonly IUpdateScopeOperation _updateScopeOperation;
         private readonly IConfigurationClient _configurationClient;
+        private readonly ISearchScopesOperation _searchScopesOperation;
 
         public ScopeClient(IAddScopeOperation addScopeOperation, IDeleteScopeOperation deleteScopeOperation, IGetAllScopesOperation getAllScopesOperation, IGetScopeOperation getScopeOperation, 
-            IUpdateScopeOperation updateScopeOperation, IConfigurationClient configurationClient)
+            IUpdateScopeOperation updateScopeOperation, IConfigurationClient configurationClient, ISearchScopesOperation searchScopesOperation)
         {
             _addScopeOperation = addScopeOperation;
             _deleteScopeOperation = deleteScopeOperation;
@@ -34,6 +38,7 @@ namespace SimpleIdentityServer.Manager.Client.Scopes
             _getScopeOperation = getScopeOperation;
             _updateScopeOperation = updateScopeOperation;
             _configurationClient = configurationClient;
+            _searchScopesOperation = searchScopesOperation;
         }
 
         public async Task<BaseResponse> ResolveAdd(Uri wellKnownConfigurationUri, ScopeResponse scope, string authorizationHeaderValue = null)
@@ -69,6 +74,12 @@ namespace SimpleIdentityServer.Manager.Client.Scopes
         {
             var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri);
             return await GetAll(new Uri(configuration.ScopesEndpoint), authorizationHeaderValue);
+        }
+
+        public async Task<SearchScopeResponse> ResolveSearch(Uri wellKnownConfigurationUri, SearchScopesRequest searchScopesParameter, string authorizationHeaderValue = null)
+        {
+            var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri);
+            return await _searchScopesOperation.ExecuteAsync(new Uri(configuration.ScopesEndpoint + "/.search"), searchScopesParameter, authorizationHeaderValue);
         }
     }
 }

@@ -18,11 +18,14 @@ using System.Collections.Generic;
 
 using SimpleIdentityServer.Core.Models;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Parameters;
 
 namespace SimpleIdentityServer.Core.Repositories
 {
     public interface IScopeRepository
     {
+        Task<SearchScopeResult> Search(SearchScopesParameter parameter);
         Task<Scope> GetAsync(string name);
         Task<ICollection<Scope>> SearchByNamesAsync(IEnumerable<string> names);
         Task<ICollection<Scope>> GetAllAsync();

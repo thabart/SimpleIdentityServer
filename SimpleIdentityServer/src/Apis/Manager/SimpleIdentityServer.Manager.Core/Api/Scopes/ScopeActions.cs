@@ -15,6 +15,8 @@
 #endregion
 
 using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Scopes.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,6 +30,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
         Task<ICollection<Scope>> GetScopes();
         Task<bool> AddScope(Scope scope);
         Task<bool> UpdateScope(Scope scope);
+        Task<SearchScopeResult> Search(SearchScopesParameter parameter);
     }
 
     internal class ScopeActions : IScopeActions
@@ -37,19 +40,27 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes
         private readonly IGetScopesOperation _getScopesOperation;
         private readonly IAddScopeOperation _addScopeOperation;
         private readonly IUpdateScopeOperation _updateScopeOperation;
+        private readonly ISearchScopesOperation _searchScopesOperation;
 
         public ScopeActions(
             IDeleteScopeOperation deleteScopeOperation,
             IGetScopeOperation getScopeOperation,
             IGetScopesOperation getScopesOperation,
             IAddScopeOperation addScopeOperation,
-            IUpdateScopeOperation updateScopeOperation)
+            IUpdateScopeOperation updateScopeOperation,
+            ISearchScopesOperation searchScopesOperation)
         {
             _deleteScopeOperation = deleteScopeOperation;
             _getScopeOperation = getScopeOperation;
             _getScopesOperation = getScopesOperation;
             _addScopeOperation = addScopeOperation;
             _updateScopeOperation = updateScopeOperation;
+            _searchScopesOperation = searchScopesOperation;
+        }
+
+        public Task<SearchScopeResult> Search(SearchScopesParameter parameter)
+        {
+            return _searchScopesOperation.Execute(parameter);
         }
 
         public Task<bool> DeleteScope(string scopeName)

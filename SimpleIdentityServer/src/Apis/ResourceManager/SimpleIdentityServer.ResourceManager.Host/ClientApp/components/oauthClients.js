@@ -50,7 +50,7 @@ class OAuthClients extends Component {
             isLoading: true
         });
         var startIndex = state.page * state.pageSize;
-        ClientService.search({ start_index: startIndex, count: state.pageSize }, 'openid').then(function (result) {
+        ClientService.search({ start_index: startIndex, count: state.pageSize }, 'auth').then(function (result) {
             var data = [];
             if (result.content) {
                 result.content.forEach(function (client) {

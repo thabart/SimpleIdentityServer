@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Manager.Client;
+using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.API.Host.Stores;
@@ -64,6 +64,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return UpdateScope(scopeResponse, EndpointTypes.OPENID, url);
         }
 
+        [HttpPost("openid/.search/{url?}")]
+        public Task<IActionResult> SearchOpenIdScopes([FromBody] SearchScopesRequest request, string url)
+        {
+            return SearchScopes(request, EndpointTypes.OPENID, url);
+        }
+
         #endregion
 
         #region AUTH
@@ -96,6 +102,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         public Task<IActionResult> UpdateAuthScope([FromBody] ScopeResponse scopeResponse, string url)
         {
             return UpdateScope(scopeResponse, EndpointTypes.AUTH, url);
+        }
+
+        [HttpPost("auth/.search/{url?}")]
+        public Task<IActionResult> SearchAuthScopes([FromBody] SearchScopesRequest request, string url)
+        {
+            return SearchScopes(request, EndpointTypes.AUTH, url);
         }
 
         #endregion
@@ -265,6 +277,43 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             return new OkResult();
+        }
+
+        private async Task<IActionResult> SearchScopes(SearchScopesRequest parameter, EndpointTypes type, string url)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            var endpoint = await TryGetEndpoint(url, type);
+            if (endpoint.Value != null)
+            {
+                return endpoint.Value;
+            }
+
+            var edp = endpoint.Key;
+            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetScopesClient().ResolveSearch(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            if (result.ContainsError)
+            {
+                var error = result.Error;
+                if (error == null)
+                {
+                    error = new ErrorResponse
+                    {
+                        Code = Constants.ErrorCodes.InternalError,
+                        Message = Constants.Errors.ErrSearchClients
+                    };
+                }
+
+                return new JsonResult(JsonConvert.SerializeObject(error))
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
+            return new OkObjectResult(result.Content);
         }
 
         private async Task<KeyValuePair<EndpointAggregate, IActionResult>> TryGetEndpoint(string url, EndpointTypes type)

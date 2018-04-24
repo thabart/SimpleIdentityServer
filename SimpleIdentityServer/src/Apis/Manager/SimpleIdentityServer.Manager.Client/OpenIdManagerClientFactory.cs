@@ -89,6 +89,7 @@ namespace SimpleIdentityServer.Manager.Client
             serviceCollection.AddTransient<IGetAllResourceOwnersOperation, GetAllResourceOwnersOperation>();
             serviceCollection.AddTransient<IGetResourceOwnerOperation, GetResourceOwnerOperation>();
             serviceCollection.AddTransient<IUpdateResourceOwnerOperation, UpdateResourceOwnerOperation>();
+            serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -6,7 +7,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimSqlServerEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddScimSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback)
         {
             if (serviceCollection == null)
             {
@@ -21,7 +22,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
             serviceCollection.AddScimRepositories();
             serviceCollection.AddEntityFrameworkSqlServer()
                 .AddDbContext<ScimDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, callback));
             return serviceCollection;
         }
     }

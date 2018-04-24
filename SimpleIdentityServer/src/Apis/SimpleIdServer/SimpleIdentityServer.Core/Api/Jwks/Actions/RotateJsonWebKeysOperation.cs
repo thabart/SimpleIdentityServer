@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Common.Extensions;
+using System.Runtime.InteropServices;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
@@ -38,17 +39,20 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             foreach(var jsonWebKey in jsonWebKeys)
             {
                 var serializedRsa = string.Empty;
-#if NET461
-                using (var provider = new RSACryptoServiceProvider())
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    serializedRsa = provider.ToXmlString(true);
+                    using (var provider = new RSACryptoServiceProvider())
+                    {
+                        serializedRsa = provider.ToXmlStringNetCore(true);
+                    }
                 }
-#else
-                using (var rsa = new RSAOpenSsl())
+                else
                 {
-                    serializedRsa = rsa.ToXmlStringNetCore(true);
+                    using (var rsa = new RSAOpenSsl())
+                    {
+                        serializedRsa = rsa.ToXmlStringNetCore(true);
+                    }
                 }
-#endif
 
                 jsonWebKey.SerializedKey = serializedRsa;
                 await _jsonWebKeyRepository.UpdateAsync(jsonWebKey);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -6,7 +7,7 @@ namespace SimpleIdentityServer.EF.Sqlite
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOAuthSqliteEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddOAuthSqliteEF(this IServiceCollection serviceCollection, string connectionString, Action<SqliteDbContextOptionsBuilder> callback)
         {
             if (serviceCollection == null)
             {
@@ -21,7 +22,7 @@ namespace SimpleIdentityServer.EF.Sqlite
             serviceCollection.AddOAuthRepositories();
             serviceCollection.AddEntityFrameworkSqlite()
                 .AddDbContext<SimpleIdentityServerContext>(options =>
-                    options.UseSqlite(connectionString));
+                    options.UseSqlite(connectionString, callback));
             return serviceCollection;
         }
     }

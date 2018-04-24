@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.EventStore.EF;
 using System;
@@ -7,7 +8,7 @@ namespace SimpleIdentityServer.EF.Postgre
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStorePostgresqlEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddEventStorePostgresqlEF(this IServiceCollection serviceCollection, string connectionString, Action<NpgsqlDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {
@@ -22,7 +23,7 @@ namespace SimpleIdentityServer.EF.Postgre
             serviceCollection.AddEventStoreRepositories();
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<EventStoreContext>(options =>
-                    options.UseNpgsql(connectionString));
+                    options.UseNpgsql(connectionString, callback));
             return serviceCollection;
         }
     }

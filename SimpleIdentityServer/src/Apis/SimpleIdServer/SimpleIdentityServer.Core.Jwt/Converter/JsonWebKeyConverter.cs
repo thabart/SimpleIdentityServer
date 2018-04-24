@@ -14,17 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Exceptions;
-using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.Jwt.Serializer;
-using System.Xml.Serialization;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using SimpleIdentityServer.Core.Common.DTOs;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Xml.Serialization;
 
 namespace SimpleIdentityServer.Core.Jwt.Converter
 {
@@ -111,22 +111,22 @@ namespace SimpleIdentityServer.Core.Jwt.Converter
                 Modulus = modulusKeyPair.Value.ToString().Base64DecodeBytes(),
                 Exponent = exponentKeyPair.Value.ToString().Base64DecodeBytes()
             };
-#if UAP
-            // TODO : Extract RSA Key information ...
-            return null;
-#elif NET461
-            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                return rsaCryptoServiceProvider.ToXmlString(false);
+                using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+                {
+                    rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+                    return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
+                }
             }
-#elif NETSTANDARD
-            using (var rsaCryptoServiceProvider = new RSAOpenSsl())
+            else
             {
-                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
-                return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
+                using (var rsaCryptoServiceProvider = new RSAOpenSsl())
+                {
+                    rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+                    return rsaCryptoServiceProvider.ToXmlStringNetCore(false);
+                }
             }
-#endif
         }
 
         private string ExtractEcKeyInformation(Dictionary<string, object> information)

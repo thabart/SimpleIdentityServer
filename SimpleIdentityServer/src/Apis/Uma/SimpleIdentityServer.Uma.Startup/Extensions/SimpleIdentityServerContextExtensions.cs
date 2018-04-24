@@ -20,6 +20,7 @@ using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Uma.Startup.Extensions
@@ -64,17 +65,20 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
             if (!context.JsonWebKeys.Any())
             {
                 var serializedRsa = string.Empty;
-#if NET461
-                using (var provider = new RSACryptoServiceProvider())
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    serializedRsa = provider.ToXmlString(true);
+                    using (var provider = new RSACryptoServiceProvider())
+                    {
+                        serializedRsa = provider.ToXmlStringNetCore(true);
+                    }
                 }
-#else
-                using (var rsa = new RSAOpenSsl())
+                else
                 {
-                    serializedRsa = rsa.ToXmlStringNetCore(true);
+                    using (var rsa = new RSAOpenSsl())
+                    {
+                        serializedRsa = rsa.ToXmlStringNetCore(true);
+                    }
                 }
-#endif
 
                 context.JsonWebKeys.AddRange(new[]
                 {

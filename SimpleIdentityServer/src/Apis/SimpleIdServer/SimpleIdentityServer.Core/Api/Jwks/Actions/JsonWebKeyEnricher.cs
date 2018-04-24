@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 using SimpleIdentityServer.Core.Common.Extensions;
@@ -75,33 +76,36 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 
         public void SetRsaPublicKeyInformation(Dictionary<string, object> result, JsonWebKey jsonWebKey)
         {
-#if NET461
-            using (var provider = new RSACryptoServiceProvider())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                provider.FromXmlString(jsonWebKey.SerializedKey);
-                var rsaParameters = provider.ExportParameters(false);
-                // Export the modulus
-                var modulus = rsaParameters.Modulus.Base64EncodeBytes();
-                // Export the exponent
-                var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+                using (var provider = new RSACryptoServiceProvider())
+                {
+                    provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    var rsaParameters = provider.ExportParameters(false);
+                    // Export the modulus
+                    var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+                    // Export the exponent
+                    var exponent = rsaParameters.Exponent.Base64EncodeBytes();
 
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                }
             }
-#else
-            using (var provider = new RSAOpenSsl())
+            else
             {
-                provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
-                var rsaParameters = provider.ExportParameters(false);
-                // Export the modulus
-                var modulus = rsaParameters.Modulus.Base64EncodeBytes();
-                // Export the exponent
-                var exponent = rsaParameters.Exponent.Base64EncodeBytes();
+                using (var provider = new RSAOpenSsl())
+                {
+                    provider.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    var rsaParameters = provider.ExportParameters(false);
+                    // Export the modulus
+                    var modulus = rsaParameters.Modulus.Base64EncodeBytes();
+                    // Export the exponent
+                    var exponent = rsaParameters.Exponent.Base64EncodeBytes();
 
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-                result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+                    result.Add(Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+                }
             }
-#endif
         }
     }
 }

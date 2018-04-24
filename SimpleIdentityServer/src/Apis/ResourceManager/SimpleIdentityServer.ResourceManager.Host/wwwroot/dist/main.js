@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f1509506f92af47de27e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "71faf16fd73a3fd35ddb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -19928,12 +19928,17 @@ var _clientService = __webpack_require__(355);
 
 var _clientService2 = _interopRequireDefault(_clientService);
 
+var _scopeService = __webpack_require__(686);
+
+var _scopeService2 = _interopRequireDefault(_scopeService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.SessionService = _sessionService2.default;
 exports.WebsiteService = _websiteService2.default;
 exports.EndpointService = _endpointService2.default;
 exports.ClientService = _clientService2.default;
+exports.ScopeService = _scopeService2.default;
 
 /***/ }),
 /* 68 */
@@ -52712,7 +52717,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = {
 	/**
- * Search all the clients
+ * Search the clients.
  */
 	search: function search(request, type) {
 		return new Promise(function (resolve, reject) {
@@ -115395,6 +115400,56 @@ module.exports = __webpack_amd_options__;
 __webpack_require__(327);
 module.exports = __webpack_require__(326);
 
+
+/***/ }),
+/* 686 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(32);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _constants = __webpack_require__(26);
+
+var _constants2 = _interopRequireDefault(_constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = {
+	/**
+ * Search the scopes.
+ */
+	search: function search(request, type) {
+		return new Promise(function (resolve, reject) {
+			var data = JSON.stringify(request);
+			_jquery2.default.ajax({
+				url: _constants2.default.apiUrl + '/scopes/' + type + '/.search',
+				method: "POST",
+				data: data,
+				contentType: 'application/json'
+			}).then(function (data) {
+				resolve(data);
+			}).fail(function (e) {
+				reject(e);
+			});
+		});
+	},
+	/**
+ * Get the scope.
+ */
+	get: function get(id) {
+		return new Promise(function (resolve, reject) {
+			_jquery2.default.get(_constants2.default.apiUrl + '/scopes/' + id).then(function (data) {
+				resolve(data);
+			}).fail(function (e) {
+				reject(e);
+			});
+		});
+	}
+};
 
 /***/ })
 /******/ ]);

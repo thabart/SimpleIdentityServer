@@ -5,11 +5,11 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Manager.Common.Responses
 {
     [DataContract]
-    public class SearchClientsResponse
+    public class SearchScopesResponse
     {
         [JsonProperty(Constants.SearchResponseNames.Content)]
         [DataMember(Name = Constants.SearchResponseNames.Content)]
-        public IEnumerable<ClientResponse> Content { get; set; }
+        public IEnumerable<ScopeResponse> Content { get; set; }
 
         [JsonProperty(Constants.SearchResponseNames.TotalResults)]
         [DataMember(Name = Constants.SearchResponseNames.TotalResults)]

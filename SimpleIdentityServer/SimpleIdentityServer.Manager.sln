@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Loggin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiContrib.Core.Storage.InMemory", "src\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj", "{EAB69369-6ADB-4FBB-B0A3-F44386C0DC9C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Manager.Common", "src\Apis\Manager\SimpleIdentityServer.Manager.Common\SimpleIdentityServer.Manager.Common.csproj", "{08151BF4-E3D3-4AE6-8455-AED206652C2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -169,6 +171,12 @@ Global
 		{EAB69369-6ADB-4FBB-B0A3-F44386C0DC9C}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{EAB69369-6ADB-4FBB-B0A3-F44386C0DC9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAB69369-6ADB-4FBB-B0A3-F44386C0DC9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,6 +204,7 @@ Global
 		{FE130370-7222-450D-954F-5D6EAA0EC858} = {1D898F1E-AD66-4BAF-B24F-A7530425F46A}
 		{F5ECB450-0CA6-4CD9-A2D7-2EC1907A2632} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
 		{EAB69369-6ADB-4FBB-B0A3-F44386C0DC9C} = {5D407E0D-4A55-4AA6-AC79-93F82BC7EE57}
+		{08151BF4-E3D3-4AE6-8455-AED206652C2B} = {D3274B2A-7992-412D-A2BC-CD2DDA51F24E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA28E198-EBC9-4C87-B84F-439D80617DC3}

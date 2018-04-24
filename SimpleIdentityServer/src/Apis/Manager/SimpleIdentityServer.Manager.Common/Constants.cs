@@ -2,11 +2,16 @@
 {
     public static class Constants
     {
-        public static class SearchClientsResponseNames
+        public static class SearchResponseNames
         {
             public const string Content = "content";
             public const string StartIndex = "start_index";
             public const string TotalResults = "count";
+        }
+
+        public static class SearchScopeNames
+        {
+            public const string ScopeNames = "names";
         }
 
         public static class ClientSecretNames

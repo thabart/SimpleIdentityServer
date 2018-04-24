@@ -3,7 +3,7 @@ import Constants from '../constants';
 
 module.exports = {
 	/**
-	* Search all the clients
+	* Search the clients.
 	*/
 	search: function(request, type) {
         return new Promise(function (resolve, reject) {

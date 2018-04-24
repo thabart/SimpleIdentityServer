@@ -17,6 +17,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.Manager.Core.Api.Scopes;
 using SimpleIdentityServer.Manager.Host.Extensions;
@@ -40,6 +41,20 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         {
             _scopeActions = scopeActions;
             _representationManager = representationManager;
+        }
+        
+        [HttpPost(".search")]
+        [Authorize("manager")]
+        public async Task<IActionResult> Search([FromBody] SearchScopesRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var parameter = request.ToSearchScopesParameter();
+            var result = await _scopeActions.Search(parameter);
+            return new OkObjectResult(result.ToDto());
         }
 
         [HttpGet]

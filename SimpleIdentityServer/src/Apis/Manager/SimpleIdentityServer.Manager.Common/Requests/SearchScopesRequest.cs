@@ -5,15 +5,11 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.Manager.Common.Requests
 {
     [DataContract]
-    public class SearchClientsRequest
+    public class SearchScopesRequest
     {
-        [JsonProperty(Constants.SearchClientNames.ClientNames)]
-        [DataMember(Name = Constants.SearchClientNames.ClientNames)]
-        public IEnumerable<string> ClientNames { get; set; }
-
-        [JsonProperty(Constants.SearchClientNames.ClientIds)]
-        [DataMember(Name = Constants.SearchClientNames.ClientIds)]
-        public IEnumerable<string> ClientIds { get; set; }
+        [JsonProperty(Constants.SearchScopeNames.ScopeNames)]
+        [DataMember(Name = Constants.SearchScopeNames.ScopeNames)]
+        public IEnumerable<string> ScopeNames { get; set; }
 
         [JsonProperty(Constants.SearchResponseNames.StartIndex)]
         [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
