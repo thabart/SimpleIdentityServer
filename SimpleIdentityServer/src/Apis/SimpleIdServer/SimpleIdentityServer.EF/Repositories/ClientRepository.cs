@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.EF.Repositories
             IQueryable<Client> clients = _context.Clients;
             if (parameter.ClientIds != null && parameter.ClientIds.Any())
             {
-                clients = clients.Where(c => parameter.ClientIds.Contains(c.ClientId));
+                clients = clients.Where(c => parameter.ClientIds.Any(i => c.ClientId.Contains(i)));
             }
 
             if (parameter.ClientNames != null && parameter.ClientNames.Any())

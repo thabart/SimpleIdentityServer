@@ -43,8 +43,15 @@ class ResourceOwners extends Component {
         self.setState({
             isLoading: true
         });
+
         var startIndex = state.page * state.pageSize;
-        ResourceOwnerService.search({ start_index: startIndex, count: state.pageSize }, self.props.type).then(function (result) {
+        var request = { start_index: startIndex, count: state.pageSize };
+        if (state.filtered && state.filtered.length > 0) {
+            var firstFilter = state.filtered[0];
+            request.subjects = [ firstFilter.value ];
+        }
+
+        ResourceOwnerService.search(request, self.props.type).then(function (result) {
             var data = [];
             if (result.content) {
                 result.content.forEach(function (client) {
@@ -107,7 +114,7 @@ class ResourceOwners extends Component {
                                     columns={columns}
                                     defaultPageSize={10}
                                     manual={true}
-                                    filterable={false}
+                                    filterable={true}
                                     showPaginationTop={true}
                                     showPaginationBottom={false}
                                     sortable={false}

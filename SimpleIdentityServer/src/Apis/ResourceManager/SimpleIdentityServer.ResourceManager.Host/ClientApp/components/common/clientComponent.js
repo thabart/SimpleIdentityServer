@@ -10,9 +10,9 @@ const columns = [
     {
         Header: '', accessor: 'logo_uri', Cell: row => (
             <img src={row.value} width="50" />
-        )
+        ), filterable: false
     },
-    { Header: 'Name', accessor: 'client_name' },
+    { Header: 'Name', accessor: 'client_name', filterable: false },
     { Header: 'Identifier', accessor: 'client_id' }
 ];
 
@@ -50,7 +50,12 @@ class ClientComponent extends Component {
             isLoading: true
         });
         var startIndex = state.page * state.pageSize;
-        ClientService.search({ start_index: startIndex, count: state.pageSize }, self.props.type).then(function (result) {
+        var request = { start_index: startIndex, count: state.pageSize };
+        if (state.filtered && state.filtered.length > 0) {
+            request.client_ids = [ state.filtered[0].value ];
+        }
+
+        ClientService.search(request, self.props.type).then(function (result) {
             var data = [];
             if (result.content) {
                 result.content.forEach(function (client) {
@@ -115,7 +120,7 @@ class ClientComponent extends Component {
                                     columns={columns}
                                     defaultPageSize={10}
                                     manual={true}
-                                    filterable={false}
+                                    filterable={true}
                                     showPaginationTop={true}
                                     showPaginationBottom={false}
                                     sortable={false}

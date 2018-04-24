@@ -199,7 +199,7 @@ class Layout extends Component {
                             <ListItem primaryText={t('manageAuthServers')} nestedItems={[
                                 <ListItem primaryText={t('oauthClients')} onClick={() => self.navigate('/authclients')} />,    
                                 <ListItem primaryText={t('oauthScopes')} onClick={() => self.navigate('/authscopes')} />,    
-                                <ListItem primaryText={t('resources')} />                               
+                                <ListItem primaryText={t('resources')} onClick={() => self.navigate('/resources')} />            
                             ]} />
                         ))}
                         {/* SCIM server */}

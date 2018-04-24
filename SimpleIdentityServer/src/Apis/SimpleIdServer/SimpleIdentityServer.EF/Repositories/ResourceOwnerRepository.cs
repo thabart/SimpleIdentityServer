@@ -245,7 +245,8 @@ namespace SimpleIdentityServer.EF.Repositories
 
                 if (parameter.Subjects != null)
                 {                    
-                    result = result.Where(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && parameter.Subjects.Contains(c.Value)));
+                    result = result.Where(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code 
+                        && parameter.Subjects.Any(s => c.Value.Contains(s))));
                 }
 
                 if (result == null)
