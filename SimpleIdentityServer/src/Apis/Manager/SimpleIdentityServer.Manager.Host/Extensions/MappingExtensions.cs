@@ -43,7 +43,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 Count = parameter.NbResults,
                 ScopeNames = parameter.ScopeNames,
-                StartIndex = parameter.StartIndex
+                StartIndex = parameter.StartIndex,
+                Types = parameter.ScopeTypes
             };
         }
 

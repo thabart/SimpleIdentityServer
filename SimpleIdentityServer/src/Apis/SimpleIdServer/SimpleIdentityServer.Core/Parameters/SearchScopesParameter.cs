@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SimpleIdentityServer.Core.Models;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -13,6 +14,7 @@ namespace SimpleIdentityServer.Core.Parameters
         }
 
         public IEnumerable<string> ScopeNames { get; set; }
+        public IList<int> Types { get; set; }
         public bool IsPagingEnabled { get; set; }
         public int StartIndex { get; set; }
         public int Count { get; set; }

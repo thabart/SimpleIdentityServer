@@ -7,8 +7,33 @@ import { EndpointService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
-import { IconButton, RaisedButton, Drawer, SelectField, MenuItem } from 'material-ui';
-import { List, ListItem } from 'material-ui/List';
+import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl } from 'material-ui';
+import  List, { ListItem, ListItemText } from 'material-ui/List';
+import { InputLabel } from 'material-ui/Input';
+import { withStyles } from 'material-ui/styles';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Settings from '@material-ui/icons/Settings';
+import Collapse from 'material-ui/transitions/Collapse';
+
+
+const drawerWidth = 300;
+const styles = theme => ({
+  root: {
+    display: 'flex'
+  },
+  body: {
+    width: '100%',
+  },
+  drawerPaper: {
+    position: 'relative',
+    width: drawerWidth,
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120,
+  }
+});
 
 class Layout extends Component {
     constructor(props) {
@@ -23,6 +48,9 @@ class Layout extends Component {
         this.startCheckSession = this.startCheckSession.bind(this);
         this.stopCheckSession = this.stopCheckSession.bind(this);
         this.state = {
+            isManageOpenidServerOpened: false,
+            isManageAuthServersOpened: false,
+            isScimOpened: false,
             isLoggedIn: false,
             isOauthDisplayed: false,
             isScimDisplayed: false,
@@ -30,7 +58,10 @@ class Layout extends Component {
             isDrawerDisplayed: false,
             openidEndpoints: [],
             authEndpoints: [],
-            scimEndpoints: []
+            scimEndpoints: [],
+            selectedOpenid: null,
+            selectedAuth: null,
+            selectedScim: null
         };
     }
     /**
@@ -71,16 +102,40 @@ class Layout extends Component {
     refresh() {
         var self = this;
         EndpointService.getAll().then(function(endpoints) {
+            var authEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 0; });
+            var openidEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 1; });
+            var scimEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 2; });
+            var selectedOpenid = null;
+            var selectedAuth = null;
+            var selectedScim = null;
+            if (authEndpoints.length > 0) {
+                selectedAuth = authEndpoints[0].name;
+            }
+
+            if (openidEndpoints.length > 0) {
+                selectedOpenid = openidEndpoints[0].name;
+            }
+
+            if (scimEndpoints.length > 0) {
+                selectedScim = scimEndpoints[0].name;
+            }
+
             self.setState({
-                authEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 0; }),
-                openidEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 1; }),
-                scimEndpoints: endpoints.filter(function(endpoint) { return endpoint.type === 2; })
+                authEndpoints: authEndpoints,
+                openidEndpoints: openidEndpoints,
+                scimEndpoints: scimEndpoints,
+                selectedOpenid: selectedOpenid,
+                selectedAuth: selectedAuth,
+                selectedScim: selectedScim
             });
         }).catch(function() {
 
         });
     }
 
+    /**
+    * Start the check the session.
+    */
     startCheckSession() {
         var self = this;
         if (self._checkSessionInterval) {
@@ -116,6 +171,9 @@ class Layout extends Component {
         }, 3*1000);
     }
 
+    /**
+    * Stop to check the session.
+    */
     stopCheckSession() {
         var self = this;
         if (!self._checkSessionInterval) {
@@ -128,107 +186,145 @@ class Layout extends Component {
 
     render() {
         var self = this;
-        const { t } = this.props;
+        const { t, classes } = this.props;
         var openidEndpoints = [];
         var authEndpoints = [];
         var scimEndpoints = [];
         if (self.state.openidEndpoints) {
             self.state.openidEndpoints.forEach(function(openidEndpoint) {
-                openidEndpoints.push((<MenuItem key={openidEndpoint.name} primaryText={openidEndpoint.description}></MenuItem>));
+                openidEndpoints.push((<MenuItem key={openidEndpoint.name} value={openidEndpoint.name}>{openidEndpoint.description}</MenuItem>));
             });
+
+            console.log(openidEndpoints);
+            console.log(self.state.selectedOpenid);
         }
 
         if (self.state.authEndpoints) {
             self.state.authEndpoints.forEach(function(authEndpoint) {
-                authEndpoints.push((<MenuItem key={authEndpoint.name} primaryText={authEndpoint.description}></MenuItem>));
+                authEndpoints.push((<MenuItem key={authEndpoint.name} value={authEndpoint.name}>{authEndpoint.description}</MenuItem>));
             });
         }
 
         if (self.state.scimEndpoints) {
             self.state.scimEndpoints.forEach(function(scimEndpoint) {
-                scimEndpoints.push((<MenuItem key={scimEndpoint.name} primaryText={scimEndpoint.description}></MenuItem>))
+                scimEndpoints.push((<MenuItem key={scimEndpoint.name} value={scimEndpoint.name}>{scimEndpoint.description}</MenuItem>))
             });
         }
 
-        return (<div>
-            <Drawer width={300} docked={false} onRequestChange={(open) => self.setState({
-                isDrawerDisplayed: open
-            })} openSecondary={true} open={this.state.isDrawerDisplayed}>
+        return (
+        <div className={classes.root}>
+            <SwipeableDrawer open={self.state.isDrawerDisplayed} anchor="right" onClose={ () => self.setState({ isDrawerDisplayed: false }) } onOpen={ () => self.setState({ isDrawerDisplayed: true }) }>
                 <div style={{padding: "20px"}}>
                     <ul className="nav nav-tabs">
                         <li className="nav-item"><a href="#" className="nav-link">{t('yourPreferences')}</a></li>
                     </ul>
                     <div>
-                        <div className="form-group">
-                            <span>{t('selectedPreferredOpenIdProvider')}</span>
-                            <SelectField>
-                                {openidEndpoints}
-                            </SelectField>
-                        </div>
-                        <div className="form-group">
-                            <span>{t('selectPreferredAuthorizationServer')}</span>
-                            <SelectField>
-                                {authEndpoints}
-                            </SelectField>
-                        </div>
-                        <div className="form-group">
-                            <span>{t('selectPreferredScimServer')}</span>
-                            <SelectField>
-                                {scimEndpoints}
-                            </SelectField>
-                        </div>
-                        <RaisedButton label={t('saveChanges')} primary={true} />
+                        {openidEndpoints.length > 0 && (
+                            <div>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel>{t('selectedPreferredOpenIdProvider')}</InputLabel>
+                                    <Select value={self.state.selectedOpenid}>
+                                        {openidEndpoints}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        )}
+                        {authEndpoints.length > 0 && (
+                            <div>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel>{t('selectPreferredAuthorizationServer')}</InputLabel>
+                                    <Select value={self.state.selectedAuth}>
+                                        {authEndpoints}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        )}
+                        {scimEndpoints.length > 0 && (
+                            <div>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel>{t('selectPreferredScimServer')}</InputLabel>                            
+                                    <Select color="orange" value={self.state.selectedScim}>
+                                        {scimEndpoints}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        )}
+                        <Button color="primary">{t('saveChanges')}</Button>
                     </div>
                 </div>
+            </SwipeableDrawer>
+            <Drawer variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>                
+                <List>
+                    {/* About menu item */}
+                    <ListItem button onClick={() => self.navigate('/about')}>
+                        <ListItemText>{t('aboutMenuItem')}</ListItemText>
+                    </ListItem>
+                    {/* Openid menu item */}                        
+                    {(self.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <ListItem button onClick={() => self.toggleValue('isManageOpenidServerOpened')}>
+                            <ListItemText>{t('manageOpenidServers')}</ListItemText>
+                            { this.state.isManageOpenidServerOpened ? <ExpandLess /> : <ExpandMore /> }
+                        </ListItem>
+                    ))}
+                    <Collapse in={this.state.isManageOpenidServerOpened}>
+                        <List disablePadding>
+                            <ListItem button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
+                            <ListItem button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
+                            <ListItem button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
+                        </List>
+                    </Collapse>                        
+                    {/* Authorisation server */}
+                    {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <ListItem button onClick={() => self.toggleValue('isManageAuthServersOpened')}>
+                            <ListItemText>{t('manageAuthServers')}</ListItemText>
+                            { this.state.isManageAuthServersOpened ? <ExpandLess /> : <ExpandMore /> }
+                        </ListItem>
+                    ))}
+                    <Collapse in={this.state.isManageAuthServersOpened}>
+                        <List disablePadding>
+                            <ListItem button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
+                            <ListItem button onClick={() => self.navigate('/oauthScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
+                            <ListItem button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
+                        </List>
+                    </Collapse>
+                    {/* SCIM server */}
+                    {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <ListItem button onClick={() => self.toggleValue('isScimOpened')}>
+                            <ListItemText>{t('manageScimServers')}</ListItemText>
+                            { this.state.isScimOpened ? <ExpandLess /> : <ExpandMore /> }
+                        </ListItem>
+                    ))}
+                    <Collapse in={this.state.isScimOpened}>
+                        <List disablePadding>
+                            <ListItem button><ListItemText>{t('scimSchemas')}</ListItemText></ListItem>
+                            <ListItem button><ListItemText>{t('scimResources')}</ListItemText></ListItem>
+                        </List>
+                    </Collapse>
+                    {/* Logs */}         
+                    {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
+                       <ListItem button onClick={() => self.navigate('/logs')}>
+                            <ListItemText>{t('logsMenuItem')}</ListItemText>
+                        </ListItem>
+                    )}
+                    {/* Connect or disconnect */}
+                    {(this.state.isLoggedIn ? (
+                        <ListItem button onClick={() => self.disconnect()}>
+                            <ListItemText>{t('disconnectMenuItem')}</ListItemText>
+                        </ListItem>
+                    ) : (                        
+                        <ListItem button onClick={() => self.navigate('/login')}>
+                            <ListItemText>{t('connectMenuItem')}</ListItemText>
+                        </ListItem>
+                    ))}
+                </List>
             </Drawer>
-            <nav className="navbar-static-side navbar left">
-                <div className="sidebar-collapse">
-                    <List>
-                        {/* About menu item */}
-                        <ListItem primaryText={t('aboutMenuItem')} onClick={() => self.navigate('/about')} />
-                        {/* Openid menu item */}
-                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <ListItem primaryText={t('manageOpenidServers')} nestedItems={[
-                                <ListItem primaryText={t('resourceOwners')} onClick={() => self.navigate('/resourceowners')} />, 
-                                <ListItem primaryText={t('openidClients')} onClick={() => self.navigate('/openidclients')} />, 
-                                <ListItem primaryText={t('openidScopes')} onClick={() => self.navigate('/openidscopes')} />
-                            ]} />
-                        ))}
-                        {/* Authorisation server */}
-                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <ListItem primaryText={t('manageAuthServers')} nestedItems={[
-                                <ListItem primaryText={t('oauthClients')} onClick={() => self.navigate('/authclients')} />,    
-                                <ListItem primaryText={t('oauthScopes')} onClick={() => self.navigate('/authscopes')} />,    
-                                <ListItem primaryText={t('resources')} onClick={() => self.navigate('/resources')} />            
-                            ]} />
-                        ))}
-                        {/* SCIM server */}
-                        {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
-                            <ListItem primaryText={t('manageScimServers')} nestedItems={[
-                                <ListItem primaryText={t('scimSchemas')} />,
-                                <ListItem primaryText={t('scimResources')} />
-                            ]} />
-                         ))}
-                        {/* Logs */}         
-                        {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
-                            <ListItem primaryText={t('logsMenuItem')} onClick={() => self.navigate('/logs')} />
-                        )}
-                        {/* Connect or disconnect */}
-                        {(this.state.isLoggedIn ? (
-                            <ListItem primaryText={t('disconnectMenuItem')} onClick={() => self.disconnect()} />
-                        ) : (
-                            <ListItem primaryText={t('connectMenuItem')} onClick={() => self.navigate('/login')} />
-                        ))}
-                    </List>
-                </div>
-            </nav>
-            <section id="wrapper">
+            <section className={classes.body}>
                 { /* Navigation */ }
                 <nav className="navbar navbar-toggleable-md">
                     <a className="navbar-brand" href="#" id="uma-title">{t('websiteTitle')}</a>
                     <ul className="navbar-nav mr-auto">
                     </ul>
-                    {this.state.isLoggedIn && (<IconButton iconClassName="material-icons" onClick={() => self.toggleValue('isDrawerDisplayed')}>&#xE8B8;</IconButton>)}
+                    {this.state.isLoggedIn && (<IconButton  onClick={() => self.toggleValue('isDrawerDisplayed')}><Settings button  /></IconButton>)}
                 </nav>
                 { /* Display component */}
                 <section id="body">
@@ -268,4 +364,4 @@ class Layout extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(withRouter(Layout));
+export default translate('common', { wait: process && !process.release })(withRouter(withStyles(styles)(Layout)));

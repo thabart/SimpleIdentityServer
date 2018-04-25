@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../../services';
-
-import { Popover, IconButton, Menu, MenuItem } from 'material-ui';
-import ReactTable from 'react-table'
-
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
+import { Popover, IconButton, Menu, MenuItem, Checkbox } from 'material-ui';
 
 const columns = [
     { Header: 'Name', accessor: 'name' },
@@ -20,6 +18,9 @@ class ScopeComponent extends Component {
         this.displayPopOver = this.displayPopOver.bind(this);
         this.toggleProperty = this.toggleProperty.bind(this);
         this.fetchData = this.fetchData.bind(this);
+
+        this.refreshData = this.refreshData.bind(this);
+
         this.state = {
             data: [],
             isLoading: false,
@@ -74,9 +75,51 @@ class ScopeComponent extends Component {
         });
     }
 
+    refreshData() {
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        ScopeService.search({ start_index: 0, count: 500 }, self.props.type).then(function (result) {
+            var data = [];
+            if (result.content) {
+                result.content.forEach(function (client) {
+                    data.push({
+                        name: client['name'],
+                        type: client['type']
+                    });
+                });
+            }
+            
+            self.setState({
+                isLoading: false,
+                data: data,
+                pages: 100
+            });
+        }).catch(function (e) {
+            self.setState({
+                isLoading: false,
+                data: [],
+                pages: 0
+            });
+        });
+    }
+
     render() {
         var self = this;
         const { t } = this.props;
+        var rows = [];
+        if (self.state.data) {
+            self.state.data.forEach(function(record) {
+                rows.push((
+                    <TableRow hover role="checkbox" key={record.name}>
+                        <TableCell><Checkbox /></TableCell>
+                        <TableCell>{record.name}</TableCell>
+                        <TableCell>{record.type}</TableCell>
+                    </TableRow>
+                ));
+            });
+        }
         return (<div className="block">
             <div className="block-header">
                 <h4>{t('scopes')}</h4>
@@ -87,43 +130,32 @@ class ScopeComponent extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="header">
-                                <h4 style={{display: "inline-block"}}>{t('listOfScopes')}</h4>
-                                <div style={{float: "right"}}>
-                                    <IconButton iconClassName="material-icons" onClick={self.displayPopOver}>&#xE5D4;</IconButton>                                    
-                                    <Popover
-                                      open={this.state.isSettingsOpened}
-                                      anchorEl={this.state.anchorEl}
-                                      anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                                      targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                                    onRequestClose={() => self.toggleProperty('isSettingsOpened')}
-                                    >   
-                                        <Menu>
-                                            <MenuItem primaryText={t('addScope')} />
-                                        </Menu>
-                                    </Popover>
-                                </div>
                             </div>
                             <div className="body">
-                                <ReactTable
-                                    data={this.state.data}
-                                    loading={this.state.isLoading}
-                                    onFetchData={this.fetchData}
-                                    pages={this.state.pages}
-                                    columns={columns}
-                                    defaultPageSize={10}
-                                    manual={true}
-                                    filterable={false}
-                                    showPaginationTop={true}
-                                    showPaginationBottom={false}
-                                    sortable={false}
-                                    className="-striped -highlight"
-                                />
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell>{t('name')}</TableCell>
+                                            <TableCell>{t('status')}</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {rows}
+                                    </TableBody>
+                                    <TableFooter>
+                                    </TableFooter>
+                                </Table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>);
+    }
+
+    componentDidMount() {
+        this.refreshData();
     }
 }
 

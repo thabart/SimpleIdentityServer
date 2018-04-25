@@ -13,6 +13,7 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
+    "@material-ui/icons": "^1.0.0-beta.43",
     "aspnet-webpack": "^2.0.1",
     "aspnet-webpack-react": "^3.0.0",
     "babel-core": "^6.26.0",
@@ -35,7 +36,7 @@
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "material-icons": "^0.2.1",
-    "material-ui": "^0.20.0",
+    "material-ui": "^1.0.0-beta.43",
     "moment": "^2.21.0",
     "popper.js": "^1.12.9",
     "prop-types": "^15.6.1",

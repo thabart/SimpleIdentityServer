@@ -7,6 +7,10 @@ namespace SimpleIdentityServer.Manager.Common.Requests
     [DataContract]
     public class SearchScopesRequest
     {
+        [JsonProperty(Constants.SearchScopeNames.ScopeTypes)]
+        [DataMember(Name = Constants.SearchScopeNames.ScopeTypes)]
+        public IList<int> ScopeTypes { get; set; }
+
         [JsonProperty(Constants.SearchScopeNames.ScopeNames)]
         [DataMember(Name = Constants.SearchScopeNames.ScopeNames)]
         public IEnumerable<string> ScopeNames { get; set; }

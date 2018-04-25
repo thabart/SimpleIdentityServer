@@ -229,7 +229,13 @@ namespace SimpleIdentityServer.EF.Repositories
             IQueryable<Models.Scope> scopes = _context.Scopes;
             if (parameter.ScopeNames != null && parameter.ScopeNames.Any())
             {
-                scopes = scopes.Where(c => parameter.ScopeNames.Any(n => n.Contains(c.Name)));
+                scopes = scopes.Where(c => parameter.ScopeNames.Any(n => c.Name.Contains(n)));
+            }
+
+            if (parameter.Types != null && parameter.Types.Any())
+            {
+                var scopeTypes = parameter.Types.Select(t => (Models.ScopeType)t);
+                scopes = scopes.Where(s => scopeTypes.Contains(s.Type));
             }
 
             var nbResult = await scopes.CountAsync().ConfigureAwait(false);

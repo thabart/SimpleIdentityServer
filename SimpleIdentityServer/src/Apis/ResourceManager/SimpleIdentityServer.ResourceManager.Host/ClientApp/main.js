@@ -15,7 +15,6 @@ class Main extends React.Component {
     render() {
         const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
         return (
-            <MuiThemeProvider>
                 <AppContainer>
                     <I18nextProvider
                         i18n={i18n}
@@ -24,8 +23,7 @@ class Main extends React.Component {
                     >
                         <BrowserRouter children={routes} basename={baseUrl} />
                     </I18nextProvider>
-                </AppContainer>
-            </MuiThemeProvider>);
+                </AppContainer>);
     }
 }
 

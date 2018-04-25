@@ -16,6 +16,7 @@
         public static class SearchScopeNames
         {
             public const string ScopeNames = "names";
+            public const string ScopeTypes = "types";
         }
 
         public static class ClientSecretNames
