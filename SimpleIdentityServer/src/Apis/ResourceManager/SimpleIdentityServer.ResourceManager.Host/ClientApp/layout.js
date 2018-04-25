@@ -32,6 +32,9 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
+  },
+  nested: {
+    paddingLeft: theme.spacing.unit * 4,
   }
 });
 
@@ -145,7 +148,6 @@ class Layout extends Component {
         var evt = window.addEventListener("message", function(e) {
             if (e.data !== 'unchanged') {
                 SessionService.remove();
-                console.log(e.data);
                 self.setState({
                     isLoggedIn: false
                 });
@@ -194,9 +196,6 @@ class Layout extends Component {
             self.state.openidEndpoints.forEach(function(openidEndpoint) {
                 openidEndpoints.push((<MenuItem key={openidEndpoint.name} value={openidEndpoint.name}>{openidEndpoint.description}</MenuItem>));
             });
-
-            console.log(openidEndpoints);
-            console.log(self.state.selectedOpenid);
         }
 
         if (self.state.authEndpoints) {
@@ -221,7 +220,7 @@ class Layout extends Component {
                     <div>
                         {openidEndpoints.length > 0 && (
                             <div>
-                                <FormControl className={classes.formControl}>
+                                <FormControl fullWidth={true} className={classes.formControl}>
                                     <InputLabel>{t('selectedPreferredOpenIdProvider')}</InputLabel>
                                     <Select value={self.state.selectedOpenid}>
                                         {openidEndpoints}
@@ -231,9 +230,9 @@ class Layout extends Component {
                         )}
                         {authEndpoints.length > 0 && (
                             <div>
-                                <FormControl className={classes.formControl}>
+                                <FormControl fullWidth={true} className={classes.formControl}>
                                     <InputLabel>{t('selectPreferredAuthorizationServer')}</InputLabel>
-                                    <Select value={self.state.selectedAuth}>
+                                    <Select  value={self.state.selectedAuth}>
                                         {authEndpoints}
                                     </Select>
                                 </FormControl>
@@ -241,9 +240,9 @@ class Layout extends Component {
                         )}
                         {scimEndpoints.length > 0 && (
                             <div>
-                                <FormControl className={classes.formControl}>
+                                <FormControl fullWidth={true} className={classes.formControl}>
                                     <InputLabel>{t('selectPreferredScimServer')}</InputLabel>                            
-                                    <Select color="orange" value={self.state.selectedScim}>
+                                    <Select value={self.state.selectedScim}>
                                         {scimEndpoints}
                                     </Select>
                                 </FormControl>
@@ -267,10 +266,10 @@ class Layout extends Component {
                         </ListItem>
                     ))}
                     <Collapse in={this.state.isManageOpenidServerOpened}>
-                        <List disablePadding>
-                            <ListItem button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
-                            <ListItem button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
-                            <ListItem button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
+                        <List>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
                         </List>
                     </Collapse>                        
                     {/* Authorisation server */}
@@ -281,10 +280,10 @@ class Layout extends Component {
                         </ListItem>
                     ))}
                     <Collapse in={this.state.isManageAuthServersOpened}>
-                        <List disablePadding>
-                            <ListItem button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
-                            <ListItem button onClick={() => self.navigate('/oauthScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
-                            <ListItem button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
+                        <List>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/oauthScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
                         </List>
                     </Collapse>
                     {/* SCIM server */}
@@ -295,9 +294,9 @@ class Layout extends Component {
                         </ListItem>
                     ))}
                     <Collapse in={this.state.isScimOpened}>
-                        <List disablePadding>
-                            <ListItem button><ListItemText>{t('scimSchemas')}</ListItemText></ListItem>
-                            <ListItem button><ListItemText>{t('scimResources')}</ListItemText></ListItem>
+                        <List>
+                            <ListItem className={classes.nested} button><ListItemText>{t('scimSchemas')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button><ListItemText>{t('scimResources')}</ListItemText></ListItem>
                         </List>
                     </Collapse>
                     {/* Logs */}         
