@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.EventStore.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;").AddEventStore();
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;", null).AddEventStore();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

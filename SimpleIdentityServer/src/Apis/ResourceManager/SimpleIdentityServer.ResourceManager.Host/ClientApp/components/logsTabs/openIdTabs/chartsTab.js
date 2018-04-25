@@ -4,6 +4,7 @@ import Constants from '../../../constants';
 import moment from 'moment';
 import $ from 'jquery';
 import { Bar } from 'react-chartjs';
+import { Grid } from 'material-ui';
 
 class ChartsTab extends Component {
     constructor(props) {
@@ -192,24 +193,24 @@ class ChartsTab extends Component {
     render() {
         var self = this;
         const { t } = self.props;
-        return (<div className="row">
-        	<div className="col-md-6">
+        return (<Grid container spacing={8}>
+        	<Grid item sm={12} md={6} zeroMinWidth>
         		<div className="card">
                     <div className="header"><h4>{t('reportingAuthTitle')}</h4></div>
 			        <div className="body" style={{overflow: "hidden"}}>
                         {this.state.authorizationData !== null && (<Bar data={this.state.authorizationData}/>)}
                     </div>
 		      	</div>
-        	</div>
-        	<div className="col-md-6">
+        	</Grid>
+        	<Grid item sm={12} md={6} zeroMinWidth>
         		<div className="card">
 			      <div className="header"><h4>{t('reportingTokenTitle')}</h4></div>
 			      <div className="body">
                     {this.state.tokenData !== null && (<Bar data={this.state.tokenData}/>)}
 			      </div>
 		      	</div>
-        	</div>
-        </div>);
+        	</Grid>
+        </Grid>);
     }
 
     componentDidMount() {

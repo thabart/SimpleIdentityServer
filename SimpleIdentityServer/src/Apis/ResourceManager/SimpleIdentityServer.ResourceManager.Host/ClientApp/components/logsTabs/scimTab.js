@@ -5,8 +5,8 @@ import Constants from '../../constants';
 import $ from 'jquery';
 import ReactTable from 'react-table'
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
 
+/*
 const columns = [
     { Header : 'Event', accessor: 'description' },
     { Header : 'Created on', accessor: 'created_on', Filter : ({filter, onChange}) => {
@@ -20,12 +20,13 @@ const errorColumns = [
         return (<div><span>afterDate</span><DatePicker selected={filter ? filter.value : moment()} onChange={onChange} withPortal /></div>)
     } }
 ];
+*/
 
 class ScimTab extends Component {
     constructor(props) {
         super(props);
-        this.fetchData = this.fetchData.bind(this);
-        this.fetchError = this.fetchError.bind(this);
+        // this.fetchData = this.fetchData.bind(this);
+        // this.fetchError = this.fetchError.bind(this);
         this.state = {            
             data : [],
             error : [],
@@ -36,6 +37,7 @@ class ScimTab extends Component {
         };
     }
 
+    /*
     getDate(d) {
       return moment(d).format('LLL');
     }
@@ -184,8 +186,10 @@ class ScimTab extends Component {
             });
         });
     }
-    
+    */
     render() {
+        return (<span></span>);
+        /*
         var self = this;
         const { t } = self.props;
         return (<div className="row">
@@ -259,7 +263,7 @@ class ScimTab extends Component {
                     </div>
                 </div>
             </div>
-        </div>);
+        </div>);*/
     }
 
 

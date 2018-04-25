@@ -282,7 +282,7 @@ class Layout extends Component {
                     <Collapse in={this.state.isManageAuthServersOpened}>
                         <List>
                             <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/oauthScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
+                            <ListItem className={classes.nested} button onClick={() => self.navigate('/authScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
                             <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
                         </List>
                     </Collapse>

@@ -25,22 +25,20 @@ class OpenIdTab extends Component {
         var self = this;
         const { t } = self.props;
         return (
-            <div className="row">
-                <div className="col-md-12">
-                    <div className="card">
-                        <div className="body">
-                            <ul className="nav nav-tabs">
-                                <li className="nav-item">
-                                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "logs")}>{t('logs')}</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "charts")}>{t('charts')}</a>
-                                </li>
-                            </ul>
-                        </div>
+            <div>
+                <div className="card">
+                    <div className="body">
+                        <ul className="nav nav-tabs">
+                            <li className="nav-item">
+                                <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "logs")}>{t('logs')}</a>
+                            </li>
+                            <li className="nav-item">
+                                <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "charts")}>{t('charts')}</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div className="col-md-12">
+                <div>
                     {this.state.tabName === 'logs' && (<LogsTab />)}
                     {this.state.tabName === 'charts' && (<ChartsTab />)}
                 </div>
