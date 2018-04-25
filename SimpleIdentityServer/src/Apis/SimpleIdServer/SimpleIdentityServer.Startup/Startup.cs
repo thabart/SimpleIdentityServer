@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Startup
             var connectionString = Configuration["Db:EvtStoreConnectionString"];
             services.AddEventStoreSqlServerEF(connectionString, null);
             services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
+            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID));
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

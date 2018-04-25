@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
     public class UserInfoHandler : IHandle<GetUserInformationReceived>, IHandle<UserInformationReturned>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public UserInfoHandler(IEventAggregateRepository repository)
+        public UserInfoHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(GetUserInformationReceived parameter)
@@ -73,7 +75,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 Payload = content,
                 Order = order,
                 Key = key,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information
             });
         }

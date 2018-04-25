@@ -4,21 +4,36 @@ import Constants from '../constants';
 import $ from 'jquery';
 import moment from 'moment';
 
+import { withStyles } from 'material-ui/styles';
+import { CircularProgress } from 'material-ui';
+import Input, { InputLabel } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+
+const styles = theme => ({
+  margin: {
+    margin: theme.spacing.unit,
+  },
+});
+
 class ViewLog extends Component {
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
         this.state = {
-            id: null,
-            aggregateId: null,
-            description: null,
-            createdOn: null,
-            payload: null
+            loading: false,
+            id: '',
+            aggregateId: '',
+            description: '',
+            createdOn: '',
+            payload: ''
         };
     }
 
     refreshData() {
         var self = this;
+        self.setState({
+            loading: true
+        });
         var href = Constants.eventSourceUrl + "/events/" + self.props.match.params.id;
         $.get(href).done(function (result) {
             self.setState({
@@ -26,17 +41,20 @@ class ViewLog extends Component {
                 aggregateId: result.aggregate_id,
                 description: result.description,
                 createdOn: moment(result.createdOn).format('LLL'),
-                payload: result.payload
+                payload: result.payload,
+                loading: false
             });
         }).fail(function () {
-
+            self.setState({
+                loading: false
+            });
         });
 
     }
 
     render() {
         var self = this;
-        const { t } = self.props;
+        const { t, classes } = self.props;
         return (<div className="block">
             <div className="block-header">
                 <h4>{t('logTitle')}</h4>
@@ -47,27 +65,31 @@ class ViewLog extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="header"><h4>{t('logDescription')}</h4></div>
-                            <div className="body">
-                                <div className="form-group">
-                                    <label>{t('id')}</label>
-                                    <input type="text" className="form-control" value={this.state.id} />
-                                </div>
-                                <div className="form-group">
-                                    <label>{t('aggregateId')}</label>
-                                    <input type="text" className="form-control" value={this.state.aggregateId} />
-                                </div>
-                                <div className="form-group">
-                                    <label>{t('description')}</label>
-                                    <input type="text" className="form-control" value={this.state.description} />
-                                </div>
-                                <div className="form-group">
-                                    <label>{t('createdOn')}</label>
-                                    <input type="text" className="form-control" value={this.state.createdOn} />
-                                </div>
-                                <div className="form-group">
-                                    <label>{t('payload')}</label>
-                                    <textarea className="form-control" value={this.state.payload} />
-                                </div>
+                            <div className="body">    
+                                {this.state.loading ? ( <CircularProgress /> ) : (
+                                    <div>       
+                                        <FormControl fullWidth={true} className={classes.margin}>
+                                            <InputLabel htmlFor="eventid">{t('eventId')}</InputLabel>
+                                            <Input id="eventid" value={this.state.id}  />
+                                        </FormControl>                                        
+                                        <FormControl fullWidth={true} className={classes.margin}>                                    
+                                            <InputLabel htmlFor="aggregateId">{t('aggregateId')}</InputLabel>
+                                            <Input id="aggregateId" value={this.state.aggregateId}/>
+                                        </FormControl>                                        
+                                        <FormControl fullWidth={true} className={classes.margin}>                                    
+                                            <InputLabel htmlFor="description">{t('eventDescription')}</InputLabel>
+                                            <Input id="description" value={this.state.description}/>
+                                        </FormControl>                                        
+                                        <FormControl fullWidth={true} className={classes.margin}>                                    
+                                            <InputLabel htmlFor="createdOn">{t('createdOn')}</InputLabel>
+                                            <Input id="createdOn" value={this.state.createdOn}/>
+                                        </FormControl>                                        
+                                        <FormControl fullWidth={true} className={classes.margin}>                                    
+                                            <InputLabel htmlFor="payload">{t('payload')}</InputLabel>
+                                            <Input id="payload" multiline={true} value={this.state.payload}/>
+                                        </FormControl>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -81,4 +103,4 @@ class ViewLog extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(ViewLog);
+export default translate('common', { wait: process && !process.release })(withStyles(styles)(ViewLog));

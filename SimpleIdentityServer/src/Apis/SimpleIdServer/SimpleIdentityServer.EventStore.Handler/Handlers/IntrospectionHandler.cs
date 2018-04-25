@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
     public class IntrospectionHandler : IHandle<IntrospectionRequestReceived>, IHandle<IntrospectionResultReturned>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public IntrospectionHandler(IEventAggregateRepository repository)
+        public IntrospectionHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(IntrospectionRequestReceived message)
@@ -47,7 +49,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "introspection_started"
             });
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "introspection_finished"
             });

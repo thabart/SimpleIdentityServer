@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
     public class AuthorizationHandler : IHandle<AuthorizationRequestReceived>, IHandle<AuthorizationGranted>, IHandle<ResourceOwnerAuthenticated>, IHandle<ConsentAccepted>, IHandle<ConsentRejected>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public AuthorizationHandler(IEventAggregateRepository repository)
+        public AuthorizationHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(AuthorizationRequestReceived message)
@@ -47,7 +49,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "auth_process_started"
             });
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "auth_granted"
             });
@@ -89,7 +91,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "resource_owner_auth"
             });
@@ -110,7 +112,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "consent_accepted"
             });
@@ -130,7 +132,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 Description = "Consent rejected",
                 CreatedOn = DateTime.UtcNow,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "consent_rejected"
             });

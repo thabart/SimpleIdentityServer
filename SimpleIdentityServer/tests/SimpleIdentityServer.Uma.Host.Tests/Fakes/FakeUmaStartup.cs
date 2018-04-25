@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 
             services.AddEventStoreInMemoryEF();
             services.AddSimpleBusInMemory()
-                .AddEventStoreBusHandler();
+                .AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.AUTH));
 
             services.AddConcurrency(opt => opt.UseInMemory());
 

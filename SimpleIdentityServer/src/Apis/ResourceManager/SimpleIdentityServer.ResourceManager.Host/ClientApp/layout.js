@@ -7,7 +7,7 @@ import { EndpointService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
-import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl } from 'material-ui';
+import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid } from 'material-ui';
 import  List, { ListItem, ListItemText } from 'material-ui/List';
 import { InputLabel } from 'material-ui/Input';
 import { withStyles } from 'material-ui/styles';
@@ -23,11 +23,10 @@ const styles = theme => ({
     display: 'flex'
   },
   body: {
-    width: '100%',
+    marginLeft: drawerWidth + "px"
   },
   drawerPaper: {
-    position: 'relative',
-    width: drawerWidth,
+    width: drawerWidth
   },
   formControl: {
     margin: theme.spacing.unit,
@@ -211,7 +210,7 @@ class Layout extends Component {
         }
 
         return (
-        <div className={classes.root}>
+        <div>
             <SwipeableDrawer open={self.state.isDrawerDisplayed} anchor="right" onClose={ () => self.setState({ isDrawerDisplayed: false }) } onOpen={ () => self.setState({ isDrawerDisplayed: true }) }>
                 <div style={{padding: "20px"}}>
                     <ul className="nav nav-tabs">
@@ -248,11 +247,11 @@ class Layout extends Component {
                                 </FormControl>
                             </div>
                         )}
-                        <Button color="primary">{t('saveChanges')}</Button>
+                        <Button  variant="raised" color="primary">{t('saveChanges')}</Button>
                     </div>
                 </div>
             </SwipeableDrawer>
-            <Drawer variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>                
+            <Drawer docked={true} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>                
                 <List>
                     {/* About menu item */}
                     <ListItem button onClick={() => self.navigate('/about')}>

@@ -1,37 +1,33 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import ReactTable from 'react-table'
 import Constants from '../constants';
 import $ from 'jquery';
 import moment from 'moment';
-
-const columns = [
-    { Header: 'Event', accessor: 'description' },
-    { Header: 'Created on', accessor: 'created_on' },
-    {
-        Header: 'Payload', accessor: 'payload', Cell: function (row) {
-            return (<span title={row.original.payload}>{row.original.payload}</span>);
-        }
-    }
-];
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination, TableSortLabel } from 'material-ui/Table';
+import { CircularProgress, Tooltip  } from 'material-ui';
 
 class ViewAggregate extends Component {
     constructor(props) {
         super(props);
-        this.fetchData = this.fetchData.bind(this);
+        this.refreshData = this.refreshData.bind(this);
         this.state = {
             data: [],
-            loading: true,
-            pages: null
+            loading: true
         };
     }
 
+    /**
+    * Get well formated date.
+    */
     getDate(d) {
         return moment(d).format('LLL');
     }
 
-    fetchData() {
+    /**
+    * Refresh the data.
+    */
+    refreshData() {
         var self = this;
         self.setState({
             loading: true
@@ -50,11 +46,9 @@ class ViewAggregate extends Component {
                 });
             }
 
-            var pages = Math.round((result.totalResults + result.itemsPerPage - 1) / result.itemsPerPage);
             self.setState({
                 data: data,
-                loading: false,
-                pages: pages
+                loading: false
             });
         }).fail(function () {
             self.setState({
@@ -66,6 +60,21 @@ class ViewAggregate extends Component {
     render() {
         var self = this;
         const { t } = self.props;
+        var rows = [];
+        if (self.state.data) {
+            self.state.data.forEach(function(record) {                
+                rows.push((
+                    <TableRow hover role="checkbox" key={record.id} onClick={() => self.props.history.push('/viewlog/' + record.id) }>
+                        <TableCell>{record.description}</TableCell>
+                        <TableCell>{record.created_on}</TableCell>
+                        <TableCell style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "200px" }}>
+                            <span title={record.payload}>{record.payload}</span>
+                        </TableCell>
+                    </TableRow>
+                ));
+            });
+        }
+
         return (<div className="block">
             <div className="block-header">
                 <h4>{t('logAggregateTitle')}</h4>
@@ -76,35 +85,31 @@ class ViewAggregate extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="header"><h4>{t('aggregateLogsTitle')}</h4></div>
-                            <div className="body">
-                                <ReactTable
-                                    data={this.state.data}
-                                    loading={this.state.loading}
-                                    onFetchData={this.fetchData}
-                                    pages={this.state.pages}
-                                    columns={columns}
-                                    defaultPageSize={10}
-                                    manual={true}
-                                    filterable={false}
-                                    showPaginationTop={true}
-                                    showPaginationBottom={false}
-                                    sortable={false}
-                                    className="-striped -highlight"
-                                    getTrProps={(state, rowInfo, column, instance) => {
-                                        return {
-                                            onClick: function (e, handleOriginal) {
-                                                var selectedEvent = rowInfo.original;
-                                                self.props.history.push("/viewlog/" + selectedEvent.id);
-                                            }
-                                        }
-                                    }}
-                                />
+                            <div className="body" style={{ overflow: "hidden" }}>
+                                {self.state.loading ? (<CircularProgress />) : (
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>{t('event')}</TableCell>
+                                                <TableCell>{t('createdOn')}</TableCell>
+                                                <TableCell>{t('payload')}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {rows}
+                                        </TableBody>
+                                    </Table>
+                                )}                              
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>);
+    }
+
+    componentDidMount() {
+        this.refreshData();
     }
 }
 

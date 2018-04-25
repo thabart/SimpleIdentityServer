@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthInMemoryEF()
                 .AddSimpleBusInMemory()
                 .AddEventStoreInMemoryEF()
-                .AddEventStoreBusHandler()
+                .AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID))
                 .AddInMemoryStorage();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }

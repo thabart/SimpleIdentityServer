@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
     public class RegistrationHandler : IHandle<RegistrationReceived>, IHandle<RegistrationResultReceived>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public RegistrationHandler(IEventAggregateRepository repository)
+        public RegistrationHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(RegistrationReceived message)
@@ -47,7 +49,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "register_client_started"
             });
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = message.Payload,
                 Order = message.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information,
                 Key = "register_client_finished"
             });

@@ -34,10 +34,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
         }
 
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public OpenIdErrorHandler(IEventAggregateRepository repository)
+        public OpenIdErrorHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(OpenIdErrorReceived evt)
@@ -62,7 +64,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 Description = "An error occured",
                 Payload =  payload,
                 Order = evt.Order,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Error,
                 Key = "error"
             });

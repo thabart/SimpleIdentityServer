@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { translate } from 'react-i18next';
 import CubeLoading from './cubeLoading';
 
-import { TextField , RaisedButton } from 'material-ui';
+import { TextField , Button } from 'material-ui';
 
 class Login extends Component {
     constructor(props) {
@@ -111,7 +111,7 @@ class Login extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="body">
-                                <RaisedButton label={t('connect')} primary={true} onClick={this.externalAuthenticate} />
+                                <Button variant="raised" color="primary" onClick={this.externalAuthenticate}>{t('connect')}</Button>
                                 {(this.state.errorMessage !== null && (
                                     <div className="alert alert-danger alert-dismissable" style={{ marginTop: '5px' }}>
                                         <strong>Danger !</strong> {this.state.errorMessage}

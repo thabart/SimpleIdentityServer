@@ -26,10 +26,12 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
     public class TokenHandler : IHandle<GrantTokenViaAuthorizationCodeReceived>, IHandle<GrantTokenViaClientCredentialsReceived>, IHandle<GrantTokenViaRefreshTokenReceived>, IHandle<GrantTokenViaResourceOwnerCredentialsReceived>, IHandle<RevokeTokenReceived>, IHandle<TokenGranted>, IHandle<TokenRevoked>
     {
         private readonly IEventAggregateRepository _repository;
+        private readonly EventStoreHandlerOptions _options;
 
-        public TokenHandler(IEventAggregateRepository repository)
+        public TokenHandler(IEventAggregateRepository repository, EventStoreHandlerOptions options)
         {
             _repository = repository;
+            _options = options;
         }
 
         public async Task Handle(GrantTokenViaAuthorizationCodeReceived message)
@@ -128,7 +130,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
                 Payload = payload,
                 Order = order,
                 Key = key,
-                Type = Constants.Type,
+                Type = _options.Type,
                 Verbosity = EventVerbosities.Information
             });
         }

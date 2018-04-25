@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Uma.Startup
         {
             services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False", null);
             services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
+            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.AUTH));
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

@@ -8,13 +8,19 @@ namespace SimpleIdentityServer.EventStore.Handler
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStoreBusHandler(this IServiceCollection services, IEnumerable<Type> handlers = null)
+        public static IServiceCollection AddEventStoreBusHandler(this IServiceCollection services, EventStoreHandlerOptions options, IEnumerable<Type> handlers = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            services.AddSingleton(options);
             services.AddTransient<AuthorizationHandler>();
             services.AddTransient<OpenIdErrorHandler>();
             services.AddTransient<TokenHandler>();

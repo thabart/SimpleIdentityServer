@@ -6,7 +6,7 @@ import $ from 'jquery';
 import moment from 'moment';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination, TableSortLabel } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, Grid } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, Grid, CircularProgress } from 'material-ui';
 import { DatePicker } from 'material-ui-pickers';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
@@ -21,21 +21,33 @@ class LogsTab extends Component {
         this.handleLogChangeFilter = this.handleLogChangeFilter.bind(this);
         this.handleLogCreatedOnChange = this.handleLogCreatedOnChange.bind(this);
         this.getLogsUrl = this.getLogsUrl.bind(this);
+        this.getErrorsUrl = this.getErrorsUrl.bind(this);
         this.handleSortLog = this.handleSortLog.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPage = this.handleChangeRowsPage.bind(this);
+        this.handleErrorChangePage = this.handleErrorChangePage.bind(this);
+        this.handleErrorChangeRowsPage = this.handleErrorChangeRowsPage.bind(this);
+        this.handleErrorCreatedOnChange = this.handleErrorCreatedOnChange.bind(this);
+        this.handleSortError = this.handleSortError.bind(this);
         this.state = {
             loading: true,
         	data : [],
+            errorData: [],
             page: 0,
+            errorPage: 0,
             pageSize: 5,
+            errorPageSize: 5,
             count: 0,
+            errorCount: 0,
             logOrderBy: '',
+            errorOrderBy: '',
             logOrder: 'asc',
+            errorOrder: 'asc',
             selectedLogEventDescription: '',
             selectedLogCreatedOn: moment().subtract(1, "years"),
+            selectedErrorCreatedOn: moment().subtract(1, "years"),
             errorData: [],
-            errorLoading: true,
+            errorLoading: false,
             errorPages: null
         };
     }
@@ -78,7 +90,7 @@ class LogsTab extends Component {
             }
 
             self.setState({
-                isLoading: false,
+                loading: false,
                 data: data,
                 count: searchResult.totalResults
             });
@@ -94,7 +106,48 @@ class LogsTab extends Component {
     * Refresh the errors.
     */
     refreshErrors() {
+        var self = this;
+        self.setState({
+            errorLoading: true
+        });
+        var url = this.getErrorsUrl();
+        $.get(url).done(function (searchResult) {
+            var data = [];
+            if (searchResult.content) {
+                searchResult.content.forEach(function (log) {
+                    var obj = {
+                        code: '-',
+                        message: '-',
+                        created_on: self.getDate(log.CreatedOn),
+                        id: log.Id
+                    };
+                    if (log.Payload) {
+                        var requestPayload = JSON.parse(log.Payload);
+                        if (requestPayload && requestPayload.Code) {
+                            obj['code'] = requestPayload.Code;
+                        }
 
+                        if (requestPayload && requestPayload.Message) {
+                            obj['message'] = requestPayload.Message;
+                        }
+                    }
+                    data.push(obj);
+                });
+            }
+
+            self.setState({
+                isLoading: false,
+                errorData: data,
+                errorCount: searchResult.totalResults,
+                errorLoading: false
+            });
+        }).fail(function () {
+            self.setState({
+                errorLoading: false,
+                errorData: [],
+                errorLoading: false
+            });
+        });
     }
 
     /**
@@ -122,6 +175,18 @@ class LogsTab extends Component {
     }
 
     /**
+    * When "createdOn" is modified then refresh the ERROR logs.
+    */
+    handleErrorCreatedOnChange(date) {
+        var self = this;
+        self.setState({
+            selectedErrorCreatedOn: date
+        }, () => {
+            self.refreshErrors();
+        });
+    }
+
+    /**
     * When columns are sorted then refresh the OPENID logs.
     */
     handleSortLog(colName) {
@@ -136,6 +201,24 @@ class LogsTab extends Component {
             logOrder: logOrder
         }, () => {
             self.refreshLogs();
+        });
+    }
+
+    /**
+    * When columns are sorted then refresh the ERROR logs.
+    */
+    handleSortError(colName) {
+        var self = this;
+        var logOrder = this.state.logOrder === 'asc' ? 'desc' : 'asc';
+        if (this.state.logOrderBy !== colName) {
+            logOrder = 'asc';
+        }
+
+        this.setState({
+            errorOrderBy: colName,
+            errorOrder: logOrder
+        }, () => {
+            self.refreshErrors();
         });
     }
 
@@ -164,7 +247,7 @@ class LogsTab extends Component {
             orderBy = "orderby$on("+columnName+"),order("+orderName+")";
         }
 
-        var filterValue = "Type eq 'simpleidserver' and Verbosity eq '0'";
+        var filterValue = "Type eq 'openid' and Verbosity eq '0'";
         var conds = [];
         if (this.state.selectedLogEventDescription && this.state.selectedLogEventDescription !== '') {
             var columnName = getColumnName('description');
@@ -182,10 +265,23 @@ class LogsTab extends Component {
         }
 
         if (conds.length > 0) {
-            filterValue = "Type eq 'simpleidserver' and Verbosity eq '0' and " + conds.join(' and ');            
+            filterValue = "Type eq 'openid' and Verbosity eq '0' and " + conds.join(' and ');            
         }
 
         url += "/events/.search?filter=where$("+filterValue+") join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) "+orderBy+"&startIndex="+startIndex+"&count="+this.state.pageSize;
+        return url;
+    }
+
+    /**
+    * Build the error URL.
+    */
+    getErrorsUrl() {
+        var url = Constants.eventSourceUrl;
+        var startIndex = this.state.errorPage * this.state.errorPageSize;
+        var createdOn = this.state.selectedErrorCreatedOn.format("YYYY-MM-DD");
+        var orderBy = "orderby$on(CreatedOn),order("+this.state.errorOrder+")";
+        var filterValue = "Type eq 'openid' and Verbosity eq '1' and CreatedOn gt '" + createdOn + "'";
+        url += "/events/.search?filter=where$("+filterValue+") "+orderBy+"&startIndex=" + startIndex + "&count=" + this.state.errorPageSize;
         return url;
     }
 
@@ -202,6 +298,18 @@ class LogsTab extends Component {
     }
 
     /**
+    * When the page is changed then refresh the ERROR logs.
+    */
+    handleErrorChangePage(evt, page) {
+        var self = this;
+        self.setState({
+            errorPage: page
+        }, () => {
+            self.refreshErrors();
+        });
+    }
+
+    /**
     * When the number of records is changed then refresh the OPENID logs.
     */
     handleChangeRowsPage(evt) {
@@ -213,169 +321,17 @@ class LogsTab extends Component {
         });
     }
 
-    /*
-
-    fetchData(state, instance) {
-    	var self = this;
-    	self.setState({
-    		loading: true
-    	});
-
-        var getColumnName = function(id) {
-            if (id === 'description') {
-                return 'Description';
-            }
-
-            if (id === 'created_on') {
-                return 'CreatedOn';
-            }
-
-            return null;
-        };
-
-        var getOrderName = function(desc) {
-            if(!desc) {
-                return "asc";
-            }
-
-            return "desc";
-        }
-
-        var getValue = function(filter) {
-            if (filter.id === 'created_on') {
-                return filter.value.format("YYYY-MM-DD");
-            }
-
-            return filter.value;
-        }
-
-        var getEqualitySign = function(filter) {
-            if (filter.id === 'created_on') {
-                return 'gt';
-            }
-
-            return 'co';
-        }
-
-    	var url = Constants.eventSourceUrl;
-    	var startIndex = state.page * state.pageSize;
-        var orderBy = "orderby$on(CreatedOn),order(desc)";
-        if (state.sorted && state.sorted.length > 0) {
-            var firstSort = state.sorted[0];
-            var columnName = getColumnName(firstSort.id);
-            var orderName = getOrderName(firstSort.desc);
-            orderBy = "orderby$on("+columnName+"),order("+orderName+")";
-        }
-
-        var filterValue = "Type eq 'simpleidserver' and Verbosity eq '0'";
-        if (state.filtered && state.filtered.length > 0) {
-            var conds = [];
-            state.filtered.forEach(function(filter) {
-                var columnName = getColumnName(filter.id);
-                var value = getValue(filter);
-                var equalitySign = getEqualitySign(filter);
-                var cond = columnName + " " + equalitySign + " '"+value + "'";
-                conds.push(cond);
-            });
-
-            filterValue = "Type eq 'simpleidserver' and Verbosity eq '0' and " + conds.join(' and ');
-        }
-
-    	url += "/events/.search?filter=where$("+filterValue+") join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) "+orderBy+"&startIndex="+startIndex+"&count="+state.pageSize;
-    	$.get(url).done(function(searchResult) {
-    		var data = [];
-    		if (searchResult.content) {
-    			searchResult.content.forEach(function(log) {
-    				var obj = {
-    					description: log.Description,
-    					created_on: self.getDate(log.CreatedOn),
-    					aggregate_id: log.AggregateId,
-                        client_id: '-'
-    				};
-                    if (log.Payload) {
-                        var requestPayload = JSON.parse(log.Payload);
-                        if (requestPayload && requestPayload.ClientId) {
-                            obj['client_id'] = requestPayload.ClientId;
-                        }
-                    }
-    				data.push(obj);
-    			});
-    		}
-
-    		var pages = Math.round((searchResult.totalResults + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage);
-    		self.setState({
-    			data: data,
-    			loading: false,
-    			pages : pages
-    		});
-    	}).fail(function() {
-            self.setState({
-                loading: false
-            });
-    	});
-    }
-
-    errorFetchData(state, instance) {
+    /**
+    * When the number of records is changed then refresh the ERROR logs.
+    */
+    handleErrorChangeRowsPage(evt) {
         var self = this;
         self.setState({
-            errorLoading: true
-        });
-
-        var url = Constants.eventSourceUrl;
-        var startIndex = state.page * state.pageSize;
-        var orderBy = "orderby$on(CreatedOn),order(desc)";
-        if (state.sorted && state.sorted.length > 0) {
-            var firstSort = state.sorted[0];
-            if (!firstSort.desc) {
-                orderBy = "orderby$on(CreatedOn),order(asc)";
-            }
-        }
-
-        var filterValue = "Type eq 'simpleidserver' and Verbosity eq '1'";
-        if (state.filtered && state.filtered.length > 0) {
-            var firstFilter = state.filtered[0];
-            var value = firstFilter.value.format("YYYY-MM-DD");
-            filterValue = "Type eq 'simpleidserver' and Verbosity eq '1' and CreatedOn gt '" + value + "'";
-        }
-
-        url += "/events/.search?filter=where$("+filterValue+") "+orderBy+"&startIndex=" + startIndex + "&count=" + state.pageSize;
-        $.get(url).done(function (searchResult) {
-            var data = [];
-            if (searchResult.content) {
-                searchResult.content.forEach(function (log) {
-                    var obj = {
-                        code: '-',
-                        message: '-',
-                        created_on: self.getDate(log.CreatedOn),
-                        id: log.Id
-                    };
-                    if (log.Payload) {
-                        var requestPayload = JSON.parse(log.Payload);
-                        if (requestPayload && requestPayload.Code) {
-                            obj['code'] = requestPayload.Code;
-                        }
-
-                        if (requestPayload && requestPayload.Message) {
-                            obj['message'] = requestPayload.Message;
-                        }
-                    }
-                    data.push(obj);
-                });
-            }
-
-            var pages = Math.round((searchResult.totalResults + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage);
-            self.setState({
-                errorData: data,
-                errorLoading: false,
-                errorPages: pages
-            });
-        }).fail(function () {
-            self.setState({
-                errorLoading: false
-            });
+            errorPageSize: evt.target.value
+        }, () => {
+            self.refreshErrors();
         });
     }
-    */
 
     render() {
         var self = this;
@@ -384,7 +340,7 @@ class LogsTab extends Component {
         if (self.state.data) {
             self.state.data.forEach(function(record) {
                 logRows.push((
-                    <TableRow hover role="checkbox" key={record.aggregate_id}>
+                    <TableRow hover role="checkbox" key={record.aggregate_id} onClick={() => self.props.history.push('/viewaggregate/' + record.aggregate_id) }>
                         <TableCell>{record.description}</TableCell>
                         <TableCell>{record.client_id}</TableCell>
                         <TableCell>{record.created_on}</TableCell>
@@ -392,6 +348,20 @@ class LogsTab extends Component {
                 ));
             });
         }
+
+        var errorRows = [];
+        if (self.state.errorData) {
+            self.state.errorData.forEach(function(record) {
+                errorRows.push((
+                    <TableRow hover role="checkbox" key={record.id} onClick={() => self.props.history.push('/viewlog/' + record.id) }>
+                        <TableCell>{record.code}</TableCell>
+                        <TableCell>{record.description}</TableCell>
+                        <TableCell>{record.created_on}</TableCell>
+                    </TableRow>
+                ));
+            });
+        }
+
         return (<Grid container spacing={8}>
             <Grid item sm={12} md={6} zeroMinWidth>
                 <div className="card">
@@ -399,32 +369,36 @@ class LogsTab extends Component {
                         <h4>{t('openIdLogsTitle')}</h4>
                     </div>
                     <div className="body" style={{overflowX: "auto"}}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sortDirection='asc'>
-                                        <TableSortLabel active={self.state.logOrderBy === 'description' ? true : false} direction={self.state.logOrder} onClick={() => self.handleSortLog('description')}>{t('eventDescription')}</TableSortLabel>                                        
-                                    </TableCell>
-                                    <TableCell>{t('clientId')}</TableCell>
-                                    <TableCell sortDirection='asc'>
-                                        <TableSortLabel active={self.state.logOrderBy === 'created_on' ? true : false} direction={self.state.logOrder} onClick={() => self.handleSortLog('created_on')}>{t('createdAfter')}</TableSortLabel>                                        
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell><TextField value={this.state.selectedLogEventDescription} name='selectedLogEventDescription' onChange={this.handleLogChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}>
-                                            <DatePicker value={self.state.selectedLogCreatedOn} onChange={self.handleLogCreatedOnChange} />
-                                        </MuiPickersUtilsProvider>
-                                    </TableCell>
-                                </TableRow>
-                                {logRows}
-                            </TableBody>
-                        </Table>
-                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                        {self.state.loading ? (<CircularProgress />) : (
+                            <div>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <TableSortLabel active={self.state.logOrderBy === 'description' ? true : false} direction={self.state.logOrder} onClick={() => self.handleSortLog('description')}>{t('eventDescription')}</TableSortLabel>                                        
+                                            </TableCell>
+                                            <TableCell>{t('clientId')}</TableCell>
+                                            <TableCell>
+                                                <TableSortLabel active={self.state.logOrderBy === 'created_on' ? true : false} direction={self.state.logOrder} onClick={() => self.handleSortLog('created_on')}>{t('createdAfter')}</TableSortLabel>                                        
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell><TextField value={this.state.selectedLogEventDescription} name='selectedLogEventDescription' onChange={this.handleLogChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell>
+                                                <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                    <DatePicker value={self.state.selectedLogCreatedOn} onChange={self.handleLogCreatedOnChange} />
+                                                </MuiPickersUtilsProvider>
+                                            </TableCell>
+                                        </TableRow>
+                                        {logRows}
+                                    </TableBody>
+                                </Table>
+                                <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                            </div>
+                        )}                        
                     </div>
                 </div>
             </Grid>
@@ -434,50 +408,34 @@ class LogsTab extends Component {
                         <h4>{t('openIdErrorsTitle')}</h4>
                     </div>
                     <div className="body" style={{overflow: "hidden"}}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>{t('errorCode')}</TableCell>
-                                    <TableCell>{t('errorMessage')}</TableCell>
-                                    <TableCell>{t('createdAfter')}</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                         {/*
-                         <ReactTable
-                            data={this.state.errorData}
-                            loading={this.state.errorLoading}
-                            onFetchData={this.errorFetchData}
-                            pages={this.state.errorPages}
-                            columns={errorColumns}
-                            defaultPageSize={10}
-                            manual={true}
-                            filterable={true}
-                            showPaginationTop={true}
-                            showPaginationBottom={false}
-                            sortable={true}
-                            className="-striped -highlight"
-                            defaultSorted={[{
-                                id: 'created_on',
-                                desc: true
-                            }]}
-                            getTrProps={(state, rowInfo, column, instance) => {
-                                return {
-                                    onClick: function (e, handleOriginal) {
-                                        var selectedEvent = rowInfo.original;
-                                        self.props.history.push("/viewlog/" + selectedEvent.id);
-                                    }
-                                }
-                            }}
-                            />
-                        */}
+                        {self.state.errorLoading ? (<CircularProgress />) : (
+                            <div>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>{t('errorCode')}</TableCell>
+                                            <TableCell>{t('errorMessage')}</TableCell>
+                                            <TableCell>
+                                                <TableSortLabel active={self.state.errorOrderBy === 'created_on' ? true : false} direction={self.state.errorOrder} onClick={() => self.handleSortError('created_on')}>{t('createdAfter')}</TableSortLabel>                                        
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell>
+                                                <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                    <DatePicker value={self.state.selectedErrorCreatedOn} onChange={self.handleErrorCreatedOnChange} />
+                                                </MuiPickersUtilsProvider>
+                                            </TableCell>
+                                        </TableRow>
+                                        {errorRows}
+                                    </TableBody>
+                                </Table>
+                                <TablePagination component="div" count={self.state.errorCount} rowsPerPage={self.state.errorPageSize} page={this.state.errorPage} onChangePage={self.handleErrorChangePage} onChangeRowsPerPage={self.handleErrorChangeRowsPage} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </Grid>
@@ -486,6 +444,7 @@ class LogsTab extends Component {
 
     componentDidMount() {
         this.refreshLogs();
+        this.refreshErrors();
     }
 }
 
