@@ -1,6 +1,7 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import { ChartsTab, LogsTab } from './openIdTabs';
+import { ChartsTab } from './openIdTabs';
+import { LogTables } from '../common';
 import { withRouter } from 'react-router-dom';
 
 class OpenIdTab extends Component {
@@ -39,7 +40,7 @@ class OpenIdTab extends Component {
                     </div>
                 </div>
                 <div>
-                    {this.state.tabName === 'logs' && (<LogsTab />)}
+                    {this.state.tabName === 'logs' && (<LogTables logTitle={t('openidLogsTitle')} errorTitle={t('openidErrorsTitle')} type='openid' />)}
                     {this.state.tabName === 'charts' && (<ChartsTab />)}
                 </div>
             </div>);

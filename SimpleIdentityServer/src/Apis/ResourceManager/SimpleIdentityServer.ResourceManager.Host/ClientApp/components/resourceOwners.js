@@ -3,7 +3,7 @@ import { translate } from 'react-i18next';
 import { ResourceOwnerService } from '../services';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar , CircularProgress} from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 
@@ -193,7 +193,7 @@ class ResourceOwners extends Component {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="header">
-                                <h4 style={{display: "inline-block"}}>{t('listOfClients')}</h4>
+                                <h4 style={{display: "inline-block"}}>{t('listOfUsers')}</h4>
                                 <div style={{float: "right"}}>
                                     {self.state.isRemoveDisplayed && (
                                         <IconButton onClick={self.handleRemoveUsers}>
@@ -209,22 +209,26 @@ class ResourceOwners extends Component {
                                 </div>
                             </div>
                             <div className="body">
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell></TableCell>
-                                            <TableCell>{t('login')}</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
-                                            <TableCell><TextField value={this.state.selectedSubject} name='selectedSubject' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                        </TableRow>
-                                        {rows}
-                                    </TableBody>
-                                </Table>
-                                <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                { this.state.isLoading ? (<CircularProgress />) : (
+                                    <div>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell></TableCell>
+                                                    <TableCell>{t('login')}</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                                    <TableCell><TextField value={this.state.selectedSubject} name='selectedSubject' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
+                                                </TableRow>
+                                                {rows}
+                                            </TableBody>
+                                        </Table>
+                                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

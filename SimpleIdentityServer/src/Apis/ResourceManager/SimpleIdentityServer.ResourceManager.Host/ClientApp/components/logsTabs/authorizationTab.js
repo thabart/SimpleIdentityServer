@@ -1,5 +1,6 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
+import { LogTables } from '../common';
 
 class AuthorizationTab extends Component {
     constructor(props) {
@@ -7,20 +8,8 @@ class AuthorizationTab extends Component {
     }
 
     render() {
-        var self = this;
-        const { t } = self.props;
-        return (<div className="row">
-            <div className="col-md-12">
-                <div className="card">
-                    <div className="header">
-                        <h4>{t('authorizationLogsTitle')}</h4>
-                    </div>
-                    <div className="body">
-
-                    </div>
-                </div>
-            </div>
-        </div>);
+        const { t } = this.props;
+        return (<LogTables logTitle={t('authLogsTitle')} errorTitle={t('authErrorsTitle')} type='auth' />);
     }
 }
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../../services';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 
@@ -220,32 +220,36 @@ class ScopeComponent extends Component {
                                 </div>
                             </div>
                             <div className="body">
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell></TableCell>
-                                            <TableCell>{t('name')}</TableCell>
-                                            <TableCell>{t('status')}</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
-                                            <TableCell><TextField value={this.state.selectedName} name='selectedName' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                            <TableCell>
-                                                <Select value={this.state.selectedType} fullWidth={true} name="selectedType" onChange={this.handleChangeFilter}>
-                                                    <MenuItem value="all">{t('all')}</MenuItem>
-                                                    <MenuItem value="0">{t('openid')}</MenuItem>
-                                                    <MenuItem value="1">{t('api')}</MenuItem>
-                                                </Select>
-                                            </TableCell>
-                                        </TableRow>
-                                        {rows}
-                                    </TableBody>
-                                    <TableFooter>
-                                    </TableFooter>
-                                </Table>
-                                <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                { this.state.isLoading ? (<CircularProgress />) : (
+                                    <div>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell></TableCell>
+                                                    <TableCell>{t('name')}</TableCell>
+                                                    <TableCell>{t('status')}</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                                    <TableCell><TextField value={this.state.selectedName} name='selectedName' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
+                                                    <TableCell>
+                                                        <Select value={this.state.selectedType} fullWidth={true} name="selectedType" onChange={this.handleChangeFilter}>
+                                                            <MenuItem value="all">{t('all')}</MenuItem>
+                                                            <MenuItem value="0">{t('openid')}</MenuItem>
+                                                            <MenuItem value="1">{t('api')}</MenuItem>
+                                                        </Select>
+                                                    </TableCell>
+                                                </TableRow>
+                                                {rows}
+                                            </TableBody>
+                                            <TableFooter>
+                                            </TableFooter>
+                                        </Table>
+                                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

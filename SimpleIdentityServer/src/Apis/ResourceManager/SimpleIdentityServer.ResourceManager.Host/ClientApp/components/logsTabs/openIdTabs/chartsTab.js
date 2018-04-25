@@ -4,12 +4,11 @@ import Constants from '../../../constants';
 import moment from 'moment';
 import $ from 'jquery';
 import { Bar } from 'react-chartjs';
-import { Grid } from 'material-ui';
+import { Grid, CircularProgress } from 'material-ui';
 
 class ChartsTab extends Component {
     constructor(props) {
         super(props);
-        this.errorFetchData = this.errorFetchData.bind(this);
         this.refreshAuthorizationData = this.refreshAuthorizationData.bind(this);
         this.refreshTokenData = this.refreshTokenData.bind(this);
         this.changeAuthorizationDataNbWeeks = this.changeAuthorizationDataNbWeeks.bind(this);
@@ -21,57 +20,14 @@ class ChartsTab extends Component {
             authorizationData: null,
             tokenData: null,
             nbAuthorizationDataWeeks: 1,
-            nbTokenNbWeeks: 1
+            nbTokenNbWeeks: 1,
+            isAuthLoading: true,
+            isTokenLoading: true
         };
     }
 
     getDate(d) {
       return moment(d).format('LLL');
-    }
-
-    errorFetchData(state, instance) {
-        var self = this;
-        self.setState({
-            errorLoading: true
-        });
-
-        var url = Constants.eventSourceUrl;
-        var startIndex = state.page * state.pageSize;
-        url += "/events/.search?filter=where$(Type eq 'simpleidserver' and Verbosity eq '1') orderby$on(CreatedOn),order(desc)&startIndex="+startIndex+"&count="+state.pageSize;
-        $.get(url).done(function(searchResult) {
-            var data = [];
-            if (searchResult.content) {
-                searchResult.content.forEach(function(log) {
-                    var obj = {
-                        Code: '-',
-                        Message: '-',
-                        created_on: self.getDate(log.CreatedOn)
-                    };
-                    if (log.Payload) {
-                        var requestPayload = JSON.parse(log.Payload);
-                        if (requestPayload && requestPayload.Code) {
-                            obj['code'] = requestPayload.Code;
-                        }
-
-                        if (requestPayload && requestPayload.Message) {
-                            obj['message'] = requestPayload.Message;
-                        }
-                    }
-                    data.push(obj);
-                });
-            }
-
-            var pages = Math.round((searchResult.totalResults + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage);
-            self.setState({
-                errorData: data,
-                errorLoading: false,
-                errorPages : pages
-            });
-        }).fail(function() {
-            self.setState({
-                errorLoading: false
-            });
-        });
     }
 
     fillDataSet(ds, labels, data) {
@@ -95,13 +51,16 @@ class ChartsTab extends Component {
 
     refreshAuthorizationData(nbAuthorizationDataWeeks) {
         var self = this;
+        self.setState({
+            isAuthLoading: true
+        });
         var url = Constants.eventSourceUrl;
         var startDateTime = moment().subtract(nbAuthorizationDataWeeks, 'week').format('YYYY-MM-DD HH:mm');
         var startAuthProcesses = function() {
-            return $.get(url + "/events/.search?filter=where$(Type eq 'simpleidserver' and Key eq 'auth_process_started' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
+            return $.get(url + "/events/.search?filter=where$(Type eq 'openid' and Key eq 'auth_process_started' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
         };
         var grantedAuthProcesses = function() {
-            return $.get(url + "/events/.search?filter=where$(Type eq 'simpleidserver' and Key eq 'auth_granted' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
+            return $.get(url + "/events/.search?filter=where$(Type eq 'openid' and Key eq 'auth_granted' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
         };
         $.when(startAuthProcesses(), grantedAuthProcesses()).done(function(startAuthProcesses, grantedAuthProcesses) {
             startAuthProcesses = startAuthProcesses[0];
@@ -109,13 +68,13 @@ class ChartsTab extends Component {
             var startProcessDataSet = {
                 label: 'Authorization process',
                 borderWidth: 1,
-                fillColor: 'green',
+                fillColor: '#01d8da',
                 data: []
             };
             var authorizationGrantedDataSet = {
                 label: 'Granted authorization',
                 borderWidth: 1,
-                fillColor: 'yellow',
+                fillColor: '#f4f6f9',
                 data: []
             };
             var result = {
@@ -126,22 +85,29 @@ class ChartsTab extends Component {
             self.fillDataSet(startProcessDataSet, result.labels, startAuthProcesses);
             self.fillDataSet(authorizationGrantedDataSet, result.labels, grantedAuthProcesses);
             self.setState({
-                authorizationData: result
+                authorizationData: result,
+                isAuthLoading: false
             });
         }).fail(function() {
-
+            self.setState({
+                isAuthLoading: false,
+                authorizationData: null
+            });
         });
     }
 
     refreshTokenData(nbTokenDataWeeks) {
         var self = this;
+        self.setState({
+            isTokenLoading: true
+        });
         var url = Constants.eventSourceUrl;
         var startDateTime = moment().subtract(nbTokenDataWeeks, 'week').format('YYYY-MM-DD HH:mm');
         var tokensGrantedCall = function() {
-            return $.get(url + "/events/.search?filter=where$(Type eq 'simpleidserver' and Key eq 'token_granted' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
+            return $.get(url + "/events/.search?filter=where$(Type eq 'openid' and Key eq 'token_granted' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
         };     
         var tokensRevokedCall = function() {
-            return $.get(url + "/events/.search?filter=where$(Type eq 'simpleidserver' and Key eq 'token_revoked' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
+            return $.get(url + "/events/.search?filter=where$(Type eq 'openid' and Key eq 'token_revoked' and CreatedOn gt '"+startDateTime+"') orderby$on(CreatedOn)");
         };
         $.when(tokensGrantedCall(), tokensRevokedCall()).done(function(tokensGranted, tokenRevoked) {
             tokensGranted = tokensGranted[0];
@@ -165,12 +131,15 @@ class ChartsTab extends Component {
 
             self.fillDataSet(tokensGrantedDataSet, result.labels, tokensGranted);
             self.fillDataSet(tokensRevokedDataSet, result.labels, tokenRevoked);
-            console.log(result);
             self.setState({
-                tokenData: result
+                tokenData: result,
+                isTokenLoading: false
             });
         }).fail(function() {
-
+            self.setState({
+                tokenData: null,
+                isTokenLoading: false
+            });
         });
     }
 
@@ -198,7 +167,9 @@ class ChartsTab extends Component {
         		<div className="card">
                     <div className="header"><h4>{t('reportingAuthTitle')}</h4></div>
 			        <div className="body" style={{overflow: "hidden"}}>
-                        {this.state.authorizationData !== null && (<Bar data={this.state.authorizationData}/>)}
+                        { this.state.isAuthLoading && (<CircularProgress />) }
+                        { (!this.state.isAuthLoading && (!this.state.authorizationData || this.state.authorizationData.labels.length === 0)) && (<span>{t('noData')}</span>) }
+                        { (!this.state.isAuthLoading && this.state.authorizationData && this.state.authorizationData.labels.length > 0) && (<Bar data={this.state.authorizationData}/>) }
                     </div>
 		      	</div>
         	</Grid>
@@ -206,7 +177,9 @@ class ChartsTab extends Component {
         		<div className="card">
 			      <div className="header"><h4>{t('reportingTokenTitle')}</h4></div>
 			      <div className="body">
-                    {this.state.tokenData !== null && (<Bar data={this.state.tokenData}/>)}
+                    { this.state.isTokenLoading && (<CircularProgress />) }
+                    { (!this.state.isTokenLoading && (!this.state.tokenData || this.state.tokenData.labels.length === 0)) && (<span>{t('noData')}</span>) }
+                    { (!this.state.isTokenLoading && this.state.tokenData && this.state.tokenData.labels.length > 0) && (<Bar data={this.state.tokenData}/>) }
 			      </div>
 		      	</div>
         	</Grid>

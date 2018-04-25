@@ -3,7 +3,7 @@ import { translate } from 'react-i18next';
 import { ClientService } from '../../services';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 
@@ -214,26 +214,30 @@ class ClientComponent extends Component {
                                 </div>
                             </div>
                             <div className="body">
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell></TableCell>
-                                            <TableCell></TableCell>
-                                            <TableCell>{t('clientName')}</TableCell>
-                                            <TableCell>{t('clientId')}</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
-                                            <TableCell></TableCell>
-                                            <TableCell></TableCell>
-                                            <TableCell><TextField value={this.state.selectedId} name='selectedId' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                        </TableRow>
-                                        {rows}
-                                    </TableBody>
-                                </Table>
-                                <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                { this.state.isLoading ? (<CircularProgress />) : (
+                                    <div>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell></TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell>{t('clientName')}</TableCell>
+                                                    <TableCell>{t('clientId')}</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell><TextField value={this.state.selectedId} name='selectedId' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
+                                                </TableRow>
+                                                {rows}
+                                            </TableBody>
+                                        </Table>
+                                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
