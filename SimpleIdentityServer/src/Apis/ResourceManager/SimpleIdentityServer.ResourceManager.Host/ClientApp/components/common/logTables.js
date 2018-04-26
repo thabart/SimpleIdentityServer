@@ -10,6 +10,7 @@ import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avata
 import { DatePicker } from 'material-ui-pickers';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import Search from '@material-ui/icons/Search';
 
 class LogTables extends Component {
     constructor(props) {
@@ -19,6 +20,7 @@ class LogTables extends Component {
         this.handleLogChangeFilter = this.handleLogChangeFilter.bind(this);
         this.handleLogCreatedOnChange = this.handleLogCreatedOnChange.bind(this);
         this.getLogsUrl = this.getLogsUrl.bind(this);
+        this.handleChangeValue = this.handleChangeValue.bind(this);
         this.getErrorsUrl = this.getErrorsUrl.bind(this);
         this.handleSortLog = this.handleSortLog.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
@@ -260,11 +262,21 @@ class LogTables extends Component {
         }
 
         if (conds.length > 0) {
-            filterValue = "Type eq '"+this.props.type+"' and Verbosity eq '0' and " + conds.join(' and ');            
+            filterValue = "Type eq '"+this.props.type+"' and Verbosity eq '0' and Order eq '0' and " + conds.join(' and ');            
         }
 
-        url += "/events/.search?filter=where$("+filterValue+") join$target(groupby$on(AggregateId),aggregate(min with Order)),outer(AggregateId|Order),inner(AggregateId|Order) "+orderBy+"&startIndex="+startIndex+"&count="+this.state.pageSize;
+        url += "/events/.search?filter=where$("+filterValue+") "+orderBy+"&startIndex="+startIndex+"&count="+this.state.pageSize;
         return url;
+    }
+
+    /**
+    * Handle the changes.
+    */
+    handleChangeValue(e) {
+        var self = this;
+        self.setState({
+            [e.target.name]: e.target.value
+        });
     }
 
     /**
@@ -380,7 +392,12 @@ class LogTables extends Component {
                                     </TableHead>
                                     <TableBody>
                                         <TableRow>
-                                            <TableCell><TextField value={this.state.selectedLogEventDescription} name='selectedLogEventDescription' onChange={this.handleLogChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
+                                            <TableCell>
+                                                <form onSubmit={(e) => { e.preventDefault(); self.refreshLogs(); }}>
+                                                    <TextField value={this.state.selectedLogEventDescription} name='selectedLogEventDescription' onChange={this.handleChangeValue} placeholder={t('Filter...')}/>
+                                                    <IconButton onClick={self.refreshData}><Search /></IconButton>
+                                                </form>
+                                            </TableCell>
                                             <TableCell></TableCell>
                                             <TableCell>
                                                 <MuiPickersUtilsProvider utils={MomentUtils}>

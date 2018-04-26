@@ -10,15 +10,9 @@ class About extends Component {
                 <h4>{t('aboutTitle')}</h4>
                 <i>{t('aboutShortDescription')}</i>
             </div>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card">
-                            <div className="body">
-                                {t('aboutContent')}
-                            </div>
-                        </div>
-                    </div>
+            <div className="card">
+                <div className="body">
+                    {t('aboutContent')}
                 </div>
             </div>
         </div>);

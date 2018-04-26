@@ -72,6 +72,7 @@
         {
             public const string ClientIds = "client_ids";
             public const string ClientNames = "client_names";
+            public const string ClientTypes = "client_types";
         }
 
         public static class ClientNames

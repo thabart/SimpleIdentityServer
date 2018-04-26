@@ -6,6 +6,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePag
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar , CircularProgress} from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
+import Search from '@material-ui/icons/Search';
 
 class ResourceOwners extends Component {
     constructor(props) {
@@ -14,7 +15,6 @@ class ResourceOwners extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleChangeFilter = this.handleChangeFilter.bind(this);
         this.refreshData = this.refreshData.bind(this);
-        this.getFilter = this.getFilter.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPage = this.handleChangeRowsPage.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
@@ -57,42 +57,55 @@ class ResourceOwners extends Component {
         var self = this;
         self.setState({
             [e.target.name]: e.target.value
-        }, () => {
-            var filter = self.getFilter();
-            self.refreshData(self.state.page, self.state.pageSize, filter);
         });
     }
 
     /**
     * Refresh the clients.
     */
-    refreshData(page, pageSize, filter) { 
-        var startIndex = page * pageSize;
+    refreshData() { 
         var self = this;
+        var startIndex = self.state.page * self.state.pageSize;
         self.setState({
             isLoading: true
         });
 
-        var request = { start_index: startIndex, count: pageSize };
-        if (filter.subjects) {
-            request['subjects'] = filter.subjects;
+        var request = { start_index: 1, count: self.state.pageSize };
+        if (self.state.selectedSubject && self.state.selectedSubject !== '') {
+            request['subjects'] = [ self.state.selectedSubject ];
         }
+
+        var getClaim = function(claimName, claims, defaultValue) {
+            for(var i in claims) {
+                var claim = claims[i];
+                if (claim.key === claimName) {
+                    return claim.value;
+                }
+            }
+
+            return defaultValue;
+        };
 
         ResourceOwnerService.search(request, self.props.type).then(function (result) {
             var data = [];
             if (result.content) {
                 result.content.forEach(function (client) {
-                    data.push({
+                    var record = {
                         login: client['login'],
-                        isSelected: false
-                    });
+                        isSelected: false,
+                        picture: getClaim("picture", client.claims, ""),
+                        email: getClaim("email", client.claims, "-"),
+                        name: getClaim("given_name", client.claims, "-")
+                    };
+
+                    data.push(record);
                 });
             }
-            
+
             self.setState({
                 isLoading: false,
                 data: data,
-                pageSize: pageSize,
+                pageSize: self.state.pageSize,
                 count: result.count
             });
         }).catch(function (e) {
@@ -105,25 +118,13 @@ class ResourceOwners extends Component {
     }
 
     /**
-    * Get the filter.
-    */
-    getFilter() {  
-        var filter = {};
-        if (this.state.selectedSubject && this.state.selectedSubject !== '') {
-            filter['subjects'] = [ this.state.selectedSubject ];
-        }
-
-        return filter;
-    }
-
-    /**
     * Execute when the page has changed.
     */
     handleChangePage(evt, page) {
         this.setState({
             page: page
         });
-        this.refreshData(page, this.state.pageSize, this.getFilter());
+        this.refreshData();
     }
 
     /**
@@ -133,7 +134,7 @@ class ResourceOwners extends Component {
         this.setState({
             pageSize: evt.target.value
         });
-        this.refreshData(this.state.page, evt.target.value, this.getFilter());
+        this.refreshData();
     }
 
     /**
@@ -177,7 +178,10 @@ class ResourceOwners extends Component {
                 rows.push((
                     <TableRow hover role="checkbox" key={record.login}>
                         <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
+                        <TableCell><Avatar src={record.picture}/></TableCell>
                         <TableCell>{record.login}</TableCell>
+                        <TableCell>{record.email}</TableCell>
+                        <TableCell>{record.name}</TableCell>
                     </TableRow>
                 ));
             });
@@ -188,57 +192,62 @@ class ResourceOwners extends Component {
                 <h4>{t('users')}</h4>
                 <i>{t('usersShortDescription')}</i>
             </div>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card">
-                            <div className="header">
-                                <h4 style={{display: "inline-block"}}>{t('listOfUsers')}</h4>
-                                <div style={{float: "right"}}>
-                                    {self.state.isRemoveDisplayed && (
-                                        <IconButton onClick={self.handleRemoveUsers}>
-                                            <Delete />
-                                        </IconButton>
-                                    )}
-                                    <IconButton onClick={this.handleClick}>
-                                        <MoreVert />
-                                    </IconButton>
-                                    <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
-                                        <MenuItem>{t('addUser')}</MenuItem>
-                                    </Menu>
-                                </div>
-                            </div>
-                            <div className="body">
-                                { this.state.isLoading ? (<CircularProgress />) : (
-                                    <div>
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell></TableCell>
-                                                    <TableCell>{t('login')}</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                <TableRow>
-                                                    <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
-                                                    <TableCell><TextField value={this.state.selectedSubject} name='selectedSubject' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                                </TableRow>
-                                                {rows}
-                                            </TableBody>
-                                        </Table>
-                                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+            <div className="card">
+                <div className="header">
+                    <h4 style={{display: "inline-block"}}>{t('listOfUsers')}</h4>
+                    <div style={{float: "right"}}>
+                        {self.state.isRemoveDisplayed && (
+                            <IconButton onClick={self.handleRemoveUsers}>
+                                <Delete />
+                            </IconButton>
+                        )}
+                        <IconButton onClick={this.handleClick}>
+                            <MoreVert />
+                        </IconButton>
+                        <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
+                            <MenuItem>{t('addUser')}</MenuItem>
+                        </Menu>
                     </div>
+                </div>
+                <div className="body">
+                    { this.state.isLoading ? (<CircularProgress />) : (
+                        <div>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell>{t('subject')}</TableCell>
+                                        <TableCell>{t('email')}</TableCell>
+                                        <TableCell>{t('name')}</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell>
+                                            <form onSubmit={(e) => { e.preventDefault(); self.refreshData(); }}>
+                                                <TextField value={this.state.selectedSubject} name='selectedSubject' onChange={this.handleChangeFilter} placeholder={t('Filter...')}/>
+                                                <IconButton onClick={self.refreshData}><Search /></IconButton>
+                                            </form>
+                                        </TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
+                                    </TableRow>
+                                    {rows}
+                                </TableBody>
+                            </Table>
+                            <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>);
     }
 
     componentDidMount() {        
-        this.refreshData(0, this.state.pageSize, this.getFilter());
+        this.refreshData();
     }
 }
 

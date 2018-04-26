@@ -5,14 +5,15 @@ import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePag
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
+import Search from '@material-ui/icons/Search';
 
 class ScopeComponent extends Component {
     constructor(props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleChangeProperty = this.handleChangeProperty.bind(this);
         this.handleChangeFilter = this.handleChangeFilter.bind(this);
-        this.getFilter = this.getFilter.bind(this);
         this.refreshData = this.refreshData.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPage = this.handleChangeRowsPage.bind(this);
@@ -53,50 +54,46 @@ class ScopeComponent extends Component {
     }
 
     /**
-    * Handle the change
+    * Handle the changes.
+    */
+    handleChangeProperty(e) {
+        var self = this;
+        self.setState({
+            [e.target.name]: e.target.value
+        });
+    }
+
+    /**
+    * Handle the filter.
     */
     handleChangeFilter(e) {
         var self = this;
         self.setState({
             [e.target.name]: e.target.value
         }, () => {
-            var filter = self.getFilter();
-            self.refreshData(self.state.page, self.state.pageSize, filter);
+            self.refreshData();
         });
-    }
-
-    /**
-    * Get the filter.
-    */
-    getFilter() {
-        var filter = {
-            names: [],
-            types: []
-        };
-        if (this.state.selectedName && this.state.selectedName !== '') {
-            filter['names'] = [ this.state.selectedName ];
-        }
-
-        if (this.state.selectedType !== 'all') {
-            filter['types'] = [ this.state.selectedType ];
-        }
-
-        return filter;
     }
 
     /**
     * Display the data.
     */
-    refreshData(page, pageSize, filter) {        
-        var startIndex = page * pageSize;
+    refreshData() {        
         var self = this;
+        var startIndex = self.state.page * self.state.pageSize;
         const { t } = self.props;
         self.setState({
             isLoading: true
         });
-        var request = { start_index: startIndex, count: pageSize };
-        request['names'] = filter.names;
-        request['types'] = filter.types;
+        var request = { start_index: startIndex, count: self.state.pageSize };
+        if (self.state.selectedName && self.state.selectedName !== '') {
+            request['names'] = [ self.state.selectedName ];
+        }
+
+        if (self.state.selectedType !== 'all') {
+            request['types'] = [ self.state.selectedType ];
+        }
+
         ScopeService.search(request, self.props.type).then(function (result) {
             var data = [];
             if (result.content) {
@@ -114,7 +111,6 @@ class ScopeComponent extends Component {
             self.setState({
                 isLoading: false,
                 data: data,
-                pageSize: pageSize,
                 count: result.count
             });
         }).catch(function (e) {
@@ -130,20 +126,24 @@ class ScopeComponent extends Component {
     * Execute when the page has changed.
     */
     handleChangePage(evt, page) {
+        var self = this;
         this.setState({
             page: page
+        }, () => {
+            self.refreshData();
         });
-        this.refreshData(page, this.state.pageSize, this.getFilter());
     }
 
     /**
     * Execute when the number of records has changed.
     */
     handleChangeRowsPage(evt) {
-        this.setState({
+        var self = this;
+        self.setState({
             pageSize: evt.target.value
+        }, () => {
+            self.refreshData();
         });
-        this.refreshData(this.state.page, evt.target.value);
     }
 
     /**
@@ -199,67 +199,66 @@ class ScopeComponent extends Component {
                 <h4>{t('scopes')}</h4>
                 <i>{t('scopesDescription')}</i>
             </div>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card">
-                            <div className="header">
-                                <h4 style={{display: "inline-block"}}>{t('listOfScopes')}</h4>
-                                <div style={{float: "right"}}>
-                                    {self.state.isRemoveDisplayed && (
-                                        <IconButton onClick={self.handleRemoveScopes}>
-                                            <Delete />
-                                        </IconButton>
-                                    )}
-                                    <IconButton onClick={this.handleClick}>
-                                        <MoreVert />
-                                    </IconButton>
-                                    <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
-                                        <MenuItem>{t('addScope')}</MenuItem>
-                                    </Menu>
-                                </div>
-                            </div>
-                            <div className="body">
-                                { this.state.isLoading ? (<CircularProgress />) : (
-                                    <div>
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell></TableCell>
-                                                    <TableCell>{t('name')}</TableCell>
-                                                    <TableCell>{t('status')}</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                <TableRow>
-                                                    <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
-                                                    <TableCell><TextField value={this.state.selectedName} name='selectedName' onChange={this.handleChangeFilter} fullWidth={true} placeholder={t('Filter...')}/></TableCell>
-                                                    <TableCell>
-                                                        <Select value={this.state.selectedType} fullWidth={true} name="selectedType" onChange={this.handleChangeFilter}>
-                                                            <MenuItem value="all">{t('all')}</MenuItem>
-                                                            <MenuItem value="0">{t('openid')}</MenuItem>
-                                                            <MenuItem value="1">{t('api')}</MenuItem>
-                                                        </Select>
-                                                    </TableCell>
-                                                </TableRow>
-                                                {rows}
-                                            </TableBody>
-                                            <TableFooter>
-                                            </TableFooter>
-                                        </Table>
-                                        <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+            <div className="card">
+                <div className="header">
+                    <h4 style={{display: "inline-block"}}>{t('listOfScopes')}</h4>
+                    <div style={{float: "right"}}>
+                        {self.state.isRemoveDisplayed && (
+                            <IconButton onClick={self.handleRemoveScopes}>
+                                <Delete />
+                            </IconButton>
+                        )}
+                        <IconButton onClick={this.handleClick}>
+                            <MoreVert />
+                        </IconButton>
+                        <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
+                            <MenuItem>{t('addScope')}</MenuItem>
+                        </Menu>
                     </div>
+                </div>
+                <div className="body">
+                    { this.state.isLoading ? (<CircularProgress />) : (
+                        <div>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell></TableCell>
+                                        <TableCell>{t('name')}</TableCell>
+                                        <TableCell>{t('scopeType')}</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell>
+                                            <form onSubmit={(e) => { e.preventDefault(); self.refreshData(); }}>
+                                                <TextField value={this.state.selectedName} name='selectedName' onChange={self.handleChangeProperty} placeholder={t('Filter...')}/>
+                                                <IconButton onClick={self.refreshData}><Search /></IconButton>
+                                            </form>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Select value={this.state.selectedType} fullWidth={true} name="selectedType" onChange={this.handleChangeFilter}>
+                                                <MenuItem value="all">{t('all')}</MenuItem>
+                                                <MenuItem value="0">{t('openidScope')}</MenuItem>
+                                                <MenuItem value="1">{t('apiScope')}</MenuItem>
+                                            </Select>
+                                        </TableCell>
+                                    </TableRow>
+                                    {rows}
+                                </TableBody>
+                                <TableFooter>
+                                </TableFooter>
+                            </Table>
+                            <TablePagination component="div" count={self.state.count} rowsPerPage={self.state.pageSize} page={this.state.page} onChangePage={self.handleChangePage} onChangeRowsPerPage={self.handleChangeRowsPage} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>);
     }
 
     componentDidMount() {
-        this.refreshData(0, this.state.pageSize, this.getFilter());
+        this.refreshData();
     }
 }
 

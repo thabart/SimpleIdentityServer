@@ -66,6 +66,12 @@ namespace SimpleIdentityServer.EF.Repositories
                 clients = clients.Where(c => parameter.ClientNames.Any(n => n.Contains(c.ClientName)));
             }
 
+            if (parameter.ClientTypes != null && parameter.ClientTypes.Any())
+            {
+                var clientTypes = parameter.ClientTypes.Select(t => (Models.ApplicationTypes)t);
+                clients = clients.Where(c => clientTypes.Contains(c.ApplicationType));
+            }
+
             var nbResult = await clients.CountAsync().ConfigureAwait(false);
             clients = clients.OrderBy(c => c.ClientId);
             if (parameter.IsPagingEnabled)

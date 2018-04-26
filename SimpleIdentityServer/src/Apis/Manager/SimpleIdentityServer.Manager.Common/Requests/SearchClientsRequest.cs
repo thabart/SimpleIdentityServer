@@ -15,6 +15,10 @@ namespace SimpleIdentityServer.Manager.Common.Requests
         [DataMember(Name = Constants.SearchClientNames.ClientIds)]
         public IEnumerable<string> ClientIds { get; set; }
 
+        [JsonProperty(Constants.SearchClientNames.ClientTypes)]
+        [DataMember(Name = Constants.SearchClientNames.ClientTypes)]
+        public IEnumerable<int> ClientTypes { get; set; }
+
         [JsonProperty(Constants.SearchResponseNames.StartIndex)]
         [DataMember(Name = Constants.SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }

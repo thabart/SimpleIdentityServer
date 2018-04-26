@@ -15,6 +15,8 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public IEnumerable<string> ClientIds { get; set; }
         public IEnumerable<string> ClientNames { get; set; }
+        public IEnumerable<int> ClientTypes { get; set; }
+
         public bool IsPagingEnabled { get; set; }
         public int StartIndex { get; set; }
         public int Count { get; set; }

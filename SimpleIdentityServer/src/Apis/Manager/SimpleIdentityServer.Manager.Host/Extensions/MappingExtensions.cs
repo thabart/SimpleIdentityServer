@@ -58,6 +58,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 ClientIds = parameter.ClientIds,
                 ClientNames = parameter.ClientNames,
+                ClientTypes = parameter.ClientTypes,
                 Count = parameter.NbResults,
                 StartIndex = parameter.StartIndex
             };

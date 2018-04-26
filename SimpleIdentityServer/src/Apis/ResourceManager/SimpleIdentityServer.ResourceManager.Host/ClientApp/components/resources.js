@@ -1,13 +1,25 @@
 ﻿import React, { Component } from "react";
-import { withRouter } from 'react-router-dom';
 import { translate } from 'react-i18next';
-import $ from 'jquery';
-window.jQuery = $;
-jQuery = $;
-require('jquery-ui-dist/jquery-ui.js');
-require('../../elfinder/js/elfinder.full.js');
+import { ResourcesTab, HierarchicalResourcesTab } from './resourcesTabs';
+import { withRouter, Link } from 'react-router-dom';
+import Tabs, { Tab } from 'material-ui/Tabs';
 
 class Resources extends Component {
+    constructor(props) {
+        super(props);
+        this.handleChangeTab = this.handleChangeTab.bind(this);
+        this.state = {
+            tabId: 0
+        };
+    }
+
+    handleChangeTab(e, v) {
+        var self = this;
+        self.setState({
+            tabId: v
+        });
+    }
+
     render() {
         var self = this;
         const { t } = self.props;
@@ -16,62 +28,28 @@ class Resources extends Component {
                 <h4>{t('resourcesTitle')}</h4>
                 <i>{t('resourcesShortDescription')}</i>
             </div>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card">
-                            <div className="body">
-                            	<div ref="elfinder"></div>
-                            </div>
-                        </div>
-                    </div>
+            <div className="card">
+                <div className="body">
+                                <Tabs value={self.state.tabId} onChange={self.handleChangeTab}>
+                                    <Tab label={t('resources')} component={Link}  to="/resources" />
+                                    <Tab label={t('hierarchicalResources')} component={Link}  to="/resources/hierarchy" />
+                                </Tabs>
                 </div>
             </div>
+            { this.state.tabId === 0 && (<ResourcesTab />) }
+            { this.state.tabId === 1 && (<HierarchicalResourcesTab />) }
         </div>);
     }
 
-    componentDidMount() {
-    	$(this.refs.elfinder).elfinder({
-				// Connector URL
-				url : 'http://localhost:5004/elfinder',
-
-				// Callback when a file is double-clicked
-				getFileCallback : function(file) {
-					// ...
-				},
-        contextmenu: {
-						cwd    : ['reload', 'back', '|', 'mkdir', 'mkfile', 'paste', 'addclient', 'mkuser', 'mkscope', '|', 'sort', '|', 'info'],
-						navbar : ['open', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'removeclient', 'rmpolicy', 'rmresource',  'rmscope', 'rmuser', '|', 'clientinfo',  'resourceinfo', 'authpolicy', 'scopeinfo', 'accessinfo', 'permissions', 'userinfo', 'umaresource' ],
-            files: ['getfile', '|', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'removeclient', 'rmpolicy', 'rmscope', 'rmresource', 'rmuser', '|', 'rename', '|', 'clientinfo',  'resourceinfo', 'authpolicy', 'scopeinfo', 'accessinfo', 'info', 'permissions', 'userinfo', 'protectresource' ]
-        },
-				stores: [ 'openIdStore' ],
-        uiOptions: {
-          toolbar: [
-            ['back', 'forward'],
-			      ['mkdir', 'mkfile'],
-			      ['rm'],
-			      ['rename'],
-			      ['search'],
-			      ['view', 'sort'],
-            ['protectresource', 'permissions']
-          ]
-        },
-				commandsOptions: {
-					clientinfo: {
-						editUrl: 'https://{client_id}'
-					},
-					authpolicy: {
-						editUrl: 'http://{authpolicy_id}'
-					},
-					resourceinfo: {
-						editUrl: 'http://{resource_id}'
-					},
-					userinfo: {
-						editUrl: 'http://localhost:4200/users/{user_id}'
-					}
-				}
-			});
+    componentDidMount() {        
+        var self = this;
+        var action = self.props.match.params.action;
+        if (action === 'hierarchy') {
+            self.setState({
+                tabId: 1
+            });
+        }
     }
 }
 
-export default translate('common', { wait: process && !process.release })(withRouter(Resources));
+export default translate('common', { wait: process && !process.release })(Resources);
