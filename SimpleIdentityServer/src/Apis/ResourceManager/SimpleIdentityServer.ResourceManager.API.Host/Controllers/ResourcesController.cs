@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
 using SimpleIdentityServer.ResourceManager.Core.Exceptions;
@@ -31,7 +30,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             try
             {
                 var result = await _resourcesetActions.Search(url, parameter);
-                return new OkObjectResult(JsonConvert.SerializeObject(result).ToString());
+                return new OkObjectResult(result);
             }
             catch (ResourceManagerException ex)
             {
