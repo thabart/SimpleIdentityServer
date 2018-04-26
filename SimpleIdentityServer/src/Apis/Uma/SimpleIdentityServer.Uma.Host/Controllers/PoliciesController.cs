@@ -42,7 +42,21 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _policyActions = policyActions;
             _representationManager = representationManager;
         }
-        
+
+        [HttpPost(".search")]
+        [Authorize("UmaProtection")]
+        public async Task<IActionResult> SearchPolicies([FromBody] SearchAuthPolicies searchAuthPolicies)
+        {
+            if (searchAuthPolicies == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPolicies));
+            }
+
+            var parameter = searchAuthPolicies.ToParameter();
+            var result = await _policyActions.Search(parameter);
+            return new OkObjectResult(result.ToResponse());
+        }
+
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetPolicy(string id)

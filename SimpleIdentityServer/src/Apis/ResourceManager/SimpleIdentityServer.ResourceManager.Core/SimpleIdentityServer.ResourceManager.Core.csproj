@@ -12,4 +12,13 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
+    <ProjectReference Include="..\..\Uma\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj" />
+  </ItemGroup>
 </Project>

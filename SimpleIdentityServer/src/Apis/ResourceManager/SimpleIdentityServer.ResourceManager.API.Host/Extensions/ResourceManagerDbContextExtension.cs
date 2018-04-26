@@ -43,17 +43,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                    },
                    new Asset
                    {
-                       Hash = HashHelper.GetHash("Second root"),
-                       Name = "Second root",
-                       Path = "Second root",
-                       IsLocked = true,
-                       CanRead = true,
-                       CanWrite = false,
-                       CreateDateTime = DateTime.UtcNow,
-                       MimeType = Constants.MimeNames.Directory
-                   },
-                   new Asset
-                   {
                        Hash = HashHelper.GetHash("Root/Sub"),
                        ResourceParentHash = HashHelper.GetHash("Root"),
                        Name = "Sub",
@@ -105,7 +94,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                             AuthUrl = "http://localhost:60004/.well-known/uma2-configuration",
                             ClientId = "ResourceServer",
                             ClientSecret = "LW46am54neU/[=Su",
-                            ManagerUrl = "http://localhost:60003/.well-known/openidmanager-configuration",
+                            ManagerUrl = "http://localhost:60003/.well-known/openidmanager-configuration"
                         },
                         Order = 1
                     },
@@ -116,7 +105,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                         Name = "authserver",
                         Url = "http://localhost:60004/.well-known/uma2-configuration",
                         Type = (int)EndpointTypes.AUTH,
-                        Order = 1
+                        Order = 1,
+                        Manager = new EndpointManager
+                        {
+                            AuthUrl = "http://localhost:60004/.well-known/uma2-configuration",
+                            ClientId = "ResourceServer",
+                            ClientSecret = "LW46am54neU/[=Su",
+                            ManagerUrl = "http://localhost:60004/.well-known/uma2-configuration"
+                        }
                     },
                     new Endpoint
                     {

@@ -1,18 +1,13 @@
-﻿using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.DTOs.Response;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Client.DTOs.Response;
 
-namespace SimpleIdentityServer.ResourceManager.API.Host.Stores
+namespace SimpleIdentityServer.ResourceManager.Core.Stores
 {
-    public interface ITokenStore
-    {
-        Task<GrantedToken> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes);
-    }
-
-    internal class TokenStore : ITokenStore
+    internal sealed class InMemoryTokenStore : ITokenStore
     {
         private class StoredToken
         {
@@ -30,7 +25,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Stores
         private readonly List<StoredToken> _tokens;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
-        public TokenStore(IIdentityServerClientFactory identityServerClientFactory)
+        public InMemoryTokenStore(IIdentityServerClientFactory identityServerClientFactory)
         {
             _tokens = new List<StoredToken>();
             _identityServerClientFactory = identityServerClientFactory;
@@ -72,7 +67,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Stores
             var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretPostAuth(clientId, clientSecret)
                 .UseClientCredentials(scopes.ToArray())
-                .ResolveAsync(url) // $"{Constants.AuthUrl}/.well-known/uma2-configuration"
+                .ResolveAsync(url)
                 .ConfigureAwait(false);
             _tokens.Add(new StoredToken
             {

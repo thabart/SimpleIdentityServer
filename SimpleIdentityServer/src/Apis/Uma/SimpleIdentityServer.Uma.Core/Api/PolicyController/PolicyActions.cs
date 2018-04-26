@@ -31,6 +31,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         Task<ICollection<string>> GetPolicies();
         Task<bool> AddResourceSet(AddResourceSetParameter addResourceSetParameter);
         Task<bool> DeleteResourceSet(string id, string resourceId);
+        Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter);
     }
 
     internal class PolicyActions : IPolicyActions
@@ -42,6 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
         private readonly IUpdatePolicyAction _updatePolicyAction;
         private readonly IAddResourceSetToPolicyAction _addResourceSetAction;
         private readonly IDeleteResourcePolicyAction _deleteResourcePolicyAction;
+        private readonly ISearchAuthPoliciesAction _searchAuthPoliciesAction;
 
         public PolicyActions(
             IAddAuthorizationPolicyAction addAuthorizationPolicyAction,
@@ -50,7 +52,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             IGetAuthorizationPoliciesAction getAuthorizationPoliciesAction,
             IUpdatePolicyAction updatePolicyAction,
             IAddResourceSetToPolicyAction addResourceSetAction,
-            IDeleteResourcePolicyAction deleteResourcePolicyAction)
+            IDeleteResourcePolicyAction deleteResourcePolicyAction,
+            ISearchAuthPoliciesAction searchAuthPoliciesAction)
         {
             _addAuthorizationPolicyAction = addAuthorizationPolicyAction;
             _getAuthorizationPolicyAction = getAuthorizationPolicyAction;
@@ -59,8 +62,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController
             _updatePolicyAction = updatePolicyAction;
             _addResourceSetAction = addResourceSetAction;
             _deleteResourcePolicyAction = deleteResourcePolicyAction;
+            _searchAuthPoliciesAction = searchAuthPoliciesAction;
         }
-        
+
+        public Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
+        {
+            return _searchAuthPoliciesAction.Execute(parameter);
+        }
+
         public Task<string> AddPolicy(AddPolicyParameter addPolicyParameter)
         {
             return _addAuthorizationPolicyAction.Execute(addPolicyParameter);

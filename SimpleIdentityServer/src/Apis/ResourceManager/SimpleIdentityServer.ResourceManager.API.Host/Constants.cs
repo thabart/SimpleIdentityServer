@@ -14,6 +14,7 @@
             public const string ClientsController = "clients";
             public const string ScopesController = "scopes";
             public const string ResourceOwnersController = "resourceowners";
+            public const string ResourcesController = "resources";
         }
 
         public static class SearchClientNames

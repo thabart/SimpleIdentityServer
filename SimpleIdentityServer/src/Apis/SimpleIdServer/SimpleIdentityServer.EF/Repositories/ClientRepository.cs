@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.EF.Repositories
 
             if (parameter.ClientNames != null && parameter.ClientNames.Any())
             {
-                clients = clients.Where(c => parameter.ClientNames.Any(n => n.Contains(c.ClientName)));
+                clients = clients.Where(c => parameter.ClientNames.Any(n => c.ClientName.Contains(n)));
             }
 
             if (parameter.ClientTypes != null && parameter.ClientTypes.Any())

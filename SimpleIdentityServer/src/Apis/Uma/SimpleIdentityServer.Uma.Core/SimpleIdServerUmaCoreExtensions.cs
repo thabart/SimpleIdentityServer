@@ -106,6 +106,8 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
             serviceCollection.AddTransient<IGetPoliciesAction, GetPoliciesAction>();
+            serviceCollection.AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>();
+            serviceCollection.AddTransient<ISearchResourceSetOperation, SearchResourceSetOperation>();
             if (umaServerOptions.ConfigurationService == null)
             {
                 serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();

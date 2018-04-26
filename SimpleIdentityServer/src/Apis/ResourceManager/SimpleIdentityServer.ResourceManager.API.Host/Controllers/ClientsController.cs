@@ -4,13 +4,12 @@ using SimpleIdentityServer.Manager.Client;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
-using SimpleIdentityServer.ResourceManager.API.Host.Stores;
+using SimpleIdentityServer.ResourceManager.Core.Exceptions;
+using SimpleIdentityServer.ResourceManager.Core.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Models;
-using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
+using SimpleIdentityServer.ResourceManager.Core.Stores;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -23,13 +22,15 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         private readonly IEndpointRepository _endpointRepository;
         private readonly ITokenStore _tokenStore;
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
+        private readonly IEndpointHelper _endpointHelper;
 
         public ClientsController(IEndpointRepository endpointRepository, ITokenStore tokenStore,
-            IOpenIdManagerClientFactory openIdManagerClientFactory)
+            IOpenIdManagerClientFactory openIdManagerClientFactory, IEndpointHelper endpointHelper)
         {
             _endpointRepository = endpointRepository;
             _tokenStore = tokenStore;
             _openIdManagerClientFactory = openIdManagerClientFactory;
+            _endpointHelper = endpointHelper;
         }
 
         [HttpGet("openid/{id}/{url?}")]
@@ -99,15 +100,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var endpoint = await TryGetEndpoint(url, type);
-            if (endpoint.Value != null)
+            EndpointAggregate endpoint;
+            try
             {
-                return endpoint.Value;
+                endpoint = await _endpointHelper.TryGetEndpoint(url, type);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
             }
 
-            var edp = endpoint.Key;
-            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
-            var client = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGet(new Uri(edp.ManagerUrl), id, grantedToken.AccessToken);
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
+            var client = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGet(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
             if (client == null || client.ContainsError)
             {
                 return new NotFoundResult();
@@ -123,15 +131,23 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var endpoint = await TryGetEndpoint(url, type);
-            if (endpoint.Value != null)
+
+            EndpointAggregate endpoint;
+            try
             {
-                return endpoint.Value;
+                endpoint = await _endpointHelper.TryGetEndpoint(url, type);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
             }
 
-            var edp = endpoint.Key;
-            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolvedDelete(new Uri(edp.ManagerUrl), id, grantedToken.AccessToken);
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolvedDelete(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
             if (result.ContainsError)
             {
                 var error = result.Error;
@@ -160,15 +176,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var endpoint = await TryGetEndpoint(url, type);
-            if (endpoint.Value != null)
+            EndpointAggregate endpoint;
+            try
             {
-                return endpoint.Value;
+                endpoint = await _endpointHelper.TryGetEndpoint(url, type);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
             }
 
-            var edp = endpoint.Key;
-            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveSearch(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveSearch(new Uri(endpoint.ManagerUrl), parameter, grantedToken.AccessToken);
             if (result.ContainsError)
             {
                 var error = result.Error;
@@ -196,16 +219,23 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-
-            var endpoint = await TryGetEndpoint(url, type);
-            if (endpoint.Value != null)
+            
+            EndpointAggregate endpoint;
+            try
             {
-                return endpoint.Value;
+                endpoint = await _endpointHelper.TryGetEndpoint(url, type);
             }
-
-            var edp = endpoint.Key;
-            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveAdd(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+            
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveAdd(new Uri(endpoint.ManagerUrl), parameter, grantedToken.AccessToken);
             if (result.ContainsError)
             {
                 var error = result.Error;
@@ -234,15 +264,22 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var endpoint = await TryGetEndpoint(url, type);
-            if (endpoint.Value != null)
+            EndpointAggregate endpoint;
+            try
             {
-                return endpoint.Value;
+                endpoint = await _endpointHelper.TryGetEndpoint(url, type);
             }
-
-            var edp = endpoint.Key;
-            var grantedToken = await _tokenStore.GetToken(edp.AuthUrl, edp.ClientId, edp.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveUpdate(new Uri(edp.ManagerUrl), parameter, grantedToken.AccessToken);
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+            
+            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
+            var result = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveUpdate(new Uri(endpoint.ManagerUrl), parameter, grantedToken.AccessToken);
             if (result.ContainsError)
             {
                 var error = result.Error;
@@ -262,48 +299,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             }
 
             return new OkResult();
-        }
-
-        private async Task<KeyValuePair<EndpointAggregate, IActionResult>> TryGetEndpoint(string url, EndpointTypes type)
-        {
-            var endpoint = await GetEndpoint(url, type);
-            if (endpoint == null)
-            {
-                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrNoEndpoint, HttpStatusCode.InternalServerError));
-            }
-
-            if (string.IsNullOrWhiteSpace(endpoint.AuthUrl) || string.IsNullOrWhiteSpace(endpoint.ClientId) || string.IsNullOrWhiteSpace(endpoint.ClientSecret))
-            {
-                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrAuthNotConfigured, HttpStatusCode.InternalServerError));
-            }
-
-            if (string.IsNullOrWhiteSpace(endpoint.ManagerUrl))
-            {
-                return new KeyValuePair<EndpointAggregate, IActionResult>(null, this.GetError(Constants.Errors.ErrManagerApiNotConfigured, HttpStatusCode.InternalServerError));
-            }
-
-            return new KeyValuePair<EndpointAggregate, IActionResult>(endpoint, null);
-        }
-
-        private async Task<EndpointAggregate> GetEndpoint(string url, EndpointTypes type)
-        {
-            if (!string.IsNullOrWhiteSpace(url))
-            {
-                var endpoint = await _endpointRepository.Get(url);
-                return endpoint;
-            }
-
-            var endpoints = await _endpointRepository.Search(new SearchEndpointsParameter
-            {
-                Type = type
-            });
-            if (endpoints == null || !endpoints.Any())
-            {
-                return null;
-            }
-
-            var minOrder = endpoints.Min(e => e.Order);
-            return endpoints.First(e => e.Order == minOrder);
         }
     }
 }

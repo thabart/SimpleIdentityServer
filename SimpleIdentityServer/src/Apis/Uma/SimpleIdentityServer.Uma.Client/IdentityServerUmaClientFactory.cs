@@ -20,6 +20,8 @@ using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Uma.Client.Policy;
+using SimpleIdentityServer.Uma.Client.ResourceSet;
 using System;
 
 namespace SimpleIdentityServer.Client
@@ -85,7 +87,8 @@ namespace SimpleIdentityServer.Client
             serviceCollection.AddTransient<IAddResourceToPolicyOperation, AddResourceToPolicyOperation>();
             serviceCollection.AddTransient<IDeleteResourceFromPolicyOperation, DeleteResourceFromPolicyOperation>();
             serviceCollection.AddTransient<IUpdatePolicyOperation, UpdatePolicyOperation>();
-
+            serviceCollection.AddTransient<ISearchPoliciesOperation, SearchPoliciesOperation>();
+            serviceCollection.AddTransient<ISearchResourcesOperation, SearchResourcesOperation>();
         }
     }
 }

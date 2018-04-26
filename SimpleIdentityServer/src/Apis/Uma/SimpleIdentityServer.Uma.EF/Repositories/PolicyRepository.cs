@@ -17,6 +17,7 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
@@ -54,6 +55,35 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
         }
 
 #if NET461
+
+        public async Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Models.Policy> policies = _context.Policies;
+            if (parameter.Ids != null && parameter.Ids.Any())
+            {
+                policies = policies.Where(r => parameter.Ids.Contains(r.Id));
+            }
+
+            var nbResult = await policies.CountAsync().ConfigureAwait(false);
+            policies = policies.OrderBy(c => c.Id);
+            if (parameter.IsPagingEnabled)
+            {
+                policies = policies.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchAuthPoliciesResult
+            {
+                Content = await policies.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
+        }
+
         public async Task<bool> BulkAdd(IEnumerable<Policy> parameter)
         {
             if (parameter == null)

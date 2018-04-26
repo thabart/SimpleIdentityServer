@@ -42,6 +42,20 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _representationManager = representationManager;
         }
 
+        [HttpPost(".search")]
+        [Authorize("UmaProtection")]
+        public async Task<IActionResult> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
+        {
+            if (searchResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSet));
+            }
+
+            var parameter = searchResourceSet.ToParameter();
+            var result = await _resourceSetActions.Search(parameter);
+            return new OkObjectResult(result.ToResponse());
+        }
+
         [HttpGet]
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetResourceSets()

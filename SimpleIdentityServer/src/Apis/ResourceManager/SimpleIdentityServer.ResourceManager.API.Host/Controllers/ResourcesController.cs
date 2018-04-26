@@ -1,12 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
+using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
+using SimpleIdentityServer.ResourceManager.Core.Exceptions;
+using SimpleIdentityServer.Uma.Common.DTOs;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 {
+    [Route(Constants.RouteNames.ResourcesController)]
     public class ResourcesController : Controller
     {
-        public IActionResult GetAll()
+        private readonly IResourcesetActions _resourcesetActions;
+
+        public ResourcesController(IResourcesetActions resourcesetActions)
         {
-            return null;
+            _resourcesetActions = resourcesetActions;
+        }
+
+        [HttpPost(".search/{url?}")]
+        public async Task<IActionResult> Search([FromBody] SearchResourceSet parameter, string url)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            try
+            {
+                var result = await _resourcesetActions.Search(url, parameter);
+                return new OkObjectResult(JsonConvert.SerializeObject(result).ToString());
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

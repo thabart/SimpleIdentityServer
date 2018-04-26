@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
+using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace SimpleIdentityServer.Client.Policy
         Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token);
         Task<bool> DeleteResource(string id, string resourceId, string url, string token);
         Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token);
+        Task<SearchAuthPoliciesResponse> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
     }
 
     internal class PolicyClient : IPolicyClient
@@ -51,6 +53,7 @@ namespace SimpleIdentityServer.Client.Policy
         private readonly IDeleteResourceFromPolicyOperation _deleteResourceFromPolicyOperation;
         private readonly IUpdatePolicyOperation _updatePolicyOperation;
         private readonly IGetConfigurationOperation _getConfigurationOperation;
+        private readonly ISearchPoliciesOperation _searchPoliciesOperation;
 
         public PolicyClient(
             IAddPolicyOperation addPolicyOperation,
@@ -60,7 +63,8 @@ namespace SimpleIdentityServer.Client.Policy
             IAddResourceToPolicyOperation addResourceToPolicyOperation,
             IDeleteResourceFromPolicyOperation deleteResourceFromPolicyOperation,
             IUpdatePolicyOperation updatePolicyOperation,
-            IGetConfigurationOperation getConfigurationOperation)
+            IGetConfigurationOperation getConfigurationOperation,
+            ISearchPoliciesOperation searchPoliciesOperation)
         {
             _addPolicyOperation = addPolicyOperation;
             _getPolicyOperation = getPolicyOperation;
@@ -70,6 +74,7 @@ namespace SimpleIdentityServer.Client.Policy
             _deleteResourceFromPolicyOperation = deleteResourceFromPolicyOperation;
             _updatePolicyOperation = updatePolicyOperation;
             _getConfigurationOperation = getConfigurationOperation;
+            _searchPoliciesOperation = searchPoliciesOperation;
         }
 
         public Task<AddPolicyResponse> Add(PostPolicy request, string url, string token)
@@ -148,7 +153,13 @@ namespace SimpleIdentityServer.Client.Policy
             var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
             return await DeleteResource(id, resourceId, policyEndpoint, token);
         }
-        
+
+        public async Task<SearchAuthPoliciesResponse> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
+        {
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
+            return await _searchPoliciesOperation.ExecuteAsync(policyEndpoint + "./search", parameter, authorizationHeaderValue);
+        }
+
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)
         {
             if (configurationUri == null)

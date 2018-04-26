@@ -33,6 +33,38 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
     {
         #region UMA
 
+        public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
+        {
+            if (searchResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSet));
+            }
+
+            return new SearchResourceSetParameter
+            {
+                Count = searchResourceSet.TotalResults,
+                Ids = searchResourceSet.Ids,
+                Names = searchResourceSet.Names,
+                StartIndex = searchResourceSet.StartIndex,
+                Types = searchResourceSet.Types
+            };
+        }
+
+        public static SearchAuthPoliciesParameter ToParameter(this SearchAuthPolicies searchAuthPolicies)
+        {
+            if (searchAuthPolicies == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPolicies));
+            }
+
+            return new SearchAuthPoliciesParameter
+            {
+                Count = searchAuthPolicies.TotalResults,
+                Ids = searchAuthPolicies.Ids,
+                StartIndex = searchAuthPolicies.StartIndex
+            };
+        }
+
         public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
         {
             return new AddResouceSetParameter
@@ -172,6 +204,36 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Scopes = policyRule.Scopes,
                 Script = policyRule.Script,
                 OpenIdProvider = policyRule.OpenIdProvider
+            };
+        }
+
+        public static SearchResourceSetResponse ToResponse(this SearchResourceSetResult searchResourceSetResult)
+        {
+            if (searchResourceSetResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSetResult));
+            }
+
+            return new SearchResourceSetResponse
+            {
+                StartIndex = searchResourceSetResult.StartIndex,
+                TotalResults = searchResourceSetResult.TotalResults,
+                Content = searchResourceSetResult.Content == null ? new List<ResourceSetResponse>() : searchResourceSetResult.Content.Select(s => s.ToResponse())
+            };
+        }
+
+        public static SearchAuthPoliciesResponse ToResponse(this SearchAuthPoliciesResult searchAuthPoliciesResult)
+        {
+            if (searchAuthPoliciesResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPoliciesResult));
+            }
+
+            return new SearchAuthPoliciesResponse
+            {
+                StartIndex = searchAuthPoliciesResult.StartIndex,
+                TotalResults = searchAuthPoliciesResult.TotalResults,
+                Content = searchAuthPoliciesResult.Content == null ? new List<PolicyResponse>() : searchAuthPoliciesResult.Content.Select(s => s.ToResponse())
             };
         }
 

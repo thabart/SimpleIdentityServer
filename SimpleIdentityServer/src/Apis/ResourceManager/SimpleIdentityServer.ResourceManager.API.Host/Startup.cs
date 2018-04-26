@@ -19,15 +19,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Configuration.Client;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
+using SimpleIdentityServer.ResourceManager.Core;
 using SimpleIdentityServer.ResourceManager.EF;
-using WebApiContrib.Core.Storage.InMemory;
-using System;
-using SimpleIdentityServer.Uma.Client;
-using SimpleIdentityServer.ResourceManager.API.Host.Stores;
 using SimpleIdentityServer.ResourceManager.EF.InMemory;
+using System;
+using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host
 {
@@ -82,9 +80,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
         private void RegisterServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddOpenIdManagerClient();
-            serviceCollection.AddIdServerClient();
-            serviceCollection.AddUmaClient();
-            serviceCollection.AddSingleton<ITokenStore, TokenStore>();
+            serviceCollection.AddResourceManager();
+            serviceCollection.AddInMemoryTokenStore();
             WebApiContrib.Core.Storage.ServiceCollectionExtensions.AddStorage(serviceCollection, opts => opts.UseInMemory());
             serviceCollection.AddSingleton<IConfiguration>(Configuration);
         }

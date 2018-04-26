@@ -16,6 +16,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
@@ -82,6 +83,44 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return true;
         }
 #endif
+        
+        public async Task<SearchResourceSetResult> Search(SearchResourceSetParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Models.ResourceSet> resourceSet = _context.ResourceSets;
+            if (parameter.Ids != null && parameter.Ids.Any())
+            {
+                resourceSet = resourceSet.Where(r => parameter.Ids.Contains(r.Id));
+            }
+
+            if (parameter.Names != null && parameter.Names.Any())
+            {
+                resourceSet = resourceSet.Where(r => parameter.Names.Any(n => r.Name.Contains(n)));
+            }
+
+            if (parameter.Types != null && parameter.Types.Any())
+            {
+                resourceSet = resourceSet.Where(r => parameter.Types.Any(t => r.Type.Contains(t)));
+            }
+
+            var nbResult = await resourceSet.CountAsync().ConfigureAwait(false);
+            resourceSet = resourceSet.OrderBy(c => c.Id);
+            if (parameter.IsPagingEnabled)
+            {
+                resourceSet = resourceSet.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchResourceSetResult
+            {
+                Content = await resourceSet.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
+        }
 
         public async Task<bool> Insert(ResourceSet resourceSet)
         {
