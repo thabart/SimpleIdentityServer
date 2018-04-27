@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Client.Policy
         public async Task<SearchAuthPoliciesResponse> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
         {
             var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await _searchPoliciesOperation.ExecuteAsync(policyEndpoint + "./search", parameter, authorizationHeaderValue);
+            return await _searchPoliciesOperation.ExecuteAsync(policyEndpoint + "/.search", parameter, authorizationHeaderValue);
         }
 
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)

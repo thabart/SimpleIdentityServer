@@ -41,5 +41,51 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpGet("{id}/{url?}")]
+        public async Task<IActionResult> Get(string id, string url)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                var result = await _resourcesetActions.Get(url, id);
+                return new OkObjectResult(result);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet("{id}/policies/{url?}")]
+        public async Task<IActionResult> GetAuthPolicies(string id, string url)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                var result = await _resourcesetActions.GetAuthPolicies(url, id);
+                return new OkObjectResult(result);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

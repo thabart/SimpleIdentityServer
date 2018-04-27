@@ -6,6 +6,7 @@
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <AssemblyName>SimpleIdentityServer.ResourceManager.Core</AssemblyName>
     <PackageId>SimpleIdentityServer.DataAccess.SqlServer</PackageId>
+    <RootNamespace>SimpleIdentityServer.ResourceManager.Core</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

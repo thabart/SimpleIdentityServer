@@ -12,6 +12,7 @@ import OpenidClients from './openidClients';
 import OAuthScopes from './oauthScopes';
 import OpenidScopes from './openidScopes';
 import ResourceOwners from './resourceOwners';
+import ViewResource from './viewResource';
 
 exports.About = About;
 exports.Login = Login;
@@ -27,3 +28,4 @@ exports.OpenidClients = OpenidClients;
 exports.OAuthScopes = OAuthScopes;
 exports.OpenidScopes = OpenidScopes;
 exports.ResourceOwners = ResourceOwners;
+exports.ViewResource = ViewResource;

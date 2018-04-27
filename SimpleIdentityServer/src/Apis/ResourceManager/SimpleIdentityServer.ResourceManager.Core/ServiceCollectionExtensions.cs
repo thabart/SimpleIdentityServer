@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
+using SimpleIdentityServer.ResourceManager.Core.Api.Resources.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Helpers;
-using SimpleIdentityServer.ResourceManager.Core.Resources.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Stores;
 using SimpleIdentityServer.Uma.Client;
 using System;
@@ -23,6 +23,8 @@ namespace SimpleIdentityServer.ResourceManager.Core
             services.AddTransient<IEndpointHelper, EndpointHelper>();
             services.AddTransient<ISearchResourcesetAction, SearchResourcesetAction>();
             services.AddTransient<IResourcesetActions, ResourcesetActions>();
+            services.AddTransient<IGetAuthPoliciesByResourceAction, GetAuthPoliciesByResourceAction>();
+            services.AddTransient<IGetResourceAction, GetResourceAction>();
             return services;
         }
 

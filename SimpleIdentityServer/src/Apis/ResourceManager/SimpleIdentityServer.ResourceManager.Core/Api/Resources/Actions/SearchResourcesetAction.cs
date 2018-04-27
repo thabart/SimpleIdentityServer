@@ -5,7 +5,7 @@ using SimpleIdentityServer.ResourceManager.Core.Stores;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.ResourceManager.Core.Resources.Actions
+namespace SimpleIdentityServer.ResourceManager.Core.Api.Resources.Actions
 {
     public interface ISearchResourcesetAction
     {

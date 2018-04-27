@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ResourceService } from '../../services';
+import { withRouter } from 'react-router-dom';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress } from 'material-ui';
 import Delete from '@material-ui/icons/Delete';
 import MoreVert from '@material-ui/icons/MoreVert';
+import Visibility from '@material-ui/icons/Visibility';
 
 class Resources extends Component {
     constructor(props) {
@@ -83,7 +85,6 @@ class Resources extends Component {
         var request = { start_index: startIndex, count: self.state.pageSize };
         ResourceService.search(request, self.props.type).then(function (result) {
             var data = [];
-            console.log(result);
             if (result.content) {
                 result.content.forEach(function (r) {
                     var scopes = r['scopes'] ? r['scopes'].join(',') : '-';
@@ -96,15 +97,13 @@ class Resources extends Component {
                     });
                 });
             }
-            
-            console.log(data);
+
             self.setState({
                 isLoading: false,
                 data: data,
                 count: result.count
             });
         }).catch(function (e) {
-            console.log(e);
             self.setState({
                 isLoading: false,
                 data: []
@@ -126,12 +125,15 @@ class Resources extends Component {
         if (self.state.data) {
             self.state.data.forEach(function(record) {
                 rows.push(
-                    <TableRow>
+                    <TableRow key={record.id}>
                         <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell>{record.id}</TableCell>
                         <TableCell>{record.name}</TableCell>
                         <TableCell>{record.type}</TableCell>
                         <TableCell>{record.scopes}</TableCell>
+                        <TableCell>
+                            <IconButton onClick={ () => self.props.history.push('/resource/' + record.id) }><Visibility /></IconButton>
+                        </TableCell>
                     </TableRow>
                 );
             });
@@ -165,11 +167,13 @@ class Resources extends Component {
                                         <TableCell>{t('resourceName')}</TableCell>
                                         <TableCell>{t('resourceType')}</TableCell>
                                         <TableCell>{t('resourceScopes')}</TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
                                         <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
@@ -190,4 +194,4 @@ class Resources extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(Resources);
+export default translate('common', { wait: process && !process.release })(withRouter(Resources));

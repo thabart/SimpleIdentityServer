@@ -19,5 +19,35 @@ module.exports = {
                 reject(e);
             });
 		});
-	}
+	},
+    /**
+    * Get the authorization policies.
+    */
+    getAuthPolicies: function(id) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: Constants.apiUrl + '/resources/' + id + '/policies',
+                method: "GET"
+            }).then(function (data) {
+                resolve(data);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });        
+    },
+    /**
+    * Get the resource.
+    */
+    get: function(id) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: Constants.apiUrl + '/resources/' + id,
+                method: "GET"
+            }).then(function (data) {
+                resolve(data);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });        
+    }
 };

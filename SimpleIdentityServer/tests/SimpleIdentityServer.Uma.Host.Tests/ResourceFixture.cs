@@ -20,6 +20,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Client.Factory;
@@ -170,7 +171,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new GetResourcesOperation(_httpClientFactoryStub.Object),
                 new GetResourceOperation(_httpClientFactoryStub.Object),
                 new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object));
+                new GetConfigurationOperation(_httpClientFactoryStub.Object),
+				new SearchResourcesOperation(_httpClientFactoryStub.Object));
         }
     }
 }

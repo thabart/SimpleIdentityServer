@@ -56,34 +56,6 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
 #if NET461
 
-        public async Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            IQueryable<Models.Policy> policies = _context.Policies;
-            if (parameter.Ids != null && parameter.Ids.Any())
-            {
-                policies = policies.Where(r => parameter.Ids.Contains(r.Id));
-            }
-
-            var nbResult = await policies.CountAsync().ConfigureAwait(false);
-            policies = policies.OrderBy(c => c.Id);
-            if (parameter.IsPagingEnabled)
-            {
-                policies = policies.Skip(parameter.StartIndex).Take(parameter.Count);
-            }
-
-            return new SearchAuthPoliciesResult
-            {
-                Content = await policies.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
-                StartIndex = parameter.StartIndex,
-                TotalResults = nbResult
-            };
-        }
-
         public async Task<bool> BulkAdd(IEnumerable<Policy> parameter)
         {
             if (parameter == null)
@@ -168,6 +140,41 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return true;
         }
 #endif
+
+        public async Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Models.Policy> policies = _context.Policies
+                .Include(p => p.PolicyResources)
+                .Include(p => p.Rules);
+            if (parameter.Ids != null && parameter.Ids.Any())
+            {
+                policies = policies.Where(r => parameter.Ids.Contains(r.Id));
+            }
+
+            if (parameter.ResourceIds != null && parameter.ResourceIds.Any())
+            {
+                policies = policies.Where(p => p.PolicyResources.Any(r => parameter.ResourceIds.Contains(r.ResourceSetId)));
+            }
+
+            var nbResult = await policies.CountAsync().ConfigureAwait(false);
+            policies = policies.OrderBy(c => c.Id);
+            if (parameter.IsPagingEnabled)
+            {
+                policies = policies.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchAuthPoliciesResult
+            {
+                Content = await policies.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
+        }
 
         public async Task<bool> Add(Policy policy)
         {

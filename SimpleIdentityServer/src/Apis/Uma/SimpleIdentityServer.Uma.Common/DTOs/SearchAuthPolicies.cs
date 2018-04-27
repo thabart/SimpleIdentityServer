@@ -11,6 +11,10 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         [DataMember(Name = SearchAuthPolicyNames.Ids)]
         public IEnumerable<string> Ids { get; set; }
 
+        [JsonProperty(SearchAuthPolicyNames.ResourceIds)]
+        [DataMember(Name = SearchAuthPolicyNames.ResourceIds)]
+        public IEnumerable<string> ResourceIds { get; set; }
+
         [JsonProperty(SearchResponseNames.StartIndex)]
         [DataMember(Name = SearchResponseNames.StartIndex)]
         public int StartIndex { get; set; }

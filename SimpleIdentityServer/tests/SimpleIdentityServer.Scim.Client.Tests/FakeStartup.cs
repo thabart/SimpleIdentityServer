@@ -22,6 +22,7 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.EventStore.EF;
 using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Scim.Client.Tests.Extensions;
+using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.InMemory;
@@ -61,7 +62,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             InitializeDatabase(app);
-            app.UseStatusCodePages();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

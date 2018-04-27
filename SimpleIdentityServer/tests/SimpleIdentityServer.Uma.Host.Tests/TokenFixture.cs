@@ -6,7 +6,9 @@ using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
+using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
@@ -146,7 +148,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new GetResourcesOperation(_umaHttpClientFactoryStub.Object),
                 new GetResourceOperation(_umaHttpClientFactoryStub.Object),
                 new UpdateResourceOperation(_umaHttpClientFactoryStub.Object),
-                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object));
+                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object),
+				new SearchResourcesOperation(_umaHttpClientFactoryStub.Object));
             _permissionClient = new PermissionClient(
                 new AddPermissionsOperation(_umaHttpClientFactoryStub.Object),
                 new GetConfigurationOperation(_umaHttpClientFactoryStub.Object));
@@ -157,7 +160,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new AddResourceToPolicyOperation(_umaHttpClientFactoryStub.Object),
                 new DeleteResourceFromPolicyOperation(_umaHttpClientFactoryStub.Object),
                 new UpdatePolicyOperation(_umaHttpClientFactoryStub.Object),
-                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object));
+                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object),
+				new SearchPoliciesOperation(_umaHttpClientFactoryStub.Object));
         }
     }
 }

@@ -17,7 +17,9 @@
 using Moq;
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Policy;
+using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
+using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Client.Factory;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
@@ -432,13 +434,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new AddResourceToPolicyOperation(_httpClientFactoryStub.Object),
                 new DeleteResourceFromPolicyOperation(_httpClientFactoryStub.Object),
                 new UpdatePolicyOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object));
+                new GetConfigurationOperation(_httpClientFactoryStub.Object),
+				new SearchPoliciesOperation(_httpClientFactoryStub.Object));
             _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
                 new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
                 new GetResourcesOperation(_httpClientFactoryStub.Object),
                 new GetResourceOperation(_httpClientFactoryStub.Object),
                 new UpdateResourceOperation(_httpClientFactoryStub.Object),
-                new GetConfigurationOperation(_httpClientFactoryStub.Object));
+                new GetConfigurationOperation(_httpClientFactoryStub.Object),
+				new SearchResourcesOperation(_httpClientFactoryStub.Object));
         }
     }
 }

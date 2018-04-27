@@ -61,7 +61,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 Count = searchAuthPolicies.TotalResults,
                 Ids = searchAuthPolicies.Ids,
-                StartIndex = searchAuthPolicies.StartIndex
+                StartIndex = searchAuthPolicies.StartIndex,
+                ResourceIds = searchAuthPolicies.ResourceIds
             };
         }
 
