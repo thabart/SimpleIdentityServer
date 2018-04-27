@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\Uma\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Api\Endpoints\Actions\" />
+  </ItemGroup>
 </Project>

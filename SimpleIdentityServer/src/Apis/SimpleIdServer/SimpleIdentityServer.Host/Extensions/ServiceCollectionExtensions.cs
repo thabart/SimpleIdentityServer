@@ -178,7 +178,6 @@ namespace SimpleIdentityServer.Host
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddDataProtection();
-
             serviceCollection.AddAuthorization(opts =>
             {
                 opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {

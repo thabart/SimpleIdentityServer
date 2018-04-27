@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Manager\SimpleIdentityServer.Manager.Client\SimpleIdentityServer.Manager.Client.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.ResourceManager.Core\SimpleIdentityServer.ResourceManager.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.ResourceManager.EF.InMemory\SimpleIdentityServer.ResourceManager.EF.InMemory.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.ResourceManager.EF\SimpleIdentityServer.ResourceManager.EF.csproj" />

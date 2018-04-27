@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.ResourceManager.EF
 			
             serviceCollection.AddTransient<IAssetRepository, AssetRepository>();
             serviceCollection.AddTransient<IEndpointRepository, EndpointRepository>();
+            serviceCollection.AddTransient<IProfileRepository, ProfileRepository>();
 			return serviceCollection;
         }
     }

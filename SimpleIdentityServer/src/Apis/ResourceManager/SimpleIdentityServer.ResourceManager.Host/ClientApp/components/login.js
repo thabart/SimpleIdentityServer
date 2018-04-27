@@ -4,7 +4,6 @@ import Constants from '../constants';
 import { WebsiteService, SessionService } from '../services';
 import { withRouter } from 'react-router-dom';
 import { translate } from 'react-i18next';
-import CubeLoading from './cubeLoading';
 
 import { TextField , Button } from 'material-ui';
 

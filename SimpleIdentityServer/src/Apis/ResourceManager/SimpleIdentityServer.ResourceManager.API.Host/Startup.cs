@@ -24,6 +24,7 @@ using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
 using SimpleIdentityServer.ResourceManager.Core;
 using SimpleIdentityServer.ResourceManager.EF;
 using SimpleIdentityServer.ResourceManager.EF.InMemory;
+using SimpleIdentityServer.UserInfoIntrospection;
 using System;
 using WebApiContrib.Core.Storage.InMemory;
 
@@ -51,6 +52,15 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
             services.AddMvc();
             services.AddResourceManagerInMemoryEF();
             RegisterServices(services);
+            services.AddAuthentication(UserInfoIntrospectionOptions.AuthenticationScheme)
+                .AddUserInfoIntrospection(opts =>
+                {
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
+                });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("connected", policy => policy.RequireAuthenticatedUser());
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -58,6 +68,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
             app.UseCors("AllowAll");
             loggerFactory.AddConsole();
             app.UseStatusCodePages();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

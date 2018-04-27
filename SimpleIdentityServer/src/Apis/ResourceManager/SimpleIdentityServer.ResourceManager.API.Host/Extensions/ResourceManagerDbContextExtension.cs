@@ -4,7 +4,6 @@ using SimpleIdentityServer.ResourceManager.EF;
 using SimpleIdentityServer.ResourceManager.EF.Models;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
 {
@@ -120,6 +119,47 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Extensions
                         Description = "scim server",
                         Name = "scimserver",
                         Url = "http://localhost:60001/ServiceProviderConfig",
+                        Type = (int)EndpointTypes.SCIM,
+                        Order = 1
+                    },
+                    new Endpoint
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "fake simple identity server",
+                        Name = "fakesimpleidserver",
+                        Url = "http://fake:60000/.well-known/openid-configuration",
+                        Type = (int)EndpointTypes.OPENID,
+                        Manager = new EndpointManager
+                        {
+                            AuthUrl = "http://fake:60004/.well-known/uma2-configuration",
+                            ClientId = "ResourceServer",
+                            ClientSecret = "LW46am54neU/[=Su",
+                            ManagerUrl = "http://fake:60003/.well-known/openidmanager-configuration"
+                        },
+                        Order = 2
+                    },
+                    new Endpoint
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "fake authorization server",
+                        Name = "fakeauthserver",
+                        Url = "http://fake:60004/.well-known/uma2-configuration",
+                        Type = (int)EndpointTypes.AUTH,
+                        Order = 1,
+                        Manager = new EndpointManager
+                        {
+                            AuthUrl = "http://fake:60004/.well-known/uma2-configuration",
+                            ClientId = "ResourceServer",
+                            ClientSecret = "LW46am54neU/[=Su",
+                            ManagerUrl = "http://fake:60004/.well-known/uma2-configuration"
+                        }
+                    },
+                    new Endpoint
+                    {
+                        CreateDateTime = DateTime.UtcNow,
+                        Description = "fakescim server",
+                        Name = "fakescimserver",
+                        Url = "http://fake:60001/ServiceProviderConfig",
                         Type = (int)EndpointTypes.SCIM,
                         Order = 1
                     }

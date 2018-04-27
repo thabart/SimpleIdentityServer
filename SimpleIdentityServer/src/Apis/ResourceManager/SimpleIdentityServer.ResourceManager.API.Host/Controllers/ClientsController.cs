@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Manager.Client;
 using SimpleIdentityServer.Manager.Common.Requests;
@@ -45,6 +46,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return DeleteClient(id, url, EndpointTypes.OPENID);
         }
 
+        [Authorize("connected")]
         [HttpPost("openid/.search/{url?}")]
         public Task<IActionResult> SearchOpenidClients([FromBody] SearchClientsRequest request, string url)
         {

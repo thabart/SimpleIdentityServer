@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.ResourceManager.Core.Api.Profile;
+using SimpleIdentityServer.ResourceManager.Core.Api.Profile.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Helpers;
@@ -25,6 +27,9 @@ namespace SimpleIdentityServer.ResourceManager.Core
             services.AddTransient<IResourcesetActions, ResourcesetActions>();
             services.AddTransient<IGetAuthPoliciesByResourceAction, GetAuthPoliciesByResourceAction>();
             services.AddTransient<IGetResourceAction, GetResourceAction>();
+            services.AddTransient<IProfileActions, ProfileActions>();
+            services.AddTransient<IGetProfileAction, GetProfileAction>();
+            services.AddTransient<IUpdateProfileAction, UpdateProfileAction>();
             return services;
         }
 

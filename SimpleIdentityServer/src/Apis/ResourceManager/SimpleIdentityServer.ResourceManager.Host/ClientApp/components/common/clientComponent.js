@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ClientService } from '../../services';
+import { withRouter } from 'react-router-dom';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
+import Visibility from '@material-ui/icons/Visibility';
 
 class ClientComponent extends Component {
     constructor(props) {
@@ -193,6 +195,9 @@ class ClientComponent extends Component {
                         <TableCell>{record.client_name}</TableCell>
                         <TableCell>{record.client_id}</TableCell>
                         <TableCell>{record.type}</TableCell>
+                        <TableCell>
+                            <IconButton onClick={ () => self.props.history.push('/viewClient/' + record.client_id) }><Visibility /></IconButton>
+                        </TableCell>
                     </TableRow>
                 ));
             });
@@ -231,6 +236,7 @@ class ClientComponent extends Component {
                                         <TableCell>{t('clientName')}</TableCell>
                                         <TableCell>{t('clientId')}</TableCell>
                                         <TableCell>{t('clientType')}</TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -251,6 +257,7 @@ class ClientComponent extends Component {
                                                 <MenuItem value="1">{t('web')}</MenuItem>
                                             </Select>
                                         </TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                     {rows}
                                 </TableBody>
@@ -268,4 +275,4 @@ class ClientComponent extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(ClientComponent);
+export default translate('common', { wait: process && !process.release })(withRouter(ClientComponent));

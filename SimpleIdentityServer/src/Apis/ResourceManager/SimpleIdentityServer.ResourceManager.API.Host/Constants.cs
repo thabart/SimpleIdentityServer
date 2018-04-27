@@ -15,6 +15,14 @@
             public const string ScopesController = "scopes";
             public const string ResourceOwnersController = "resourceowners";
             public const string ResourcesController = "resources";
+            public const string ProfileController = "profile";
+        }
+
+        public static class ProfileResponseNames
+        {
+            public const string AuthUrl = "auth_url";
+            public const string OpenidUrl = "openid_url";
+            public const string ScimUrl = "scim_url";
         }
 
         public static class SearchClientNames
@@ -213,6 +221,7 @@
             public const string ErrUpdateClient = "an error occured while trying to update the client";
             public const string ErrDeleteRo = "an error occured while trying to remove the resource owner(s)";
             public const string ErrSearchRos = "an error occured while trying to search the resource owner(s)";
+            public const string ErrUpdateProfile = "an error occured while trying to update the profile";
         }
 
         public static class ElFinderCommands

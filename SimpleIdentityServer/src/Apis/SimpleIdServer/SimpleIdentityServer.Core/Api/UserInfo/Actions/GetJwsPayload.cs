@@ -72,9 +72,6 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            // TODO : TH : Check the access token is correct
-            // TH : RETRIEVE THE GRANTED_TOKEN FROM THE CACHE AND RETURNS THE PAYLOAD INFORMATION.
-
             var grantedToken = await _tokenStore.GetAccessToken(accessToken);
             var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
             if (client == null)

@@ -1,13 +1,12 @@
 ﻿import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import { SessionService } from './services';
 import { withRouter, Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
-import { EndpointService } from './services';
+import { SessionService, EndpointService, ProfileService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
-import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid } from 'material-ui';
+import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid, CircularProgress } from 'material-ui';
 import  List, { ListItem, ListItemText } from 'material-ui/List';
 import { InputLabel } from 'material-ui/Input';
 import { withStyles } from 'material-ui/styles';
@@ -15,7 +14,6 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Settings from '@material-ui/icons/Settings';
 import Collapse from 'material-ui/transitions/Collapse';
-
 
 const drawerWidth = 300;
 const styles = theme => ({
@@ -49,6 +47,8 @@ class Layout extends Component {
         this.refresh = this.refresh.bind(this);
         this.startCheckSession = this.startCheckSession.bind(this);
         this.stopCheckSession = this.stopCheckSession.bind(this);
+        this.handleSelection = this.handleSelection.bind(this);
+        this.handleSaveChanges = this.handleSaveChanges.bind(this);
         this.state = {
             isManageOpenidServerOpened: false,
             isManageAuthServersOpened: false,
@@ -63,7 +63,8 @@ class Layout extends Component {
             scimEndpoints: [],
             selectedOpenid: null,
             selectedAuth: null,
-            selectedScim: null
+            selectedScim: null,
+            isLoading: false
         };
     }
     /**
@@ -103,7 +104,12 @@ class Layout extends Component {
     */
     refresh() {
         var self = this;
-        EndpointService.getAll().then(function(endpoints) {
+        self.setState({
+            isLoading: true
+        });
+        Promise.all([ EndpointService.getAll(), ProfileService.get() ]).then(function(values) {
+            var endpoints = values[0];
+            var profile = values[1];
             var authEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 0; });
             var openidEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 1; });
             var scimEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 2; });
@@ -128,10 +134,17 @@ class Layout extends Component {
                 scimEndpoints: scimEndpoints,
                 selectedOpenid: selectedOpenid,
                 selectedAuth: selectedAuth,
-                selectedScim: selectedScim
+                selectedScim: selectedScim,
+                selectedOpenid: profile.openid_url,
+                selectedAuth: profile.auth_url,
+                selectedScim: profile.scim_url,
+                isLoading: false
             });
-        }).catch(function() {
-
+        }).catch(function(e) {
+            console.log(e);
+            self.setState({
+                isLoading: false
+            });
         });
     }
 
@@ -185,6 +198,39 @@ class Layout extends Component {
         self._checkSessionInterval = null;
     }
 
+    /**
+    * Handle the selection.
+    */
+    handleSelection(e) {
+        this.setState({
+            [e.target.name]: e.target.value
+        });
+    }
+
+    /**
+    *   Save the profile.
+    */
+    handleSaveChanges() {
+        var self = this;
+        var request = {
+            openid_url: self.state.selectedOpenid,
+            auth_url: self.state.selectedAuth,
+            scim_url: self.state.selectedScim
+        };
+        self.setState({
+            isLoading: true
+        });
+        ProfileService.update(request).then(function() {
+            self.setState({
+                isLoading: false
+            });
+        }).catch(function() {
+            self.setState({
+                isLoading: false
+            });
+        });
+    }
+
     render() {
         var self = this;
         const { t, classes } = this.props;
@@ -212,44 +258,46 @@ class Layout extends Component {
         return (
         <div>
             <SwipeableDrawer open={self.state.isDrawerDisplayed} anchor="right" onClose={ () => self.setState({ isDrawerDisplayed: false }) } onOpen={ () => self.setState({ isDrawerDisplayed: true }) }>
-                <div style={{padding: "20px"}}>
-                    <ul className="nav nav-tabs">
-                        <li className="nav-item"><a href="#" className="nav-link">{t('yourPreferences')}</a></li>
-                    </ul>
-                    <div>
-                        {openidEndpoints.length > 0 && (
-                            <div>
-                                <FormControl fullWidth={true} className={classes.formControl}>
-                                    <InputLabel>{t('selectedPreferredOpenIdProvider')}</InputLabel>
-                                    <Select value={self.state.selectedOpenid}>
-                                        {openidEndpoints}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        )}
-                        {authEndpoints.length > 0 && (
-                            <div>
-                                <FormControl fullWidth={true} className={classes.formControl}>
-                                    <InputLabel>{t('selectPreferredAuthorizationServer')}</InputLabel>
-                                    <Select  value={self.state.selectedAuth}>
-                                        {authEndpoints}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        )}
-                        {scimEndpoints.length > 0 && (
-                            <div>
-                                <FormControl fullWidth={true} className={classes.formControl}>
-                                    <InputLabel>{t('selectPreferredScimServer')}</InputLabel>                            
-                                    <Select value={self.state.selectedScim}>
-                                        {scimEndpoints}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        )}
-                        <Button  variant="raised" color="primary">{t('saveChanges')}</Button>
+                {self.state.isLoading ? (<CircularProgress />) : (
+                    <div style={{padding: "20px"}}>
+                        <ul className="nav nav-tabs">
+                            <li className="nav-item"><a href="#" className="nav-link">{t('yourPreferences')}</a></li>
+                        </ul>
+                        <div>
+                            {openidEndpoints.length > 0 && (
+                                <div>
+                                    <FormControl fullWidth={true} className={classes.formControl}>
+                                        <InputLabel>{t('selectedPreferredOpenIdProvider')}</InputLabel>
+                                        <Select value={self.state.selectedOpenid} name='selectedOpenid' onChange={self.handleSelection}>
+                                            {openidEndpoints}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            )}
+                            {authEndpoints.length > 0 && (
+                                <div>
+                                    <FormControl fullWidth={true} className={classes.formControl}>
+                                        <InputLabel>{t('selectPreferredAuthorizationServer')}</InputLabel>
+                                        <Select  value={self.state.selectedAuth} name='selectedAuth' onChange={self.handleSelection}>
+                                            {authEndpoints}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            )}
+                            {scimEndpoints.length > 0 && (
+                                <div>
+                                    <FormControl fullWidth={true} className={classes.formControl}>
+                                        <InputLabel>{t('selectPreferredScimServer')}</InputLabel>                            
+                                        <Select value={self.state.selectedScim} name='selectedScim' onChange={self.handleSelection}>
+                                            {scimEndpoints}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            )}
+                            <Button  variant="raised" color="primary" onClick={self.handleSaveChanges}>{t('saveChanges')}</Button>
+                        </div>
                     </div>
-                </div>
+                )}
             </SwipeableDrawer>
             <Drawer docked={true} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>                
                 <List>
@@ -264,13 +312,15 @@ class Layout extends Component {
                             { this.state.isManageOpenidServerOpened ? <ExpandLess /> : <ExpandMore /> }
                         </ListItem>
                     ))}
-                    <Collapse in={this.state.isManageOpenidServerOpened}>
-                        <List>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
-                        </List>
-                    </Collapse>                        
+                    {(self.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <Collapse in={this.state.isManageOpenidServerOpened}>
+                            <List>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
+                            </List>
+                        </Collapse>   
+                    ))}       
                     {/* Authorisation server */}
                     {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                         <ListItem button onClick={() => self.toggleValue('isManageAuthServersOpened')}>
@@ -278,13 +328,15 @@ class Layout extends Component {
                             { this.state.isManageAuthServersOpened ? <ExpandLess /> : <ExpandMore /> }
                         </ListItem>
                     ))}
-                    <Collapse in={this.state.isManageAuthServersOpened}>
-                        <List>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/authScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
-                        </List>
-                    </Collapse>
+                    {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <Collapse in={this.state.isManageAuthServersOpened}>
+                            <List>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
+                            </List>
+                        </Collapse>
+                    ))}
                     {/* SCIM server */}
                     {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                         <ListItem button onClick={() => self.toggleValue('isScimOpened')}>
@@ -292,12 +344,14 @@ class Layout extends Component {
                             { this.state.isScimOpened ? <ExpandLess /> : <ExpandMore /> }
                         </ListItem>
                     ))}
-                    <Collapse in={this.state.isScimOpened}>
-                        <List>
-                            <ListItem className={classes.nested} button><ListItemText>{t('scimSchemas')}</ListItemText></ListItem>
-                            <ListItem className={classes.nested} button><ListItemText>{t('scimResources')}</ListItemText></ListItem>
-                        </List>
-                    </Collapse>
+                    {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <Collapse in={this.state.isScimOpened}>
+                            <List>
+                                <ListItem className={classes.nested} button><ListItemText>{t('scimSchemas')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button><ListItemText>{t('scimResources')}</ListItemText></ListItem>
+                            </List>
+                        </Collapse>
+                    ))}
                     {/* Logs */}         
                     {!process.env.IS_LOG_DISABLED && this.state.isLoggedIn  && (
                        <ListItem button onClick={() => self.navigate('/logs')}>

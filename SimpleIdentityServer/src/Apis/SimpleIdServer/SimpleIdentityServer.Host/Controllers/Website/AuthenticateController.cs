@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.User;
@@ -59,6 +60,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IConfigurationService _configurationService;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -74,7 +76,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IUserActions userActions,
             IPayloadSerializer payloadSerializer,
-            AuthenticateOptions authenticateOptions) : base(authenticationService, userActions, authenticateOptions)
+            AuthenticateOptions authenticateOptions,
+            IConfigurationService configurationService) : base(authenticationService, userActions, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -86,6 +89,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
+            _configurationService = configurationService;
         }
         
         #region Public methods
@@ -536,15 +540,21 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         private async Task SetLocalCookie(IEnumerable<Claim> claims, string sessionId)
         {
             var cls = claims.ToList();
+            var tokenValidity = await _configurationService.GetTokenValidityPeriodInSecondsAsync();
+            var now = DateTime.UtcNow;
+            var expires = now.AddSeconds(tokenValidity);
             HttpContext.Response.Cookies.Append(Core.Constants.SESSION_ID, sessionId, new CookieOptions
             {
-                HttpOnly = false
+                HttpOnly = false,
+                Expires = expires
             });
             var identity = new ClaimsIdentity(cls, _authenticateOptions.CookieName);
             var principal = new ClaimsPrincipal(identity);
             await _authenticationService.SignInAsync(HttpContext, _authenticateOptions.CookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
             {
-                ExpiresUtc = DateTime.UtcNow.AddDays(7),
+                IssuedUtc = now,
+                ExpiresUtc = expires,
+                AllowRefresh = false,
                 IsPersistent = false
             });
         }

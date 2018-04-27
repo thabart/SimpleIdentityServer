@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{736DB7E1-6AA9-466A-8470-EFC582B219FA}"
 EndProject
@@ -114,6 +114,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.ResourceManager.EF.SqlServer", "src\Apis\ResourceManager\SimpleIdentityServer.ResourceManager.EF.SqlServer\SimpleIdentityServer.ResourceManager.EF.SqlServer.csproj", "{1FBC9EEF-EE86-4FA3-8C9A-F97E9A250AFD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EF", "src\Apis\SimpleIdServer\SimpleIdentityServer.EF\SimpleIdentityServer.EF.csproj", "{2B028CE8-8D6B-4DB9-BC07-F7BDAF50114B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserInfoIntrospection", "src\Apis\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj", "{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -293,6 +295,10 @@ Global
 		{2B028CE8-8D6B-4DB9-BC07-F7BDAF50114B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B028CE8-8D6B-4DB9-BC07-F7BDAF50114B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B028CE8-8D6B-4DB9-BC07-F7BDAF50114B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -349,6 +355,7 @@ Global
 		{D86A3C21-DA9D-426D-AAA8-8A8E446831BB} = {46443992-2A56-4DF1-92B7-6E4C7EA093FA}
 		{1FBC9EEF-EE86-4FA3-8C9A-F97E9A250AFD} = {46443992-2A56-4DF1-92B7-6E4C7EA093FA}
 		{2B028CE8-8D6B-4DB9-BC07-F7BDAF50114B} = {454E693F-333D-471A-8B8B-A5DEC41749E2}
+		{1A01C4D2-6CCD-43DE-AFDD-AC31B27C0C70} = {454E693F-333D-471A-8B8B-A5DEC41749E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4E1AD5C7-B8BE-4890-9985-F2BDCAD9425F}
