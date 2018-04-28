@@ -90,7 +90,6 @@ namespace SimpleIdentityServer.ResourceManager.API.Host
 
         private void RegisterServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddOpenIdManagerClient();
             serviceCollection.AddResourceManager();
             serviceCollection.AddInMemoryTokenStore();
             WebApiContrib.Core.Storage.ServiceCollectionExtensions.AddStorage(serviceCollection, opts => opts.UseInMemory());

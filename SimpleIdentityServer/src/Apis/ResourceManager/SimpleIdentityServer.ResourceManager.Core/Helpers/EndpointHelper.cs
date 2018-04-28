@@ -2,6 +2,7 @@
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Parameters;
 using SimpleIdentityServer.ResourceManager.Core.Repositories;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Helpers
 {
     public interface IEndpointHelper
     {
+        Task<EndpointAggregate> TryGetEndpointFromProfile(string subject, EndpointTypes type);
         Task<EndpointAggregate> TryGetEndpoint(string url, EndpointTypes type);
         Task<EndpointAggregate> GetEndpoint(string url, EndpointTypes type);
     }
@@ -16,12 +18,40 @@ namespace SimpleIdentityServer.ResourceManager.Core.Helpers
     internal sealed class EndpointHelper : IEndpointHelper
     {
         private readonly IEndpointRepository _endpointRepository;
+        private readonly IProfileRepository _profileRepository;
 
-        public EndpointHelper(IEndpointRepository endpointRepository)
+        public EndpointHelper(IEndpointRepository endpointRepository, IProfileRepository profileRepository)
         {
             _endpointRepository = endpointRepository;
+            _profileRepository = profileRepository;
         }
-        
+
+        public async Task<EndpointAggregate> TryGetEndpointFromProfile(string subject, EndpointTypes type)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            var profile = await _profileRepository.Get(subject);
+            if (profile == null)
+            {
+                return await TryGetEndpoint(null, type);
+            }
+            
+            switch(type)
+            {
+                case EndpointTypes.AUTH:
+                    return await TryGetEndpoint(profile.AuthUrl, type);
+                case EndpointTypes.OPENID:
+                    return await TryGetEndpoint(profile.OpenidUrl, type);
+                case EndpointTypes.SCIM:
+                    return await TryGetEndpoint(profile.ScimUrl, type);
+            }
+
+            return await TryGetEndpoint(null, type);
+        }
+
         public async Task<EndpointAggregate> TryGetEndpoint(string url, EndpointTypes type)
         {
             var endpoint = await GetEndpoint(url, type);

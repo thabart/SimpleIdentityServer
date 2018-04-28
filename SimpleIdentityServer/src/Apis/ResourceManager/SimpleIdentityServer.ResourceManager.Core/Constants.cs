@@ -2,6 +2,8 @@
 {
     public static class Constants
     {
+        public const string MANAGER_SCOPE = "manager";
+
         public static class ErrorCodes
         {
             public const string InternalError = "internal_error";

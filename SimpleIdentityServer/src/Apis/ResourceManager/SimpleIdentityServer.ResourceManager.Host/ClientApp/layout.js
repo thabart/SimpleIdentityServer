@@ -107,41 +107,48 @@ class Layout extends Component {
         self.setState({
             isLoading: true
         });
-        Promise.all([ EndpointService.getAll(), ProfileService.get() ]).then(function(values) {
-            var endpoints = values[0];
-            var profile = values[1];
+
+        EndpointService.getAll().then(function(endpoints) {
             var authEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 0; });
             var openidEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 1; });
             var scimEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 2; });
-            var selectedOpenid = null;
-            var selectedAuth = null;
-            var selectedScim = null;
-            if (authEndpoints.length > 0) {
-                selectedAuth = authEndpoints[0].name;
-            }
+            ProfileService.get().then(function(profile) {
+                self.setState({
+                    authEndpoints: authEndpoints,
+                    openidEndpoints: openidEndpoints,
+                    scimEndpoints: scimEndpoints,
+                    selectedOpenid: profile.openid_url,
+                    selectedAuth: profile.auth_url,
+                    selectedScim: profile.scim_url,
+                    isLoading: false
+                });
+            }).catch(function() {
+                var selectedOpenid = null;
+                var selectedAuth = null;
+                var selectedScim = null;
+                if (authEndpoints.length > 0) {
+                    selectedAuth = authEndpoints[0].url;
+                }
 
-            if (openidEndpoints.length > 0) {
-                selectedOpenid = openidEndpoints[0].name;
-            }
+                if (openidEndpoints.length > 0) {
+                    selectedOpenid = openidEndpoints[0].url;
+                }
 
-            if (scimEndpoints.length > 0) {
-                selectedScim = scimEndpoints[0].name;
-            }
+                if (scimEndpoints.length > 0) {
+                    selectedScim = scimEndpoints[0].url;
+                }
 
-            self.setState({
-                authEndpoints: authEndpoints,
-                openidEndpoints: openidEndpoints,
-                scimEndpoints: scimEndpoints,
-                selectedOpenid: selectedOpenid,
-                selectedAuth: selectedAuth,
-                selectedScim: selectedScim,
-                selectedOpenid: profile.openid_url,
-                selectedAuth: profile.auth_url,
-                selectedScim: profile.scim_url,
-                isLoading: false
+                self.setState({
+                    authEndpoints: authEndpoints,
+                    openidEndpoints: openidEndpoints,
+                    scimEndpoints: scimEndpoints,
+                    selectedOpenid: selectedOpenid,
+                    selectedAuth: selectedAuth,
+                    selectedScim: selectedScim,
+                    isLoading: false
+                });
             });
-        }).catch(function(e) {
-            console.log(e);
+        }).catch(function() {
             self.setState({
                 isLoading: false
             });
@@ -239,19 +246,19 @@ class Layout extends Component {
         var scimEndpoints = [];
         if (self.state.openidEndpoints) {
             self.state.openidEndpoints.forEach(function(openidEndpoint) {
-                openidEndpoints.push((<MenuItem key={openidEndpoint.name} value={openidEndpoint.name}>{openidEndpoint.description}</MenuItem>));
+                openidEndpoints.push((<MenuItem key={openidEndpoint.name} value={openidEndpoint.url}>{openidEndpoint.description}</MenuItem>));
             });
         }
 
         if (self.state.authEndpoints) {
             self.state.authEndpoints.forEach(function(authEndpoint) {
-                authEndpoints.push((<MenuItem key={authEndpoint.name} value={authEndpoint.name}>{authEndpoint.description}</MenuItem>));
+                authEndpoints.push((<MenuItem key={authEndpoint.name} value={authEndpoint.url}>{authEndpoint.description}</MenuItem>));
             });
         }
 
         if (self.state.scimEndpoints) {
             self.state.scimEndpoints.forEach(function(scimEndpoint) {
-                scimEndpoints.push((<MenuItem key={scimEndpoint.name} value={scimEndpoint.name}>{scimEndpoint.description}</MenuItem>))
+                scimEndpoints.push((<MenuItem key={scimEndpoint.name} value={scimEndpoint.url}>{scimEndpoint.description}</MenuItem>))
             });
         }
 

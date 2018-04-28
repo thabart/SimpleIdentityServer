@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Configuration.Client;
+using SimpleIdentityServer.ResourceManager.Core.Api.Clients;
+using SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Api.Profile;
 using SimpleIdentityServer.ResourceManager.Core.Api.Profile.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
@@ -22,6 +25,7 @@ namespace SimpleIdentityServer.ResourceManager.Core
 
             services.AddIdServerClient();
             services.AddUmaClient();
+            services.AddOpenIdManagerClient();
             services.AddTransient<IEndpointHelper, EndpointHelper>();
             services.AddTransient<ISearchResourcesetAction, SearchResourcesetAction>();
             services.AddTransient<IResourcesetActions, ResourcesetActions>();
@@ -30,6 +34,12 @@ namespace SimpleIdentityServer.ResourceManager.Core
             services.AddTransient<IProfileActions, ProfileActions>();
             services.AddTransient<IGetProfileAction, GetProfileAction>();
             services.AddTransient<IUpdateProfileAction, UpdateProfileAction>();
+            services.AddTransient<IClientActions, ClientActions>();
+            services.AddTransient<IAddClientAction, AddClientAction>();
+            services.AddTransient<IDeleteClientAction, DeleteClientAction>();
+            services.AddTransient<IGetClientAction, GetClientAction>();
+            services.AddTransient<ISearchClientsAction, SearchClientsAction>();
+            services.AddTransient<IUpdateClientAction, UpdateClientAction>();
             return services;
         }
 
