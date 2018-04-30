@@ -101,7 +101,7 @@ class ScopeComponent extends Component {
             if (result.content) {
                 result.content.forEach(function (client) {
                     var type = client.type;
-                    type = type === 1 ? t('apiScope') : t('openidScope');
+                    type = type === 1 ? t('openidScope') : t('apiScope');
                     data.push({
                         name: client['name'],
                         type: type,
@@ -217,7 +217,7 @@ class ScopeComponent extends Component {
                             <MoreVert />
                         </IconButton>
                         <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
-                            <MenuItem>{t('addScope')}</MenuItem>
+                            <MenuItem onClick={() => self.props.history.push('/addScope/' + self.props.type)}>{t('addScope')}</MenuItem>
                         </Menu>
                     </div>
                 </div>
@@ -245,8 +245,8 @@ class ScopeComponent extends Component {
                                         <TableCell>
                                             <Select value={this.state.selectedType} fullWidth={true} name="selectedType" onChange={this.handleChangeFilter}>
                                                 <MenuItem value="all">{t('all')}</MenuItem>
-                                                <MenuItem value="0">{t('openidScope')}</MenuItem>
-                                                <MenuItem value="1">{t('apiScope')}</MenuItem>
+                                                <MenuItem value="0">{t('apiScope')}</MenuItem>
+                                                <MenuItem value="1">{t('openidScope')}</MenuItem>
                                             </Select>
                                         </TableCell>                                        
                                         <TableCell></TableCell>

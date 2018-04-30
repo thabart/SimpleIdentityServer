@@ -6,7 +6,7 @@ import { SessionService, EndpointService, ProfileService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
-import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid, CircularProgress } from 'material-ui';
+import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid, CircularProgress, Snackbar } from 'material-ui';
 import  List, { ListItem, ListItemText } from 'material-ui/List';
 import { InputLabel } from 'material-ui/Input';
 import { withStyles } from 'material-ui/styles';
@@ -49,6 +49,8 @@ class Layout extends Component {
         this.stopCheckSession = this.stopCheckSession.bind(this);
         this.handleSelection = this.handleSelection.bind(this);
         this.handleSaveChanges = this.handleSaveChanges.bind(this);
+        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+        this.displayMessage = this.displayMessage.bind(this);
         this.state = {
             isManageOpenidServerOpened: false,
             isManageAuthServersOpened: false,
@@ -64,7 +66,9 @@ class Layout extends Component {
             selectedOpenid: null,
             selectedAuth: null,
             selectedScim: null,
-            isLoading: false
+            isLoading: false,
+            isSnackbarOpened: false,
+            snackbarMessage: ''
         };
     }
     /**
@@ -108,6 +112,7 @@ class Layout extends Component {
             isLoading: true
         });
 
+        const { t } = self.props;
         EndpointService.getAll().then(function(endpoints) {
             var authEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 0; });
             var openidEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 1; });
@@ -121,6 +126,10 @@ class Layout extends Component {
                     selectedAuth: profile.auth_url,
                     selectedScim: profile.scim_url,
                     isLoading: false
+                });
+                AppDispatcher.dispatch({
+                    actionName: Constants.events.SESSION_CREATED,
+                    data: profile
                 });
             }).catch(function() {
                 var selectedOpenid = null;
@@ -147,10 +156,22 @@ class Layout extends Component {
                     selectedScim: selectedScim,
                     isLoading: false
                 });
+                AppDispatcher.dispatch({
+                    actionName: Constants.events.SESSION_CREATED,
+                    data: {
+                        openid_url: selectedOpenid,
+                        auth_url: selectedAuth,
+                        scim_url: selectedScim
+                    }
+                });
             });
         }).catch(function() {
             self.setState({
                 isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('profileCannotBeRetrieved')
             });
         });
     }
@@ -166,10 +187,6 @@ class Layout extends Component {
 
         var evt = window.addEventListener("message", function(e) {
             if (e.data !== 'unchanged') {
-                SessionService.remove();
-                self.setState({
-                    isLoggedIn: false
-                });
                 AppDispatcher.dispatch({
                     actionName: Constants.events.USER_LOGGED_OUT
                 });
@@ -219,6 +236,7 @@ class Layout extends Component {
     */
     handleSaveChanges() {
         var self = this;
+        const { t } = self.props;
         var request = {
             openid_url: self.state.selectedOpenid,
             auth_url: self.state.selectedAuth,
@@ -229,12 +247,44 @@ class Layout extends Component {
         });
         ProfileService.update(request).then(function() {
             self.setState({
-                isLoading: false
+                isLoading: false,
+                isDrawerDisplayed: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('profileSaved')
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.SESSION_UPDATED,
+                data: request
             });
         }).catch(function() {
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('profileCannotBeSaved')
+            });
             self.setState({
                 isLoading: false
             });
+        });
+    }
+
+    /**
+    * Snackbar is closed.
+    */
+    handleSnackbarClose(message) {
+        this.setState({
+            isSnackbarOpened: false
+        });
+    }
+
+    /**
+    * Display the message in the snackbar.
+    */
+    displayMessage(message) {
+        this.setState({
+            isSnackbarOpened: true,
+            snackbarMessage: message
         });
     }
 
@@ -394,15 +444,12 @@ class Layout extends Component {
                     <iframe ref={(elt) => { self._sessionFrame = elt; self.startCheckSession(); }} id="session-frame" src="http://localhost:60000/check_session" style={{display: "none"}} /> 
                 </div>
             )}
+            <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={self.state.isSnackbarOpened} onClose={self.handleSnackbarClose} message={<span>{self.state.snackbarMessage}</span>} />
         </div>);
     }
 
     componentDidMount() {
         var self = this;
-        var isLoggedIn = !SessionService.isExpired();
-        self.setState({
-            isLoggedIn: isLoggedIn
-        });
         self._appDispatcher = AppDispatcher.register(function (payload) {
             switch (payload.actionName) {
                 case Constants.events.USER_LOGGED_IN:
@@ -411,11 +458,24 @@ class Layout extends Component {
                     });
                     self.refresh();
                     break;
+                case Constants.events.USER_LOGGED_OUT:
+                    self.setState({
+                        isLoggedIn: false
+                    });
+                    SessionService.remove();
+                    break;
+                case Constants.events.DISPLAY_MESSAGE:
+                    self.displayMessage(payload.data);
+                    break;
             }
         });
+
+        var isLoggedIn = !SessionService.isExpired();
         if (isLoggedIn) {
-            self.refresh();
-        }
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_IN
+            });
+        }        
     }
 
     componentWillUnmount() {

@@ -93,7 +93,7 @@ class ChipsSelector extends Component {
             var options = [];
             if (self.state.input.values) {
                 self.state.input.values.forEach(function(value) {
-                    options.push((<MenuItem value={value.key}>{t(value.label)}</MenuItem>))
+                    options.push((<MenuItem key={value.key} value={value.key}>{t(value.label)}</MenuItem>))
                 });
             }
 

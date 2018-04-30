@@ -1,28 +1,18 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../services';
-import { GeneralSettingsTab } from './clientTabs';
 import { withStyles } from 'material-ui/styles';
 import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography } from 'material-ui';
 import Input, { InputLabel } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import { ChipsSelector } from './common';
+import { DisplayScope } from './common';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Save from '@material-ui/icons/Save';
-
-const styles = theme => ({
-  margin: {
-    margin: theme.spacing.unit,
-  }
-});
 
 class ViewScope extends Component {
     constructor(props) {
         super(props);
         this.saveScope = this.saveScope.bind(this);
         this.refreshData = this.refreshData.bind(this);
-        this.handleChangeProperty = this.handleChangeProperty.bind(this);
-        this.handleToggleProperty = this.handleToggleProperty.bind(this);
         this.state = {
             isLoading: true,
             id: null,
@@ -34,8 +24,7 @@ class ViewScope extends Component {
     * Save the scope.
     */
     saveScope() {
-        console.log("*** SAVE THE SCOPE ***");
-        console.log(this.state.scope);
+        
     }
 
     /**
@@ -55,30 +44,6 @@ class ViewScope extends Component {
             self.setState({
                 isLoading: false
             });
-        });
-    }
-
-    /**
-    * Change the property.
-    */
-    handleChangeProperty(e) {
-        var self = this;
-        var scope = self.state.scope;
-        scope[e.target.name] = e.target.value;
-        self.setState({
-            scope: scope
-        });
-    }
-
-    /**
-    * Toggle a property.
-    */
-    handleToggleProperty(name) {
-        var self = this;
-        var scope = self.state.scope;
-        scope[name] = !scope[name];
-        self.setState({
-            scope: scope
         });
     }
 
@@ -104,34 +69,7 @@ class ViewScope extends Component {
                 </div>
                 <div className="body">
                     { self.state.isLoading ? (<CircularProgress />) : (
-                        <div>
-                            {/* Name */}
-                            <FormControl fullWidth={true} className={classes.margin}>
-                                <InputLabel>{t('scopeName')}</InputLabel>
-                                <Input value={self.state.scope.name} name="name" onChange={self.handleChangeProperty}  />
-                                <FormHelperText>{t('scopeNameDescription')}</FormHelperText>
-                            </FormControl>
-                            {/* Description */}
-                            <FormControl fullWidth={true} className={classes.margin}>
-                                <InputLabel>{t('scopeDescription')}</InputLabel>
-                                <Input value={self.state.scope.description} name="description" onChange={self.handleChangeProperty}  />
-                                <FormHelperText>{t('scopeDescriptionDescription')}</FormHelperText>
-                            </FormControl>
-                            {/* Type */}
-                            <FormControl fullWidth={true} className={classes.margin}>                                
-                                <InputLabel>{t('scopeType')}</InputLabel>
-                                <Select value={self.state.scope.type} onChange={self.handleChangeProperty} name="type">
-                                    <MenuItem value={0}>{t('apiScope')}</MenuItem>
-                                    <MenuItem value={1}>{t('resourceOwnerScope')}</MenuItem>
-                                </Select>
-                                <FormHelperText>{t('scopeTypeDescription')}</FormHelperText>
-                            </FormControl>
-                            {/* Openid scope */}
-                            <div>
-                                <Typography><Checkbox checked={self.state.scope.is_openid_scope} onChange={() => self.handleToggleProperty('is_openid_scope')}/> {t('isOpenidScope')}</Typography >
-                                <Typography>{t('isOpenidScopeDescription')}</Typography>
-                            </div>
-                        </div>
+                        <DisplayScope type={self.state.type} scope={self.state.scope} />
                     ) }
                 </div>
             </div>
@@ -149,4 +87,4 @@ class ViewScope extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(withStyles(styles)(ViewScope));
+export default translate('common', { wait: process && !process.release })(ViewScope);

@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         [Authorize("connected")]
         [HttpDelete("openid/{id}")]
-        public Task<IActionResult> DeleteOpenIdScope(string id, string url)
+        public Task<IActionResult> DeleteOpenIdScope(string id)
         {
             return DeleteScope(id, EndpointTypes.OPENID);
         }
@@ -67,28 +67,28 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         }
 
         [Authorize("connected")]
-        [HttpDelete("auth/{id}/{url?}")]
+        [HttpDelete("auth/{id}")]
         public Task<IActionResult> DeleteAuthScope(string id)
         {
             return DeleteScope(id, EndpointTypes.AUTH);
         }
 
         [Authorize("connected")]
-        [HttpPost("auth/{url?}")]
+        [HttpPost("auth")]
         public Task<IActionResult> AddAuthScope([FromBody] ScopeResponse scopeResponse)
         {
             return AddScope(scopeResponse, EndpointTypes.AUTH);
         }
 
         [Authorize("connected")]
-        [HttpPut("auth/{url?}")]
+        [HttpPut("auth")]
         public Task<IActionResult> UpdateAuthScope([FromBody] ScopeResponse scopeResponse)
         {
             return UpdateScope(scopeResponse, EndpointTypes.AUTH);
         }
 
         [Authorize("connected")]
-        [HttpPost("auth/.search/{url?}")]
+        [HttpPost("auth/.search")]
         public Task<IActionResult> SearchAuthScopes([FromBody] SearchScopesRequest request)
         {
             return SearchScopes(request, EndpointTypes.AUTH);

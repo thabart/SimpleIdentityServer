@@ -1,5 +1,6 @@
 ﻿var sessionName = "ehealth_website",
     createDateTimeKey = "create_datetime";
+var _profile = {};
 module.exports = {
     /* Get the session */
     getSession: function () {

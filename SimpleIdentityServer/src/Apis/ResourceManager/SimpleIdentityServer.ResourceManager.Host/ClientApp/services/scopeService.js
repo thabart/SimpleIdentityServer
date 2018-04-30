@@ -43,5 +43,27 @@ module.exports = {
 				reject(e);
 			});
 		});
-	}
+	},
+    /**
+    * Add a scope.
+    */
+    add: function(request, type) {
+        return new Promise(function (resolve, reject) {
+            var data = JSON.stringify(request);
+            var session = SessionService.getSession();
+            $.ajax({
+                url: Constants.apiUrl + '/scopes/'+type,
+                method: "POST",
+                data: data,
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": "Bearer "+ session.token
+                }
+            }).then(function (data) {
+                resolve(data);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });
+    }
 };

@@ -150,7 +150,7 @@ class GeneralSettingsTab extends Component {
                                 <Tab label={t('clientOAuth')} />
 	                        </Tabs>
                             {self.state.tabIndex === 0 && (
-                                <ChipsSelector input={self.state.grantTypeSelectorOpts} />
+                                <ChipsSelector label={t('chooseClientGrantTypes')} input={self.state.grantTypeSelectorOpts} />
                             )}
                             {self.state.tabIndex === 1 && (
                                 <div>

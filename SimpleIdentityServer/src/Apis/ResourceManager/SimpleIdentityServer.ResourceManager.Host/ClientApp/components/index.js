@@ -12,6 +12,8 @@ import ResourceOwners from './resourceOwners';
 import ViewResource from './viewResource';
 import ViewClient from './viewClient';
 import ViewScope  from './viewScope';
+import AddScope from './addScope';
+import ViewUser from './viewUser';
 
 exports.About = About;
 exports.Login = Login;
@@ -27,3 +29,5 @@ exports.ResourceOwners = ResourceOwners;
 exports.ViewResource = ViewResource;
 exports.ViewClient = ViewClient;
 exports.ViewScope = ViewScope;
+exports.AddScope = AddScope;
+exports.ViewUser = ViewUser;
