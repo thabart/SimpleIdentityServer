@@ -538,7 +538,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 UserInfoEncryptedResponseAlg = client.UserInfoEncryptedResponseAlg,
                 UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
                 UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
-                TosUri = client.TosUri
+                TosUri = client.TosUri,
+                PostLogoutRedirectUris = client.PostLogoutRedirectUris
             };
         }
 

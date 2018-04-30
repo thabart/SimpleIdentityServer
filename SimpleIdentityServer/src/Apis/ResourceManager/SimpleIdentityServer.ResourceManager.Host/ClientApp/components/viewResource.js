@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
+import { ChipsSelector } from './common';
 import { ResourceService } from '../services';
 import { withStyles } from 'material-ui/styles';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -26,9 +27,7 @@ class ViewResource extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleProperty = this.handleProperty.bind(this);
         this.handleAllSelections = this.handleAllSelections.bind(this);
-        this.handleAddScope = this.handleAddScope.bind(this);
         this.handleRemoveAuthPolicies = this.handleRemoveAuthPolicies.bind(this);
-        this.handleDeleteScope = this.handleDeleteScope.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDisplayAuthPolicy = this.handleDisplayAuthPolicy.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
@@ -84,20 +83,6 @@ class ViewResource extends Component {
             isRemoveDisplayed: checked
         });
     }
-
-    /**
-    * Add a scope.
-    */
-    handleAddScope() {
-        var self = this;
-        var scopes = self.state.resourceScopes;
-        scopes.push(self.state.scopeName);
-        self.setState({
-            scopeName: '',
-            scopes: scopes
-        });
-    }
-
     /**
     * Remove the selected authorization policies.
     */
@@ -105,17 +90,6 @@ class ViewResource extends Component {
 
     }
 
-    /**
-    * Delete a scope.
-    */
-    handleDeleteScope(scope) {
-        const scopes = this.state.resourceScopes;
-        const scopeIndex = scopes.indexOf(scope);
-        scopes.splice(scopeIndex, 1);
-        this.setState({
-            resourceScopes: scopes
-        });
-    }
     /**
     * Save the changes.
     */
@@ -188,14 +162,7 @@ class ViewResource extends Component {
     render() {
         var self = this;
         const { t, classes } = self.props;
-        var chips = [];
         var rows = [];
-        if (self.state.resourceScopes) {
-            self.state.resourceScopes.forEach(function(scope) {
-                chips.push((<Chip label={scope} key={scope} className={classes.margin} onDelete={() => self.handleDeleteScope(scope)} />));
-            });
-        }
-
         if (self.state.resourceAuthPolicies) {
             self.state.resourceAuthPolicies.forEach(function(authPolicy) {
                 var authPolicies = [];
@@ -280,16 +247,7 @@ class ViewResource extends Component {
                                     </FormControl>
                                     {/* Scopes */}
                                     <div className={classes.margin}>
-                                        <form onSubmit={(e) => { e.preventDefault(); self.handleAddScope(); }}>
-                                            <FormControl className={classes.margin}>
-                                                <InputLabel htmlFor="scopeName">{t('scopeName')}</InputLabel>
-                                                <Input id="scopeName" value={self.state.scopeName} name="scopeName" onChange={self.handleProperty}  />
-                                            </FormControl>
-                                            <Button variant="raised" color="primary" onClick={this.handleAddScope}>{t('addScope')}</Button>
-                                        </form>
-                                        <Paper>
-                                            {chips}
-                                        </Paper>
+                                        <ChipsSelector label={t('resourceScopes')} properties={self.state.resourceScopes} />
                                     </div>
                                 </Grid>
                                 <Grid item sm={12} md={6} zeroMinWidth>

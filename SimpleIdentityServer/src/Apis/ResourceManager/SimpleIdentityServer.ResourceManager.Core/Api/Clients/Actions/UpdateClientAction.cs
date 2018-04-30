@@ -1,7 +1,6 @@
 ﻿using SimpleIdentityServer.Manager.Client;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.Manager.Common.Requests;
-using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.ResourceManager.Core.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Models;
 using SimpleIdentityServer.ResourceManager.Core.Stores;

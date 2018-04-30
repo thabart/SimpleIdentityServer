@@ -28,13 +28,20 @@ module.exports = {
 	/**
 	* Get the client.
 	*/
-	get: function(id) {
+	get: function(id, type) {
 		return new Promise(function(resolve, reject) {
-            $.get(Constants.apiUrl + '/clients/'+id).then(function(data) {
+            var session = SessionService.getSession();
+			$.ajax({
+				url: Constants.apiUrl + '/clients/' + type + '/' +id,
+                method: "GET",
+                headers: {
+                	"Authorization": "Bearer "+ session.token
+                }
+			}).then(function(data) {
 				resolve(data);
 			}).fail(function(e) {
 				reject(e);
-			})
+			});
 		});
 	}
 };

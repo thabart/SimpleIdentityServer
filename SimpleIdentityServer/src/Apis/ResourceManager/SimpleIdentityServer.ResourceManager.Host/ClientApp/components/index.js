@@ -11,6 +11,7 @@ import OpenidScopes from './openidScopes';
 import ResourceOwners from './resourceOwners';
 import ViewResource from './viewResource';
 import ViewClient from './viewClient';
+import ViewScope  from './viewScope';
 
 exports.About = About;
 exports.Login = Login;
@@ -25,3 +26,4 @@ exports.OpenidScopes = OpenidScopes;
 exports.ResourceOwners = ResourceOwners;
 exports.ViewResource = ViewResource;
 exports.ViewClient = ViewClient;
+exports.ViewScope = ViewScope;

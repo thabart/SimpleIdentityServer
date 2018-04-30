@@ -7,6 +7,8 @@ using SimpleIdentityServer.ResourceManager.Core.Api.Profile;
 using SimpleIdentityServer.ResourceManager.Core.Api.Profile.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources;
 using SimpleIdentityServer.ResourceManager.Core.Api.Resources.Actions;
+using SimpleIdentityServer.ResourceManager.Core.Api.Scopes;
+using SimpleIdentityServer.ResourceManager.Core.Api.Scopes.Actions;
 using SimpleIdentityServer.ResourceManager.Core.Helpers;
 using SimpleIdentityServer.ResourceManager.Core.Stores;
 using SimpleIdentityServer.Uma.Client;
@@ -40,6 +42,12 @@ namespace SimpleIdentityServer.ResourceManager.Core
             services.AddTransient<IGetClientAction, GetClientAction>();
             services.AddTransient<ISearchClientsAction, SearchClientsAction>();
             services.AddTransient<IUpdateClientAction, UpdateClientAction>();
+            services.AddTransient<IScopeActions, ScopeActions>();
+            services.AddTransient<IAddScopeAction, AddScopeAction>();
+            services.AddTransient<IDeleteScopeAction, DeleteScopeAction>();
+            services.AddTransient<IGetScopeAction, GetScopeAction>();
+            services.AddTransient<ISearchScopesAction, SearchScopesAction>();
+            services.AddTransient<IUpdateScopeAction, UpdateScopeAction>();
             return services;
         }
 

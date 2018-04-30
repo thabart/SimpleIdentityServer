@@ -113,6 +113,7 @@
             public const string JsonWebKeys = "json_web_keys";
             public const string RedirectionUrls = "redirection_urls";
             public const string SectorIdentifierUri = "sector_identifier_uri";
+            public const string PostLogoutRedirectUris = "post_logout_redirect_uris";
         }
 
         public static class ScopeResponseNames

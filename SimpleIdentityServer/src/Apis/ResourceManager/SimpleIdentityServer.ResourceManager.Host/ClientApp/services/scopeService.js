@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Constants from '../constants';
+import SessionService from './sessionService';
 
 module.exports = {
 	/**
@@ -8,11 +9,15 @@ module.exports = {
 	search: function(request, type) {
         return new Promise(function (resolve, reject) {
             var data = JSON.stringify(request);
+            var session = SessionService.getSession();
             $.ajax({
                 url: Constants.apiUrl + '/scopes/'+type+'/.search',
                 method: "POST",
                 data: data,
-                contentType: 'application/json'
+                contentType: 'application/json',
+                headers: {
+                	"Authorization": "Bearer "+ session.token
+                }
             }).then(function (data) {
                 resolve(data);
             }).fail(function (e) {
@@ -23,13 +28,20 @@ module.exports = {
 	/**
 	* Get the scope.
 	*/
-	get: function(id) {
+	get: function(id, type) {
 		return new Promise(function(resolve, reject) {
-            $.get(Constants.apiUrl + '/scopes/'+id).then(function(data) {
+            var session = SessionService.getSession();
+			$.ajax({
+				url: Constants.apiUrl + '/scopes/' + type + '/' +id,
+                method: "GET",
+                headers: {
+                	"Authorization": "Bearer "+ session.token
+                }
+			}).then(function(data) {
 				resolve(data);
 			}).fail(function(e) {
 				reject(e);
-			})
+			});
 		});
 	}
 };

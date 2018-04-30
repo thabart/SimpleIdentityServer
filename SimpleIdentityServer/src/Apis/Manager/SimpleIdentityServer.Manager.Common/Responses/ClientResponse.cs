@@ -282,5 +282,12 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         [JsonProperty(Constants.ClientNames.RequestUris)]
         [DataMember(Name = Constants.ClientNames.RequestUris)]
         public List<string> RequestUris { get; set; }
+
+        /// <summary>
+        /// Gets or sets the post logout redirection urls.
+        /// </summary>
+        [JsonProperty(Constants.ClientNames.PostLogoutRedirectUris)]
+        [DataMember(Name = Constants.ClientNames.PostLogoutRedirectUris)]
+        public List<string> PostLogoutRedirectUris { get; set; }
     }
 }

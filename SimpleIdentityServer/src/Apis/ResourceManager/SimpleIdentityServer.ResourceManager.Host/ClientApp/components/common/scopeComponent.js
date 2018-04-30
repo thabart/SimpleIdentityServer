@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../../services';
+import { withRouter } from 'react-router-dom';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
+import Visibility from '@material-ui/icons/Visibility';
 
 class ScopeComponent extends Component {
     constructor(props) {
@@ -190,6 +192,9 @@ class ScopeComponent extends Component {
                         <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell>{record.name}</TableCell>
                         <TableCell>{record.type}</TableCell>
+                        <TableCell>
+                            <IconButton onClick={ () => self.props.history.push('/viewScope/' + self.props.type + '/' + record.name) }><Visibility /></IconButton>
+                        </TableCell>
                     </TableRow>
                 ));
             });
@@ -225,6 +230,7 @@ class ScopeComponent extends Component {
                                         <TableCell></TableCell>
                                         <TableCell>{t('name')}</TableCell>
                                         <TableCell>{t('scopeType')}</TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -242,7 +248,8 @@ class ScopeComponent extends Component {
                                                 <MenuItem value="0">{t('openidScope')}</MenuItem>
                                                 <MenuItem value="1">{t('apiScope')}</MenuItem>
                                             </Select>
-                                        </TableCell>
+                                        </TableCell>                                        
+                                        <TableCell></TableCell>
                                     </TableRow>
                                     {rows}
                                 </TableBody>
@@ -262,4 +269,4 @@ class ScopeComponent extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(ScopeComponent);
+export default translate('common', { wait: process && !process.release })(withRouter(ScopeComponent));

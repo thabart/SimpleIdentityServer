@@ -196,7 +196,7 @@ class ClientComponent extends Component {
                         <TableCell>{record.client_id}</TableCell>
                         <TableCell>{record.type}</TableCell>
                         <TableCell>
-                            <IconButton onClick={ () => self.props.history.push('/viewClient/' + record.client_id) }><Visibility /></IconButton>
+                            <IconButton onClick={ () => self.props.history.push('/viewClient/' + self.props.type + '/' + record.client_id) }><Visibility /></IconButton>
                         </TableCell>
                     </TableRow>
                 ));
