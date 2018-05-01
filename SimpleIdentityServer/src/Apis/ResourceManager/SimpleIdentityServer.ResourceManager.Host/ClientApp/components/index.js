@@ -1,4 +1,5 @@
-﻿import About from './about';
+﻿import Dashboard from './dashboard';
+import About from './about';
 import Login from './login';
 import Logs from './logs';
 import Resources from './resources';
@@ -15,6 +16,7 @@ import ViewScope  from './viewScope';
 import AddScope from './addScope';
 import ViewUser from './viewUser';
 
+exports.Dashboard = Dashboard;
 exports.About = About;
 exports.Login = Login;
 exports.Logs = Logs;

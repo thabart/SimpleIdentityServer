@@ -165,6 +165,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
                     connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
                     connectedClient.ScimProfile = client.ScimProfile;
+                    connectedClient.UpdateDateTime = DateTime.UtcNow;
                     var scopesNotToBeDeleted = new List<string>();
                     if (client.AllowedScopes != null)
                     {
@@ -319,7 +320,9 @@ namespace SimpleIdentityServer.EF.Repositories
                         GrantTypes = grantTypes,
                         ResponseTypes = responseTypes,
                         ScimProfile = client.ScimProfile,
-                        ClientSecrets = clientSecrets
+                        ClientSecrets = clientSecrets,
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateDateTime = DateTime.UtcNow
                     };
 
                     _context.Clients.Add(newClient);

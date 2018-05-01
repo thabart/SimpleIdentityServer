@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../../services';
-import { withRouter } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress, Grid } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
@@ -189,7 +189,7 @@ class ScopeComponent extends Component {
             self.state.data.forEach(function(record) {
                 rows.push((
                     <TableRow hover role="checkbox" key={record.name}>
-                        <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
+                        <TableCell><Checkbox color="primary" checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell>{record.name}</TableCell>
                         <TableCell>{record.type}</TableCell>
                         <TableCell>
@@ -201,8 +201,18 @@ class ScopeComponent extends Component {
         }
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('scopes')}</h4>
-                <i>{t('scopesDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('scopes')}</h4>
+                        <i>{t('scopesDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('scopes')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 <div className="header">
@@ -235,7 +245,7 @@ class ScopeComponent extends Component {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell><Checkbox color="primary" onChange={self.handleAllSelections} /></TableCell>
                                         <TableCell>
                                             <form onSubmit={(e) => { e.preventDefault(); self.refreshData(); }}>
                                                 <TextField value={this.state.selectedName} name='selectedName' onChange={self.handleChangeProperty} placeholder={t('Filter...')}/>

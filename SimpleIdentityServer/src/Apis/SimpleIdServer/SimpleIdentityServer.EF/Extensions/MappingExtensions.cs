@@ -32,7 +32,9 @@ namespace SimpleIdentityServer.EF.Extensions
                 IsExposed = scope.IsExposed,
                 IsOpenIdScope = scope.IsOpenIdScope,
                 Type = (Domain.ScopeType)scope.Type,
-                Claims = scope.ScopeClaims == null ? new List<string>() : scope.ScopeClaims.Select(c => c.ClaimCode).ToList()
+                Claims = scope.ScopeClaims == null ? new List<string>() : scope.ScopeClaims.Select(c => c.ClaimCode).ToList(),
+                UpdateDateTime = scope.UpdateDateTime,
+                CreateDateTime = scope.CreateDateTime
             };
         }
 
@@ -56,7 +58,9 @@ namespace SimpleIdentityServer.EF.Extensions
                 IsLocalAccount = resourceOwner.IsLocalAccount,
                 TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
                 Claims = claims,
-                Password = resourceOwner.Password
+                Password = resourceOwner.Password,
+                CreateDateTime = resourceOwner.CreateDateTime,
+                UpdateDateTime = resourceOwner.UpdateDateTime
             };
         }
 
@@ -201,7 +205,9 @@ namespace SimpleIdentityServer.EF.Extensions
                 ResponseTypes = responseTypes,
                 ScimProfile = client.ScimProfile,
                 Secrets = clientSecrets,
-                RequirePkce = client.RequirePkce
+                RequirePkce = client.RequirePkce,
+                CreateDateTime = client.CreateDateTime,
+                UpdateDateTime = client.UpdateDateTime
             };
         }
 

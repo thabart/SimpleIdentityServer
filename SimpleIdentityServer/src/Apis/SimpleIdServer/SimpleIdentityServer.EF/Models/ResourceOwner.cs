@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EF.Models
@@ -44,5 +45,7 @@ namespace SimpleIdentityServer.EF.Models
         /// Gets or sets the list of consents
         /// </summary>
         public virtual List<Consent> Consents { get; set; } 
+        public DateTime CreateDateTime { get; set; }
+        public DateTime UpdateDateTime { get; set; }
     }
 }

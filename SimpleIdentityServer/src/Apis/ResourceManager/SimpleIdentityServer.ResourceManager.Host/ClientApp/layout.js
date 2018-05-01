@@ -6,13 +6,17 @@ import { SessionService, EndpointService, ProfileService } from './services';
 import Constants from './constants';
 import AppDispatcher from './appDispatcher';
 
-import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid, CircularProgress, Snackbar } from 'material-ui';
-import  List, { ListItem, ListItemText } from 'material-ui/List';
+import { IconButton, Button , Drawer, Select, MenuItem, SwipeableDrawer, FormControl, Grid, CircularProgress, Snackbar, Divider, Avatar, Typography } from 'material-ui';
+import  List, { ListItem, ListItemText, ListItemIcon } from 'material-ui/List';
 import { InputLabel } from 'material-ui/Input';
 import { withStyles } from 'material-ui/styles';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Settings from '@material-ui/icons/Settings';
+import Face from '@material-ui/icons/Face';
+import Language from '@material-ui/icons/Language';
+import Label from '@material-ui/icons/Label';
+import Lock from '@material-ui/icons/Lock';
 import Collapse from 'material-ui/transitions/Collapse';
 
 const drawerWidth = 300;
@@ -32,6 +36,10 @@ const styles = theme => ({
   },
   nested: {
     paddingLeft: theme.spacing.unit * 4,
+  },
+  avatar: {
+    width: 120,
+    height: 120
   }
 });
 
@@ -317,9 +325,6 @@ class Layout extends Component {
             <SwipeableDrawer open={self.state.isDrawerDisplayed} anchor="right" onClose={ () => self.setState({ isDrawerDisplayed: false }) } onOpen={ () => self.setState({ isDrawerDisplayed: true }) }>
                 {self.state.isLoading ? (<CircularProgress />) : (
                     <div style={{padding: "20px"}}>
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item"><a href="#" className="nav-link">{t('yourPreferences')}</a></li>
-                        </ul>
                         <div>
                             {openidEndpoints.length > 0 && (
                                 <div>
@@ -358,10 +363,25 @@ class Layout extends Component {
             </SwipeableDrawer>
             <Drawer docked={true} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>                
                 <List>
+                    {(self.state.isLoggedIn && (
+                        <ListItem>
+                                <Avatar className={classes.avatar}  src="http://via.placeholder.com/80x80" />
+                                <Typography variant="title">userName</Typography>
+                        </ListItem>
+                    ))}
+                    {(self.state.isLoggedIn && (
+                        <Divider />
+                    ))}
                     {/* About menu item */}
                     <ListItem button onClick={() => self.navigate('/about')}>
                         <ListItemText>{t('aboutMenuItem')}</ListItemText>
                     </ListItem>
+                    {/* Dashboard menu item */}                        
+                    {(self.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
+                        <ListItem button onClick={() => self.navigate('/dashboard')}>
+                            <ListItemText>{t('dashboardMenuItem')}</ListItemText>
+                        </ListItem>
+                    ))}
                     {/* Openid menu item */}                        
                     {(self.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                         <ListItem button onClick={() => self.toggleValue('isManageOpenidServerOpened')}>
@@ -372,9 +392,18 @@ class Layout extends Component {
                     {(self.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                         <Collapse in={this.state.isManageOpenidServerOpened}>
                             <List>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resourceowners')}><ListItemText>{t('resourceOwners')}</ListItemText></ListItem>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidclients')}><ListItemText>{t('openidclients')}</ListItemText></ListItem>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidscopes')}><ListItemText>{t('openidScopes')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resourceowners')}>
+                                    <ListItemIcon><Face /></ListItemIcon>
+                                    <ListItemText>{t('resourceOwners')}</ListItemText>
+                                </ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidclients')}>
+                                    <ListItemIcon><Language /></ListItemIcon>
+                                    <ListItemText>{t('openidclients')}</ListItemText>
+                                </ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/openidscopes')}>
+                                    <ListItemIcon><Label /></ListItemIcon>
+                                    <ListItemText>{t('openidScopes')}</ListItemText>
+                                </ListItem>
                             </List>
                         </Collapse>   
                     ))}       
@@ -388,9 +417,18 @@ class Layout extends Component {
                     {(this.state.isLoggedIn && !process.env.IS_MANAGE_DISABLED && (
                         <Collapse in={this.state.isManageAuthServersOpened}>
                             <List>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}><ListItemText>{t('oauthClients')}</ListItemText></ListItem>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authScopes')}><ListItemText>{t('authscopes')}</ListItemText></ListItem>
-                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}><ListItemText>{t('resources')}</ListItemText></ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authclients')}>
+                                    <ListItemIcon><Language /></ListItemIcon>
+                                    <ListItemText>{t('oauthClients')}</ListItemText>
+                                </ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/authScopes')}>
+                                    <ListItemIcon><Label /></ListItemIcon>
+                                    <ListItemText>{t('authscopes')}</ListItemText>
+                                </ListItem>
+                                <ListItem className={classes.nested} button onClick={() => self.navigate('/resources')}>
+                                    <ListItemIcon><Lock /></ListItemIcon>
+                                    <ListItemText>{t('resources')}</ListItemText>
+                                </ListItem>
                             </List>
                         </Collapse>
                     ))}

@@ -19,6 +19,7 @@ using Newtonsoft.Json.Converters;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -289,5 +290,19 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         [JsonProperty(Constants.ClientNames.PostLogoutRedirectUris)]
         [DataMember(Name = Constants.ClientNames.PostLogoutRedirectUris)]
         public List<string> PostLogoutRedirectUris { get; set; }
+
+        /// <summary>
+        /// Gets or sets the create datetime.
+        /// </summary>
+        [JsonProperty(Constants.ClientNames.CreateDateTime)]
+        [DataMember(Name = Constants.ClientNames.CreateDateTime)]
+        public DateTime CreateDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the update datetime.
+        /// </summary>
+        [JsonProperty(Constants.ClientNames.UpdateDateTime)]
+        [DataMember(Name = Constants.ClientNames.UpdateDateTime)]
+        public DateTime UpdateDateTime { get; set; }
     }
 }

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Models
@@ -31,6 +32,8 @@ namespace SimpleIdentityServer.Core.Models
         public bool IsOpenIdScope { get; set; }
         public bool IsExposed { get; set; }
         public ScopeType Type { get; set; }
+        public DateTime CreateDateTime { get; set; }
+        public DateTime UpdateDateTime { get; set; }
         public List<string> Claims { get; set; }
     }
 }

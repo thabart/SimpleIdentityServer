@@ -539,7 +539,9 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc,
                 UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg,
                 TosUri = client.TosUri,
-                PostLogoutRedirectUris = client.PostLogoutRedirectUris
+                PostLogoutRedirectUris = client.PostLogoutRedirectUris,
+                CreateDateTime = client.CreateDateTime,
+                UpdateDateTime = client.UpdateDateTime
             };
         }
 
@@ -557,7 +559,9 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Password = resourceOwner.Password,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
                 Claims = claims,
-                TwoFactorAuthentication = (Common.Responses.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication
+                TwoFactorAuthentication = (Common.Responses.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
+                CreateDateTime = resourceOwner.CreateDateTime,
+                UpdateDateTime = resourceOwner.UpdateDateTime
             };
         }
 
@@ -571,7 +575,9 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 IsExposed = scope.IsExposed,
                 IsOpenIdScope = scope.IsOpenIdScope,
                 Name = scope.Name,
-                Type = (ScopeResponseType)(int)scope.Type
+                Type = (ScopeResponseType)(int)scope.Type,
+                CreateDateTime = scope.CreateDateTime,
+                UpdateDateTime = scope.UpdateDateTime
             };
         }
 

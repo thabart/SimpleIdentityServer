@@ -114,6 +114,8 @@
             public const string RedirectionUrls = "redirection_urls";
             public const string SectorIdentifierUri = "sector_identifier_uri";
             public const string PostLogoutRedirectUris = "post_logout_redirect_uris";
+            public const string UpdateDateTime = "update_datetime";
+            public const string CreateDateTime = "create_datetime";
         }
 
         public static class ScopeResponseNames
@@ -125,6 +127,8 @@
             public const string IsExposed = "is_exposed";
             public const string Type = "type";
             public const string Claims = "claims";
+            public const string UpdateDateTime = "update_datetime";
+            public const string CreateDateTime = "create_datetime";
         }
 
         public static class JwsInformationResponseNames
@@ -165,6 +169,8 @@
             public const string IsLocalAccount = "is_localaccount";
             public const string Claims = "claims";
             public const string TwoFactorAuthentication = "two_factor_auth";
+            public const string UpdateDateTime = "update_datetime";
+            public const string CreateDateTime = "create_datetime";
         }
     }
 }

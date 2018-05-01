@@ -93,7 +93,9 @@ namespace SimpleIdentityServer.EF.Repositories
                         IsExposed = scope.IsExposed,
                         IsOpenIdScope = scope.IsOpenIdScope,
                         Type = (Models.ScopeType)scope.Type,
-                        ScopeClaims = new List<Models.ScopeClaim>()
+                        ScopeClaims = new List<Models.ScopeClaim>(),
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateDateTime = DateTime.UtcNow
                     };
 
                     if (scope.Claims != null &&
@@ -172,6 +174,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
                     connectedScope.IsExposed = scope.IsExposed;
                     connectedScope.Type = (Models.ScopeType)scope.Type;
+                    connectedScope.UpdateDateTime = DateTime.UtcNow;
                     var scopesNotToBeRemoved = new List<string>();
                     if (scope.Claims != null &&
                         scope.Claims.Any())

@@ -16,6 +16,7 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -57,5 +58,13 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         [JsonProperty(Constants.ResourceOwnerResponseNames.Claims)]
         [DataMember(Name = Constants.ResourceOwnerResponseNames.Claims)]
         public List<KeyValuePair<string, string>> Claims { get; set; }
+
+        [JsonProperty(Constants.ResourceOwnerResponseNames.CreateDateTime)]
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.CreateDateTime)]
+        public DateTime CreateDateTime { get; set; }
+
+        [JsonProperty(Constants.ResourceOwnerResponseNames.UpdateDateTime)]
+        [DataMember(Name = Constants.ResourceOwnerResponseNames.UpdateDateTime)]
+        public DateTime UpdateDateTime { get; set; }
     }
 }

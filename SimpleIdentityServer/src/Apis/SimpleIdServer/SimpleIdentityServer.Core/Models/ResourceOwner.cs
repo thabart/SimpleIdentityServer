@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -41,6 +42,8 @@ namespace SimpleIdentityServer.Core.Models
         /// Gets or sets if the resource owner is local or external
         /// </summary>
         public bool IsLocalAccount { get; set; }
+        public DateTime CreateDateTime { get; set; }
+        public DateTime UpdateDateTime { get; set; }
     }
 
     public enum TwoFactorAuthentications

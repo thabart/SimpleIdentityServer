@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ResourceOwnerService } from '../services';
+import { NavLink } from "react-router-dom";
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar , CircularProgress} from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar , CircularProgress, Grid } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
@@ -177,7 +178,7 @@ class ResourceOwners extends Component {
             self.state.data.forEach(function(record) {
                 rows.push((
                     <TableRow hover role="checkbox" key={record.login}>
-                        <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
+                        <TableCell><Checkbox color="primary" checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell><Avatar src={record.picture}/></TableCell>
                         <TableCell>{record.login}</TableCell>
                         <TableCell>{record.email}</TableCell>
@@ -189,8 +190,19 @@ class ResourceOwners extends Component {
 
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('users')}</h4>
-                <i>{t('usersShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('users')}</h4>
+                        <i>{t('usersShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('resourceOwners')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
+
             </div>
             <div className="card">
                 <div className="header">
@@ -224,7 +236,7 @@ class ResourceOwners extends Component {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell><Checkbox color="primary" onChange={self.handleAllSelections} /></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell>
                                             <form onSubmit={(e) => { e.preventDefault(); self.refreshData(); }}>

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ClientService } from '../../services';
-import { withRouter } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress } from 'material-ui';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress, Grid } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
@@ -190,7 +190,7 @@ class ClientComponent extends Component {
             self.state.data.forEach(function(record) {
                 rows.push((
                     <TableRow hover role="checkbox" key={record.client_id}>
-                        <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
+                        <TableCell><Checkbox color="primary" checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell><Avatar src={record.logo_uri}/></TableCell>
                         <TableCell>{record.client_name}</TableCell>
                         <TableCell>{record.client_id}</TableCell>
@@ -205,8 +205,18 @@ class ClientComponent extends Component {
 
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('oauthClients')}</h4>
-                <i>{t('oauthClientsShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('oauthClients')}</h4>
+                        <i>{t('oauthClientsShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('oauthClients')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 <div className="header">
@@ -241,7 +251,7 @@ class ClientComponent extends Component {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell><Checkbox color="primary" onChange={self.handleAllSelections} /></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell>

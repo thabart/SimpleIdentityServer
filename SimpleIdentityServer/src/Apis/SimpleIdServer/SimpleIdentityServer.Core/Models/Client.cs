@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using SimpleIdentityServer.Core.Jwt;
 
@@ -248,5 +249,8 @@ namespace SimpleIdentityServer.Core.Models
         /// Get or sets the post logout redirect uris.
         /// </summary>
         public List<string> PostLogoutRedirectUris { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
+        public DateTime UpdateDateTime { get; set; }
     }
 }

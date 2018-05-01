@@ -1,8 +1,9 @@
 ﻿import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ResourcesTab, HierarchicalResourcesTab } from './resourcesTabs';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter, Link, NavLink } from 'react-router-dom';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import { Grid } from 'material-ui';
 
 class Resources extends Component {
     constructor(props) {
@@ -25,12 +26,22 @@ class Resources extends Component {
         const { t } = self.props;
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('resourcesTitle')}</h4>
-                <i>{t('resourcesShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('resourcesTitle')}</h4>
+                        <i>{t('resourcesShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('resources')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 <div className="body">
-                                <Tabs value={self.state.tabId} onChange={self.handleChangeTab}>
+                                <Tabs indicatorColor="primary" value={self.state.tabId} onChange={self.handleChangeTab}>
                                     <Tab label={t('resources')} component={Link}  to="/resources" />
                                     <Tab label={t('hierarchicalResources')} component={Link}  to="/resources/hierarchy" />
                                 </Tabs>

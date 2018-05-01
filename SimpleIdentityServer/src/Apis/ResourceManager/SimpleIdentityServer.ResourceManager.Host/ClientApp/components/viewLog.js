@@ -4,8 +4,9 @@ import Constants from '../constants';
 import $ from 'jquery';
 import moment from 'moment';
 
+import { NavLink } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
-import { CircularProgress } from 'material-ui';
+import { CircularProgress, Grid } from 'material-ui';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 
@@ -57,8 +58,19 @@ class ViewLog extends Component {
         const { t, classes } = self.props;
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('logTitle')}</h4>
-                <i>{t('logShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('logTitle')}</h4>
+                        <i>{t('logShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item"><NavLink to="/logs">{t('logs')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('log')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="container-fluid">
                 <div className="row">

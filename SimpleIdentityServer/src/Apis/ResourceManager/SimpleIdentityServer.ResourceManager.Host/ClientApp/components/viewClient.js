@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ClientService } from '../services';
 import { GeneralSettingsTab } from './clientTabs';
-import { CircularProgress, IconButton } from 'material-ui';
+import { NavLink } from 'react-router-dom';
+import { CircularProgress, IconButton, Grid } from 'material-ui';
 import { ChipsSelector } from './common';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Save from '@material-ui/icons/Save';
@@ -67,8 +68,19 @@ class ViewClient extends Component {
         const { t } = self.props;
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('clientTitle')}</h4>
-                <i>{t('clientShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('clientTitle')}</h4>
+                        <i>{t('clientShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item"><NavLink to={self.state.type ==="openid" ? "/openidclients" : "/authclients"}>{t('clients')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('client')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 <div className="header">
@@ -82,7 +94,7 @@ class ViewClient extends Component {
                 <div className="body">
                     { self.state.isLoading ? (<CircularProgress />) : (
                         <div>
-                            <Tabs value={self.state.tabIndex} onChange={self.handleTabChange}>
+                            <Tabs indicatorColor="primary" value={self.state.tabIndex} onChange={self.handleTabChange}>
                                 <Tab label={t('clientGeneralSettings')} />
                                 <Tab label={t('clientScopes')} />
                             </Tabs>

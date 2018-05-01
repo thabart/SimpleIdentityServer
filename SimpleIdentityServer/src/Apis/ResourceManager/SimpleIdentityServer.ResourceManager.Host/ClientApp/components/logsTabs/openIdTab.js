@@ -2,24 +2,23 @@
 import { translate } from 'react-i18next';
 import { ChartsTab } from './openIdTabs';
 import { LogTables } from '../common';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
+import Tabs, { Tab } from 'material-ui/Tabs';
 
 class OpenIdTab extends Component {
     constructor(props) {
         super(props);
-        this.navigate = this.navigate.bind(this);
+        this.handleChangeTab = this.handleChangeTab.bind(this);
         this.state = {
-            tabName : null
+            tabId : 0
         };
     }
 
-    navigate(e, name) {
-        e.preventDefault();
-        this.setState({
-            tabName: name
+    handleChangeTab(e, v) {
+        var self = this;
+        self.setState({
+            tabId: v
         });
-        var action = this.props.match.params.action;
-        this.props.history.push('/logs/' + action + '/' + name);
     }
 
     render() {
@@ -29,36 +28,36 @@ class OpenIdTab extends Component {
             <div>
                 <div className="card">
                     <div className="body">
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "logs")}>{t('logs')}</a>
-                            </li>
-                            <li className="nav-item">
-                                <a href="#" className="nav-link" onClick={(e) => self.navigate(e, "charts")}>{t('charts')}</a>
-                            </li>
-                        </ul>
+                        <Tabs indicatorColor="primary" value={self.state.tabId} onChange={self.handleChangeTab}>
+                            <Tab label={t('logs')} component={Link}  to="/logs/openid/logs" />
+                            <Tab label={t('charts')} component={Link}  to="/logs/openid/charts" />
+                        </Tabs>
                     </div>
                 </div>
                 <div>
-                    {this.state.tabName === 'logs' && (<LogTables logTitle={t('openidLogsTitle')} errorTitle={t('openidErrorsTitle')} type='openid' />)}
-                    {this.state.tabName === 'charts' && (<ChartsTab />)}
+                    {this.state.tabId === 0 && (<LogTables logTitle={t('openidLogsTitle')} errorTitle={t('openidErrorsTitle')} type='openid' />)}
+                    {this.state.tabId === 1 && (<ChartsTab />)}
                 </div>
             </div>);
     }
 
-    getSubAction() {
+    getTabId() {
         var self = this;
         var subAction = self.props.match.params.subaction;
         if (!subAction || (subAction !== 'logs' && subAction !== 'charts')) {
             subAction = 'logs';
         }
 
-        return subAction;
+        if(subAction === 'logs') {
+            return 0;
+        }
+
+        return 1;
     }
 
     componentDidMount() {
         this.setState({
-            tabName: this.getSubAction()
+            tabId: this.getTabId()
         });
     }
 }

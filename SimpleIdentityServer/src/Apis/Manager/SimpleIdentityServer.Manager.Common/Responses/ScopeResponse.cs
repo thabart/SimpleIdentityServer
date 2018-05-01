@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -56,5 +57,19 @@ namespace SimpleIdentityServer.Manager.Common.Responses
         [JsonProperty(Constants.ScopeResponseNames.Claims)]
         [DataMember(Name = Constants.ScopeResponseNames.Claims)]
         public List<string> Claims { get; set; }
+
+        /// <summary>
+        /// Gets or sets the create datetime.
+        /// </summary>
+        [JsonProperty(Constants.ScopeResponseNames.CreateDateTime)]
+        [DataMember(Name = Constants.ScopeResponseNames.CreateDateTime)]
+        public DateTime CreateDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the update datetime.
+        /// </summary>
+        [JsonProperty(Constants.ScopeResponseNames.UpdateDateTime)]
+        [DataMember(Name = Constants.ScopeResponseNames.UpdateDateTime)]
+        public DateTime UpdateDateTime { get; set; }
     }
 }

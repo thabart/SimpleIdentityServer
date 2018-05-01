@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
 import { ScopeService } from '../services';
 import { withStyles } from 'material-ui/styles';
-import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography } from 'material-ui';
+import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography, Grid } from 'material-ui';
 import Input, { InputLabel } from 'material-ui/Input';
 import { DisplayScope } from './common';
 import Tabs, { Tab } from 'material-ui/Tabs';
@@ -55,8 +56,19 @@ class ViewScope extends Component {
         const { t, classes } = self.props;
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('scopeTitle')}</h4>
-                <i>{t('scopeShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('scopeTitle')}</h4>
+                        <i>{t('scopeShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item"><NavLink to={self.state.type === "openid" ? "/openidscopes" : "/authscopes"}>{t('scopes')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('scope')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 <div className="header">

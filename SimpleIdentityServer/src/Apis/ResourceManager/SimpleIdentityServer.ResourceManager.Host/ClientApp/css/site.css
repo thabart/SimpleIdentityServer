@@ -1,8 +1,4 @@
-@import 'loading.css';
-@import 'navbar.css';
 @import 'palette.css';
-@import 'connections.css';
-@import 'workflow.css';
 
 * {
     margin: 0;
@@ -26,25 +22,8 @@ body {
     line-height: 1.5;
 }
 
-.full-width {
-    width: 100% !important;
-}
-
-.center {
-    margin: 0 auto;
-}
-
-.block {
-    display: block;
-}
-
-.center-text {
+.text-center {
     text-align: center;
-}
-
-.center-column {
-    float: none;
-    margin: 0 auto;
 }
 
 .margin-5 {
@@ -59,8 +38,12 @@ body {
     margin-top: 10px;
 }
 
-.box {
-    margin: 5px;
+.inline-block {
+    display: inline-block;
+}
+
+.no-margin {
+    margin: 0 !important;
 }
 
 .list-item {
@@ -69,30 +52,8 @@ body {
     padding: 5px;
 }
 
-.no-margin {
-    margin: 0 !important;
-}
-
-.inline-block {
-    display: inline-block;
-}
-
-#wrapper {
-    z-index: 100;
-}
-
-#wrapper, .navbar-static-side {
-    -webkit-transition: all 0.4s;
-    transition: all 0.4s;
-}
-
 .navbar {
-    z-index: 3;
-}
-
-.nav-tabs .nav-link {
-    border: 1px solid transparent;
-    border-radius: 30px;
+    z-index: 2;
 }
 
 .block {
@@ -111,8 +72,15 @@ body {
 
 .block-header {
     position: relative;
-    /* z-index: 2; */
     padding: 15px;
+}
+
+.block-header .breadcrumb {
+    border-radius: 50px;
+}
+
+.block-header .breadcrumb a {
+    text-decoration: none;
 }
 
 .card {
@@ -122,7 +90,7 @@ body {
 
 .card .header {
     position: relative;
-    padding: 20px;
+    padding: 20px 20px 0px 20px;
 }
 
 .card .header h4 {
@@ -142,32 +110,5 @@ body {
 
 .card .body {
     overflow-x: auto;
-}
-
-@media (min-width: 768px) {
-    #wrapper {
-        margin: 0 0 0 220px;
-    }
-}
-
-@media (max-width: 768px) {
-    #wrapper {
-        margin: 0;
-    }
-
-    .navbar-static-side {
-        width: 0px !important;
-    }
-
-        .navbar-static-side li {
-            display: none;
-        }
-}
-
-.jwsarea {
-    height: 300px !important;
-}
-
-.jwearea {
-    height: 200px !important;
+    padding: 0px 20px 20px 20px;
 }

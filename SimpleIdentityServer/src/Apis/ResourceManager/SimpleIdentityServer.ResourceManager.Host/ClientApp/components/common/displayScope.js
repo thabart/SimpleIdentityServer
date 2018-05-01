@@ -3,7 +3,7 @@ import { translate } from 'react-i18next';
 import { withStyles } from 'material-ui/styles';
 import { SessionService } from '../../services';
 import $ from 'jquery';
-import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography } from 'material-ui';
+import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography, Grid } from 'material-ui';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import { ChipsSelector } from '../common';
@@ -127,35 +127,39 @@ class DisplayScope extends Component {
         var self = this;
         const { t, classes } = self.props;
         return (
-                <div>
-                    {/* Name */}
-                    <FormControl fullWidth={true} className={classes.margin}>
-                        <InputLabel>{t('scopeName')}</InputLabel>
-                        <Input value={self.state.scope.name} name="name" onChange={self.handleChangeProperty}  />
-                        <FormHelperText>{t('scopeNameDescription')}</FormHelperText>
-                    </FormControl>
-                    {/* Description */}
-                    <FormControl fullWidth={true} className={classes.margin}>
-                        <InputLabel>{t('scopeDescription')}</InputLabel>
-                        <Input value={self.state.scope.description} name="description" onChange={self.handleChangeProperty}  />
-                        <FormHelperText>{t('scopeDescriptionDescription')}</FormHelperText>
-                    </FormControl>
-                    {/* Type */}
-                    <FormControl fullWidth={true} className={classes.margin}>                                
-                        <InputLabel>{t('scopeType')}</InputLabel>
-                        <Select value={self.state.scope.type} onChange={self.handleChangeProperty} name="type">
-                            <MenuItem value={0}>{t('apiScope')}</MenuItem>
-                            <MenuItem value={1}>{t('resourceOwnerScope')}</MenuItem>
-                        </Select>
-                        <FormHelperText>{t('scopeTypeDescription')}</FormHelperText>
-                    </FormControl>
-                    {/* Openid scope */}
-                    <div>
-                        <Typography><Checkbox checked={self.state.scope.is_openid_scope} onChange={() => { self.handleToggleProperty('is_openid_scope'); }}/> {t('isOpenidScope')}</Typography >
-                        <Typography>{t('isOpenidScopeDescription')}</Typography>
-                    </div>
-                    { self.state.scope.type === 1 && self.state.chipsSelectorOpts.values.length > 0 && ( <ChipsSelector label={t('addScopeClaims')} properties={self.state.scope.claims} input={self.state.chipsSelectorOpts} />) }
-                </div>
+                <Grid container spacing={40}>
+                    <Grid item sm={12} md={6} className={classes.grid}>
+                        {/* Name */}
+                        <FormControl fullWidth={true} className={classes.margin}>
+                            <InputLabel>{t('scopeName')}</InputLabel>
+                            <Input value={self.state.scope.name} name="name" onChange={self.handleChangeProperty}  />
+                            <FormHelperText>{t('scopeNameDescription')}</FormHelperText>
+                        </FormControl>
+                        {/* Description */}
+                        <FormControl fullWidth={true} className={classes.margin}>
+                            <InputLabel>{t('scopeDescription')}</InputLabel>
+                            <Input value={self.state.scope.description} name="description" onChange={self.handleChangeProperty}  />
+                            <FormHelperText>{t('scopeDescriptionDescription')}</FormHelperText>
+                        </FormControl>                        
+                    </Grid>
+                    <Grid item sm={12} md={6} className={classes.grid}>
+                        {/* Type */}
+                        <FormControl fullWidth={true} className={classes.margin}>                                
+                            <InputLabel>{t('scopeType')}</InputLabel>
+                            <Select value={self.state.scope.type} onChange={self.handleChangeProperty} name="type">
+                                <MenuItem value={0}>{t('apiScope')}</MenuItem>
+                                <MenuItem value={1}>{t('resourceOwnerScope')}</MenuItem>
+                            </Select>
+                            <FormHelperText>{t('scopeTypeDescription')}</FormHelperText>
+                        </FormControl>
+                        {/* Openid scope */}
+                        <div>
+                            <Typography><Checkbox color="primary" checked={self.state.scope.is_openid_scope} onChange={() => { self.handleToggleProperty('is_openid_scope'); }}/> {t('isOpenidScope')}</Typography >
+                            <Typography>{t('isOpenidScopeDescription')}</Typography>
+                        </div>
+                        { self.state.scope.type === 1 && self.state.chipsSelectorOpts.values.length > 0 && ( <ChipsSelector label={t('addScopeClaims')} properties={self.state.scope.claims} input={self.state.chipsSelectorOpts} />) }                        
+                    </Grid>
+                </Grid>
         );
     }
 

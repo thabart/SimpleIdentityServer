@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ChipsSelector } from './common';
 import { ResourceService } from '../services';
+import { NavLink } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
@@ -181,7 +182,7 @@ class ViewResource extends Component {
 
                 rows.push(
                     <TableRow key={authPolicy.id}>
-                        <TableCell><Checkbox checked={authPolicy.isChecked} onChange={(e) => self.handleRowClick(e, authPolicy)} /></TableCell>
+                        <TableCell><Checkbox color="primary" checked={authPolicy.isChecked} onChange={(e) => self.handleRowClick(e, authPolicy)} /></TableCell>
                         <TableCell>
                             {t('authorizationPolicy') +": " + authPolicy.id}
                             { authPolicy.isDeployed ? (<IconButton onClick={() => self.handleDisplayAuthPolicy(authPolicy, false)}><ExpandLess /> </IconButton>) : (<IconButton onClick={() => self.handleDisplayAuthPolicy(authPolicy, true)}><ExpandMore /></IconButton>) }                            
@@ -205,10 +206,22 @@ class ViewResource extends Component {
             });
         }
 
+        console.log(classes);
         return (<div className="block">
             <div className="block-header">
-                <h4>{t('resourceTitle')}</h4>
-                <i>{t('resourceShortDescription')}</i>
+                <Grid container>
+                    <Grid item md={5} sm={12}>
+                        <h4>{t('resourceTitle')}</h4>
+                        <i>{t('resourceShortDescription')}</i>
+                    </Grid>
+                    <Grid item md={7} sm={12}>                        
+                        <ul className="breadcrumb float-md-right">
+                            <li className="breadcrumb-item"><NavLink to="/">{t('websiteTitle')}</NavLink></li>
+                            <li className="breadcrumb-item"><NavLink to="/resources">{t('resources')}</NavLink></li>
+                            <li className="breadcrumb-item">{t('resource')}</li>
+                        </ul>
+                    </Grid>
+                </Grid>
             </div>
             <div className="card">
                 { self.state.isLoading ? ( <CircularProgress /> ) : (
@@ -233,8 +246,8 @@ class ViewResource extends Component {
                             </div>
                         </div>
                         <div className="body">
-                            <Grid container spacing={8}>
-                                <Grid item sm={12} md={6} zeroMinWidth>
+                            <Grid container spacing={40}>
+                                <Grid item sm={12} md={4}>
                                     {/* Name */}
                                     <FormControl className={classes.margin} fullWidth={true}>
                                         <InputLabel htmlFor="resourceName">{t('resourceName')}</InputLabel>
@@ -250,11 +263,11 @@ class ViewResource extends Component {
                                         <ChipsSelector label={t('resourceScopes')} properties={self.state.resourceScopes} />
                                     </div>
                                 </Grid>
-                                <Grid item sm={12} md={6} zeroMinWidth>
+                                <Grid item sm={12} md={8}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                                <TableCell><Checkbox color="primary" onChange={self.handleAllSelections} /></TableCell>
                                                 <TableCell></TableCell>
                                             </TableRow>
                                         </TableHead>

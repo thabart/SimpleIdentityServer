@@ -126,7 +126,7 @@ class Resources extends Component {
             self.state.data.forEach(function(record) {
                 rows.push(
                     <TableRow key={record.id}>
-                        <TableCell><Checkbox checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
+                        <TableCell><Checkbox color="primary" checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell>{record.id}</TableCell>
                         <TableCell>{record.name}</TableCell>
                         <TableCell>{record.type}</TableCell>
@@ -172,7 +172,7 @@ class Resources extends Component {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell><Checkbox onChange={self.handleAllSelections} /></TableCell>
+                                        <TableCell><Checkbox color="primary" onChange={self.handleAllSelections} /></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
