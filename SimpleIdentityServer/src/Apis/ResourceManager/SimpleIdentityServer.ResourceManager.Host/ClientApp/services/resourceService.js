@@ -49,5 +49,11 @@ module.exports = {
                 reject(e);
             });
         });        
+    },
+    /**
+    * Remove the user.
+    */
+    delete: function(id, type) {
+
     }
 };

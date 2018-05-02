@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SimpleIdentityServer.Manager.Client;
+using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using SimpleIdentityServer.ResourceManager.API.Host.Extensions;
+using SimpleIdentityServer.ResourceManager.Core.Api.ResourceOwners;
 using SimpleIdentityServer.ResourceManager.Core.Exceptions;
-using SimpleIdentityServer.ResourceManager.Core.Helpers;
-using SimpleIdentityServer.ResourceManager.Core.Models;
-using SimpleIdentityServer.ResourceManager.Core.Repositories;
-using SimpleIdentityServer.ResourceManager.Core.Stores;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,125 +16,160 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
     [Route(Constants.RouteNames.ResourceOwnersController)]
     public class ResourceOwnersController : Controller
     {
-        private const string _scopeName = "manager";
-        private readonly IEndpointRepository _endpointRepository;
-        private readonly ITokenStore _tokenStore;
-        private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
-        private readonly IEndpointHelper _endpointHelper;
+        private readonly IResourceOwnerActions _resourceOwnerActions;
 
-        public ResourceOwnersController(IEndpointRepository endpointRepository, ITokenStore tokenStore,
-            IOpenIdManagerClientFactory openIdManagerClientFactory, IEndpointHelper endpointHelper)
+        public ResourceOwnersController(IResourceOwnerActions resourceOwnerActions)
         {
-            _endpointRepository = endpointRepository;
-            _tokenStore = tokenStore;
-            _openIdManagerClientFactory = openIdManagerClientFactory;
-            _endpointHelper = endpointHelper;
+            _resourceOwnerActions = resourceOwnerActions;
         }
 
-        [HttpGet("{id}/{url?}")]
-        public Task<IActionResult> Get(string id, string url)
-        {
-            return GetResourceOwner(id, url);
-        }
-
-        [HttpDelete("{id}/{url?}")]
-        public Task<IActionResult> Delete(string id, string url)
-        {
-            return DeleteResourceOwner(id, url);
-        }
-
-        [HttpPost(".search/{url?}")]
-        public Task<IActionResult> Search([FromBody] SearchResourceOwnersRequest request, string url)
-        {
-            return SearchResourceOwners(request, url);
-        }
-        
-        private async Task<IActionResult> GetResourceOwner(string id, string url)
+        [HttpGet("{id}")]
+        [Authorize("connected")]
+        public async Task<IActionResult> Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            EndpointAggregate endpoint;
             try
             {
-                endpoint = await _endpointHelper.TryGetEndpoint(url, EndpointTypes.OPENID);
-            }
-            catch (ResourceManagerException ex)
-            {
-                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
-            }
-            catch (Exception ex)
-            {
-                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
-            }
-            
-            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
-            var client = await _openIdManagerClientFactory.GetResourceOwnerClient().ResolveGet(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
-            if (client == null || client.ContainsError)
-            {
-                return new NotFoundResult();
-            }
-
-            return new OkObjectResult(JsonConvert.SerializeObject(client.Content).ToString());
-        }
-
-        private async Task<IActionResult> DeleteResourceOwner(string id, string url)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            EndpointAggregate endpoint;
-            try
-            {
-                endpoint = await _endpointHelper.TryGetEndpoint(url, EndpointTypes.OPENID);
-            }
-            catch (ResourceManagerException ex)
-            {
-                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
-            }
-            catch (Exception ex)
-            {
-                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
-            }
-            
-            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetResourceOwnerClient().ResolvedDelete(new Uri(endpoint.ManagerUrl), id, grantedToken.AccessToken);
-            if (result.ContainsError)
-            {
-                var error = result.Error;
-                if (error == null)
+                var subject = User.GetSubject();
+                var result = await _resourceOwnerActions.Get(subject, id);
+                if (result == null || result.ContainsError)
                 {
-                    error = new ErrorResponse
+                    return new NotFoundResult();
+                }
+
+                return new OkObjectResult(result.Content);
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize("connected")]
+        public async Task<IActionResult> Delete(string id, string url)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                var subject = User.GetSubject();
+                var result = await _resourceOwnerActions.Delete(subject, id);
+                if (result.ContainsError)
+                {
+                    var error = result.Error;
+                    if (error == null)
                     {
-                        Code = Constants.ErrorCodes.InternalError,
-                        Message = Constants.Errors.ErrDeleteRo
+                        error = new ErrorResponse
+                        {
+                            Code = Constants.ErrorCodes.InternalError,
+                            Message = Constants.Errors.ErrDeleteRo
+                        };
+                    }
+
+                    return new JsonResult(JsonConvert.SerializeObject(error))
+                    {
+                        StatusCode = (int)HttpStatusCode.InternalServerError
                     };
                 }
 
-                return new JsonResult(JsonConvert.SerializeObject(error))
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
+                return new OkResult();
             }
-
-            return new OkResult();
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
         }
 
-        private async Task<IActionResult> SearchResourceOwners(SearchResourceOwnersRequest parameter, string url)
+        [HttpPost(".search")]
+        [Authorize("connected")]
+        public async Task<IActionResult> Search([FromBody] SearchResourceOwnersRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            try
+            {
+                var result = await _resourceOwnerActions.Search(User.GetSubject(), request);
+                if (result.ContainsError)
+                {
+                    var error = result.Error;
+                    if (error == null)
+                    {
+                        error = new ErrorResponse
+                        {
+                            Code = Constants.ErrorCodes.InternalError,
+                            Message = Constants.Errors.ErrSearchRos
+                        };
+                    }
+
+                    return new JsonResult(JsonConvert.SerializeObject(error))
+                    {
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return new OkObjectResult(result.Content);
+
+            }
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [Authorize("connected")]
+        public async Task<IActionResult> Add([FromBody] AddResourceOwnerRequest parameter)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            EndpointAggregate endpoint;
             try
             {
-                endpoint = await _endpointHelper.TryGetEndpoint(url, EndpointTypes.OPENID);
+                var result = await _resourceOwnerActions.Add(User.GetSubject(), parameter);
+                if (result.ContainsError)
+                {
+                    var error = result.Error;
+                    if (error == null)
+                    {
+                        error = new ErrorResponse
+                        {
+                            Code = Constants.ErrorCodes.InternalError,
+                            Message = Constants.Errors.ErrInsertRo
+                        };
+                    }
+
+                    return new JsonResult(JsonConvert.SerializeObject(error))
+                    {
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return new OkResult();
             }
             catch (ResourceManagerException ex)
             {
@@ -146,28 +179,48 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             {
                 return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
             }
+        }
 
-            var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { _scopeName });
-            var result = await _openIdManagerClientFactory.GetResourceOwnerClient().ResolveSearch(new Uri(endpoint.ManagerUrl), parameter, grantedToken.AccessToken);
-            if (result.ContainsError)
+        [HttpPut]
+        [Authorize("connected")]
+        public async Task<IActionResult> Update([FromBody] ResourceOwnerResponse parameter)
+        {
+            if (parameter == null)
             {
-                var error = result.Error;
-                if (error == null)
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            try
+            {
+                var result = await _resourceOwnerActions.Update(User.GetSubject(), parameter);
+                if (result.ContainsError)
                 {
-                    error = new ErrorResponse
+                    var error = result.Error;
+                    if (error == null)
                     {
-                        Code = Constants.ErrorCodes.InternalError,
-                        Message = Constants.Errors.ErrSearchRos
+                        error = new ErrorResponse
+                        {
+                            Code = Constants.ErrorCodes.InternalError,
+                            Message = Constants.Errors.ErrUpdateRo
+                        };
+                    }
+
+                    return new JsonResult(JsonConvert.SerializeObject(error))
+                    {
+                        StatusCode = (int)HttpStatusCode.InternalServerError
                     };
                 }
 
-                return new JsonResult(JsonConvert.SerializeObject(error))
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
+                return new OkResult();
             }
-
-            return new OkObjectResult(result.Content);
+            catch (ResourceManagerException ex)
+            {
+                return this.GetError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception ex)
+            {
+                return this.GetError(ex.Message, HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

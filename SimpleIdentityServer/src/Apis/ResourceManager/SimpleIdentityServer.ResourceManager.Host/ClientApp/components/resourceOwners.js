@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ResourceOwnerService } from '../services';
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
+import moment from 'moment';
 
-import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination, TableSortLabel } from 'material-ui/Table';
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar , CircularProgress, Grid } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
+import Visibility from '@material-ui/icons/Visibility'; 
 
 class ResourceOwners extends Component {
     constructor(props) {
@@ -21,6 +23,7 @@ class ResourceOwners extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleAllSelections = this.handleAllSelections.bind(this);
         this.handleRemoveUsers = this.handleRemoveUsers.bind(this);
+        this.handleSort = this.handleSort.bind(this);
         this.state = {
             data: [],
             isLoading: false,
@@ -29,7 +32,8 @@ class ResourceOwners extends Component {
             count: 0,
             anchorEl: null,
             isRemoveDisplayed: false,
-            selectedSubject: ''
+            selectedSubject: '',
+            order: 'desc'
         };
     }
 
@@ -71,7 +75,7 @@ class ResourceOwners extends Component {
             isLoading: true
         });
 
-        var request = { start_index: 1, count: self.state.pageSize };
+        var request = { start_index: 1, count: self.state.pageSize, order: { target: 'update_datetime', type: (self.state.order === 'desc' ? 1 : 0) } };
         if (self.state.selectedSubject && self.state.selectedSubject !== '') {
             request['subjects'] = [ self.state.selectedSubject ];
         }
@@ -168,6 +172,20 @@ class ResourceOwners extends Component {
     * Remove the selected users.
     */
     handleRemoveUsers() {      
+        
+    }
+
+    /**
+    * Sort the users.
+    */
+    handleSort() {
+        var self = this;
+        var order = this.state.order === 'desc' ? 'asc' : 'desc';
+        this.setState({
+            order: order
+        }, () => {
+            self.refreshData();
+        });
     }
 
     render() {
@@ -183,6 +201,10 @@ class ResourceOwners extends Component {
                         <TableCell>{record.login}</TableCell>
                         <TableCell>{record.email}</TableCell>
                         <TableCell>{record.name}</TableCell>
+                        <TableCell>{moment(record.update_datetime).format('LLLL')}</TableCell>
+                        <TableCell>
+                            <IconButton onClick={ () => self.props.history.push('/viewUser/' + record.login) }><Visibility /></IconButton>
+                        </TableCell>
                     </TableRow>
                 ));
             });
@@ -232,6 +254,10 @@ class ResourceOwners extends Component {
                                         <TableCell>{t('subject')}</TableCell>
                                         <TableCell>{t('email')}</TableCell>
                                         <TableCell>{t('name')}</TableCell>
+                                        <TableCell>
+                                            <TableSortLabel active={true} direction={self.state.order} onClick={self.handleSort}>{t('updateDateTime')}</TableSortLabel>
+                                        </TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -244,6 +270,8 @@ class ResourceOwners extends Component {
                                                 <IconButton onClick={self.refreshData}><Search /></IconButton>
                                             </form>
                                         </TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
                                         <TableCell></TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
@@ -263,4 +291,4 @@ class ResourceOwners extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(ResourceOwners);
+export default translate('common', { wait: process && !process.release })(withRouter(ResourceOwners));

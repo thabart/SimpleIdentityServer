@@ -5,7 +5,7 @@ import { SessionService } from './services';
 import Layout from './layout';
 import { Login, About, Logs, Resources, ViewAggregate, ViewLog,
  OAuthClients, OpenidClients, OAuthScopes, OpenidScopes, ResourceOwners, ViewResource, ViewClient, ViewScope,
- AddScope, Dashboard } from './components';
+ AddScope, Dashboard, ViewUser } from './components';
 
 export const routes = (<Layout>
     <Route exact path='/' component={About} />
@@ -21,6 +21,7 @@ export const routes = (<Layout>
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/viewClient/:type/:id/:action?' component={ViewClient} />)}
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/viewScope/:type/:id' component={ViewScope} />)}
     { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/addScope/:type' component={AddScope} />)}
+    { !process.env.IS_MANAGE_DISABLED && (<Route exact path='/viewUser/:id' component={ViewUser} />)}
     { !process.env.IS_RESOURCES_DISABLED && (<Route exact path='/resources/:action?' component={Resources} />)}
     { !process.env.IS_RESOURCES_DISABLED && (<Route exact path='/resource/:id' component={ViewResource} />)}
     { !process.env.IS_LOG_DISABLED && (<Route exact path="/viewaggregate/:id" component={ViewAggregate} /> )}

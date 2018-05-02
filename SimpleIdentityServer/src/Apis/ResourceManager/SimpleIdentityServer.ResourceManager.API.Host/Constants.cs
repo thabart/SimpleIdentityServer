@@ -219,8 +219,14 @@
             public const string ErrSearchClients = "an error occured while trying to search the client(s)";
             public const string ErrInsertClient = "an error occured while trying to insert the client";
             public const string ErrUpdateClient = "an error occured while trying to update the client";
+            public const string ErrInsertRo = "an error occured while trying to insert the resource owner(s)";
+            public const string ErrUpdateRo = "an error occured while trying to update the resource owner(s)";
             public const string ErrDeleteRo = "an error occured while trying to remove the resource owner(s)";
             public const string ErrSearchRos = "an error occured while trying to search the resource owner(s)";
+            public const string ErrInsertScope = "an error occured while trying to insert the scope(s)";
+            public const string ErrUpdateScope = "an error occured while trying to update the scope(s)";
+            public const string ErrDeleteScope = "an error occured while trying to delete the scope(s)";
+            public const string ErrSearchScope = "an error occured while trying to search the scope(s)";
             public const string ErrUpdateProfile = "an error occured while trying to update the profile";
         }
 

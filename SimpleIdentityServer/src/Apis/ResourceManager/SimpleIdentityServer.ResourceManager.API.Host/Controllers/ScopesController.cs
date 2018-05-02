@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                         error = new ErrorResponse
                         {
                             Code = Constants.ErrorCodes.InternalError,
-                            Message = Constants.Errors.ErrDeleteClient
+                            Message = Constants.Errors.ErrDeleteScope
                         };
                     }
 
@@ -181,7 +181,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                         error = new ErrorResponse
                         {
                             Code = Constants.ErrorCodes.InternalError,
-                            Message = Constants.Errors.ErrSearchClients
+                            Message = Constants.Errors.ErrSearchScope
                         };
                     }
 
@@ -222,7 +222,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                         error = new ErrorResponse
                         {
                             Code = Constants.ErrorCodes.InternalError,
-                            Message = Constants.Errors.ErrInsertClient
+                            Message = Constants.Errors.ErrInsertScope
                         };
                     }
 
@@ -262,7 +262,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                         error = new ErrorResponse
                         {
                             Code = Constants.ErrorCodes.InternalError,
-                            Message = Constants.Errors.ErrUpdateClient
+                            Message = Constants.Errors.ErrUpdateScope
                         };
                     }
 
