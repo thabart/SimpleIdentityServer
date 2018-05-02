@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 import { ScopeService } from '../services';
 import { CircularProgress, IconButton, Grid } from 'material-ui';
 import { DisplayScope } from './common';
 import Save from '@material-ui/icons/Save';
+import AppDispatcher from '../appDispatcher';
+import Constants from '../constants';
 
 class AddScope extends Component {
     constructor(props) {
@@ -13,7 +15,8 @@ class AddScope extends Component {
         this.state = {
             type: '',
         	scope: {
-                type: 0                
+                type: 0,
+                claims: []                
             },
         	isLoading: true
         };
@@ -31,9 +34,18 @@ class AddScope extends Component {
             self.setState({
                 isLoading: false
             });
+            self.props.history.push(self.state.type === "openid" ? "/openidscopes" : "/authscopes");
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopeAdded')
+            });
         }).catch(function(e) {
             self.setState({
                 isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopeCannotBeAdded')
             });
         });
     }
@@ -71,7 +83,7 @@ class AddScope extends Component {
                 </div>
                 <div className="body">
                     { self.state.isLoading ? (<CircularProgress />) : (
-                        <DisplayScope type={self.state.type} scope={self.state.scope} />
+                        <DisplayScope type={self.state.type} isReadOnly={false} scope={self.state.scope} />
                     ) }
                 </div>
             </div>
@@ -90,4 +102,4 @@ class AddScope extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(AddScope);
+export default translate('common', { wait: process && !process.release })(withRouter(AddScope));

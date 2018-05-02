@@ -2,12 +2,15 @@ import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ScopeService } from '../../services';
 import { withRouter, NavLink } from 'react-router-dom';
-import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
+import moment from 'moment';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination, TableSortLabel } from 'material-ui/Table';
 import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, CircularProgress, Grid } from 'material-ui';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
 import Visibility from '@material-ui/icons/Visibility';
+import AppDispatcher from '../../appDispatcher';
+import Constants from '../../constants';
 
 class ScopeComponent extends Component {
     constructor(props) {
@@ -22,11 +25,12 @@ class ScopeComponent extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleRemoveScopes = this.handleRemoveScopes.bind(this);
         this.handleAllSelections = this.handleAllSelections.bind(this);
+        this.handleSort = this.handleSort.bind(this);
 
         this.state = {
             data: [],
             isLoading: false,
-            page: 1,
+            page: 0,
             pageSize: 5,
             count: 0,
             selectedType: 'all',
@@ -34,6 +38,7 @@ class ScopeComponent extends Component {
             isSettingsOpened: false,
             isRemoveDisplayed: false,
             anchorEl: null,
+            order: 'desc'
         };
     }
 
@@ -87,7 +92,7 @@ class ScopeComponent extends Component {
         self.setState({
             isLoading: true
         });
-        var request = { start_index: startIndex, count: self.state.pageSize };
+        var request = { start_index: startIndex, count: self.state.pageSize, order: { target: 'update_datetime', type: (self.state.order === 'desc' ? 1 : 0) } };
         if (self.state.selectedName && self.state.selectedName !== '') {
             request['names'] = [ self.state.selectedName ];
         }
@@ -165,7 +170,36 @@ class ScopeComponent extends Component {
     * Remove the selected scopes.
     */
     handleRemoveScopes() {
+        var self = this;
+        var scopeNames = self.state.data.filter(function(s) { return s.isSelected; }).map(function(s) { return s.name; });
+        if (scopeNames.length === 0) {
+            return;
+        }
 
+        const { t } = self.props;
+        self.setState({
+            isLoading: true
+        });
+        var operations = [];
+        scopeNames.forEach(function(scopeName) {
+            operations.push(ScopeService.delete(scopeName, self.props.type));
+        });
+
+        Promise.all(operations).then(function() {
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopesAreRemoved')
+            });
+            self.refreshData();
+        }).catch(function(e) {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopesCannotBeRemoved')
+            });
+        });
     }
 
     /**
@@ -181,6 +215,19 @@ class ScopeComponent extends Component {
         });
     }
 
+    /**
+    * Sort the scopes.
+    */
+    handleSort(colName) {
+        var self = this;
+        var order = this.state.order === 'desc' ? 'asc' : 'desc';
+        this.setState({
+            order: order
+        }, () => {
+            self.refreshData();
+        });
+    }
+
     render() {
         var self = this;
         const { t } = this.props;
@@ -192,6 +239,7 @@ class ScopeComponent extends Component {
                         <TableCell><Checkbox color="primary" checked={record.isSelected} onChange={(e) => self.handleRowClick(e, record)} /></TableCell>
                         <TableCell>{record.name}</TableCell>
                         <TableCell>{record.type}</TableCell>
+                        <TableCell>{moment(record.update_datetime).format('LLLL')}</TableCell>
                         <TableCell>
                             <IconButton onClick={ () => self.props.history.push('/viewScope/' + self.props.type + '/' + record.name) }><Visibility /></IconButton>
                         </TableCell>
@@ -240,6 +288,9 @@ class ScopeComponent extends Component {
                                         <TableCell></TableCell>
                                         <TableCell>{t('name')}</TableCell>
                                         <TableCell>{t('scopeType')}</TableCell>
+                                        <TableCell>
+                                            <TableSortLabel active={true} direction={self.state.order} onClick={self.handleSort}>{t('updateDateTime')}</TableSortLabel>
+                                        </TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -259,6 +310,7 @@ class ScopeComponent extends Component {
                                                 <MenuItem value="1">{t('openidScope')}</MenuItem>
                                             </Select>
                                         </TableCell>                                        
+                                        <TableCell></TableCell>                               
                                         <TableCell></TableCell>
                                     </TableRow>
                                     {rows}

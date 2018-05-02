@@ -8,6 +8,8 @@ import Input, { InputLabel } from 'material-ui/Input';
 import { DisplayScope } from './common';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Save from '@material-ui/icons/Save';
+import AppDispatcher from '../appDispatcher';
+import Constants from '../constants';
 
 class ViewScope extends Component {
     constructor(props) {
@@ -25,7 +27,29 @@ class ViewScope extends Component {
     * Save the scope.
     */
     saveScope() {
-        
+        var self = this;
+        const { t } = self.props;
+        self.setState({
+            isLoading: true
+        });
+        ScopeService.update(self.state.scope, self.state.type).then(function() {
+            self.setState({
+                isLoading: false
+            });
+            self.props.history.push(self.state.type === "openid" ? "/openidscopes" : "/authscopes");
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopeUpdated')
+            });
+        }).catch(function(e) {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('scopeCannotBeUpdated')
+            });
+        });
     }
 
     /**
@@ -81,7 +105,7 @@ class ViewScope extends Component {
                 </div>
                 <div className="body">
                     { self.state.isLoading ? (<CircularProgress />) : (
-                        <DisplayScope type={self.state.type} scope={self.state.scope} />
+                        <DisplayScope type={self.state.type} isReadOnly={true} scope={self.state.scope} />
                     ) }
                 </div>
             </div>

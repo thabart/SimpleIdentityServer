@@ -13,6 +13,7 @@ namespace SimpleIdentityServer.Core.Parameters
             Count = 500;
         }
 
+        public OrderParameter Order { get; set; }
         public IEnumerable<string> ClientIds { get; set; }
         public IEnumerable<string> ClientNames { get; set; }
         public IEnumerable<int> ClientTypes { get; set; }

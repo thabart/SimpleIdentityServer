@@ -83,7 +83,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         IsOpenIdScope = true,
                         IsDisplayedInConsent = true,
                         Description = "access to the openid scope",
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -109,7 +111,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt }
                         },
                         Type = ScopeType.ResourceOwner,
-                        IsDisplayedInConsent = true
+                        IsDisplayedInConsent = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -123,7 +127,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation }
                         },
                         Type = ScopeType.ResourceOwner,
-                        IsDisplayedInConsent = true
+                        IsDisplayedInConsent = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -137,7 +143,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email },
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.EmailVerified }
                         },
-                        Type = ScopeType.ResourceOwner
+                        Type = ScopeType.ResourceOwner,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -150,7 +158,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         {
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Address }
                         },
-                        Type = ScopeType.ResourceOwner
+                        Type = ScopeType.ResourceOwner,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -164,7 +174,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber },
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumberVerified }
                         },
-                        Type = ScopeType.ResourceOwner
+                        Type = ScopeType.ResourceOwner,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -177,7 +189,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         {
                             new ScopeClaim { ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role }
                         },
-                        Type = ScopeType.ResourceOwner
+                        Type = ScopeType.ResourceOwner,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Scopes needed by UMA solution
                     new Scope
@@ -186,7 +200,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Access to UMA permission, resource set & token introspection endpoints",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -194,7 +210,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Access to the UMA authorization endpoint",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -202,7 +220,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "UMA",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Scopes needed to manage the openid assets
                     new Scope
@@ -211,7 +231,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Access to the OpenId Manager",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Scopes needed by the configuration API
                     new Scope
@@ -220,7 +242,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Manage configuration",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -228,7 +252,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Display configuration",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -236,7 +262,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Configuration",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Scope needed by the visual studio extension
                     new Scope
@@ -245,7 +273,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         Description = "Access to the website api",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = true,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
@@ -641,7 +671,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             }
                         },
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        IsLocalAccount = true
+                        IsLocalAccount = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new ResourceOwner // Patient
                     {
@@ -776,7 +808,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             }
                         },
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        IsLocalAccount = true
+                        IsLocalAccount = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new ResourceOwner // doctor
                     {
@@ -911,7 +945,9 @@ namespace SimpleIdentityServer.EF.Extensions
                             }
                         },
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
-                        IsLocalAccount = true
+                        IsLocalAccount = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
@@ -986,7 +1022,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://configuration/callback"
+                        RedirectionUrls = "https://configuration/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Open Id manager API : needs to interact with the introspection endpoint.
                     new Models.Client
@@ -1007,7 +1045,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://openidmanager/callback"
+                        RedirectionUrls = "https://openidmanager/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // UMA API : needs to interact with the introspection endpoint.
                     new Models.Client
@@ -1029,6 +1069,8 @@ namespace SimpleIdentityServer.EF.Extensions
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://uma/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Anonymous client
                     new Models.Client
@@ -1067,7 +1109,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:4200/callback"
+                        RedirectionUrls = "https://localhost:4200/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Website
                     new Models.Client
@@ -1110,7 +1154,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://website/callback"
+                        RedirectionUrls = "https://website/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Models.Client // Medical website.
                     {
@@ -1164,7 +1210,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://localhost:5106/Authenticate/Callback"
+                        RedirectionUrls = "https://localhost:5106/Authenticate/Callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Manager website API
                     new Models.Client
@@ -1223,7 +1271,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://websiteapi/callback"
+                        RedirectionUrls = "https://websiteapi/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Resource manager website.
                     new Models.Client
@@ -1267,7 +1317,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:64950/callback",
-                        PostLogoutRedirectUris = "http://localhost:64950/end_session"
+                        PostLogoutRedirectUris = "http://localhost:64950/end_session",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Visual studio extension
                     new Models.Client
@@ -1296,7 +1348,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         },
                         GrantTypes = "3",
                         ResponseTypes = "1",
-                        ApplicationType = ApplicationTypes.native
+                        ApplicationType = ApplicationTypes.native,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
 
                     },
                     // SimpleIdentity server : needs to interact with the configuration server to retrieve his configuration
@@ -1327,7 +1381,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://simpleidserver/callback"
+                        RedirectionUrls = "https://simpleidserver/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Manager website 
                     new Models.Client
@@ -1364,7 +1420,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "https://sampleclient/callback"
+                        RedirectionUrls = "https://sampleclient/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     // Simple Identity server test client
                     new Models.Client
@@ -1405,7 +1463,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         ResponseTypes = "0,1,2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://localhost:60000/User/Callback"
+                        RedirectionUrls = "http://localhost:60000/User/Callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Models.Client // Resource manager API.
                     {
@@ -1440,7 +1500,9 @@ namespace SimpleIdentityServer.EF.Extensions
                         GrantTypes = "1", // Client credentials.
                         ResponseTypes = "2", // id_token.
                         IdTokenSignedResponseAlg = "RS256",
-                        ApplicationType = ApplicationTypes.native
+                        ApplicationType = ApplicationTypes.native,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }

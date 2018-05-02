@@ -26,5 +26,9 @@ namespace SimpleIdentityServer.Manager.Common.Requests
         [JsonProperty(Constants.SearchResponseNames.TotalResults)]
         [DataMember(Name = Constants.SearchResponseNames.TotalResults)]
         public int NbResults { get; set; }
+
+        [JsonProperty(Constants.SearchClientNames.Order)]
+        [DataMember(Name = Constants.SearchClientNames.Order)]
+        public OrderRequest Order { get; set; }
     }
 }

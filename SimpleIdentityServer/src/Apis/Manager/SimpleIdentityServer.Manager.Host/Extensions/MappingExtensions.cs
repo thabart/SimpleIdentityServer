@@ -44,7 +44,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Count = parameter.NbResults,
                 ScopeNames = parameter.ScopeNames,
                 StartIndex = parameter.StartIndex,
-                Types = parameter.ScopeTypes
+                Types = parameter.ScopeTypes,
+                Order = parameter.Order == null ? null : parameter.Order.ToParameter()
             };
         }
 
@@ -60,7 +61,22 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 ClientNames = parameter.ClientNames,
                 ClientTypes = parameter.ClientTypes,
                 Count = parameter.NbResults,
-                StartIndex = parameter.StartIndex
+                StartIndex = parameter.StartIndex,
+                Order = parameter.Order == null ? null : parameter.Order.ToParameter()
+            };
+        }
+
+        public static OrderParameter ToParameter(this OrderRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            return new OrderParameter
+            {
+                Target = request.Target,
+                Type = (OrderTypes)request.Type
             };
         }
 
@@ -88,7 +104,8 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             {
                 Count = request.NbResults,
                 StartIndex = request.StartIndex,
-                Subjects = request.Subjects
+                Subjects = request.Subjects,
+                Order = request.Order == null ? null : request.Order.ToParameter()
             };
         }
 

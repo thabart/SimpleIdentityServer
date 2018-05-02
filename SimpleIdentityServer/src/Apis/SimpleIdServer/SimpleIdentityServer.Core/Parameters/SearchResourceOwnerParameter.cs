@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Core.Parameters
             IsPagingEnabled = false;
         }
 
+        public OrderParameter Order { get; set; }
         public IEnumerable<string> Subjects { get; set; }
         public bool IsPagingEnabled { get; set; }
         public int StartIndex { get; set; }

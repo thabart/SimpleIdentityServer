@@ -4,8 +4,10 @@
     {
         public static class SearchResourceOwnerNames
         {
+            public const string Order = "order";
             public const string Subjects = "subjects";
         }
+
         public static class SearchResponseNames
         {
             public const string Content = "content";
@@ -13,8 +15,15 @@
             public const string TotalResults = "count";
         }
 
+        public static class OrderRequestNames
+        {
+            public const string Target = "target";
+            public const string Type = "type";
+        }
+
         public static class SearchScopeNames
         {
+            public const string Order = "order";
             public const string ScopeNames = "names";
             public const string ScopeTypes = "types";
         }
@@ -70,6 +79,7 @@
 
         public static class SearchClientNames
         {
+            public const string Order = "order";
             public const string ClientIds = "client_ids";
             public const string ClientNames = "client_names";
             public const string ClientTypes = "client_types";

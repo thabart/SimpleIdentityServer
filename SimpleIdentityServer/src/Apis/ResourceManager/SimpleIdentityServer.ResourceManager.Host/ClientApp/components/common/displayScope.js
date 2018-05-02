@@ -52,6 +52,7 @@ class DisplayScope extends Component {
         var self = this;
         var scope = self.state.scope;
         scope[e.target.name] = e.target.value;
+        self.state.scope.claims = [];
         self.setState({
             scope: scope
         });
@@ -76,6 +77,10 @@ class DisplayScope extends Component {
         var self = this;
         const { t } = self.props;
         var profile = SessionStore.getSession();
+        if (!profile.openid_url) {
+            return;
+        }
+
         var type = self.state.type;
         var url = '';
         switch(type) {
@@ -130,7 +135,7 @@ class DisplayScope extends Component {
                 <Grid container spacing={40}>
                     <Grid item sm={12} md={6} className={classes.grid}>
                         {/* Name */}
-                        <FormControl fullWidth={true} className={classes.margin}>
+                        <FormControl fullWidth={true} className={classes.margin} disabled={self.props.isReadOnly}>
                             <InputLabel>{t('scopeName')}</InputLabel>
                             <Input value={self.state.scope.name} name="name" onChange={self.handleChangeProperty}  />
                             <FormHelperText>{t('scopeNameDescription')}</FormHelperText>

@@ -23,6 +23,7 @@ using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Domains = SimpleIdentityServer.Core.Models;
 
@@ -31,7 +32,6 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ScopeRepository : IScopeRepository
     {
         private readonly SimpleIdentityServerContext _context;
-
         private readonly IManagerEventSource _managerEventSource;
 
         public ScopeRepository(
@@ -242,7 +242,28 @@ namespace SimpleIdentityServer.EF.Repositories
             }
 
             var nbResult = await scopes.CountAsync().ConfigureAwait(false);
-            scopes = scopes.OrderBy(c => c.Name);
+            if (parameter.Order != null)
+            {
+                switch (parameter.Order.Target)
+                {
+                    case "update_datetime":
+                        switch(parameter.Order.Type)
+                        {
+                            case OrderTypes.Asc:
+                                scopes = scopes.OrderBy(c => c.UpdateDateTime);
+                                break;
+                            case OrderTypes.Desc:
+                                scopes = scopes.OrderByDescending(c => c.UpdateDateTime);
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                scopes = scopes.OrderByDescending(c => c.UpdateDateTime);
+            }
+
             if (parameter.IsPagingEnabled)
             {
                 scopes = scopes.Skip(parameter.StartIndex).Take(parameter.Count);

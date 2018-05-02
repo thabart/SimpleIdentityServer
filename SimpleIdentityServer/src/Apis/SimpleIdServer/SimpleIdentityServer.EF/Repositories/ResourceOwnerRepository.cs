@@ -258,6 +258,28 @@ namespace SimpleIdentityServer.EF.Repositories
                 }
 
                 var nbResult = await result.CountAsync().ConfigureAwait(false);
+                if (parameter.Order != null)
+                {
+                    switch (parameter.Order.Target)
+                    {
+                        case "update_datetime":
+                            switch (parameter.Order.Type)
+                            {
+                                case OrderTypes.Asc:
+                                    result = result.OrderBy(c => c.UpdateDateTime);
+                                    break;
+                                case OrderTypes.Desc:
+                                    result = result.OrderByDescending(c => c.UpdateDateTime);
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    result = result.OrderByDescending(c => c.UpdateDateTime);
+                }
+
                 if (parameter.IsPagingEnabled)
                 {
                     result = result.Skip(parameter.StartIndex).Take(parameter.Count);

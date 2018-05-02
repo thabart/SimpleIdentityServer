@@ -76,7 +76,8 @@ class Layout extends Component {
             selectedScim: null,
             isLoading: false,
             isSnackbarOpened: false,
-            snackbarMessage: ''
+            snackbarMessage: '',
+            user: {}
         };
     }
     /**
@@ -116,11 +117,11 @@ class Layout extends Component {
     */
     refresh() {
         var self = this;
+        const { t } = self.props;
         self.setState({
             isLoading: true
         });
 
-        const { t } = self.props;
         EndpointService.getAll().then(function(endpoints) {
             var authEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 0; });
             var openidEndpoints = endpoints.filter(function(endpoint) { return endpoint.type === 1; });
@@ -181,6 +182,29 @@ class Layout extends Component {
                 actionName: Constants.events.DISPLAY_MESSAGE,
                 data: t('profileCannotBeRetrieved')
             });
+        });
+
+        var image = "/img/unknown.png";
+        var givenName = t("unknown");
+        var session = SessionService.getSession();
+        if (session && session.id_token) {
+            var idToken = session.id_token;
+            var splitted = idToken.split('.');
+            var claims = JSON.parse(window.atob(splitted[1]));
+            if (claims.picture) {
+                image = claims.picture;
+            }
+
+            if (claims.given_name) {
+                givenName = claims.given_name;
+            }
+        }
+
+        self.setState({
+            user: {
+                name: givenName,
+                picture: image
+            }
         });
     }
 
@@ -365,8 +389,10 @@ class Layout extends Component {
                 <List>
                     {(self.state.isLoggedIn && (
                         <ListItem>
-                                <Avatar className={classes.avatar}  src="http://via.placeholder.com/80x80" />
-                                <Typography variant="title">userName</Typography>
+                            <div style={{ width: "100%", "textAlign": "center"}}>
+                                <img src={self.state.user.picture} style={{"width": "80px", "height": "80px"}} className="img-circle img-thumbnail" />
+                                <Typography variant="title">{self.state.user.name}</Typography>
+                            </div>
                         </ListItem>
                     ))}
                     {(self.state.isLoggedIn && (

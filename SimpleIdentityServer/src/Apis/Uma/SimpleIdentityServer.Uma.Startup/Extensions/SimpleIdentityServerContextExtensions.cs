@@ -46,7 +46,9 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         Description = "Access to UMA permission, resource set",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = false,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -54,7 +56,9 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         Description = "Access to the manager",
                         IsOpenIdScope = false,
                         IsDisplayedInConsent = false,
-                        Type = ScopeType.ProtectedApi
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
@@ -127,7 +131,9 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
-                        ApplicationType = ApplicationTypes.native
+                        ApplicationType = ApplicationTypes.native,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new SimpleIdentityServer.EF.Models.Client // Configure the client which needs to access to the token edp (grant_type = uma_ticket)
                     {
@@ -148,7 +154,9 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.native,
                         GrantTypes = "5",
-                        ResponseTypes = "1"
+                        ResponseTypes = "1",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new SimpleIdentityServer.EF.Models.Client // Configure the client which need to access to the permission endpoint.
                     {
@@ -182,6 +190,8 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         GrantTypes = "3",
                         ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new SimpleIdentityServer.EF.Models.Client
                     {
@@ -211,7 +221,9 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                             }
                         },
                         ClientName = "SCIM",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
