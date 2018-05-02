@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             return AddClient(request, EndpointTypes.AUTH);
         }
 
-        [HttpPut("openid")]
+        [HttpPut("auth")]
         public Task<IActionResult> UpdateAuthdClient([FromBody] UpdateClientRequest request)
         {
             return UpdateClient(request, EndpointTypes.AUTH);
@@ -237,7 +237,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     };
                 }
 
-                return new OkResult();
+                return new OkObjectResult(result.Content);
             }
             catch (ResourceManagerException ex)
             {

@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             var body = new StringContent(serializedJson, Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
+                Method = HttpMethod.Put,
                 RequestUri = clientsUri,
                 Content = body
             };

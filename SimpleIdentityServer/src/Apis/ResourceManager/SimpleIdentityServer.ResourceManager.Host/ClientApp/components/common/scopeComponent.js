@@ -247,6 +247,7 @@ class ScopeComponent extends Component {
                 ));
             });
         }
+        
         return (<div className="block">
             <div className="block-header">
                 <Grid container>

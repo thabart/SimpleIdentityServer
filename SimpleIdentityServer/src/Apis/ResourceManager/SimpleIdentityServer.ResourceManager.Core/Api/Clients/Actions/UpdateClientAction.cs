@@ -19,13 +19,15 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
         private readonly IEndpointHelper _endpointHelper;
         private readonly ITokenStore _tokenStore;
+        private readonly IRequestHelper _requestHelper;
 
         public UpdateClientAction(IOpenIdManagerClientFactory openIdManagerClientFactory,
-            IEndpointHelper endpointHelper, ITokenStore tokenStore)
+            IEndpointHelper endpointHelper, ITokenStore tokenStore, IRequestHelper requestHelper)
         {
             _openIdManagerClientFactory = openIdManagerClientFactory;
             _endpointHelper = endpointHelper;
             _tokenStore = tokenStore;
+            _requestHelper = requestHelper;
         }
 
         public async Task<BaseResponse> Execute(string subject, UpdateClientRequest request, EndpointTypes type)
@@ -40,6 +42,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(request));
             }
 
+            _requestHelper.UpdateClientResponseTypes(request);
             var endpoint = await _endpointHelper.TryGetEndpointFromProfile(subject, type);
             var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { Constants.MANAGER_SCOPE });
             return await _openIdManagerClientFactory.GetOpenIdsClient().ResolveUpdate(new Uri(endpoint.ManagerUrl), request, grantedToken.AccessToken);

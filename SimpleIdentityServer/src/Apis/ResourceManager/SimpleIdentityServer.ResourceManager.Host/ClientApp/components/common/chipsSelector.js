@@ -47,7 +47,7 @@ class ChipsSelector extends Component {
     handleAddProperty() {
         var self = this;
         var properties = self.state.properties;
-        if (properties.indexOf(self.state.property) !== -1) {
+        if (properties.indexOf(self.state.property) !== -1 || !self.state.property || self.state.property === '') {
             return;
         }
 

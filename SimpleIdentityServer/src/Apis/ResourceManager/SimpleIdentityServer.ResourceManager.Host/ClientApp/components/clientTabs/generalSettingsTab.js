@@ -5,7 +5,11 @@ import { ChipsSelector } from '../common';
 import { withStyles } from 'material-ui/styles';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
+import $ from 'jquery';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import AppDispatcher from '../../appDispatcher';
+import Constants from '../../constants';
+import { SessionStore } from '../../stores';
 
 const styles = theme => ({
   margin: {
@@ -20,27 +24,100 @@ const styles = theme => ({
 class GeneralSettingsTab extends Component {
 	constructor(props) {
 		super(props);
+        this.refreshData = this.refreshData.bind(this);
 		this.handleToggleValue = this.handleToggleValue.bind(this);
 		this.handleChangeProperty = this.handleChangeProperty.bind(this);
 		this.handleChangeClientSecret = this.handleChangeClientSecret.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
 		this.state = {
+            isLoading: true,
 			client: props.client,
-            grantTypeSelectorOpts: {
-                type: 'select',
-                values: [                    
-                    { key: "authorization_code", label: "authorizationCode" },
-                    { key: "implicit", label: "implicit" },
-                    { key: "refresh_token", label: "refreshToken" },
-                    { key: "client_credentials", label: "clientCredentials" },
-                    { key: "password", label: "password" }
-                ]
-            },
 			isAdvSettingsDisplayed: false,
 			isClearClientSecret: false,
-            tabIndex: 0
+            tabIndex: 0,
+            grantTypeSelectorOpts: {},
+            jsonWebTokenSignature: [],
+            tokenEdpAuthMethods: []
 		};
 	}
+
+    /**
+    * Refresh the data.
+    */
+    refreshData() {        
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        const { t } = self.props;
+        var profile = SessionStore.getSession();
+        if (!profile.openid_url) {
+            self.setState({
+                isLoading: false
+            });
+            return;
+        }
+
+
+        var type = self.props.type;
+        var url = '';
+        switch(type) {
+            case "openid":
+                url = profile.openid_url;
+            break;
+            case "auth":
+                url = profile.auth_url;
+            break;
+            default:
+                return;
+        }
+
+        $.get(url).then(function(result) {
+            var grantTypesSupported = [],
+                jsonWebTokenSignature = [],
+                tokenEdpAuthMethods = [];
+            if (result['grant_types_supported']) {
+                result['grant_types_supported'].forEach(function(authMethod) {
+                    grantTypesSupported.push({
+                        key: authMethod,
+                        label: authMethod
+                    })
+                });
+            }
+
+            if (result['id_token_signing_alg_values_supported']) {
+                jsonWebTokenSignature = result['id_token_signing_alg_values_supported'];
+            }
+
+            if (result['token_endpoint_auth_methods_supported']) {
+                tokenEdpAuthMethods = result['token_endpoint_auth_methods_supported'];
+            }
+
+            self.setState({
+                isLoading: false,
+                grantTypeSelectorOpts: {
+                    type: 'select',
+                    values: grantTypesSupported
+                },
+                jsonWebTokenSignature: jsonWebTokenSignature,
+                tokenEdpAuthMethods: tokenEdpAuthMethods
+            });
+        }).fail(function() {
+            self.setState({
+                isLoading: false,
+                grantTypeSelectorOpts: {
+                    type: 'select',
+                    values: []
+                },
+                jsonWebTokenSignature: [],
+                tokenEdpAuthMethods: []
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('openidConfigurationCannotBeRetrieved')
+            });
+        });
+    }
 
 	/**
 	* Toggle a value.
@@ -98,6 +175,24 @@ class GeneralSettingsTab extends Component {
             });
         }
 
+        if (self.state.isLoading) {
+            return (<CircularProgress />);
+        }
+
+        var tokenAuthMethods = [],
+            jsonWebTokenSignature = [];
+        if (self.state.tokenEdpAuthMethods) {
+            self.state.tokenEdpAuthMethods.forEach(function(tokenAuthMethod) {
+                tokenAuthMethods.push((<MenuItem key={tokenAuthMethod} value={tokenAuthMethod}>{tokenAuthMethod}</MenuItem>));
+            });
+        }
+
+        if (self.state.jsonWebTokenSignature) {
+            self.state.jsonWebTokenSignature.forEach(function(jsonWebTokenSig) {
+                jsonWebTokenSignature.push((<MenuItem key={jsonWebTokenSig} value={jsonWebTokenSig}>{jsonWebTokenSig}</MenuItem>));
+            });
+        }
+        
         return (<Grid container spacing={40}>
                     <Grid item md={6} sm={12}>
                         {/* Client name */}
@@ -106,7 +201,7 @@ class GeneralSettingsTab extends Component {
                             <Input id="clientName" value={self.state.client.client_name} name="client_name" onChange={self.handleChangeProperty}  />
                         </FormControl>
                         {/* Client ID */}
-                        <FormControl fullWidth={true} className={classes.margin}>
+                        <FormControl fullWidth={true} className={classes.margin} disabled={self.props.isReadonly}>
                             <InputLabel htmlFor="clientId">{t('clientId')}</InputLabel>
                             <Input id="clientId" value={self.state.client.client_id} name="client_id" onChange={self.handleChangeProperty}  />
                         </FormControl>
@@ -115,7 +210,7 @@ class GeneralSettingsTab extends Component {
                             <InputLabel htmlFor="clientSecret">{t('clientSecret')}</InputLabel>
                             <Input id="clientSecret" type={self.state.isClearClientSecret ? "text" : "password"} value={self.state.client.secrets[0].value} onChange={self.handleChangeClientSecret} />                                
                             <FormHelperText>
-                                <Checkbox onChange={() => self.handleToggleValue('isClearClientSecret')} /><span>{t('revealClientSecret')}</span>
+                                <Checkbox color="primary" onChange={() => self.handleToggleValue('isClearClientSecret')} /><span>{t('revealClientSecret')}</span>
                             </FormHelperText>
                         </FormControl>
                         {/* Client logo */}
@@ -155,20 +250,28 @@ class GeneralSettingsTab extends Component {
                                 <Tab label={t('clientOAuth')} />
                             </Tabs>
                             {self.state.tabIndex === 0 && (
-                                <ChipsSelector label={t('chooseClientGrantTypes')} input={self.state.grantTypeSelectorOpts} />
+                                <div>
+                                    <ChipsSelector properties={self.state.client.grant_types} label={t('chooseClientGrantTypes')} input={self.state.grantTypeSelectorOpts} />
+                                    <Typography variant="caption" gutterBottom>{t('chooseClientGrantTypesDescription')}</Typography>
+                                </div>
                             )}
                             {self.state.tabIndex === 1 && (
                                 <div>
                                     <FormControl fullWidth={true} className={classes.margin}>
-                                        <InputLabel>{t('jsonWebTokenSignatureAlg')}</InputLabel>
-                                        <Input value={self.state.client.id_token_signed_response_alg} name="id_token_signed_response_alg" onChange={self.handleChangeProperty}  />
+                                        <InputLabel htmlFor="clientApplicationType">{t('jsonWebTokenSignatureAlg')}</InputLabel>   
+                                        <Select value={this.state.client.id_token_signed_response_alg} name="id_token_signed_response_alg" onChange={this.handleChangeProperty}>
+                                            {jsonWebTokenSignature}
+                                        </Select>
                                         <FormHelperText>{t('jsonWebTokenSignatureAlgDescription')}</FormHelperText>
                                     </FormControl>
                                     <FormControl fullWidth={true} className={classes.margin}>
-                                        <InputLabel>{t('tokenEndpointAuthMethod')}</InputLabel>
-                                        <Input value={self.state.client.token_endpoint_auth_method} name="token_endpoint_auth_method" onChange={self.handleChangeProperty}  />
-                                        <FormHelperText>{t('tokenEndpointAuthMethodDescription')}</FormHelperText>
+                                        <InputLabel htmlFor="clientApplicationType">{t('tokenAuthMethod')}</InputLabel>   
+                                        <Select value={this.state.client.token_endpoint_auth_method} name="token_endpoint_auth_method" onChange={this.handleChangeProperty}>
+                                            {tokenAuthMethods}
+                                        </Select>
+                                        <FormHelperText>{t('tokenAuthMethodDescription')}</FormHelperText>
                                     </FormControl>
+
                                 </div>
                             )}
                         </Paper>
@@ -176,6 +279,14 @@ class GeneralSettingsTab extends Component {
                     </Grid>
               	</Grid>
         );
+    }
+
+    componentDidMount() {
+        var self = this;
+        SessionStore.addChangeListener(function() {
+           self.refreshData();
+        });
+        self.refreshData();
     }
 }
 

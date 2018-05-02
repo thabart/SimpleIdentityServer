@@ -48,6 +48,7 @@ namespace SimpleIdentityServer.ResourceManager.Core
             services.AddTransient<IGetScopeAction, GetScopeAction>();
             services.AddTransient<ISearchScopesAction, SearchScopesAction>();
             services.AddTransient<IUpdateScopeAction, UpdateScopeAction>();
+            services.AddTransient<IRequestHelper, RequestHelper>();
             return services;
         }
 

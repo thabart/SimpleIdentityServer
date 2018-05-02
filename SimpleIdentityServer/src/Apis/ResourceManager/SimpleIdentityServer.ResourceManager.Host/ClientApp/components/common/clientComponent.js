@@ -2,13 +2,20 @@ import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ClientService } from '../../services';
 import { withRouter, NavLink } from 'react-router-dom';
+import ChipsSelector from './chipsSelector';
+import moment from 'moment';
 
-import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress, Grid } from 'material-ui';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination, TableSortLabel } from 'material-ui/Table';
+import { Popover, IconButton, Menu, MenuItem, Checkbox, TextField, Select, Avatar, CircularProgress, Grid, Typography, Button } from 'material-ui';
+import Dialog, { DialogTitle, DialogContent, DialogActions } from 'material-ui/Dialog';
+import { withStyles } from 'material-ui/styles';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Delete from '@material-ui/icons/Delete';
 import Search from '@material-ui/icons/Search';
-import Visibility from '@material-ui/icons/Visibility';
+import Visibility from '@material-ui/icons/Visibility'; 
+import AppDispatcher from '../../appDispatcher';
+import Constants from '../../constants';
 
 class ClientComponent extends Component {
     constructor(props) {
@@ -23,17 +30,27 @@ class ClientComponent extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleAllSelections = this.handleAllSelections.bind(this);
         this.handleRemoveClients = this.handleRemoveClients.bind(this);
+        this.handleSort = this.handleSort.bind(this);
+        this.handleCloseModal = this.handleCloseModal.bind(this);
+        this.handleOpenModal = this.handleOpenModal.bind(this);
+        this.handleAddClient = this.handleAddClient.bind(this);
 
         this.state = {
             data: [],
             isLoading: false,
+            isAddClientLoading: false,
             page: 0,
             pageSize: 5,
             count: 0,
             anchorEl: null,
             isRemoveDisplayed: false,
             selectedId: null,
-            selectedType: 'all'
+            selectedType: 'all',
+            order: 'desc',
+            isModalOpened: false,
+            client: {
+                redirect_uris: [],
+            }
         };
     }
 
@@ -88,7 +105,7 @@ class ClientComponent extends Component {
             isLoading: true
         });
 
-        var request = { start_index: startIndex, count: self.state.pageSize };
+        var request = { start_index: startIndex, count: self.state.pageSize, order: { target: 'update_datetime', type: (self.state.order === 'desc' ? 1 : 0) } };
         if (self.state.selectedId && self.state.selectedId !== '') {
             request['client_ids'] = [ self.state.selectedId ];
         }
@@ -179,12 +196,103 @@ class ClientComponent extends Component {
     * Remove the selected clients.
     */
     handleRemoveClients() {      
+        var self = this;
+        var clientIds = self.state.data.filter(function(s) { return s.isSelected; }).map(function(s) { return s.client_id; });
+        if (clientIds.length === 0) {
+            return;
+        }
+
+        const { t } = self.props;
+        self.setState({
+            isLoading: true
+        });
+        var operations = [];
+        clientIds.forEach(function(clientId) {
+            operations.push(ClientService.remove(clientId, self.props.type));
+        });
+
+        Promise.all(operations).then(function() {
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientsAreRemoved')
+            });
+            self.refreshData();
+        }).catch(function(e) {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientsCannotBeRemoved')
+            });
+        });
+    }
+
+    /**
+    * Sort the scopes.
+    */
+    handleSort(colName) {
+        var self = this;
+        var order = this.state.order === 'desc' ? 'asc' : 'desc';
+        this.setState({
+            order: order
+        }, () => {
+            self.refreshData();
+        });
+    }
+
+    /**
+    * Close the modal.
+    */
+    handleCloseModal() {
+        this.setState({
+            isModalOpened: false
+        });
+    }
+
+    /**
+    * Open the modal.
+    */
+    handleOpenModal() {
+        this.setState({
+            isModalOpened: true
+        });
     }
 
 
+    /**
+    * Add the client.
+    */
+    handleAddClient() {
+        var self = this;
+        self.setState({
+            isAddClientLoading: true
+        });
+        const { t } = self.props;
+        ClientService.add(self.state.client, self.props.type).then(function() {
+            self.setState({
+                isAddClientLoading: false,
+                isModalOpened: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientIsAdded')
+            });
+            self.refreshData();
+        }).catch(function() {
+            self.setState({
+                isAddClientLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientCannotBeAdded')
+            });
+        });
+    }
+
     render() {
         var self = this;
-        const { t } = this.props;
+        const { t, classes } = this.props;
         var rows = [];
         if (self.state.data) {
             self.state.data.forEach(function(record) {
@@ -195,6 +303,7 @@ class ClientComponent extends Component {
                         <TableCell>{record.client_name}</TableCell>
                         <TableCell>{record.client_id}</TableCell>
                         <TableCell>{record.type}</TableCell>
+                        <TableCell>{moment(record.update_datetime).format('LLLL')}</TableCell>
                         <TableCell>
                             <IconButton onClick={ () => self.props.history.push('/viewClient/' + self.props.type + '/' + record.client_id) }><Visibility /></IconButton>
                         </TableCell>
@@ -204,6 +313,20 @@ class ClientComponent extends Component {
         }
 
         return (<div className="block">
+            <Dialog open={self.state.isModalOpened} onClose={this.handleCloseModal}>
+                <DialogTitle>{t('addClient')}</DialogTitle>
+                {self.state.isAddClientLoading ? (<CircularProgress />) : (
+                    <div>
+                        <DialogContent>
+                            <ChipsSelector label={t('clientAllowedCallbackUrls')} properties={self.state.client.redirect_uris} />
+                            <FormHelperText>{t('clientAllowedCallbackUrlsDescription')}</FormHelperText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button  variant="raised" color="primary" onClick={self.handleAddClient}>{t('addClient')}</Button>
+                        </DialogActions>
+                    </div>
+                )}
+            </Dialog>
             <div className="block-header">
                 <Grid container>
                     <Grid item md={5} sm={12}>
@@ -231,7 +354,7 @@ class ClientComponent extends Component {
                             <MoreVert />
                         </IconButton>
                         <Menu anchorEl={self.state.anchorEl} open={Boolean(self.state.anchorEl)} onClose={self.handleClose}>
-                            <MenuItem>{t('addClient')}</MenuItem>
+                            <MenuItem onClick={self.handleOpenModal}>{t('addClient')}</MenuItem>
                         </Menu>
                     </div>
                 </div>
@@ -246,6 +369,9 @@ class ClientComponent extends Component {
                                         <TableCell>{t('clientName')}</TableCell>
                                         <TableCell>{t('clientId')}</TableCell>
                                         <TableCell>{t('clientType')}</TableCell>
+                                        <TableCell>
+                                            <TableSortLabel active={true} direction={self.state.order} onClick={self.handleSort}>{t('updateDateTime')}</TableSortLabel>
+                                        </TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -267,6 +393,7 @@ class ClientComponent extends Component {
                                                 <MenuItem value="1">{t('web')}</MenuItem>
                                             </Select>
                                         </TableCell>
+                                        <TableCell></TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
                                     {rows}

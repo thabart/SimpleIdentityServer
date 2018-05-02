@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Manager.Client.DTOs.Responses;
 using SimpleIdentityServer.Manager.Client.Factories;
 using SimpleIdentityServer.Manager.Common.Responses;
@@ -12,7 +13,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 {
     public interface IAddClientOperation
     {
-        Task<BaseResponse> ExecuteAsync(Uri clientsUri, ClientResponse client, string authorizationHeaderValue = null);
+        Task<AddClientResponse> ExecuteAsync(Uri clientsUri, ClientResponse client, string authorizationHeaderValue = null);
     }
 
     internal sealed class AddClientOperation : IAddClientOperation
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<BaseResponse> ExecuteAsync(Uri clientsUri, ClientResponse client, string authorizationHeaderValue = null)
+        public async Task<AddClientResponse> ExecuteAsync(Uri clientsUri, ClientResponse client, string authorizationHeaderValue = null)
         {
             if (clientsUri == null)
             {
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             catch (HttpRequestException)
             {
                 var rec = JsonConvert.DeserializeObject<ErrorResponse>(content);
-                return new BaseResponse
+                return new AddClientResponse
                 {
                     ContainsError = true,
                     Error = rec
@@ -67,13 +68,17 @@ namespace SimpleIdentityServer.Manager.Client.Clients
             }
             catch (Exception)
             {
-                return new BaseResponse
+                return new AddClientResponse
                 {
                     ContainsError = true
                 };
             }
 
-            return new BaseResponse();
+            var regist = JsonConvert.DeserializeObject<ClientRegistrationResponse>(content);
+            return new AddClientResponse
+            {
+                Content = regist
+            };
         }
     }
 }

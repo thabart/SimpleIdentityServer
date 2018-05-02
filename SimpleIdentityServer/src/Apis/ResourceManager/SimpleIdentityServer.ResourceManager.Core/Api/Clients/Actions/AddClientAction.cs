@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions
 {
     public interface IAddClientAction
     {
-        Task<BaseResponse> Execute(string subject, ClientResponse request, EndpointTypes type);
+        Task<AddClientResponse> Execute(string subject, ClientResponse request, EndpointTypes type);
     }
 
     internal sealed class AddClientAction : IAddClientAction
@@ -19,16 +19,18 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions
         private readonly IOpenIdManagerClientFactory _openIdManagerClientFactory;
         private readonly IEndpointHelper _endpointHelper;
         private readonly ITokenStore _tokenStore;
+        private readonly IRequestHelper _requestHelper;
 
         public AddClientAction(IOpenIdManagerClientFactory openIdManagerClientFactory,
-            IEndpointHelper endpointHelper, ITokenStore tokenStore)
+            IEndpointHelper endpointHelper, ITokenStore tokenStore, IRequestHelper requestHelper)
         {
             _openIdManagerClientFactory = openIdManagerClientFactory;
             _endpointHelper = endpointHelper;
             _tokenStore = tokenStore;
+            _requestHelper = requestHelper;
         }
 
-        public async Task<BaseResponse> Execute(string subject, ClientResponse request, EndpointTypes type)
+        public async Task<AddClientResponse> Execute(string subject, ClientResponse request, EndpointTypes type)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -40,6 +42,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(request));
             }
 
+            _requestHelper.UpdateClientResponseTypes(request);
             var endpoint = await _endpointHelper.TryGetEndpointFromProfile(subject, type);
             var grantedToken = await _tokenStore.GetToken(endpoint.AuthUrl, endpoint.ClientId, endpoint.ClientSecret, new[] { Constants.MANAGER_SCOPE });
             return await _openIdManagerClientFactory.GetOpenIdsClient().ResolveAdd(new Uri(endpoint.ManagerUrl), request, grantedToken.AccessToken);

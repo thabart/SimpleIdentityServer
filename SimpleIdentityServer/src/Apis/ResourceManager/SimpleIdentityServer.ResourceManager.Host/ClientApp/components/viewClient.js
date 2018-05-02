@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { translate } from 'react-i18next';
 import { ClientService } from '../services';
-import { GeneralSettingsTab } from './clientTabs';
-import { NavLink } from 'react-router-dom';
+import { GeneralSettingsTab, ScopesTab } from './clientTabs';
+import { NavLink, Link } from 'react-router-dom';
 import { CircularProgress, IconButton, Grid } from 'material-ui';
 import { ChipsSelector } from './common';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Save from '@material-ui/icons/Save';
+import AppDispatcher from '../appDispatcher';
+import Constants from '../constants';
 
 class ViewClient extends Component {
     constructor(props) {
@@ -15,6 +17,7 @@ class ViewClient extends Component {
         this.refreshData = this.refreshData.bind(this);
         this.saveClient = this.saveClient.bind(this);
         this.state = {
+            isDisplayed: false,
             id: null,
             type: null,
             isLoading: true,
@@ -41,7 +44,6 @@ class ViewClient extends Component {
             isLoading: true
         });
         ClientService.get(self.state.id, self.state.type).then(function(client) {
-            console.log(client);
             self.setState({
                 client: client,
                 isLoading: false
@@ -56,8 +58,29 @@ class ViewClient extends Component {
     /**
     * Save the client.
     */
-    saveClient() {
-
+    saveClient() {        
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        const { t } = self.props;
+        ClientService.update(self.state.client, self.state.type).then(function() {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientIsUpdated')
+            });
+        }).catch(function() {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: t('clientCannotBeUpdated')
+            });
+        });
     }
 
     /**
@@ -66,6 +89,10 @@ class ViewClient extends Component {
     render() {
         var self = this;
         const { t } = self.props;
+        if (!self.state.isDisplayed) {
+            return (<span></span>);
+        }
+        
         return (<div className="block">
             <div className="block-header">
                 <Grid container>
@@ -95,10 +122,11 @@ class ViewClient extends Component {
                     { self.state.isLoading ? (<CircularProgress />) : (
                         <div>
                             <Tabs indicatorColor="primary" value={self.state.tabIndex} onChange={self.handleTabChange}>
-                                <Tab label={t('clientGeneralSettings')} />
-                                <Tab label={t('clientScopes')} />
+                                <Tab label={t('clientGeneralSettings')} component={Link}  to={"/viewClient/" + self.state.type + "/" + self.state.id} />
+                                <Tab label={t('clientScopes')} component={Link}  to={"/viewClient/" + self.state.type + "/" + self.state.id + "/scopes"} />
                             </Tabs>
-                            { self.state.tabIndex === 0 && (<GeneralSettingsTab client={self.state.client} />) }
+                            { self.state.tabIndex === 0 && (<GeneralSettingsTab isReadonly={true} type={self.state.type} client={self.state.client} />) }
+                            { self.state.tabIndex === 1 && (<ScopesTab allowedScopes={self.state.client.allowed_scopes} type={self.state.type} client={self.state.client} />) }
                         </div>
                     ) }
                 </div>
@@ -108,9 +136,16 @@ class ViewClient extends Component {
 
     componentDidMount() {
         var self = this;
+        var tabIndex = 0;
+        if (self.props.match.params.action === 'scopes') {
+            tabIndex = 1;
+        }
+
         self.setState({
             id: self.props.match.params.id,
-            type: self.props.match.params.type
+            type: self.props.match.params.type,
+            tabIndex: tabIndex,
+            isDisplayed: true
         }, function() {
             self.refreshData();
         });

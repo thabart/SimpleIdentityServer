@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients
 {
     public interface IClientActions
     {
-        Task<BaseResponse> Add(string subject, ClientResponse client, EndpointTypes type);
+        Task<AddClientResponse> Add(string subject, ClientResponse client, EndpointTypes type);
         Task<BaseResponse> Delete(string subject, string clientId, EndpointTypes type);
         Task<GetClientResponse> Get(string subject, string clientId, EndpointTypes type);
         Task<SearchClientResponse> Search(string subject, SearchClientsRequest request, EndpointTypes type);
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.ResourceManager.Core.Api.Clients
             _updateClientAction = updateClientAction;
         }
 
-        public Task<BaseResponse> Add(string subject, ClientResponse client, EndpointTypes type)
+        public Task<AddClientResponse> Add(string subject, ClientResponse client, EndpointTypes type)
         {
             return _addClientAction.Execute(subject, client, type);
         }
