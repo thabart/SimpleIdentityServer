@@ -39,6 +39,7 @@ namespace SimpleIdentityServer.Manager.Host
             public const string ScopesEndpoint = "scopes_endpoint";
             public const string ResourceOwnersEndpoint = "resourceowners_endpoint";
             public const string ManageEndpoint = "manage_endpoint";
+            public const string ClaimsEndpoint = "claims_endpoint";
         }
     }
 }

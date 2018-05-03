@@ -1,5 +1,6 @@
-﻿using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+﻿using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Claims.Actions
             var claim = await _claimRepository.GetAsync(request.Code);
             if (claim != null)
             {
-                throw new IdentityServerManagerException(Constants.ErrorCodes.InvalidRequestCode, Constants.ErrorDescriptions.ClaimExists);
+                throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode, ErrorDescriptions.ClaimExists);
             }
 
             return await _claimRepository.InsertAsync(request);

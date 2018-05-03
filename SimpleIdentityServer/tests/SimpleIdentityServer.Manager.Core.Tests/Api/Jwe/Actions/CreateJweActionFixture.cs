@@ -15,6 +15,7 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Manager.Core.Api.Jwe.Actions;

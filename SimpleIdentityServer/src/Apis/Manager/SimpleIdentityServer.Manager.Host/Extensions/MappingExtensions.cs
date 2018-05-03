@@ -14,7 +14,9 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Common.Requests;
@@ -93,7 +95,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 Id = request.Login,
                 Password = request.Password,
                 IsLocalAccount = request.IsLocalAccount,
-                TwoFactorAuthentication = (SimpleIdentityServer.Core.Models.TwoFactorAuthentications)request.TwoFactorAuthentication,
+                TwoFactorAuthentication = (SimpleIdentityServer.Core.Common.Models.TwoFactorAuthentications)request.TwoFactorAuthentication,
                 Claims = claims
             };
         }
@@ -299,7 +301,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static SimpleIdentityServer.Core.Models.Client ToModel(this ClientResponse clientResponse)
+        public static SimpleIdentityServer.Core.Common.Models.Client ToModel(this ClientResponse clientResponse)
         {
             var responseTypes = new List<ResponseType>();
             var grantTypes = new List<GrantType>();
@@ -366,7 +368,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
                 tokenEndPointAuthenticationMethod = TokenEndPointAuthenticationMethods.client_secret_basic;
             }
 
-            return new SimpleIdentityServer.Core.Models.Client
+            return new SimpleIdentityServer.Core.Common.Models.Client
             {
                 AllowedScopes = scopes,
                 GrantTypes = grantTypes,
@@ -513,7 +515,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
             };
         }
 
-        public static ClientResponse ToDto(this SimpleIdentityServer.Core.Models.Client client)
+        public static ClientResponse ToDto(this SimpleIdentityServer.Core.Common.Models.Client client)
         {
             IEnumerable<ResponseClientSecret> secrets = null;
             if (client.Secrets != null)
@@ -602,7 +604,7 @@ namespace SimpleIdentityServer.Manager.Host.Extensions
 
         #region To List of DTOs
 
-        public static List<ClientResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Models.Client> clients)
+        public static List<ClientResponse> ToDtos(this IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> clients)
         {
             return clients.Select(c => c.ToDto()).ToList();
         }

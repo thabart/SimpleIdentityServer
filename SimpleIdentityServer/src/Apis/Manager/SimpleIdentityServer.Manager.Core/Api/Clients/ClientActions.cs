@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Parameters;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
@@ -28,8 +29,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
     public interface IClientActions
     {
         Task<SearchClientResult> Search(SearchClientParameter parameter);
-        Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients();
-        Task<SimpleIdentityServer.Core.Models.Client> GetClient(string clientId);
+        Task<IEnumerable<SimpleIdentityServer.Core.Common.Models.Client>> GetClients();
+        Task<SimpleIdentityServer.Core.Common.Models.Client> GetClient(string clientId);
         Task<bool> DeleteClient(string clientId);
         Task<bool> UpdateClient(UpdateClientParameter updateClientParameter);
         Task<ClientRegistrationResponse> AddClient(RegistrationParameter registrationParameter);
@@ -65,12 +66,12 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients
             return _searchClientsAction.Execute(parameter);
         }
         
-        public Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> GetClients()
+        public Task<IEnumerable<SimpleIdentityServer.Core.Common.Models.Client>> GetClients()
         {
             return _getClientsAction.Execute();
         }
 
-        public Task<SimpleIdentityServer.Core.Models.Client> GetClient(string clientId)
+        public Task<SimpleIdentityServer.Core.Common.Models.Client> GetClient(string clientId)
         {
             return _getClientAction.Execute(clientId);
         }

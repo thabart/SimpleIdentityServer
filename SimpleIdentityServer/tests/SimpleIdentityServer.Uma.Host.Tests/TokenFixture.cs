@@ -16,6 +16,7 @@ using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {

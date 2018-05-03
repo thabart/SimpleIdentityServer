@@ -17,6 +17,7 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;

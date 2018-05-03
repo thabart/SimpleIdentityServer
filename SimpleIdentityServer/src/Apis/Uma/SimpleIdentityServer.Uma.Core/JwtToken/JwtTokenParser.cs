@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;

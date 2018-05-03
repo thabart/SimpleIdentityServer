@@ -1,6 +1,6 @@
-﻿using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
+﻿using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Manager.Core.Api.Claims.Actions;
 using System.Threading.Tasks;
 

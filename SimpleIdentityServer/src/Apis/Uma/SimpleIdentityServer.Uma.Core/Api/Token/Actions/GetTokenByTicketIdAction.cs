@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Uma.Common;
 using SimpleIdentityServer.Uma.Core.Errors;
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             return result;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope)
+        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope)
         {
             if (client == null)
             {

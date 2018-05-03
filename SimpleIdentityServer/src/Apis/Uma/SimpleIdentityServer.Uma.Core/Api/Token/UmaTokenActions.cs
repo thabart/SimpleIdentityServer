@@ -1,4 +1,4 @@
-﻿using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Uma.Core.Api.Token.Actions;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Net.Http.Headers;

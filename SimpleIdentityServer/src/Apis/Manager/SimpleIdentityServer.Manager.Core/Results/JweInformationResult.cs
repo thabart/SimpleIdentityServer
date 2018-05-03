@@ -19,7 +19,6 @@ namespace SimpleIdentityServer.Manager.Core.Results
     public class JweInformationResult
     {
         public string Content { get; set; }
-
         public bool IsContentJws { get; set; }
     }
 }

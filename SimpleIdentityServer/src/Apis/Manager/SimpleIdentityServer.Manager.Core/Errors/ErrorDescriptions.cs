@@ -50,5 +50,7 @@ namespace SimpleIdentityServer.Manager.Core.Errors
         public const string TheScopeAlreadyExists = "The scope {0} already exists";
         public const string TheFileExtensionIsNotCorrect = "the file extension is not correct";
         public const string TheFileIsNotWellFormed = "the file is not well formed";
+        public const string ClaimExists = "a claim already exists with the same name";
+        public const string ClaimDoesntExist = "the claim doesn't exist";
     }
 }

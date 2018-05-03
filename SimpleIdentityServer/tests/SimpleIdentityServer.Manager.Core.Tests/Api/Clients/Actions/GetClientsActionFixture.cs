@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         public async Task When_Executing_Operation_Then_Operation_Is_Called()
         {
             // ARRANGE
-            IEnumerable<SimpleIdentityServer.Core.Models.Client> clients = new List<SimpleIdentityServer.Core.Models.Client>();
+            IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> clients = new List<SimpleIdentityServer.Core.Common.Models.Client>();
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetAllAsync())
                 .Returns(Task.FromResult(clients));

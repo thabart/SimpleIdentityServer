@@ -2,7 +2,7 @@
 
 namespace SimpleIdentityServer.Manager.Host.Controllers
 {
-    [Route(Constants.EndPoints.Clients)]
+    [Route(Constants.EndPoints.Claims)]
     public class ClaimsController
     {
     }

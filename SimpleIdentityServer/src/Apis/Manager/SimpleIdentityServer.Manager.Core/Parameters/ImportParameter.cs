@@ -14,14 +14,12 @@
 // limitations under the License.
 #endregion
 
-
-using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Manager.Core.Parameters
 {
     public class ImportParameter
     {
-        public IEnumerable<SimpleIdentityServer.Core.Models.Client> Clients { get; set; }
+        public IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> Clients { get; set; }
     }
 }

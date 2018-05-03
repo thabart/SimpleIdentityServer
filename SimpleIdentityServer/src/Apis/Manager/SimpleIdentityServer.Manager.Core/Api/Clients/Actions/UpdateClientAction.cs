@@ -15,9 +15,9 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using SimpleIdentityServer.Manager.Core.Parameters;
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
         Task<bool> Execute(UpdateClientParameter updateClientParameter);
     }
     
-    public class UpdateClientAction : IUpdateClientAction
+    internal sealed class UpdateClientAction : IUpdateClientAction
     {
         private readonly IClientRepository _clientRepository;
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntExist, updateClientParameter.ClientId));
             }
 
-            SimpleIdentityServer.Core.Models.Client client = null;
+            SimpleIdentityServer.Core.Common.Models.Client client = null;
             try
             {
                 client = _generateClientFromRegistrationRequest.Execute(updateClientParameter);

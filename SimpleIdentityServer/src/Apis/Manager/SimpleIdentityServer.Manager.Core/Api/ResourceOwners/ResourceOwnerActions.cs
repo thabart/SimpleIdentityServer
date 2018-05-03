@@ -14,9 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions;
 using System.Collections.Generic;

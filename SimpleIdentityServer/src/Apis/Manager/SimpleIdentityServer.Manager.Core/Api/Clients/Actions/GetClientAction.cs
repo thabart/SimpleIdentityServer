@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
 using System;
@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 {
     public interface IGetClientAction
     {
-        Task<SimpleIdentityServer.Core.Models.Client> Execute(string clientId);
+        Task<SimpleIdentityServer.Core.Common.Models.Client> Execute(string clientId);
     }
 
     public class GetClientAction : IGetClientAction
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             _clientRepository = clientRepository;
         }
         
-        public async Task<SimpleIdentityServer.Core.Models.Client> Execute(string clientId)
+        public async Task<SimpleIdentityServer.Core.Common.Models.Client> Execute(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {

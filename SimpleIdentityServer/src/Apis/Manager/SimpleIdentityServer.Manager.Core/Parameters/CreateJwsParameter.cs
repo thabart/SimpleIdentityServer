@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Manager.Core.Parameters
 {

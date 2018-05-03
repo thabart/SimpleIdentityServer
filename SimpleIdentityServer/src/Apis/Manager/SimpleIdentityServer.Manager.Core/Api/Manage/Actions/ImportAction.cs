@@ -14,8 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Parameters;
 using System;

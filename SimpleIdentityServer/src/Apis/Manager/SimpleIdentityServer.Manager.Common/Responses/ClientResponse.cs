@@ -16,9 +16,9 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;

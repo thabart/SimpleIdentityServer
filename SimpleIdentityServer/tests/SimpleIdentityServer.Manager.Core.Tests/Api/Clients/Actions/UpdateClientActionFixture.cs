@@ -16,8 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
 using SimpleIdentityServer.Manager.Core.Exceptions;
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             const string clientId = "invalid_client_id";
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((SimpleIdentityServer.Core.Models.Client)null));
+                .Returns(Task.FromResult((SimpleIdentityServer.Core.Common.Models.Client)null));
             var parameter = new UpdateClientParameter
             {
                 ClientId = clientId
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             const string clientId = "client_id";
             const string code = "code";
             const string message = "message";
-            var client = new SimpleIdentityServer.Core.Models.Client
+            var client = new SimpleIdentityServer.Core.Common.Models.Client
             {
                 ClientId = clientId
             };
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         {
             // ARRANGE
             const string clientId = "client_id";
-            var client = new SimpleIdentityServer.Core.Models.Client
+            var client = new SimpleIdentityServer.Core.Common.Models.Client
             {
                 ClientId = clientId
             };

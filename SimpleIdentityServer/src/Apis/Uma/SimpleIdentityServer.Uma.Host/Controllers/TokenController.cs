@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Serializers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Uma.Core.Api.Token;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;

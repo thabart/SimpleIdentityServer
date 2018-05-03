@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Manage.Actions;
 using System;
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
             // ACT
             var result = await _importAction.Execute(new Parameters.ImportParameter
             {
-                Clients = new List<SimpleIdentityServer.Core.Models.Client>()
+                Clients = new List<SimpleIdentityServer.Core.Common.Models.Client>()
             });
 
             // ASSERTS
@@ -68,9 +68,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(m => m.RemoveAllAsync())
                 .Returns(Task.FromResult(true));
-            _clientRepositoryStub.Setup(c => c.InsertAsync(It.IsAny<SimpleIdentityServer.Core.Models.Client>()))
+            _clientRepositoryStub.Setup(c => c.InsertAsync(It.IsAny<SimpleIdentityServer.Core.Common.Models.Client>()))
                 .Returns(Task.FromResult(false))
-                .Callback<SimpleIdentityServer.Core.Models.Client>((c) =>
+                .Callback<SimpleIdentityServer.Core.Common.Models.Client>((c) =>
                 {
                     throw new Exception("exception");
                 });
@@ -78,9 +78,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
             // ACT
             var result = await _importAction.Execute(new Parameters.ImportParameter
             {
-                Clients = new List<SimpleIdentityServer.Core.Models.Client>
+                Clients = new List<SimpleIdentityServer.Core.Common.Models.Client>
                 {
-                    new SimpleIdentityServer.Core.Models.Client
+                    new SimpleIdentityServer.Core.Common.Models.Client
                     {
                         ClientName = "client_name"
                     }
@@ -105,9 +105,9 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Manage
             // ACT
             var result = await _importAction.Execute(new Parameters.ImportParameter
             {
-                Clients = new List<SimpleIdentityServer.Core.Models.Client>
+                Clients = new List<SimpleIdentityServer.Core.Common.Models.Client>
                 {
-                    new SimpleIdentityServer.Core.Models.Client
+                    new SimpleIdentityServer.Core.Common.Models.Client
                     {
                         ClientName = "client_name"
                     }

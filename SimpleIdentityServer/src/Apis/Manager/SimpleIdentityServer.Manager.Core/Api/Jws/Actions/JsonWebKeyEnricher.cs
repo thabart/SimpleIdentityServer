@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Manager.Core.Errors;
@@ -71,12 +72,12 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
                 throw new ArgumentNullException(nameof(jsonWebKey));
             }
 
-            if (!Constants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
+            if (!SimpleIdentityServer.Core.Jwt.Constants.MappingKeyTypeEnumToName.ContainsKey(jsonWebKey.Kty))
             {
                 throw new ArgumentException(nameof(jsonWebKey.Kty));
             }
 
-            if (!Constants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
+            if (!SimpleIdentityServer.Core.Jwt.Constants.MappingUseEnumerationToName.ContainsKey(jsonWebKey.Use))
             {
                 throw new ArgumentException(nameof(jsonWebKey.Use));
             }
@@ -84,16 +85,16 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             return new Dictionary<string, object>
             {
                 {
-                    Constants.JsonWebKeyParameterNames.KeyTypeName, Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
+                    SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.KeyTypeName, SimpleIdentityServer.Core.Jwt.Constants.MappingKeyTypeEnumToName[jsonWebKey.Kty]
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.UseName, Constants.MappingUseEnumerationToName[jsonWebKey.Use]
+                    SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.UseName, SimpleIdentityServer.Core.Jwt.Constants.MappingUseEnumerationToName[jsonWebKey.Use]
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.AlgorithmName, Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
+                    SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.AlgorithmName, SimpleIdentityServer.Core.Jwt.Constants.MappingNameToAllAlgEnum.SingleOrDefault(kp => kp.Value == jsonWebKey.Alg).Key
                 },
                 {
-                    Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
+                    SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.KeyIdentifierName, jsonWebKey.Kid
                 }
                 // TODO : we still need to support the other parameters x5u & x5c & x5t & x5t#S256
             };
@@ -120,8 +121,8 @@ namespace SimpleIdentityServer.Manager.Core.Api.Jws.Actions
             // Export the exponent
             var exponent = rsaParameters.Exponent.Base64EncodeBytes();
 
-            result.Add(Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
-            result.Add(Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
+            result.Add(SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ModulusName, modulus);
+            result.Add(SimpleIdentityServer.Core.Jwt.Constants.JsonWebKeyParameterNames.RsaKey.ExponentName, exponent);
         }
     }
 }

@@ -15,8 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 

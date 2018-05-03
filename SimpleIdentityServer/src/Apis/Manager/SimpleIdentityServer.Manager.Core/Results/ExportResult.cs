@@ -20,6 +20,6 @@ namespace SimpleIdentityServer.Manager.Core.Results
 {
     public class ExportResult
     {
-        public IEnumerable<SimpleIdentityServer.Core.Models.Client> Clients { get; set; }
+        public IEnumerable<SimpleIdentityServer.Core.Common.Models.Client> Clients { get; set; }
     }
 }

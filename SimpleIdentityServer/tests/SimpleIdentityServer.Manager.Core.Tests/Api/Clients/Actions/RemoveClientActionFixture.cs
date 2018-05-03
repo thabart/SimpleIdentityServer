@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Errors;
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
             const string clientId = "invalid_client_id";
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((SimpleIdentityServer.Core.Models.Client)null));
+                .Returns(Task.FromResult((SimpleIdentityServer.Core.Common.Models.Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerManagerException>(() => _removeClientAction.Execute(clientId));
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Manager.Core.Tests.Api.Clients.Actions
         {
             // ARRANGE
             const string clientId = "client_id";
-            var client = new SimpleIdentityServer.Core.Models.Client
+            var client = new SimpleIdentityServer.Core.Common.Models.Client
             {
                 ClientId = clientId
             };
