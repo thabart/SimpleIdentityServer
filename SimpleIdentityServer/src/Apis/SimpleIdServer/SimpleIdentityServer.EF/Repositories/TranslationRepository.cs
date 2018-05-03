@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.EF.Repositories
 {

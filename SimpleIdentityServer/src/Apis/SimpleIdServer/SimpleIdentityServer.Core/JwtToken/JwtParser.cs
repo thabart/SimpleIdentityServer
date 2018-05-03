@@ -14,15 +14,15 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -210,7 +210,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jsonWebKey;
         }
         
-        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Models.Client client, string kid)
+        private async Task<JsonWebKey> GetJsonWebKeyFromClient(Core.Common.Models.Client client, string kid)
         {
             JsonWebKey result = null;
             // Fetch the json web key from the jwks_uri

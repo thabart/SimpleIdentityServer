@@ -15,7 +15,7 @@
 #endregion
 
 using System.Linq;
-
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt

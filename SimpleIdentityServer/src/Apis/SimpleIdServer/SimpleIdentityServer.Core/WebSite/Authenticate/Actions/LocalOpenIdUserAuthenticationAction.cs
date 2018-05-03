@@ -14,18 +14,18 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Claims;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions

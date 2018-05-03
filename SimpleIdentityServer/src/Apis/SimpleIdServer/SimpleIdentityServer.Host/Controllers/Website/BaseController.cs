@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host.Extensions;
 using System.Collections.Generic;

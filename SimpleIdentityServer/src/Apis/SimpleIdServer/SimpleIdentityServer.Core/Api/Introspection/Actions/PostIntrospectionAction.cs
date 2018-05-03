@@ -15,12 +15,12 @@
 #endregion
 
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Stores;
@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             if (grantedToken.IdTokenPayLoad != null)
             {
                 var audiences = string.Empty;
-                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(Jwt.Constants.StandardClaimNames.Audiences);
+                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Issuer;
                 var subject = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
@@ -171,14 +171,14 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
             var result = new GrantedToken
             {
-                Scope = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.Scopes),
-                ClientId = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.ClientId),
+                Scope = jwsPayload.GetClaimValue(StandardClaimNames.Scopes),
+                ClientId = jwsPayload.GetClaimValue(StandardClaimNames.ClientId),
                 ExpiresIn = (int)jwsPayload.ExpirationTime,
                 TokenType = Constants.StandardTokenTypes.Bearer,
                 IdTokenPayLoad = jwsPayload
             };
             
-            var issuedAt = jwsPayload.GetDoubleClaim(Jwt.Constants.StandardClaimNames.Iat);
+            var issuedAt = jwsPayload.GetDoubleClaim(StandardClaimNames.Iat);
             if (issuedAt != default(double))
             {
                 result.CreateDateTime = issuedAt.UnixTimeStampToDateTime();

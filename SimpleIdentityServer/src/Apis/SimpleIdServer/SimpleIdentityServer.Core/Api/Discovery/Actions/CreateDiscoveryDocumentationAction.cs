@@ -16,8 +16,8 @@
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = (await _claimRepository.GetAllAsync()).ToArray();
+            result.ClaimsSupported = (await _claimRepository.GetAllAsync()).Select(c => c.Code).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();

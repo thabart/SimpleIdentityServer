@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Host.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +85,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 var jws = await _jwtParser.UnSignAsync(request.IdTokenHint);
                 if (jws != null)
                 {
-                    var claim = jws.FirstOrDefault(c => c.Key == Core.Jwt.Constants.StandardClaimNames.Azp);
+                    var claim = jws.FirstOrDefault(c => c.Key == StandardClaimNames.Azp);
                     if (!claim.Equals(default(KeyValuePair<string, object>)) && claim.Value != null)
                     {
                         var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString());

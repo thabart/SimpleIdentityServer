@@ -16,9 +16,9 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Host.DTOs.Response;
@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Host.Extensions
             if (!string.IsNullOrWhiteSpace(request.CodeChallenge) && request.CodeChallengeMethod != null)
             {
                 result.CodeChallenge = request.CodeChallenge;
-                result.CodeChallengeMethod = (Core.Parameters.CodeChallengeMethods)request.CodeChallengeMethod;
+                result.CodeChallengeMethod = (Core.Common.Models.CodeChallengeMethods)request.CodeChallengeMethod;
             }
 
             return result;
@@ -294,7 +294,7 @@ namespace SimpleIdentityServer.Host.Extensions
 
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
-            var responseTypes = new List<Core.Models.ResponseType>();
+            var responseTypes = new List<Core.Common.Models.ResponseType>();
             var redirectUris = clientResponse.redirect_uris == null
                 ? new List<string>()
                 : clientResponse.redirect_uris.ToList();
@@ -308,7 +308,7 @@ namespace SimpleIdentityServer.Host.Extensions
                     var responseTypeSplitted = responseType.Split(' ');
                     foreach (var response in responseTypeSplitted)
                     {
-                        Core.Models.ResponseType responseTypeEnum;
+                        Core.Common.Models.ResponseType responseTypeEnum;
                         if (Enum.TryParse(response, out responseTypeEnum) &&
                             !responseTypes.Contains(responseTypeEnum))
                         {

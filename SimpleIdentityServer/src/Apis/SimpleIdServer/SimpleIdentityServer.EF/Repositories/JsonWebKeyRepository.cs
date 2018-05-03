@@ -14,16 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.EF.Extensions;
+using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.EF.Extensions;
-
-using Jwt = SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Logging;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.EF.Repositories
 {
@@ -39,12 +37,12 @@ namespace SimpleIdentityServer.EF.Repositories
             _managerEventSource = managerEventSource;
         }
 
-        public async Task<ICollection<Jwt.JsonWebKey>> GetAllAsync()
+        public async Task<ICollection<Core.Common.JsonWebKey>> GetAllAsync()
         {
             return await _context.JsonWebKeys.Select(s => s.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<ICollection<Jwt.JsonWebKey>> GetByAlgorithmAsync(Jwt.Use use, Jwt.AllAlg algorithm, Jwt.KeyOperations[] operations)
+        public async Task<ICollection<Core.Common.JsonWebKey>> GetByAlgorithmAsync(Core.Common.Use use, Core.Common.AllAlg algorithm, Core.Common.KeyOperations[] operations)
         {
             var algEnum = (Models.AllAlg)algorithm;
             var useEnum = (Models.Use)use;
@@ -60,10 +58,10 @@ namespace SimpleIdentityServer.EF.Repositories
                 }
 
                 var keyOperationStrings = j.KeyOps.Split(',');
-                var keyOperationEnums = new List<Jwt.KeyOperations>();
+                var keyOperationEnums = new List<Core.Common.KeyOperations>();
                 foreach (var keyOperationString in keyOperationStrings)
                 {
-                    Jwt.KeyOperations keyOperationEnum;
+                    Core.Common.KeyOperations keyOperationEnum;
                     if (!Enum.TryParse(keyOperationString, out keyOperationEnum))
                     {
                         continue;
@@ -78,7 +76,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return jsonWebKeys.Select(j => j.ToDomain()).ToList();
         }
 
-        public async Task<Jwt.JsonWebKey> GetByKidAsync(string kid)
+        public async Task<Core.Common.JsonWebKey> GetByKidAsync(string kid)
         {
             var jsonWebKey = await _context.JsonWebKeys.FirstOrDefaultAsync(j => j.Kid == kid).ConfigureAwait(false);
             if (jsonWebKey == null)
@@ -89,7 +87,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return jsonWebKey.ToDomain();
         }
 
-        public async Task<bool> DeleteAsync(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> DeleteAsync(Core.Common.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -116,7 +114,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return true;
         }
 
-        public async Task<bool> InsertAsync(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> InsertAsync(Core.Common.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -163,7 +161,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateAsync(Jwt.JsonWebKey jsonWebKey)
+        public async Task<bool> UpdateAsync(Core.Common.JsonWebKey jsonWebKey)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {

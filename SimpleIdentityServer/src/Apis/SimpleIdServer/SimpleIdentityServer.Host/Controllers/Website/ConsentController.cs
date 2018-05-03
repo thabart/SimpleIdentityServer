@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         public async Task<ActionResult> Index(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            var client = new Core.Models.Client();
+            var client = new Core.Common.Models.Client();
             var authenticatedUser = await SetUser();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
                 authenticatedUser.Key);

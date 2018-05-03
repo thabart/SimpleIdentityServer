@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Host
             {
                 foreach (var twoFactorAuthentication in options.TwoFactorAuthentications)
                 {
-                    if (twoFactorAuthentication.TwoFactorAuthType != Core.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
+                    if (twoFactorAuthentication.TwoFactorAuthType != Core.Common.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
                     {
                         twoFactorServiceStore.Add(twoFactorAuthentication.TwoFactorAuthenticationService);
                     }

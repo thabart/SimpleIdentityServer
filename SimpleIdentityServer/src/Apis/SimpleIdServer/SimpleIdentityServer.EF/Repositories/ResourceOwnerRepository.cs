@@ -15,7 +15,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.Models;
 using SimpleIdentityServer.Logging;
@@ -23,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domains = SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
+using Domains = SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.EF.Repositories
 {

@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleBus.Core;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;

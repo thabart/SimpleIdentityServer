@@ -14,21 +14,19 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {
     public interface IJsonWebKeyEnricher
     {
         Dictionary<string, object> GetPublicKeyInformation(JsonWebKey jsonWebKey);
-
         Dictionary<string, object> GetJsonWebKeyInformation(JsonWebKey jsonWebKey);
     }
 

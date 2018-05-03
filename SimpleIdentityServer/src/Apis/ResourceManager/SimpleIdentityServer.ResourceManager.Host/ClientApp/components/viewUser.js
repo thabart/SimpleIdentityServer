@@ -7,12 +7,23 @@ import Constants from '../constants';
 import Save from '@material-ui/icons/Save';
 
 import { CircularProgress, IconButton, Select, MenuItem, Checkbox, Typography, Grid } from 'material-ui';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter } from 'material-ui/Table';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
+import { withStyles } from 'material-ui/styles';
+
+const styles = theme => ({
+  margin: {
+    margin: theme.spacing.unit,
+  }
+});
 
 class ViewUser extends Component {
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
         this.saveUser = this.saveUser.bind(this);
+        this.handleChangeProperty = this.handleChangeProperty.bind(this);
         this.state = {
         	isLoading: true,
         	login: '',
@@ -31,6 +42,7 @@ class ViewUser extends Component {
 			isLoading: true
 		});
 		ResourceOwnerService.get(self.state.login).then(function(ro) {
+			console.log(ro);
 			self.setState({
 				isLoading: false,
 				user: ro
@@ -53,9 +65,22 @@ class ViewUser extends Component {
 
 	}
 
+    /**
+    * Change the property.
+    */
+    handleChangeProperty(e) {
+        var self = this;
+        var scope = self.state.scope;
+        scope[e.target.name] = e.target.value;
+        self.state.scope.claims = [];
+        self.setState({
+            scope: scope
+        });
+    }
+
     render() {
     	var self = this;
-    	const { t } = self.props;
+    	const { t, classes } = self.props;
     	return (<div className="block">
             <div className="block-header">
                 <Grid container>
@@ -83,9 +108,29 @@ class ViewUser extends Component {
                 </div>
                 <div className="body">
                 	{ self.state.isLoading ? (<CircularProgress />) : (
-                    	<div>
+                    	<Grid container spacing={40}>
+                    		<Grid item md={5} sm={12}>
+		                        {/* Login */}
+		                        <FormControl fullWidth={true} className={classes.margin} disabled={self.props.isReadOnly}>
+		                            <InputLabel>{t('roLogin')}</InputLabel>
+		                            <Input value={self.state.user.login} name="login" onChange={self.handleChangeProperty}  />
+		                            <FormHelperText>{t('roLoginDescription')}</FormHelperText>
+		                        </FormControl>                   			
+                    		</Grid>
+                    		<Grid item md={5} sm={12}>
+                    			{/* Claims */}
+                    				<Table>
+                    					<TableHead>
+                                        	<TableCell></TableCell>
+                                        	<TableCell>{t('claimKey')}</TableCell>
+                                        	<TableCell>{t('claimValue')}</TableCell>
+                    					</TableHead>
+                                		<TableBody>
 
-                    	</div>
+                                		</TableBody>
+                    				</Table>
+                    		</Grid>
+                    	</Grid>
                     )}
                 </div>
             </div>
@@ -102,4 +147,4 @@ class ViewUser extends Component {
     }
 }
 
-export default translate('common', { wait: process && !process.release })(ViewUser);
+export default translate('common', { wait: process && !process.release })(withStyles(styles)(ViewUser));

@@ -15,8 +15,8 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.Models;
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.EF.Repositories
             };
         }
 
-        public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
+        public async Task<Core.Common.Models.Client> GetClientByIdAsync(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return client.ToDomain();
         }
 
-        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
+        public async Task<IEnumerable<Core.Common.Models.Client>> GetAllAsync()
         {
             return await _context.Clients
                 .Include(c => c.JsonWebKeys)
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.EF.Repositories
                 .ConfigureAwait(false);
         }
 
-        public async Task<bool> UpdateAsync(Core.Models.Client client)
+        public async Task<bool> UpdateAsync(Core.Common.Models.Client client)
         {
             using (var translation = _context.Database.BeginTransaction())
             {
@@ -247,7 +247,7 @@ namespace SimpleIdentityServer.EF.Repositories
             }
         }
 
-        public async Task<bool> InsertAsync(Core.Models.Client client)
+        public async Task<bool> InsertAsync(Core.Common.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -361,7 +361,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Core.Models.Client client)
+        public async Task<bool> DeleteAsync(Core.Common.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {

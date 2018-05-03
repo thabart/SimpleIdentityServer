@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-
-using SimpleIdentityServer.Core.Api.Authorization;
+﻿using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
 {

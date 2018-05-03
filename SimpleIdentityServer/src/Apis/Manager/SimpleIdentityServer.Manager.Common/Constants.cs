@@ -2,6 +2,14 @@
 {
     public static class Constants
     {
+        public static class ClaimResponseNames
+        {
+            public const string Code = "key";
+            public const string IsIdentifier = "is_identifier";
+            public const string UpdateDateTime = "update_datetime";
+            public const string CreateDateTime = "create_datetime";
+        }
+
         public static class SearchResourceOwnerNames
         {
             public const string Order = "order";

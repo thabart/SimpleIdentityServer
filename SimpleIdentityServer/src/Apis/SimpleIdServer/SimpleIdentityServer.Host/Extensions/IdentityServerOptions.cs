@@ -15,7 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;

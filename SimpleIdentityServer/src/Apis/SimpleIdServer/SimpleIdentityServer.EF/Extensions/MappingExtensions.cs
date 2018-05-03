@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Domain = SimpleIdentityServer.Core.Models;
-using Jwt = SimpleIdentityServer.Core.Jwt;
+using Domain = SimpleIdentityServer.Core.Common.Models;
+using Jwt = SimpleIdentityServer.Core.Common;
 using Model = SimpleIdentityServer.EF.Models;
 
 namespace SimpleIdentityServer.EF.Extensions
@@ -11,6 +11,22 @@ namespace SimpleIdentityServer.EF.Extensions
     public static class MappingExtensions
     {
         #region To Domain Objects
+
+        public static Domain.ClaimAggregate ToDomain(this Model.Claim claim)
+        {
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            return new Domain.ClaimAggregate
+            {
+                IsIdentifier = claim.IsIdentifier,
+                CreateDateTime = claim.CreateDateTime,
+                UpdateDateTime = claim.UpdateDateTime, 
+                Code = claim.Code
+            };
+        }
 
         public static Domain.Translation ToDomain(this Model.Translation translation)
         {

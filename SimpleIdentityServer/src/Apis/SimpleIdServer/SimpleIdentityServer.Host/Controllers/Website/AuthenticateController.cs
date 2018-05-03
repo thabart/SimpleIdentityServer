@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));
                 var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-                if (resourceOwner.TwoFactorAuthentication == Core.Models.TwoFactorAuthentications.NONE)
+                if (resourceOwner.TwoFactorAuthentication == Core.Common.Models.TwoFactorAuthentications.NONE)
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString());
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);

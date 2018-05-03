@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
 using SimpleIdentityServer.Core.Jwt.Extensions;

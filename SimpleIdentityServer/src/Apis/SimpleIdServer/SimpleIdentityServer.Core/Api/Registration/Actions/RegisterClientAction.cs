@@ -16,10 +16,10 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using System;

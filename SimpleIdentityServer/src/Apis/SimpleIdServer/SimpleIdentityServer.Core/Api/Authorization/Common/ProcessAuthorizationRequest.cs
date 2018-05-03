@@ -15,13 +15,13 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;

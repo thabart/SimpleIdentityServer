@@ -14,17 +14,19 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
+
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public class AuthenticationResult
     {
-        public AuthenticationResult(Models.Client client, string errorMessage)
+        public AuthenticationResult(Client client, string errorMessage)
         {
             Client = client;
             ErrorMessage = errorMessage;
         }
 
-        public Models.Client Client { get; set; }
+        public Client Client { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

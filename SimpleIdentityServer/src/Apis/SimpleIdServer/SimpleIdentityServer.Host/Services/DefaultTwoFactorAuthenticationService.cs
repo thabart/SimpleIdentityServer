@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Services;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Services
 {

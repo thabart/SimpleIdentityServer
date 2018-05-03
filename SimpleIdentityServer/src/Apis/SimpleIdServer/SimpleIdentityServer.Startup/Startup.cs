@@ -28,6 +28,7 @@ using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Startup.Extensions;
 using System;
 
 namespace SimpleIdentityServer.Startup

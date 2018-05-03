@@ -16,8 +16,8 @@
 
 using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Handler.Events;

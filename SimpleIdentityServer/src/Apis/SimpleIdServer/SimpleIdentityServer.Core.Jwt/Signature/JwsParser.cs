@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
@@ -27,9 +28,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         JwsPayload ValidateSignature(
             string jws,
             JsonWebKey jsonWebKey);
-
         JwsProtectedHeader GetHeader(string jws);
-
         JwsPayload GetPayload(string jws);
     }
 

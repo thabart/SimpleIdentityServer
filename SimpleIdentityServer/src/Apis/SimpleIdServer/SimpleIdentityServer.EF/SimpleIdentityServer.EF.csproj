@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
   </ItemGroup>
   
   <ItemGroup>

@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
 {

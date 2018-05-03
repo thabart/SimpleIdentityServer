@@ -1,9 +1,9 @@
-﻿using SimpleIdentityServer.Core.Repositories;
+﻿using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Repositories;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Common.Extensions;
-using System.Runtime.InteropServices;
 
 namespace SimpleIdentityServer.Core.Api.Jwks.Actions
 {

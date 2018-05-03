@@ -14,24 +14,23 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Common
 {

@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {

@@ -14,8 +14,6 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt;
-
 namespace SimpleIdentityServer.EF.Models
 {
     /// <summary>

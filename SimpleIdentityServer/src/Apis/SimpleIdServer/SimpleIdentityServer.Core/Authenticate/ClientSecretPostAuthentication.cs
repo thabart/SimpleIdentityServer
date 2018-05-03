@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Linq;
 
@@ -21,14 +22,13 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientSecretPostAuthentication
     {
-        Models.Client AuthenticateClient(AuthenticateInstruction instruction, Models.Client client);
-
+        Client AuthenticateClient(AuthenticateInstruction instruction, Client client);
         string GetClientId(AuthenticateInstruction instruction);
     }
 
     public class ClientSecretPostAuthentication : IClientSecretPostAuthentication
     {
-        public Models.Client AuthenticateClient(AuthenticateInstruction instruction, Models.Client client)
+        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (instruction == null || client == null)
             {
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return null;
             }
 
-            var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == Models.ClientSecretTypes.SharedSecret);
+            var clientSecret = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.SharedSecret);
             if (clientSecret == null)
             {
                 return null;

@@ -27,6 +27,7 @@ namespace SimpleIdentityServer.Manager.Host
             public const string Scopes = RootPath + "/scopes";
             public const string ResourceOwners = RootPath + "/resource_owners";
             public const string Manage = RootPath + "/manage";
+            public const string Claims = RootPath + "/claims";
             public const string Configuration = ".well-known/openidmanager-configuration";
         }
 

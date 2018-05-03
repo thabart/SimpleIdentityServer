@@ -14,16 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Services;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
@@ -165,7 +165,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
-            Models.Client client = null;
+            Common.Models.Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {

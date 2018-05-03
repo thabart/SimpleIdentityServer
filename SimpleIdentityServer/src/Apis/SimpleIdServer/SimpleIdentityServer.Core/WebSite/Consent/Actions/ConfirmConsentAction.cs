@@ -24,14 +24,14 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using System;
 using SimpleIdentityServer.Core.Services;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Common.Repositories;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            Common.Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     claimsParameter.IsAnyUserInfoClaimParameter())
                 {
                     // A consent can be given to a set of claims
-                    assignedConsent = new Models.Consent
+                    assignedConsent = new Common.Models.Consent
                     {
                         Client = client,
                         ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 else
                 {
                     // A consent can be given to a set of scopes
-                    assignedConsent = new Models.Consent
+                    assignedConsent = new Common.Models.Consent
                     {
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),

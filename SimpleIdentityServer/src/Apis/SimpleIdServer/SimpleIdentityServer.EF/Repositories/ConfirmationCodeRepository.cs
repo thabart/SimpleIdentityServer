@@ -15,8 +15,8 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;

@@ -14,7 +14,10 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -23,9 +26,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -137,22 +138,22 @@ namespace SimpleIdentityServer.Core.JwtToken
             var timeKeyValuePair = await GetExpirationAndIssuedTime();
             var expirationInSeconds = timeKeyValuePair.Key;
             var issuedAtTime = timeKeyValuePair.Value;
-            if (jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.Iat))
+            if (jwsPayload.ContainsKey(StandardClaimNames.Iat))
             {
-                jwsPayload[Jwt.Constants.StandardClaimNames.Iat] = issuedAtTime;
+                jwsPayload[StandardClaimNames.Iat] = issuedAtTime;
             }
             else
             {
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
+                jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
             }
 
-            if (jwsPayload.ContainsKey(Jwt.Constants.StandardClaimNames.ExpirationTime))
+            if (jwsPayload.ContainsKey(StandardClaimNames.ExpirationTime))
             {
-                jwsPayload[Jwt.Constants.StandardClaimNames.ExpirationTime] = expirationInSeconds;
+                jwsPayload[StandardClaimNames.ExpirationTime] = expirationInSeconds;
             }
             else
             {
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
+                jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
             }
 
             return jwsPayload;
@@ -175,10 +176,10 @@ namespace SimpleIdentityServer.Core.JwtToken
             var issuedAtTime = timeKeyValuePair.Value;
 
             var jwsPayload = new JwsPayload();
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.ClientId, client.ClientId);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Scopes, scopes);
+            jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
+            jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
+            jwsPayload.Add(StandardClaimNames.ClientId, client.ClientId);
+            jwsPayload.Add(StandardClaimNames.Scopes, scopes);
             return jwsPayload;
         }
 
@@ -293,13 +294,13 @@ namespace SimpleIdentityServer.Core.JwtToken
             if (!string.IsNullOrWhiteSpace(authorizationCode))
             {
                 var hashingAuthorizationCode = callback(authorizationCode);
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.CHash, hashingAuthorizationCode);
+                jwsPayload.Add(StandardClaimNames.CHash, hashingAuthorizationCode);
             }
             
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 var hashingAccessToken = callback(accessToken);
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.AtHash, hashingAccessToken);
+                jwsPayload.Add(StandardClaimNames.AtHash, hashingAccessToken);
             }
         }
 
@@ -431,15 +432,15 @@ namespace SimpleIdentityServer.Core.JwtToken
             var clientId = authorizationParameter.ClientId;
             var maxAge = authorizationParameter.MaxAge;
 
-            var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Issuer);
-            var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Audiences);
-            var expirationTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.ExpirationTime);
-            var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Iat);
-            var authenticationTimeParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.AuthenticationTime);
-            var nonceParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Nonce);
-            var acrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Acr);
-            var amrParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Amr);
-            var azpParameter = claimParameters.FirstOrDefault(c => c.Name == Jwt.Constants.StandardClaimNames.Azp);
+            var issuerClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Issuer);
+            var audiencesClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Audiences);
+            var expirationTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.ExpirationTime);
+            var issuedAtTimeClaimParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Iat);
+            var authenticationTimeParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.AuthenticationTime);
+            var nonceParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Nonce);
+            var acrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Acr);
+            var amrParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Amr);
+            var azpParameter = claimParameters.FirstOrDefault(c => c.Name == StandardClaimNames.Azp);
 
             var timeKeyValuePair = await GetExpirationAndIssuedTime();
             var issuerName = await _configurationService.GetIssuerNameAsync();
@@ -479,7 +480,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!issuerIsValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Issuer),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Issuer),
                         state);
                 }
             }
@@ -497,7 +498,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!audiencesIsValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Audiences),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Audiences),
                         state);
                 }
             }
@@ -508,7 +509,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!expirationInSecondsIsValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.ExpirationTime),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.ExpirationTime),
                         state);
                 }
             }
@@ -519,7 +520,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!issuedAtTimeIsValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Iat),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Iat),
                         state);
                 }
             }
@@ -530,7 +531,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!isAuthenticationTimeValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.AuthenticationTime),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.AuthenticationTime),
                         state);
                 }
             }
@@ -541,7 +542,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!isAcrParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Acr),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Acr),
                         state);
                 }
             }
@@ -552,7 +553,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!isNonceParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Nonce),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Nonce),
                         state);
                 }
             }
@@ -563,7 +564,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!isAmrParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Amr),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Amr),
                         state);
                 }
             }
@@ -575,33 +576,33 @@ namespace SimpleIdentityServer.Core.JwtToken
                 if (!isAzpParameterValid)
                 {
                     throw new IdentityServerExceptionWithState(ErrorCodes.InvalidGrant,
-                        string.Format(ErrorDescriptions.TheClaimIsNotValid, Jwt.Constants.StandardClaimNames.Azp),
+                        string.Format(ErrorDescriptions.TheClaimIsNotValid, StandardClaimNames.Azp),
                         state);
                 }
             }
 
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Issuer, issuerName);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Audiences, audiences.ToArray());
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.ExpirationTime, expirationInSeconds);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Iat, issuedAtTime);
+            jwsPayload.Add(StandardClaimNames.Issuer, issuerName);
+            jwsPayload.Add(StandardClaimNames.Audiences, audiences.ToArray());
+            jwsPayload.Add(StandardClaimNames.ExpirationTime, expirationInSeconds);
+            jwsPayload.Add(StandardClaimNames.Iat, issuedAtTime);
 
             // Set the auth_time if it's requested as an essential claim OR the max_age request is specified
             if (((authenticationTimeParameter != null && authenticationTimeParameter.Essential) ||
                 !maxAge.Equals(default(double))) && !string.IsNullOrWhiteSpace(authenticationInstantValue))
             {
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));
+                jwsPayload.Add(StandardClaimNames.AuthenticationTime, double.Parse(authenticationInstantValue));
             }
 
             if (!string.IsNullOrWhiteSpace(nonce))
             {
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.Nonce, nonce);
+                jwsPayload.Add(StandardClaimNames.Nonce, nonce);
             }
 
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Acr, acrValues);
-            jwsPayload.Add(Jwt.Constants.StandardClaimNames.Amr, amr);
+            jwsPayload.Add(StandardClaimNames.Acr, acrValues);
+            jwsPayload.Add(StandardClaimNames.Amr, amr);
             if (!string.IsNullOrWhiteSpace(azp))
             {
-                jwsPayload.Add(Jwt.Constants.StandardClaimNames.Azp, azp);
+                jwsPayload.Add(StandardClaimNames.Azp, azp);
             }
         }
 

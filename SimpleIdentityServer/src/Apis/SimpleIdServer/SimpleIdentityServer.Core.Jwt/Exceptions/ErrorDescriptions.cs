@@ -20,12 +20,8 @@ namespace SimpleIdentityServer.Core.Jwt.Exceptions
     public static class ErrorDescriptions
     {
         public static string JwksCannotBeDeserialied = "the json web key set cannot be deserialized";
-
         public static string JwkIsInvalid = "the json web key set is invalid";
-
-        public static string CannotExtractParametersFromJsonWebKey =
-            "cannot extract the parameters from the json web key";
-
+        public static string CannotExtractParametersFromJsonWebKey = "cannot extract the parameters from the json web key";
         public static string OneOfTheParameterIsNotBase64Encoded = "one of the parameter is not base64";
     }
 }

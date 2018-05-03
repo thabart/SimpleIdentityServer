@@ -14,17 +14,16 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-using System.Net.Http;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Parameters;
+using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Common;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Validators
 {

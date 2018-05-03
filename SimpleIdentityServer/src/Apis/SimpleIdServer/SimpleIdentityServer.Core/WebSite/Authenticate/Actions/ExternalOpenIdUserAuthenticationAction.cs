@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     Id = subject,
                     IsLocalAccount = false,
                     TwoFactorAuthentication = TwoFactorAuthentications.NONE,
-                    Claims = claims.Where(c => standardClaims.Any(sc => sc == c.Type)).ToList()
+                    Claims = claims.Where(c => standardClaims.Any(sc => sc.Code == c.Type)).ToList()
                 };
                 if (!resourceOwner.Claims.Any(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
                 {

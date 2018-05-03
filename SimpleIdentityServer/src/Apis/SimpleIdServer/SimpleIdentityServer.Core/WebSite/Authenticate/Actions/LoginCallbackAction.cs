@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Claims = new List<Claim>(),
                 Password = _authenticateResourceOwnerService.GetHashedPassword(clearPassword)
             };
-            var claims = await _claimRepository.GetAllAsync();
+            var claims = (await _claimRepository.GetAllAsync()).Select(c => c.Code);
             foreach(var claim in claimsPrincipal.Claims.Where(c => claims.Contains(c.Type)))
             {
                 resourceOwner.Claims.Add(claim);

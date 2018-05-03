@@ -15,8 +15,7 @@
 #endregion
 
 using System;
-
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.Extensions
 {

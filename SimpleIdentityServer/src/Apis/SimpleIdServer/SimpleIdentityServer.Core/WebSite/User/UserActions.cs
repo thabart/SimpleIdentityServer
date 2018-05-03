@@ -24,9 +24,9 @@ namespace SimpleIdentityServer.Core.WebSite.User
 {
     public interface IUserActions
     {
-        Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
         Task<bool> DeleteConsent(string consentId);
-        Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
+        Task<Common.Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
         Task ConfirmUser(ClaimsPrincipal claimsPrincipal);
     }
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
             _confirmUserOperation = confirmUserOperation;
         }
 
-        public async Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
+        public async Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
             return await _getConsentsOperation.Execute(claimsPrincipal);
         }
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
             return await _removeConsentOperation.Execute(consentId);
         }
 
-        public async Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
+        public async Task<Common.Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
         {
             return await _getUserOperation.Execute(claimsPrincipal);
         }

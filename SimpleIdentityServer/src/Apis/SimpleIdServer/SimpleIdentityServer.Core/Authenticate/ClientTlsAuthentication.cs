@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Linq;
 
@@ -21,12 +22,12 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientTlsAuthentication
     {
-        Models.Client AuthenticateClient(AuthenticateInstruction instruction, Models.Client client);
+        Client AuthenticateClient(AuthenticateInstruction instruction, Client client);
     }
 
     internal class ClientTlsAuthentication : IClientTlsAuthentication
     {
-        public Models.Client AuthenticateClient(AuthenticateInstruction instruction, Models.Client client)
+        public Client AuthenticateClient(AuthenticateInstruction instruction, Client client)
         {
             if (instruction == null)
             {
@@ -43,8 +44,8 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return null;
             }
 
-            var thumbPrint = client.Secrets.FirstOrDefault(s => s.Type == Models.ClientSecretTypes.X509Thumbprint);
-            var name = client.Secrets.FirstOrDefault(s => s.Type == Models.ClientSecretTypes.X509Name);
+            var thumbPrint = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Thumbprint);
+            var name = client.Secrets.FirstOrDefault(s => s.Type == ClientSecretTypes.X509Name);
             if (thumbPrint == null || name == null)
             {
                 return null;

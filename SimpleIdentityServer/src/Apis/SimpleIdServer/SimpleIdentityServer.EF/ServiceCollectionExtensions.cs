@@ -15,7 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.EF.Repositories;
 using System;
 

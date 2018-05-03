@@ -23,10 +23,8 @@ namespace SimpleIdentityServer.Core.Jwt.Serializer
     {
         [XmlElement("X")]
         public byte[] X { get; set; }
-
         [XmlElement("Y")]
         public byte[] Y { get; set; }
-
         [XmlElement("D")]
         public byte[] D { get; set; }
     }

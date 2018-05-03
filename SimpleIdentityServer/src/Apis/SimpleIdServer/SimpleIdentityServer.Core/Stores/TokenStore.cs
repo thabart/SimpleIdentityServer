@@ -1,5 +1,5 @@
-﻿using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

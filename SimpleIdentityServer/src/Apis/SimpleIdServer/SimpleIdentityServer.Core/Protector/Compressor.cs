@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.Protector
         {
             if (string.IsNullOrWhiteSpace(textToCompress))
             {
-                throw new ArgumentNullException("textToCompress");
+                throw new ArgumentNullException(nameof(textToCompress));
             }
             
             using (var input = new MemoryStream(Encoding.UTF8.GetBytes(textToCompress)))

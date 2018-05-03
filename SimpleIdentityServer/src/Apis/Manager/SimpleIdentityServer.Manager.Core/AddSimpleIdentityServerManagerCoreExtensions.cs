@@ -17,6 +17,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.WebSite.Account.Actions;
+using SimpleIdentityServer.Manager.Core.Api.Claims;
+using SimpleIdentityServer.Manager.Core.Api.Claims.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Clients;
 using SimpleIdentityServer.Manager.Core.Api.Clients.Actions;
 using SimpleIdentityServer.Manager.Core.Api.Jwe;
@@ -71,6 +73,11 @@ namespace SimpleIdentityServer.Manager.Core
             serviceCollection.AddTransient<ISearchScopesOperation, SearchScopesOperation>();
             serviceCollection.AddTransient<IImportAction, ImportAction>();
             serviceCollection.AddTransient<ISearchResourceOwnersAction, SearchResourceOwnersAction>();
+            serviceCollection.AddTransient<IClaimActions, ClaimActions>();
+            serviceCollection.AddTransient<IAddClaimAction, AddClaimAction>();
+            serviceCollection.AddTransient<IDeleteClaimAction, DeleteClaimAction>();
+            serviceCollection.AddTransient<IGetClaimAction, GetClaimAction>();
+            serviceCollection.AddTransient<ISearchClaimsAction, SearchClaimsAction>();
             return serviceCollection;
         }
     }

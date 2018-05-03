@@ -51,7 +51,6 @@ using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {

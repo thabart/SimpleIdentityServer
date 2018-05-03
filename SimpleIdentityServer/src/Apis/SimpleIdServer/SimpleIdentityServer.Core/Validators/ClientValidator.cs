@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.Validators
                 return true;
             }
 
-            if (code.CodeChallengeMethod.Value == Parameters.CodeChallengeMethods.Plain)
+            if (code.CodeChallengeMethod.Value == CodeChallengeMethods.Plain)
             {
                 return codeVerifier == code.CodeChallenge;
             }
