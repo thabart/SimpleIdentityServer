@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -28,11 +28,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Fake
         /// Get a list of fake clients
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Models.Client> GetClients()
+        public static IEnumerable<Core.Common.Models.Client> GetClients()
         {
-            return new List<Models.Client>
+            return new List<Core.Common.Models.Client>
             {
-                new Models.Client
+                new Core.Common.Models.Client
                 {
                     ClientId = "MyBlog",
                     ClientName = "My blog",

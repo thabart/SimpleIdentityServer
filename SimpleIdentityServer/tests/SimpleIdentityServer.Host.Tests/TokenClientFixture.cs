@@ -21,6 +21,7 @@ using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
@@ -172,19 +173,19 @@ namespace SimpleIdentityServer.Host.Tests
             var payload = new JwsPayload
             {
                 {
-                    Core.Jwt.Constants.StandardClaimNames.Issuer, "jwt_client"
+                    StandardClaimNames.Issuer, "jwt_client"
                 },
                 {
                     Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "jwt_client"
                 },
                 {
-                    Core.Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "http://localhost:5000"
                     }
                 },
                 {
-                    Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
+                    StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
                 }
             };
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
@@ -209,19 +210,19 @@ namespace SimpleIdentityServer.Host.Tests
             var payload = new JwsPayload
             {
                 {
-                    Core.Jwt.Constants.StandardClaimNames.Issuer, "private_key_client"
+                    StandardClaimNames.Issuer, "private_key_client"
                 },
                 {
                     Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "private_key_client"
                 },
                 {
-                    Core.Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "http://localhost:5000"
                     }
                 },
                 {
-                    Core.Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
+                    StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddHours(1).ConvertToUnixTimestamp()
                 }
             };
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);

@@ -1,12 +1,12 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using System;
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             {
                 ResponseMode = ResponseMode.fragment
             };
-            var consent = new Core.Models.Consent();
+            var consent = new Core.Common.Models.Consent();
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 State = state,
                 ResponseMode = ResponseMode.None // No response mode is defined
             };
-            var consent = new Core.Models.Consent();
+            var consent = new Core.Common.Models.Consent();
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new Client()));
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Models.Consent)null));
+                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
                 Returns(Task.FromResult((Client)null));
 
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             const string scopeName = "profile";
             var claimsIdentity = new ClaimsIdentity();
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             } };
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Models.Consent)null));
+                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).
                 Returns(Task.FromResult(client));
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))

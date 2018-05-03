@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Collections.Generic;
@@ -40,9 +40,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.Empty(_clientValidator.GetRedirectionUrls(null, null));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), null));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client(), "url"));
-            Assert.Empty(_clientValidator.GetRedirectionUrls(new Models.Client
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client(), null));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client(), "url"));
+            Assert.Empty(_clientValidator.GetRedirectionUrls(new Core.Common.Models.Client
             {
                 RedirectionUrls = new List<string>()
             }, "url"));
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             const string url = "url";
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 RedirectionUrls = new List<string>
                 {
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
 
             // ACT
             var result = _clientValidator.CheckGrantTypes(client, GrantType.authorization_code);
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.False(_clientValidator.CheckGrantTypes(null, null));
-            Assert.False(_clientValidator.CheckGrantTypes(new Models.Client(), null));
+            Assert.False(_clientValidator.CheckGrantTypes(new Core.Common.Models.Client(), null));
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
         {
             // ARRANGE
             InitializeMockingObjects();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 GrantTypes = new List<GrantType>
                 {
@@ -219,7 +219,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             }, "invalid_code", new AuthorizationCode
             {
                 CodeChallenge = "code",
-                CodeChallengeMethod = Parameters.CodeChallengeMethods.Plain
+                CodeChallengeMethod = CodeChallengeMethods.Plain
             });
 
             // ASSERT
@@ -239,7 +239,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             }, "code", new AuthorizationCode
             {
                 CodeChallenge = "code",
-                CodeChallengeMethod = Parameters.CodeChallengeMethods.RS256
+                CodeChallengeMethod = CodeChallengeMethods.RS256
             });
 
             // ASSERT
@@ -261,7 +261,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             }, "code", new AuthorizationCode
             {
                 CodeChallenge = codeChallenge,
-                CodeChallengeMethod = Parameters.CodeChallengeMethods.RS256
+                CodeChallengeMethod = CodeChallengeMethods.RS256
             });
 
             // ASSERT

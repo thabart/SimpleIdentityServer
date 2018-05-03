@@ -19,9 +19,9 @@ using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Net.Http.Headers;
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => Task.FromResult(new AuthenticationResult(new Models.Client(), null)));
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))
@@ -155,7 +155,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => Task.FromResult(new AuthenticationResult(new Models.Client(), null)));
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client(), null)));
             _grantedTokenRepositoryStub.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(grantedToken));
             _grantedTokenRepositoryStub.Setup(g => g.GetRefreshToken(It.IsAny<string>()))

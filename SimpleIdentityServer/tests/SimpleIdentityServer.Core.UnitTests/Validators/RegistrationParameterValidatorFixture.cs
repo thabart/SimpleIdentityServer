@@ -10,7 +10,7 @@ using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using Xunit;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common;
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.ResponseTypes.Count == 1);
-            Assert.True(parameter.ResponseTypes.Contains(Core.Models.ResponseType.code));
+            Assert.True(parameter.ResponseTypes.Contains(Core.Common.Models.ResponseType.code));
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.GrantTypes.Count == 1);
-            Assert.True(parameter.GrantTypes.Contains(Models.GrantType.authorization_code));
+            Assert.True(parameter.GrantTypes.Contains(Core.Common.Models.GrantType.authorization_code));
         }
 
         [Fact]

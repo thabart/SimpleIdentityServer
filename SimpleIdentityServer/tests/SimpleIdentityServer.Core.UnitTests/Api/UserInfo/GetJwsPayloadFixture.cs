@@ -19,10 +19,10 @@ using Moq;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;
@@ -87,9 +87,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
@@ -114,9 +114,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
@@ -142,9 +142,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             const string jwt = "jwt";
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5

@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using Moq;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Api.Token.Actions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
@@ -11,6 +10,7 @@ using Xunit;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using SimpleBus.Core;
+using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {

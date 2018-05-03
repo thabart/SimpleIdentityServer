@@ -3,6 +3,6 @@
     public enum CodeChallengeMethods
     {
         Plain,
-        S256
+        RS256
     }
 }

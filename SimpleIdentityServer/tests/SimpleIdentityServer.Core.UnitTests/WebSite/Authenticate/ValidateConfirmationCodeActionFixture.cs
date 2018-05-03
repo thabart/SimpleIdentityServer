@@ -15,8 +15,8 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
 using System.Threading.Tasks;

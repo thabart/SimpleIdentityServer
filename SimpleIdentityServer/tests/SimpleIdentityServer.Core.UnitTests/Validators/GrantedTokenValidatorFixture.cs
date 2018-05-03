@@ -16,8 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;

@@ -3,8 +3,9 @@ using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common;
 using Xunit;
+using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {

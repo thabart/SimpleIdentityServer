@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Errors;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 RedirectInstruction = new RedirectInstruction()
             };
-            var consent = new Core.Models.Consent();
+            var consent = new Core.Common.Models.Consent();
             var authorizationParameter = new AuthorizationParameter
             {
                 ResponseMode = ResponseMode.form_post
@@ -153,7 +153,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Models.Consent)null));
+                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Core.Common.Models.Consent)null));
 
             // ACT
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,

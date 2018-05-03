@@ -21,7 +21,7 @@ using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
@@ -30,6 +30,7 @@ using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
+using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 {
@@ -80,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.AccessToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client(), null);
+            var client = new AuthenticationResult(new Client(), null);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
@@ -116,21 +117,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client
+            var client = new AuthenticationResult(new Client
             {
                 ClientId = clientId
             }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new Jwt.JwsPayload
+                IdTokenPayLoad = new JwsPayload
                 {
                     {
                         Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                         subject
                     },
                     {
-                        Jwt.Constants.StandardClaimNames.Audiences,
+                        StandardClaimNames.Audiences,
                         audiences
                     }
                 },
@@ -172,21 +173,21 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client
+            var client = new AuthenticationResult(new Client
             {
                 ClientId = clientId
             }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new Jwt.JwsPayload
+                IdTokenPayLoad = new JwsPayload
                 {
                     {
                         Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                         subject
                     },
                     {
-                        Jwt.Constants.StandardClaimNames.Audiences,
+                        StandardClaimNames.Audiences,
                         audiences
                     }
                 },

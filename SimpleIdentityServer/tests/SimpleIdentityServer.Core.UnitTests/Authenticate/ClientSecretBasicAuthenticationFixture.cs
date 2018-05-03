@@ -1,7 +1,7 @@
 ﻿using System;
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using Xunit;
 using System.Collections.Generic;
 
@@ -32,11 +32,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
             };
-            var firstClient = new Models.Client
+            var firstClient = new Core.Common.Models.Client
             {
                 Secrets = null
             };
-            var secondClient = new Models.Client
+            var secondClient = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader= "notCorrectClientSecret"
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader = clientSecret
             };
-            var client = new Models.Client
+            var client = new Client
             {
                 Secrets = new List<ClientSecret>
                 {

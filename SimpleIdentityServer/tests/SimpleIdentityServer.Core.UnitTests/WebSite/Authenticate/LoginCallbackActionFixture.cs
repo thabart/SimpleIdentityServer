@@ -15,9 +15,9 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using System;
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             var claimsIdentity = new ClaimsIdentity("test");
-            ICollection<string> claimNames = new List<string>();
+            IEnumerable<ClaimAggregate> claimNames = new List<ClaimAggregate>();
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))

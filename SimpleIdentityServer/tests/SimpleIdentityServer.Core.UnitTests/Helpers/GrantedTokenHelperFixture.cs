@@ -16,8 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
 using System;

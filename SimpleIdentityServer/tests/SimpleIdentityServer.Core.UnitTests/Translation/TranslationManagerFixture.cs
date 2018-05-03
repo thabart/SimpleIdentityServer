@@ -1,5 +1,5 @@
 ﻿using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using System;
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 "translation_code"
             };
             var defaultLanguage = "EN";
-            var translation = new Models.Translation
+            var translation = new Core.Common.Models.Translation
             {
                 Code = "code",
                 Value = "value"
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 .Returns(Task.FromResult(defaultLanguage));
             _translationRepositoryFake.Setup(t => t.GetAsync(It.IsAny<string>(),
                 It.IsAny<string>()))
-                .Returns(Task.FromResult((Models.Translation)null)); 
+                .Returns(Task.FromResult((Core.Common.Models.Translation)null)); 
 
             // ACT
             var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes);

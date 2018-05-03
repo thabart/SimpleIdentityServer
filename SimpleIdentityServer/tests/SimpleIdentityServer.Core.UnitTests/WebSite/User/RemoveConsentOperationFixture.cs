@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             const bool isRemoved = true;
             const string consentId = "consent_id";
             InitializeFakeObjects();
-            _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Models.Consent>()))
+            _consentRepositoryStub.Setup(c => c.DeleteAsync(It.IsAny<Core.Common.Models.Consent>()))
                 .Returns(Task.FromResult(isRemoved));
 
             // ACT

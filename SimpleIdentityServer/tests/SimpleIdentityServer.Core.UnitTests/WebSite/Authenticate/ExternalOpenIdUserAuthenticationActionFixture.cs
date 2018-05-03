@@ -8,11 +8,11 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using Xunit;
 using SimpleIdentityServer.Core.Services;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Type = TypeActionResult.None
             };
-            ICollection<string> claimValues = new List<string>();
+            IEnumerable<ClaimAggregate> claimValues = new List<ClaimAggregate>();
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
             _claimRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(claimValues));

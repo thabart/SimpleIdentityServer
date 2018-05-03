@@ -16,8 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;

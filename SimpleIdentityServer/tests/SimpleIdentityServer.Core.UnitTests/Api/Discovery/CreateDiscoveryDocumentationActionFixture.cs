@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
-using Xunit;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
 {
@@ -41,7 +41,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                     Name = secondScopeName
                 }
             };
-            ICollection<string> claims = new List<string> { "claim" };
+            IEnumerable<ClaimAggregate> claims = new List<ClaimAggregate>
+            {
+                new ClaimAggregate
+                {
+                    Code = "claim"
+                }
+            };
             _scopeRepositoryStub.Setup(s => s.GetAllAsync())
                 .Returns(Task.FromResult(scopes));
             _claimRepositoryStub.Setup(c => c.GetAllAsync())

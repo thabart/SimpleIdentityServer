@@ -23,11 +23,11 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            var client = new AuthenticationResult(new Models.Client(), null);            
+            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new AuthenticationResult(new Models.Client(), null);
+            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
             var resourceOwner = new ResourceOwner();
             
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(resourceOwner));
-            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => new ScopeValidationResult(false));
 
             // ACT & ASSERTS
@@ -185,7 +185,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new AuthenticationResult(new Models.Client
+            var client = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);
@@ -204,7 +204,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _resourceOwnerValidatorFake.Setup(
                 r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(resourceOwner));
-            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Models.Client>()))
+            _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => new ScopeValidationResult(true)
                 {
                     Scopes = new List<string> { invalidScope }

@@ -17,12 +17,12 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Stores;
@@ -161,7 +161,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = "clientSecret"
             };
 
-            var result = new AuthenticationResult(new Models.Client { ClientId = "notCorrectClientId" } , null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "notCorrectClientId" } , null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId"
@@ -199,7 +199,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "notCorrectRedirectUri"
             };
 
-            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -235,7 +235,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -274,7 +274,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -293,7 +293,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string[]>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>()))
                 .Returns(new string[0]);
 
             // ACT & ASSERTS
@@ -324,7 +324,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId
             };
 
-            var result = new AuthenticationResult(new Models.Client {
+            var result = new AuthenticationResult(new Core.Common.Models.Client {
                 ClientId = "clientId",
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
@@ -354,7 +354,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
             _grantedTokenHelperStub.Setup(g => g.GetValidGrantedTokenAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -385,7 +385,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = clientId
             };
-            var authResult = new AuthenticationResult(new Models.Client
+            var authResult = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);
@@ -411,7 +411,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(authorizationCode));
             _simpleIdentityServerConfiguratorFake.Setup(s => s.GetAuthorizationCodeValidityPeriodInSecondsAsync())
                 .Returns(Task.FromResult((double)3000));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string>()))
                 .Returns(new[] { "redirectUri" });
             _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
                 It.IsAny<string>(),

@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Authenticate;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;

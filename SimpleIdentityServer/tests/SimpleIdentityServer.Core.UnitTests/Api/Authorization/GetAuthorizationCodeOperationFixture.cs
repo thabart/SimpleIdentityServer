@@ -7,7 +7,7 @@ using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
                 Claims = null
             };
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERTS
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>()))
                 .Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     Action = IdentityServerEndPoints.FormIndex
                 }
             };
-            var client = new Models.Client();
+            var client = new Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(
                 It.IsAny<AuthorizationParameter>(),
                 It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT

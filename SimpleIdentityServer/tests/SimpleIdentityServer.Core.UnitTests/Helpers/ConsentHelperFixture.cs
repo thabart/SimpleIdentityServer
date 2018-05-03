@@ -1,8 +1,8 @@
 ﻿using Moq;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                     {
                         claimName
                     },
-                    Client = new Models.Client
+                    Client = new Core.Common.Models.Client
                     {
                         ClientId = clientId
                     }
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 new Consent
                 {
-                    Client = new Models.Client
+                    Client = new Core.Common.Models.Client
                     {
                         ClientId = clientId
                     },
@@ -164,7 +164,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             {
                 new Consent
                 {
-                    Client = new Models.Client
+                    Client = new Core.Common.Models.Client
                     {
                         ClientId = clientId
                     },

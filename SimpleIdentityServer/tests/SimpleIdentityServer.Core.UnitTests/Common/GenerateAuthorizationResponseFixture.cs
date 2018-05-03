@@ -23,11 +23,11 @@ using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
 using Xunit;
@@ -353,7 +353,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 Scope = scope,
                 ResponseType = responseType
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,
@@ -403,7 +403,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 ResponseType = responseType,
                 ResponseMode = ResponseMode.None
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256,

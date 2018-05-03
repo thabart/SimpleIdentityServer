@@ -18,10 +18,9 @@ using Moq;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
 using System;
@@ -117,7 +116,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                     Kid = kid
                 }
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 ClientName = clientName,
                 ResponseTypes = new List<ResponseType>
@@ -157,8 +156,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             };
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
                 .Returns(client);                
-            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Models.Client>()))
-                .Callback<Models.Client>(c => client = c)
+            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()))
+                .Callback<Core.Common.Models.Client>(c => client = c)
                 .Returns(Task.FromResult(true));
 
             // ACT
@@ -166,7 +165,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 
             // ASSERT
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Models.Client>()));
+            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()));
             _simpleIdentityServerEventSourceFake.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));

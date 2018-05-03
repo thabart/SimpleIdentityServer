@@ -1,33 +1,25 @@
-﻿using System;
-using System.Linq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.UnitTests.Fake;
-using SimpleIdentityServer.Core.Validators;
-using System.Security.Claims;
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using Moq;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Jwt.Serializer;
-using Xunit;
-using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
+using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Logging;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -69,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Models.Client()));
+                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Client()));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));

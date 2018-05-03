@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Stores;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Store.Redis
 {
