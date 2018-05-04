@@ -11,5 +11,5 @@ REM SCIM
 dotnet test tests\SimpleIdentityServer.Scim.Core.Tests
 dotnet test tests\SimpleIdentityServer.Scim.Client.Tests
 
-REM MANAGER
-dotnet test tests\SimpleIdentityServer.Manager.Core.Tests
+REM EVENTSTORE
+dotnet test tests\SimpleIdentityServer.EventStore.Tests

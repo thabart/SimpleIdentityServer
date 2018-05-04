@@ -1,7 +1,0 @@
-# Run postgresql
-docker run --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres -e POSTGRES_PASSWORD=password -d postgres
-# Run simpleidserver
-docker run --name=idserver -it --link=postgresql simpleidserver /bin/bash
-# Command line
-psql -h 172.17.0.2 -p 5432 -U postgres
-# password is : password

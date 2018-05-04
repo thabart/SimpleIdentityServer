@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleIdentityServer.ResourceManager.API.Host": {
-      "commandName": "Project",
-      "commandLineArgs": "http://*:5004"
-    }
-  }
-}

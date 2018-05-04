@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleIdentityServer.IdentityServer.Manager.Startup": {
-      "commandName": "Project",
-      "commandLineArgs": "http://*:5002"
-    }
-  }
-}
