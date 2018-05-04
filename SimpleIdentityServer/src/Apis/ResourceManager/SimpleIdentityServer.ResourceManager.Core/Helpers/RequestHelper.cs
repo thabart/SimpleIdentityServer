@@ -1,4 +1,4 @@
-﻿using SimpleIdentityServer.Core.Models;
+﻿using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Manager.Common.Requests;
 using SimpleIdentityServer.Manager.Common.Responses;
 using System;

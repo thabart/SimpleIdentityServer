@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;");
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;", null);
             services.AddSimpleBusInMemory();
             services.AddEventStoreBusHandler();
         }
