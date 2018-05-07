@@ -20,9 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Authenticate\Index.cshtml" />
-    <None Remove="Views\Authenticate\OpenId.cshtml" />
-    <None Remove="Views\Authenticate\SendCode.cshtml" />
     <None Remove="Views\CheckSession.html" />
     <None Remove="Views\Consent\Index.cshtml" />
     <None Remove="Views\Form\Index.cshtml" />
@@ -32,15 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Views\Authenticate\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Authenticate\OpenId.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Authenticate\SendCode.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="Views\Consent\Index.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

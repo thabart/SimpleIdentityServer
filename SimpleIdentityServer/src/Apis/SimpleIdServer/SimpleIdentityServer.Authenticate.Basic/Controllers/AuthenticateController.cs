@@ -20,8 +20,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.FileProviders;
 using SimpleBus.Core;
+using SimpleIdentityServer.Authenticate.Basic.Extensions;
+using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
@@ -34,8 +35,9 @@ using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
@@ -44,8 +46,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.Controllers.Website
+namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
+    [Area("UserPasswordAuthentication")]
     public class AuthenticateController : BaseController
     {
         private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";        
@@ -96,7 +99,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         
         public async Task<ActionResult> Logout()
         {
-            HttpContext.Response.Cookies.Delete(Core.Constants.SESSION_ID);
+            HttpContext.Response.Cookies.Delete(SimpleIdentityServer.Core.Constants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             return RedirectToAction("Index", "Authenticate");
         }
@@ -149,8 +152,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-                if (resourceOwner.TwoFactorAuthentication == Core.Common.Models.TwoFactorAuthentications.NONE)
+                var subject = claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+                if (resourceOwner.TwoFactorAuthentication == SimpleIdentityServer.Core.Common.Models.TwoFactorAuthentications.NONE)
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString());
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
@@ -195,8 +198,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    string.Format(SimpleIdentityServer.Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Check if the user exists and insert it
@@ -215,12 +218,12 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         public async Task<ActionResult> SendCode()
         {
             // 1. Retrieve user
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Return translated view
@@ -233,16 +236,16 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         public async Task<ActionResult> ResendCode()
         {
             // 1. Retrieve user
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Send the code
-            var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+            var subject = authenticatedUser.Claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
             var code = await _authenticateActions.GenerateAndSendCode(subject);
             _simpleIdentityServerEventSource.GetConfirmationCode(code);
 
@@ -267,12 +270,12 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             }
 
             // 1. Check user is authenticated
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Validate the code
@@ -293,7 +296,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             }
 
             // 4. Authenticate the resource owner
-            await _authenticationService.SignOutAsync(HttpContext, Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, SimpleIdentityServer.Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
             return RedirectToAction("Index", "User");
         }
@@ -369,7 +372,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
                     authorizeOpenId.Code);
-                var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+                var subject = actionResult.Claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie
                 await SetLocalCookie(actionResult.Claims, request.SessionId);
@@ -433,8 +436,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
+                throw new IdentityServerException(SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
 
             // 2 : remove the cookie
@@ -447,8 +450,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode, 
-                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode, 
+                    string.Format(SimpleIdentityServer.Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }            
             
             // 4. Check if the user is authenticated
@@ -457,8 +460,8 @@ namespace SimpleIdentityServer.Host.Controllers.Website
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity)) {
                   throw new IdentityServerException(
-                        Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                        Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                        SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                        SimpleIdentityServer.Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
             
             // 5. Rerieve the claims
@@ -491,7 +494,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
 
         #region Private methods
 
-        private async Task LogAuthenticateUser(Core.Results.ActionResult act, string processId)
+        private async Task LogAuthenticateUser(SimpleIdentityServer.Core.Results.ActionResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {
@@ -522,16 +525,16 @@ namespace SimpleIdentityServer.Host.Controllers.Website
         {
             var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
-                Core.Constants.StandardTranslationCodes.LoginCode,
-                Core.Constants.StandardTranslationCodes.UserNameCode,
-                Core.Constants.StandardTranslationCodes.PasswordCode,
-                Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
-                Core.Constants.StandardTranslationCodes.LoginLocalAccount,
-                Core.Constants.StandardTranslationCodes.LoginExternalAccount,
-                Core.Constants.StandardTranslationCodes.SendCode,
-                Core.Constants.StandardTranslationCodes.Code,
-                Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.SendConfirmationCode
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Code,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode,
+                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendConfirmationCode
             });
 
             ViewBag.Translations = translations;
@@ -543,7 +546,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             var tokenValidity = await _configurationService.GetTokenValidityPeriodInSecondsAsync();
             var now = DateTime.UtcNow;
             var expires = now.AddSeconds(tokenValidity);
-            HttpContext.Response.Cookies.Append(Core.Constants.SESSION_ID, sessionId, new CookieOptions
+            HttpContext.Response.Cookies.Append(SimpleIdentityServer.Core.Constants.SESSION_ID, sessionId, new CookieOptions
             {
                 HttpOnly = false,
                 Expires = expires
@@ -561,9 +564,9 @@ namespace SimpleIdentityServer.Host.Controllers.Website
 
         private async Task SetTwoFactorCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, Host.Constants.TwoFactorCookieName);
+            var identity = new ClaimsIdentity(claims, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext, Host.Constants.TwoFactorCookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
+            await _authenticationService.SignInAsync(HttpContext, SimpleIdentityServer.Host.Constants.TwoFactorCookieName, principal, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
             {
                 ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
                 IsPersistent = false

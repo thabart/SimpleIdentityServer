@@ -14,24 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
 {
-    public class AuthorizeOpenIdViewModel
+    public class CodeViewModel
     {
-        public AuthorizeOpenIdViewModel()
-        {
-            IdProviders = new List<IdProviderViewModel>();
-        }
-
+        [Required]
+        [Display(Name = "Code")]
         public string Code { get; set; }
-        [Required(ErrorMessage = "the user name is required")]
-        public string UserName { get; set; }
-        [Required(ErrorMessage = "the password is required")]
-        public string Password { get; set; }
-        public bool IsChecked { get; set; }
-        public List<IdProviderViewModel> IdProviders { get; set; }
     }
 }

@@ -76,11 +76,16 @@ namespace SimpleIdentityServer.Host
             return serviceCollection;
         }
    
-        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services, IHostingEnvironment hosting, IdentityServerOptions idOpts)
+        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
+            }
+
+            if(mvcBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
             if (hosting == null)
@@ -88,12 +93,7 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(hosting));
             }
 
-            if (idOpts == null)
-            {
-                throw new ArgumentNullException(nameof(idOpts));
-            }
-
-            var assembly = typeof(AuthenticateController).Assembly;
+            var assembly = typeof(ConsentController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
             services.Configure<RazorViewEngineOptions>(options =>
@@ -101,8 +101,7 @@ namespace SimpleIdentityServer.Host
                 options.FileProviders.Add(compositeProvider);
             });
 
-            services.AddSingleton<IFileProvider>(compositeProvider);
-            services.AddMvc().AddApplicationPart(assembly);
+            mvcBuilder.AddApplicationPart(assembly);
             return services;
         }
 

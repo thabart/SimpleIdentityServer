@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>  
+    <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+  </ItemGroup>
+  <ItemGroup>  
+    <EmbeddedResource Include="Areas\**\*.cshtml" />
+  </ItemGroup>
+</Project>

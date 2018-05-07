@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
+using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Extensions;
@@ -95,7 +96,9 @@ namespace SimpleIdentityServer.Startup
                     opts.LoginPath = "/Authenticate";
                 });
             // 5. Configure MVC
-            services.AddAuthenticationWebsite(_env, _options);
+            var mvcBuilder = services.AddMvc();
+            services.AddAuthenticationWebsite(mvcBuilder, _env);
+            services.AddBasicAuthentication(mvcBuilder, _env);
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -176,6 +179,7 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get500"
                     });
+                routes.UseUserPasswordAuthentication();
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

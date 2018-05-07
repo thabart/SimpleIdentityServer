@@ -1,4 +1,4 @@
-@using SimpleIdentityServer.Host
+﻿@using SimpleIdentityServer.Host
 
 @{
     ViewBag.Title = "Authenticate";
@@ -6,10 +6,10 @@
     var passwordState = ViewData.ModelState["Password"];
 }
 
-@model SimpleIdentityServer.Host.ViewModels.AuthorizeOpenIdViewModel
+@model SimpleIdentityServer.Authenticate.Basic.ViewModels.AuthorizeViewModel
 
 @section PageTitle
-{
+    {
     <h1>
         @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
     </h1>
@@ -25,17 +25,17 @@
         <div>
             @if (!Model.IdProviders.Any())
             {
-                <p>There are no external authentication services configured</p>
+                <p>There is no external authentication services configured</p>
             }
             else
             {
-                using (Html.BeginForm("ExternalLoginOpenId", "Authenticate", new { code = Model.Code }))
-                 {
-                     foreach (var loginProvider in Model.IdProviders)
-                     {
-                         <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
-                     }
-                 }
+                using (Html.BeginForm("ExternalLogin", "Authenticate"))
+                {
+                    foreach (var loginProvider in Model.IdProviders)
+                    {
+                        <button type="submit" class="btn btn-default" id="@loginProvider.AuthenticationScheme" name="provider" value="@loginProvider.AuthenticationScheme" title="Log in using your @loginProvider.AuthenticationScheme account">@loginProvider.DisplayName</button>
+                    }
+                }
             }
         </div>
     </div>
@@ -47,9 +47,8 @@
         </div>
         <div>
             @Html.ValidationMessage("invalid_credentials")
-            <form name="form" method="POST" action="@Url.Action("LocalLoginOpenId")">
+            <form name="form" method="POST" action="@Url.Action("LocalLogin")">
                 <fieldset>
-                    <input type="hidden" value="@Model.Code" name="Code" />
                     @if (userNameState != null && userNameState.Errors.Any())
                     {
                         <div class="form-group has-error">
@@ -61,7 +60,7 @@
                     else
                     {
                         <div class="form-group">
-                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
                             <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
                         </div>
                     }
@@ -77,7 +76,7 @@
                     else
                     {
                         <div class="form-group">
-                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
                             <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
                         </div>
                     }

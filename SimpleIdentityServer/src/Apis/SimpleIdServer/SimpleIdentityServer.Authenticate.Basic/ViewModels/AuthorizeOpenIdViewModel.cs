@@ -17,21 +17,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SimpleIdentityServer.Host.ViewModels
+namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
 {
-    public class IdProviderViewModel
+    public class AuthorizeOpenIdViewModel
     {
-        public string AuthenticationScheme { get; set; }
-        public string DisplayName { get; set; }
-    }
-
-    public class AuthorizeViewModel
-    {
-        public AuthorizeViewModel()
+        public AuthorizeOpenIdViewModel()
         {
             IdProviders = new List<IdProviderViewModel>();
         }
 
+        public string Code { get; set; }
         [Required(ErrorMessage = "the user name is required")]
         public string UserName { get; set; }
         [Required(ErrorMessage = "the password is required")]
