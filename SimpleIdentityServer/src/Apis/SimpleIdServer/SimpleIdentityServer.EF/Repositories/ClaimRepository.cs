@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.EF.Repositories
             IQueryable<Models.Claim> claims = _context.Claims;
             if (parameter.ClaimKeys != null)
             {
-                claims = claims.Where(c => parameter.ClaimKeys.Contains(c.Code));
+                claims = claims.Where(c => parameter.ClaimKeys.Any(ck => c.Code.Contains(ck)));
             }
 
             var nbResult = await claims.CountAsync().ConfigureAwait(false);
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     var newClaim = new Models.Claim
                     {
                         Code = claim.Code,
-                        IsIdentifier = claim.IsIdentifier,
+                        IsIdentifier = false, //claim.IsIdentifier,
                         CreateDateTime = DateTime.UtcNow,
                         UpdateDateTime = DateTime.UtcNow
                     };
