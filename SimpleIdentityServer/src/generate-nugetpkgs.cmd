@@ -14,7 +14,7 @@ dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Host /p:Pac
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Store.Redis /p:PackageVersion=%packageVersion%
 
 REM SIMPLEIDSERVER
-dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Authentication.Common /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.Basic /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Client /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Core.Common /p:PackageVersion=%packageVersion%
@@ -32,6 +32,7 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.OAut
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Store.Redis /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication.Email /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication.Twilio /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection /p:PackageVersion=%packageVersion%
 
 REM SCIM
 dotnet pack --output ..\..\..\feed Apis\Scim\SimpleIdentityServer.Scim.Client /p:PackageVersion=%packageVersion%
@@ -54,9 +55,6 @@ dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventSto
 dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.Postgre /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.Sqlite /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\EventStore\SimpleIdentityServer.EventStore.SqlServer /p:PackageVersion=%packageVersion%
-
-REM CONFIGURATION
-dotnet pack --output ..\..\..\feed Apis\Configuration\SimpleIdentityServer.Configuration.Client /p:PackageVersion=%packageVersion%
 
 REM LIB
 dotnet pack --output ..\..\feed Lib\System.Security.Cryptography.Algorithms.Extensions /p:PackageVersion=%packageVersion%

@@ -1,5 +1,3 @@
-# Lokit
+# SimpleIdentityServer.Core
 
-Visit the [website](http://simpleidentityserverdoc.readthedocs.io/en/latest/) for more information.
-
-Don't hesitate to create GITHUB tickets if you have questions or to report bugs.
+[![Build status](https://ci.appveyor.com/api/projects/status/u1ksy7m4pdl7y49m?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)
