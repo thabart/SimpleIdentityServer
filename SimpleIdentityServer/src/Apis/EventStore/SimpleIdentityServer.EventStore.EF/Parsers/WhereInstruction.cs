@@ -40,8 +40,8 @@ namespace SimpleIdentityServer.EventStore.EF.Parsers
 
         public override KeyValuePair<string, Expression>? GetExpression<TSource>(Type sourceType, ParameterExpression rootParameter, IEnumerable<TSource> source)
         {
-            const string condExpression = "(\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) ('|\")((\\w|-|_|@)| |\\d|:)*('|\")";
-            const string expression = "((\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) (('|\")((\\w|-|_|@)| |\\d|:)*('|\")( and | or ){0,1}))+";
+            const string condExpression = "(\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) ('|\")((\\w|-|_|@)| |\\d|:|\\/)*('|\")";
+            const string expression = "((\\w|-|_|@)* (eq|neq|co|sw|ew|lt|le|gt|ge) (('|\")((\\w|-|_|@)| |\\d|:|\\/)*('|\")( and | or ){0,1}))+";
             var match = Regex.Match(Parameter, expression);
             if (string.IsNullOrWhiteSpace(match.Value) || match.Value != Parameter)
             {
