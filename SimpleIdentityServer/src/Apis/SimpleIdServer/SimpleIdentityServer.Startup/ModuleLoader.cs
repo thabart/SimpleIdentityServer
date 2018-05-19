@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -88,15 +89,6 @@ namespace SimpleIdentityServer.Startup
 
         private void Initialize()
         {
-            // TH : Load those assemblies ?
-            var directoryToWatch = Path.Combine(Directory.GetCurrentDirectory(), _modulePath);
-            _watcher.Path = directoryToWatch;
-            _watcher.Filter = "*.dll";
-            _watcher.Deleted += Deleted;
-            _watcher.Renamed += Renamed;
-            _watcher.Created += Created;
-            _watcher.EnableRaisingEvents = true;
-            _watcher.IncludeSubdirectories = true;
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
 
@@ -114,21 +106,6 @@ namespace SimpleIdentityServer.Startup
             }
 
             return null;
-        }
-
-        private void Deleted(object sender, FileSystemEventArgs e)
-        {
-            string s = "";
-        }
-
-        private void Created(object sender, FileSystemEventArgs e)
-        {
-            string s = "";
-        }
-
-        private void Renamed(object sender, RenamedEventArgs e)
-        {
-            string s = "";
         }
     }
 }

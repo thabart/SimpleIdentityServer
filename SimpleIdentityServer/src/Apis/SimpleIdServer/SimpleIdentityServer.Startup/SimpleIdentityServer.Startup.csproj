@@ -35,6 +35,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+      <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.0" />
+	  <Watch Include=".\Modules\**\*.dll" />
+  </ItemGroup> 
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="System.Web" />
     <Reference Include="System" />
@@ -45,6 +50,15 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Modules\SimpleIdentityServer.Authenticate.Basic\net461\SimpleIdentityServer.Authenticate.Basic.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Modules\SimpleIdentityServer.Authenticate.Basic\netcoreapp2.0\SimpleIdentityServer.Authenticate.Basic.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
