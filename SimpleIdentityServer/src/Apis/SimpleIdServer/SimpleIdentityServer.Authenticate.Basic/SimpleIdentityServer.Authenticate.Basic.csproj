@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>  
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />  
   </ItemGroup>
   <ItemGroup>  
     <EmbeddedResource Include="Areas\**\*.cshtml" />

@@ -22,10 +22,9 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.Authenticate.Basic;
+// using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
@@ -36,6 +35,7 @@ namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
+        private ModuleLoader _moduleLoader;
         private IdentityServerOptions _options;
         private IHostingEnvironment _env;
         public IConfigurationRoot Configuration { get; set; }
@@ -61,6 +61,8 @@ namespace SimpleIdentityServer.Startup
                 }
             };
             _env = env;
+            _moduleLoader = new ModuleLoader();
+            _moduleLoader.LoadModules();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -96,9 +98,20 @@ namespace SimpleIdentityServer.Startup
                     opts.LoginPath = "/Authenticate";
                 });
             // 5. Configure MVC
-            var mvcBuilder = services.AddMvc();
+            var mvcBuilder = services.AddMvc()
+                /*
+                .AddRazorOptions(o =>
+                {
+                    foreach(var module in _moduleLoader.GetModules())
+                    {
+                        var location = module.GetType().Assembly.Location;
+                        o.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(location));
+                    }
+                })
+                */;
             services.AddAuthenticationWebsite(mvcBuilder, _env);
-            services.AddBasicAuthentication(mvcBuilder, _env);
+            // services.AddBasicAuthentication(mvcBuilder, _env);
+            _moduleLoader.ConfigureServices(services, mvcBuilder, _env);
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -179,7 +192,7 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get500"
                     });
-                routes.UseUserPasswordAuthentication();
+                // routes.UseUserPasswordAuthentication();
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
@@ -191,6 +204,8 @@ namespace SimpleIdentityServer.Startup
                 simpleIdentityServerContext.Database.EnsureCreated();
                 simpleIdentityServerContext.EnsureSeedData();
             }
+
+            _moduleLoader.Configure(app);
         }
 
         private void UseSerilogLogging(ILoggerFactory logger)
