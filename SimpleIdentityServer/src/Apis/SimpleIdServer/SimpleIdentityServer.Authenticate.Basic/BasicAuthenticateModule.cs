@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
 using System;
@@ -31,15 +32,16 @@ namespace SimpleIdentityServer.Authenticate.Basic
 
         public void Configure(IApplicationBuilder applicationBuilder)
         {
-            if (applicationBuilder == null)
+        }
+
+        public void Configure(IRouteBuilder routeBuilder)
+        {
+            if (routeBuilder == null)
             {
-                throw new ArgumentNullException(nameof(applicationBuilder));
+                throw new ArgumentNullException(nameof(routeBuilder));
             }
 
-            applicationBuilder.UseMvc(routes =>
-            {
-                routes.UseUserPasswordAuthentication();
-            });
+            routeBuilder.UseUserPasswordAuthentication();
         }
 
         public IEnumerable<string> GetOptionKeys()

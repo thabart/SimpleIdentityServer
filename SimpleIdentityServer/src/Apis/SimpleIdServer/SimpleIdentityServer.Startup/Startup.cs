@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get500"
                     });
-                // routes.UseUserPasswordAuthentication();
+                _moduleLoader.Configure(routes);
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

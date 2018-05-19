@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
 using System;
@@ -12,6 +13,10 @@ namespace SimpleIdentityServer.EF.SqlServer
         private const string _oauthConnectionString = "OAuthConnectionString";
 
         public void Configure(IApplicationBuilder applicationBuilder)
+        {
+        }
+
+        public void Configure(IRouteBuilder routeBuilder)
         {
         }
 

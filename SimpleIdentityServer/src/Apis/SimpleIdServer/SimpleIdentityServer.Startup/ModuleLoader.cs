@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
 using System;
@@ -76,6 +77,14 @@ namespace SimpleIdentityServer.Startup
             foreach(var module in _modules)
             {
                 module.ConfigureServices(services, mvcBuilder, env, opts);
+            }
+        }
+
+        public void Configure(IRouteBuilder routes)
+        {
+            foreach (var module in _modules)
+            {
+                module.Configure(routes);
             }
         }
 
