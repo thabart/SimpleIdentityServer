@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Authenticate.Basic
 {
     public class BasicAuthenticateModule : IModule
     {
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
         {
             if (services == null)
             {
@@ -39,6 +40,11 @@ namespace SimpleIdentityServer.Authenticate.Basic
             {
                 routes.UseUserPasswordAuthentication();
             });
+        }
+
+        public IEnumerable<string> GetOptionKeys()
+        {
+            return new string[0];
         }
     }
 }

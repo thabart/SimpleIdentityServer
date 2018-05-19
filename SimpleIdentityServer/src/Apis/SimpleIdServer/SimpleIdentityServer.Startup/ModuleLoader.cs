@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Startup
                     continue;
                 }
 
-                var files = Directory.GetFiles(path, "*.dll");
+                var files = Directory.GetFiles(path, "SimpleIdentityServer.*.dll");
                 foreach (var file in files)
                 {
                     var assm = Assembly.LoadFile(Path.Combine(currentDirectory, file));
@@ -71,11 +71,11 @@ namespace SimpleIdentityServer.Startup
         /// <summary>
         /// Register the services.
         /// </summary>
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment env, Dictionary<string, string> opts = null)
         {
             foreach(var module in _modules)
             {
-                module.ConfigureServices(services, mvcBuilder, env);
+                module.ConfigureServices(services, mvcBuilder, env, opts);
             }
         }
 
@@ -105,7 +105,8 @@ namespace SimpleIdentityServer.Startup
                 return assembly;
             }
 
-            return null;
+            var location = Path.Combine(Path.GetDirectoryName(args.RequestingAssembly.Location), args.Name);
+            return Assembly.LoadFile(location);
         }
     }
 }

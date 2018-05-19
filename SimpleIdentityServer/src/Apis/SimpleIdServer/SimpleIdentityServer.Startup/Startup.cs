@@ -30,6 +30,7 @@ using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Startup.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.Startup
 
             // 3. Configure Simple identity server
             ConfigureEventStoreSqlServerBus(services);
-            ConfigureOauthRepositorySqlServer(services);
+            // ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
             services.AddOpenIdApi(_options);
@@ -111,7 +112,10 @@ namespace SimpleIdentityServer.Startup
                 */;
             services.AddAuthenticationWebsite(mvcBuilder, _env);
             // services.AddBasicAuthentication(mvcBuilder, _env);
-            _moduleLoader.ConfigureServices(services, mvcBuilder, _env);
+            _moduleLoader.ConfigureServices(services, mvcBuilder, _env, new Dictionary<string, string>
+            {
+                { "OAuthConnectionString", Configuration["Db:OpenIdConnectionString"] }
+            });
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -122,11 +126,13 @@ namespace SimpleIdentityServer.Startup
             services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID));
         }
 
+        /*
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
             var connectionString = Configuration["Db:OpenIdConnectionString"];
             services.AddOAuthSqlServerEF(connectionString, null);
         }
+        */
 
         private void ConfigureStorageInMemory(IServiceCollection services)
         {
@@ -198,12 +204,15 @@ namespace SimpleIdentityServer.Startup
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             UseSerilogLogging(loggerFactory);
+
+            /*
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                 simpleIdentityServerContext.Database.EnsureCreated();
                 simpleIdentityServerContext.EnsureSeedData();
             }
+            */
 
             _moduleLoader.Configure(app);
         }

@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.EF;
+﻿/*
+using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,13 @@ using SimpleIdentityServer.Core.Extensions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Common.Extensions;
+*/
 
 namespace SimpleIdentityServer.Startup.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
+        /*
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
             InsertClaims(context);
@@ -1493,5 +1496,6 @@ namespace SimpleIdentityServer.Startup.Extensions
                 });
             }
         }
+        */
     }
 }
