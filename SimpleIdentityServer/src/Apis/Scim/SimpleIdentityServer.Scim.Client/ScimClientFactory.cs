@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Scim.Client
     {
         IGroupsClient GetGroupClient();
         IUsersClient GetUserClient();
+        IConfigurationClient GetConfigurationClient();
     }
 
     internal class ScimClientFactory : IScimClientFactory
@@ -49,10 +50,17 @@ namespace SimpleIdentityServer.Scim.Client
             return userClient;
         }
 
+        public IConfigurationClient GetConfigurationClient()
+        {
+            var configurationClient = (IConfigurationClient)_serviceProvider.GetService(typeof(IConfigurationClient));
+            return configurationClient;
+        }
+
         private static void RegisterDependencies(IServiceCollection services)
         {
             services.AddTransient<IGroupsClient, GroupsClient>();
             services.AddTransient<IUsersClient, UsersClient>();
+            services.AddTransient<IConfigurationClient, ConfigurationClient>();
             services.AddTransient<IHttpClientFactory, HttpClientFactory>();
         }
     }
