@@ -274,7 +274,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Scopes = policyRule.Scopes,
-                Script = policyRule.Script
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 

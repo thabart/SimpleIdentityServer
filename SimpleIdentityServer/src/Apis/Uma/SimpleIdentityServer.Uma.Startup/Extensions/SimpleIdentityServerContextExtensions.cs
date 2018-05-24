@@ -193,6 +193,37 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
                     },
+                    new SimpleIdentityServer.EF.Models.Client // Configure the client which need to access to the permission endpoint.
+                    {
+                        ClientId = "ProtectedWebsite",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ProtectedWebsite"
+                            }
+                        },
+                        ClientName = "ProtectedWebsite",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.native,
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName=  "uma_protection"
+                            }
+                        },
+                        GrantTypes = "3,5",
+                        ResponseTypes = "1",
+                        IdTokenSignedResponseAlg = "RS256",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
                     new SimpleIdentityServer.EF.Models.Client
                     {
                         ClientId = "OpenIdManager",

@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                     new ResourceSet
                     {
                         Id = "1",
-                        Name = "Personnal information",
+                        Name = "Access to administrator",
                         Scopes = "read,write,execute"
                     }
                 });
@@ -86,9 +86,10 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                                 Id = Guid.NewGuid().ToString(),
                                 PolicyId = _firstPolicyId,
                                 IsResourceOwnerConsentNeeded = false,
-                                ClientIdsAllowed = "client",
-                                Scopes = "read",
-                                Claims = JsonConvert.SerializeObject(claims)
+                                ClientIdsAllowed = "",
+                                Scopes = "read,write,execute",
+                                Claims = JsonConvert.SerializeObject(claims),
+                                OpenIdProvider = "http://localhost:60000/.well-known/openid-configuration"
                             }
                         }
                     }
