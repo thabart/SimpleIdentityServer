@@ -356,8 +356,8 @@ namespace SimpleIdentityServer.Scim.Common
 
         public static class SortOrderNames
         {
-            public static string Ascending = "ascending";
-            public static string Descending = "descending";
+            public const string Ascending = "ascending";
+            public const string Descending = "descending";
         }
     }
 }

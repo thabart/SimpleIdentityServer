@@ -17,24 +17,42 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Client
 {
     public enum SortOrders
     {
+        [EnumMember(Value = Common.Constants.SortOrderNames.Ascending)]
         Ascending,
+        [EnumMember(Value = Common.Constants.SortOrderNames.Descending)]
         Descending
     }
 
+    [DataContract]
     public class SearchParameter
     {
+        [DataMember(Name = Common.Constants.SearchParameterNames.Attributes)]
         public IEnumerable<string> Attributes { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.ExcludedAttributes)]
         public IEnumerable<string> ExcludedAttributes { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.Filter)]
         public string Filter { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.SortBy)]
         public string SortBy { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.SortOrder)]
         public SortOrders? SortOrder { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.StartIndex)]
         public int? StartIndex { get; set; }
+
+        [DataMember(Name = Common.Constants.SearchParameterNames.Count)]
         public int? Count { get; set; }
+
         public string ToJson()
         {
             var obj = new JObject();

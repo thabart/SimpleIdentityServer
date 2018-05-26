@@ -59,6 +59,26 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         Type = ScopeType.ProtectedApi,
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
+                    },
+                    new Scope
+                    {
+                        Name = "scim_read",
+                        Description = "Access to SCIM",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = false,
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
+                    new Scope
+                    {
+                        Name = "scim_manage",
+                        Description = "Manage SCIM resources",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = false,
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
@@ -185,6 +205,14 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                             new ClientScope
                             {
                                 ScopeName = "manager"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim_read"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim_manage"
                             }
                         },
                         GrantTypes = "3",
