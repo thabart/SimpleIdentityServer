@@ -87,13 +87,6 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = Common.Constants.SchemaAttributeTypes.String,
-                                SchemaAttributeId = _id,
-                                Value = "7d79392f-8a02-494c-949e-723a4db8ed16"
-                            },
-                            new RepresentationAttribute
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Type = Common.Constants.SchemaAttributeTypes.String,
                                 SchemaAttributeId = _externalId
                             },
                             new RepresentationAttribute
@@ -149,13 +142,6 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                         ResourceType = Common.Constants.ResourceTypes.User,
                         Attributes = new List<RepresentationAttribute>
                         {
-                            new RepresentationAttribute
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Type = Common.Constants.SchemaAttributeTypes.String,
-                                SchemaAttributeId = _id,
-                                Value = "c41c9e28-a4f8-447d-b170-f99563257d15"
-                            },
                             new RepresentationAttribute
                             {
                                 Id = Guid.NewGuid().ToString(),
