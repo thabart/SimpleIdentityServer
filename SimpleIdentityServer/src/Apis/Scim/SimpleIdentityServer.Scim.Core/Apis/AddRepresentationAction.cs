@@ -102,18 +102,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             result.Representation.LastModified = DateTime.UtcNow;
             result.Representation.ResourceType = resourceType;
             result.Representation.Version = Guid.NewGuid().ToString();
-            var attrs = result.Representation.Attributes.ToList();
-            var idAttr = result.Representation.Attributes.FirstOrDefault(a => a.Name == Common.Constants.IdentifiedScimResourceNames.Id);
-            if (idAttr == null)
-            {
-                idAttr = new RepresentationAttribute
-                {
-                    Name = Common.Constants.IdentifiedScimResourceNames.Id
-                };
-                attrs.Add(idAttr);
-            }
 
-            idAttr.Value = id;
             // 4. Save the request
             await _representationStore.AddRepresentation(result.Representation);
 
