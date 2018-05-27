@@ -5,7 +5,10 @@
 		{
 			"moduleName": "host",
 			"packages": [
-				{ "library": "SimpleIdentityServer.Host" }
+        {
+          "library": "SimpleIdentityServer.Host",
+          "version": "3.0.0-rc6"
+        }
 			]		
 		}
 	]
