@@ -21,14 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using SimpleBus.InMemory;
-// using SimpleIdentityServer.Authenticate.Basic;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Startup.Extensions;
 using System;
 using System.Collections.Generic;
 
@@ -72,11 +65,6 @@ namespace SimpleIdentityServer.Startup
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
-            // 3. Configure Simple identity server
-            ConfigureEventStoreSqlServerBus(services);
-            // ConfigureOauthRepositorySqlServer(services);
-            ConfigureStorageInMemory(services);
             ConfigureLogging(services);
             services.AddOpenIdApi(_options);
             // 4. Enable logging
@@ -99,44 +87,14 @@ namespace SimpleIdentityServer.Startup
                     opts.LoginPath = "/Authenticate";
                 });
             // 5. Configure MVC
-            var mvcBuilder = services.AddMvc()
-                /*
-                .AddRazorOptions(o =>
-                {
-                    foreach(var module in _moduleLoader.GetModules())
-                    {
-                        var location = module.GetType().Assembly.Location;
-                        o.AdditionalCompilationReferences.Add(MetadataReference.CreateFromFile(location));
-                    }
-                })
-                */;
+            var mvcBuilder = services.AddMvc();
             services.AddAuthenticationWebsite(mvcBuilder, _env);
             // services.AddBasicAuthentication(mvcBuilder, _env);
             _moduleLoader.ConfigureServices(services, mvcBuilder, _env, new Dictionary<string, string>
             {
-                { "OAuthConnectionString", Configuration["Db:OpenIdConnectionString"] }
+                { "OAuthConnectionString", Configuration["Db:OpenIdConnectionString"] },
+                { "EventStoreHandlerType", "openid" }
             });
-        }
-
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
-        {
-            var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServerEF(connectionString, null);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID));
-        }
-
-        /*
-        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
-        {
-            var connectionString = Configuration["Db:OpenIdConnectionString"];
-            services.AddOAuthSqlServerEF(connectionString, null);
-        }
-        */
-
-        private void ConfigureStorageInMemory(IServiceCollection services)
-        {
-            services.AddInMemoryStorage();
         }
 
         private void ConfigureLogging(IServiceCollection services)

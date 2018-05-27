@@ -1,0 +1,68 @@
+{
+	"libraries": [
+		{
+			"name": "SimpleIdentityServer.Authenticate.Basic",
+			"references": [ ]
+		},
+		{
+			"name": "SimpleIdentityServer.EF.SqlServer",
+			"references": [ "SimpleIdentityServer.EF", "Microsoft.EntityFrameworkCore.SqlServer" ]
+		},
+		{
+			"name": "SimpleIdentityServer.Store.InMemory",
+			"references": [ "" ]
+		},
+		{
+			"name": "SimpleIdentityServer.EF",
+			"references": [ "Microsoft.EntityFrameworkCore.Relational" ]
+		},
+		{
+			"name": "SimpleBus.InMemory",
+			"references": [ "SimpleBus.Core" ]
+		},
+		{
+			"name": "SimpleIdentityServer.EventStore.Handler",
+			"references": [ "SimpleBus.Core", "SimpleIdentityServer.Handler", "SimpleIdentityServer.EventStore.Core" ]
+		},
+		{
+			"name": "SimpleIdentityServer.EventStore.InMemory",
+			"references": [ "SimpleIdentityServer.EventStore.EF" ]
+		},
+		{
+			"name": "SimpleBus.Core",
+			"references": [ "" ]
+		},
+		{
+			"name": "SimpleIdentityServer.Handler",
+			"references": [ "" ]
+		},
+		{
+			"name": "SimpleIdentityServer.EventStore.Core",
+			"references": [ "" ]
+		},
+		{
+			"name": "SimpleIdentityServer.EventStore.EF",
+			"references": [ "" ]
+		},
+		{
+			"name": "Microsoft.EntityFrameworkCore.SqlServer",
+			"references": [ "Microsoft.EntityFrameworkCore.Relational" ]
+		},
+		{
+			"name": "Microsoft.EntityFrameworkCore.Relational",
+			"references": [ "" ]
+		},
+		{
+			"name": "Microsoft.EntityFrameworkCore",
+			"references": [ "" ]
+		},
+		{
+			"name": "Remotion.Linq",
+			"references": [ "" ]
+		},
+		{
+			"name": "System.Interactive.Async",
+			"references": [ "" ]
+		}
+	]
+}

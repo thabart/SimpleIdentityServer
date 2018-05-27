@@ -56,18 +56,6 @@ namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddInMemoryStorage(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
-            serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
-            return serviceCollection;
-        }
-
         public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, IHttpClientFactory factory = null)
         {
             if (serviceCollection == null)

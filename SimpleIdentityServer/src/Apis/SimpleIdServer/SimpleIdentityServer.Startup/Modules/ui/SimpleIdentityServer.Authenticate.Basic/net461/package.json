@@ -1,0 +1,7 @@
+{
+	"name": "SimpleIdentityServer.Authenticate.Basic",
+	"version": "1.0",
+	"references": [
+		{ "": "" }
+	]
+}

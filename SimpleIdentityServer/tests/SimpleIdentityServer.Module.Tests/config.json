@@ -1,0 +1,12 @@
+{
+	"version": "0.1",
+	"projectName": "OpenIdProvider",
+	"modules": [
+		{
+			"moduleName": "host",
+			"packages": [
+				{ "library": "SimpleIdentityServer.Host" }
+			]		
+		}
+	]
+}

@@ -1,30 +1,13 @@
 ﻿using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Stores
+namespace SimpleIdentityServer.Store.InMemory
 {
-    public interface ITokenStore
-    {
-        /// <summary>
-        /// Try to get a valid access token.
-        /// </summary>
-        /// <param name="scopes"></param>
-        /// <param name="clientId"></param>
-        /// <param name="idTokenJwsPayload"></param>
-        /// <param name="userInfoJwsPayload"></param>
-        /// <returns></returns>
-        Task<GrantedToken> GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload);
-        Task<GrantedToken> GetRefreshToken(string GetRefreshToken);
-        Task<GrantedToken> GetAccessToken(string accessToken);
-        Task<bool> AddToken(GrantedToken grantedToken);
-        Task<bool> RemoveRefreshToken(string refreshToken);
-        Task<bool> RemoveAccessToken(string accessToken);
-    }
-
     internal sealed class InMemoryTokenStore : ITokenStore
     {
         private Dictionary<string, GrantedToken> _tokens;
@@ -44,7 +27,7 @@ namespace SimpleIdentityServer.Core.Stores
             {
                 return Task.FromResult((GrantedToken)null);
             }
-            
+
             var grantedTokens = _tokens.Values
                 .Where(g => g.Scope == scopes && g.ClientId == clientId)
                 .OrderByDescending(g => g.CreateDateTime);
@@ -61,7 +44,7 @@ namespace SimpleIdentityServer.Core.Stores
                     {
                         continue;
                     }
-                    
+
                     if (!CompareJwsPayload(idTokenJwsPayload, grantedToken.IdTokenPayLoad))
                     {
                         continue;
@@ -74,7 +57,7 @@ namespace SimpleIdentityServer.Core.Stores
                     {
                         continue;
                     }
-                    
+
                     if (!CompareJwsPayload(userInfoJwsPayload, grantedToken.UserInfoPayLoad))
                     {
                         continue;
@@ -124,7 +107,7 @@ namespace SimpleIdentityServer.Core.Stores
                 throw new ArgumentNullException(nameof(grantedToken));
             }
 
-            if (_mappingStrToRefreshTokens.ContainsKey(grantedToken.RefreshToken) 
+            if (_mappingStrToRefreshTokens.ContainsKey(grantedToken.RefreshToken)
                 || _mappingStrToAccessTokens.ContainsKey(grantedToken.AccessToken))
             {
                 return Task.FromResult(false);
@@ -178,7 +161,7 @@ namespace SimpleIdentityServer.Core.Stores
         {
             foreach (var record in firstJwsPayload)
             {
-                if (!Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(record.Key))
+                if (!Core.Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(record.Key))
                 {
                     continue;
                 }
