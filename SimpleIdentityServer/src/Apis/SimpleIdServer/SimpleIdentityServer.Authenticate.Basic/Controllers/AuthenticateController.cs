@@ -32,8 +32,6 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.EventStore.Core.Models;
-using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
@@ -59,7 +57,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private readonly ITranslationManager _translationManager;        
         private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;        
         private readonly IUrlHelper _urlHelper;
-        private readonly IEventAggregateRepository _eventAggregateRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IPayloadSerializer _payloadSerializer;
@@ -73,7 +70,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
-            IEventAggregateRepository eventAggregateRepository,
             IEventPublisher eventPublisher,
             IAuthenticationService authenticationService,
             IAuthenticationSchemeProvider authenticationSchemeProvider,
@@ -88,7 +84,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _translationManager = translationManager;
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-            _eventAggregateRepository = eventAggregateRepository;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
@@ -323,7 +318,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 request);
             if (result != null)
             {
-                await LogAuthenticateUser(actionResult, request.ProcessId);
+                LogAuthenticateUser(actionResult, request.ProcessId);
                 return result;
             }
 
@@ -383,7 +378,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                     request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(actionResult.ActionResult, request.ProcessId);
+                    LogAuthenticateUser(actionResult.ActionResult, request.ProcessId);
                     return result;
                 }
             }
@@ -480,7 +475,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 await SetLocalCookie(actionResult.Claims, authorizationRequest.SessionId);
                 await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
-                await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
+                LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
             }
@@ -494,31 +489,14 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         #region Private methods
 
-        private async Task LogAuthenticateUser(SimpleIdentityServer.Core.Results.ActionResult act, string processId)
+        private void LogAuthenticateUser(Core.Results.ActionResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
             {
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
-            if (evtAggregate == null)
-            {
-                return;
-            }
-
-            _eventPublisher.Publish(new ResourceOwnerAuthenticated(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), evtAggregate.Order + 1));
-        }
-
-        private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
-        {
-            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
-            if (events == null || !events.Any())
-            {
-                return null;
-            }
-
-            return events.First();
+            _eventPublisher.Publish(new ResourceOwnerAuthenticated(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), 2));
         }
 
         private async Task TranslateView(string uiLocales)

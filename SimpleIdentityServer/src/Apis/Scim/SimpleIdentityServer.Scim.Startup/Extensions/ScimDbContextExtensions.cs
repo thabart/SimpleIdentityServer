@@ -25,6 +25,7 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
     public static class ScimDbContextExtensions
     {
         private const char _separator = ',';
+        private static string _id = Guid.NewGuid().ToString();
         private static string _externalId = Guid.NewGuid().ToString();
         private static string _adrId = Guid.NewGuid().ToString();
         private static string _localeId = Guid.NewGuid().ToString();
@@ -86,6 +87,13 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = Common.Constants.SchemaAttributeTypes.String,
+                                SchemaAttributeId = _id,
+                                Value = "7d79392f-8a02-494c-949e-723a4db8ed16"
+                            },
+                            new RepresentationAttribute
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = Common.Constants.SchemaAttributeTypes.String,
                                 SchemaAttributeId = _externalId
                             },
                             new RepresentationAttribute
@@ -141,6 +149,13 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                         ResourceType = Common.Constants.ResourceTypes.User,
                         Attributes = new List<RepresentationAttribute>
                         {
+                            new RepresentationAttribute
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = Common.Constants.SchemaAttributeTypes.String,
+                                SchemaAttributeId = _id,
+                                Value = "c41c9e28-a4f8-447d-b170-f99563257d15"
+                            },
                             new RepresentationAttribute
                             {
                                 Id = Guid.NewGuid().ToString(),
@@ -437,7 +452,13 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                     "A physical mailing address for this User. Canonical type values of 'work', 'home', and 'other'.  This attribute is a complex type with the following sub-attributes.",
                     UserAddressAttributes,
                     multiValued: true),
-                SchemaAttributeFactory.CreateAttribute(Common.Constants.IdentifiedScimResourceNames.Id, "Unique identifier for a SCIM resource as defined by the service provider", mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, caseExact: true, returned: Common.Constants.SchemaAttributeReturned.Always, isCommon: true),
+                SchemaAttributeFactory.CreateAttributeWithId(_id, 
+                    Common.Constants.IdentifiedScimResourceNames.Id, 
+                    "Unique identifier for a SCIM resource as defined by the service provider",
+                    mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, 
+                    caseExact: true, 
+                    returned: Common.Constants.SchemaAttributeReturned.Always, 
+                    isCommon: true),
                 SchemaAttributeFactory.CreateAttribute(Common.Constants.IdentifiedScimResourceNames.ExternalId, "Identifier as defined by the provisioning client", caseExact: true, mutability: Common.Constants.SchemaAttributeMutability.ReadWrite, required: false, isCommon: true),
                 SchemaAttributeFactory.CreateComplexAttribute(Guid.NewGuid().ToString(), Common.Constants.ScimResourceNames.Meta, "Complex attribute contaning resource metadata", UserMetaDataAttributes, mutability: Common.Constants.SchemaAttributeMutability.ReadOnly, returned: Common.Constants.SchemaAttributeReturned.Default, isCommon: true)
             },

@@ -17,11 +17,13 @@
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
+using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Validators;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -100,7 +102,18 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             result.Representation.LastModified = DateTime.UtcNow;
             result.Representation.ResourceType = resourceType;
             result.Representation.Version = Guid.NewGuid().ToString();
+            var attrs = result.Representation.Attributes.ToList();
+            var idAttr = result.Representation.Attributes.FirstOrDefault(a => a.Name == Common.Constants.IdentifiedScimResourceNames.Id);
+            if (idAttr == null)
+            {
+                idAttr = new RepresentationAttribute
+                {
+                    Name = Common.Constants.IdentifiedScimResourceNames.Id
+                };
+                attrs.Add(idAttr);
+            }
 
+            idAttr.Value = id;
             // 4. Save the request
             await _representationStore.AddRepresentation(result.Representation);
 
