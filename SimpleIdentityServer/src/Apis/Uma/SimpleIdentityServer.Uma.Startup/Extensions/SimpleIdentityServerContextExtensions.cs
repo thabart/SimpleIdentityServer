@@ -269,6 +269,21 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                     },
                     new SimpleIdentityServer.EF.Models.Client
                     {
+                        ClientId = "AuthManager",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "XD~}]7nYh5NS*N{U"
+                            }
+                        },
+                        ClientName = "AuthManager",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post
+                    },
+                    new SimpleIdentityServer.EF.Models.Client
+                    {
                         ClientId = "Scim",
                         ClientSecrets = new List<ClientSecret>
                         {
