@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.EF\SimpleIdentityServer.EF.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
   </ItemGroup>
   
   <ItemGroup>

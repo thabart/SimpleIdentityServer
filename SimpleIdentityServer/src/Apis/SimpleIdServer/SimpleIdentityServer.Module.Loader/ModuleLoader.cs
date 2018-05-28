@@ -27,14 +27,16 @@ namespace SimpleIdentityServer.Module.Loader
         void Configure(IRouteBuilder routes);
         void Configure(IApplicationBuilder app);
     }
-
+    
     internal sealed class ModuleLoader : IModuleLoader
     {
+        private const string _fkName = "net461"; // TODO : Resolve the current framework version.
         private readonly INugetClient _nugetClient;
         private readonly ModuleLoaderOptions _options;
         private const string _configFile = "config.json";
-        private IEnumerable<IModule> _modules;
+        private ICollection<IModule> _modules;
         private bool _isInitialized = false;
+        private bool _isPackagesRestored = false;
         private ProjectConfiguration _projectConfiguration;
         private ConcurrentBag<string> _installedLibs;
 
@@ -53,6 +55,10 @@ namespace SimpleIdentityServer.Module.Loader
             _nugetClient = nugetClient;
             _options = options;
         }
+
+        public event EventHandler Initialized;
+        public event EventHandler PackageRestored;
+        public event EventHandler ModulesLoaded;
 
         /// <summary>
         /// Initialize the module loader.
@@ -89,6 +95,10 @@ namespace SimpleIdentityServer.Module.Loader
             }
 
             _isInitialized = true;
+            if (Initialized != null)
+            {
+                Initialized(this, EventArgs.Empty);
+            }
         }
         
         /// <summary>
@@ -121,6 +131,65 @@ namespace SimpleIdentityServer.Module.Loader
                     await RestorePackages(package.Library, package.Version);
                 }
             }
+
+            _isPackagesRestored = true;
+            if (PackageRestored != null)
+            {
+                PackageRestored(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Load the modules.
+        /// </summary>
+        public void LoadModules()
+        {
+            if (!_isInitialized)
+            {
+                throw new ModuleLoaderInternalException("the loader is not initialized");
+            }
+
+            if (!_isPackagesRestored)
+            {
+                throw new ModuleLoaderInternalException("the packages are not restored");
+            }
+
+            _modules = new List<IModule>();
+            if (_projectConfiguration.Modules == null || !_projectConfiguration.Modules.Any())
+            {
+                return;
+            }
+
+            foreach(var module in _projectConfiguration.Modules)
+            {
+                if (module.Packages == null || !module.Packages.Any())
+                {
+                    continue;
+                }
+
+                foreach(var package in module.Packages)
+                {
+                    var path = GetPath($"{package.Library}.{package.Version}/lib/{_fkName}/{package.Library}.dll");
+                    if (!File.Exists(path))
+                    {
+                        throw new ModuleLoaderInternalException($"The module {package.Library}.{package.Version} cannot be loaded");
+                    }
+
+                    var assm = Assembly.LoadFile(path);
+                    var modules = assm.GetExportedTypes().Where(t => typeof(IModule).IsAssignableFrom(t));
+                    if (modules == null || !modules.Any() || modules.Count() != 1)
+                    {
+                        throw new ModuleLoaderInternalException($"The module {package.Library}.{package.Version} doesn't contain an implementation of IModule");
+                    }
+
+                    _modules.Add((IModule)Activator.CreateInstance(modules.First()));
+                }
+            }
+
+            if (ModulesLoaded != null)
+            {
+                ModulesLoaded(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>
@@ -131,55 +200,7 @@ namespace SimpleIdentityServer.Module.Loader
         {
             return _modules;
         }
-
-        /// <summary>
-        /// Load the modules.
-        /// </summary>
-        public void LoadModules()
-        {
-            /*
-            _modules = new List<IModule>();
-
-            var result = new List<IModule>();
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var subDirectories = Directory.GetDirectories(_modulePath);
-            foreach (var module in configuration.Modules)
-            {
-                var subDirectory = Path.Combine(_modulePath, module.ModuleName);
-                if (!Directory.Exists(subDirectory))
-                {
-                    continue;
-                }
-
-
-                foreach (var package in module.Packages)
-                {
-                    var libPath = Path.Combine(subDirectory, package.Library);
-                    var libFkPath = Path.Combine(libPath, "net461"); // TODO : Retrieve the correct framework version (netcoreapp2.0 or net461)
-                    if (!Directory.Exists(libPath) || !Directory.Exists(libFkPath))
-                    {
-                        continue;
-                    }
-
-                    var files = Directory.GetFiles(libFkPath, "SimpleIdentityServer.*.dll");
-                    foreach (var file in files)
-                    {
-                        var assm = Assembly.LoadFile(Path.Combine(currentDirectory, file));
-                        var modules = assm.GetExportedTypes().Where(t => typeof(IModule).IsAssignableFrom(t));
-                        if (modules == null || !modules.Any() || modules.Count() != 1)
-                        {
-                            continue;
-                        }
-
-                        result.Add((IModule)Activator.CreateInstance(modules.First()));
-                    }
-                }
-            }
-
-            _modules = result;
-            */
-        }
-
+        
         /// <summary>
         /// Register the services.
         /// </summary>
@@ -361,8 +382,7 @@ namespace SimpleIdentityServer.Module.Loader
                             continue;
                         }
 
-                        var flatContainerUrl = $"{pkgBaseAdr.Id}{packageName}/index.json";
-                        var flatContainerResponse = await _nugetClient.GetNugetFlatContainer(flatContainerUrl, packageName);
+                        var flatContainerResponse = await _nugetClient.GetNugetFlatContainer(pkgBaseAdr.Id, packageName);
                         if (flatContainerResponse == null || !flatContainerResponse.Versions.Contains(version))
                         {
                             continue;
@@ -381,7 +401,7 @@ namespace SimpleIdentityServer.Module.Loader
                     File.Delete(pkgFilePath);
                     return;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
 
                 }

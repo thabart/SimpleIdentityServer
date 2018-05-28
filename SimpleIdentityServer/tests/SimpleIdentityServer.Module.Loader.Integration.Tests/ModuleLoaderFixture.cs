@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Module.Loader.Integration.Tests
 
             moduleLoader.Initialize();
             await moduleLoader.RestorePackages();
+            moduleLoader.LoadModules();
         }
     }
 }

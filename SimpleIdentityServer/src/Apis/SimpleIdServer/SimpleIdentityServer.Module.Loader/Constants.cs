@@ -36,7 +36,7 @@
 
         public static class NugetFlatContainerResponseNames
         {
-            public const string Version = "version";
+            public const string Versions = "versions";
         }
     }
 }

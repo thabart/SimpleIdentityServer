@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
   </ItemGroup>
 
   <ItemGroup>
