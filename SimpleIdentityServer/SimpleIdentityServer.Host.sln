@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core", "01. Core", "{4E750A65-E3DF-4030-ACC0-C47FBDAA615C}"
 EndProject
@@ -107,9 +107,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Store.InMemory", "src\Apis\SimpleIdServer\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj", "{49FCFE88-C4EF-41B2-A7F1-14234E90A71E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module.Tests", "tests\SimpleIdentityServer.Module.Tests\SimpleIdentityServer.Module.Tests.csproj", "{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module.Loader", "src\Apis\SimpleIdServer\SimpleIdentityServer.Module.Loader\SimpleIdentityServer.Module.Loader.csproj", "{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module.Loader.Tests", "tests\SimpleIdentityServer.Module.Loader.Tests\SimpleIdentityServer.Module.Loader.Tests.csproj", "{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module.Loader.Integration.Tests", "tests\SimpleIdentityServer.Module.Loader.Integration.Tests\SimpleIdentityServer.Module.Loader.Integration.Tests.csproj", "{60BD16E3-D70D-4008-8594-0D2E508790E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -352,18 +354,24 @@ Global
 		{49FCFE88-C4EF-41B2-A7F1-14234E90A71E}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{49FCFE88-C4EF-41B2-A7F1-14234E90A71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49FCFE88-C4EF-41B2-A7F1-14234E90A71E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Fake|Any CPU.Build.0 = Debug|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60BD16E3-D70D-4008-8594-0D2E508790E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -416,8 +424,9 @@ Global
 		{AECEA402-5A13-46FC-B469-11DB6685320E} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{D0453ED3-435D-4B69-BD49-2BB038118F2C} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{49FCFE88-C4EF-41B2-A7F1-14234E90A71E} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
-		{9BA4E556-06E0-49EE-9C76-E70C1F0EFE80} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
 		{822DAFA2-C234-4A1E-B25A-0DCC1D7B4F14} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{DFE9B6D7-75BD-4FE4-A97C-B7363151EEFF} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
+		{60BD16E3-D70D-4008-8594-0D2E508790E3} = {17B98C75-B2C6-4B33-8865-A3832E3AB0CC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

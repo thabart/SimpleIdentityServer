@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
-        private ModuleLoader _moduleLoader;
+        // private ModuleLoader _moduleLoader;
         private IdentityServerOptions _options;
         private IHostingEnvironment _env;
         public IConfigurationRoot Configuration { get; set; }
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Startup
                 }
             };
             _env = env;
-            _moduleLoader = new ModuleLoader();
-            _moduleLoader.LoadModules();
+            // _moduleLoader = new ModuleLoader();
+            // _moduleLoader.LoadModules();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -90,11 +90,13 @@ namespace SimpleIdentityServer.Startup
             var mvcBuilder = services.AddMvc();
             services.AddAuthenticationWebsite(mvcBuilder, _env);
             // services.AddBasicAuthentication(mvcBuilder, _env);
+            /*
             _moduleLoader.ConfigureServices(services, mvcBuilder, _env, new Dictionary<string, string>
             {
                 { "OAuthConnectionString", Configuration["Db:OpenIdConnectionString"] },
                 { "EventStoreHandlerType", "openid" }
             });
+            */
         }
 
         private void ConfigureLogging(IServiceCollection services)
@@ -156,7 +158,7 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get500"
                     });
-                _moduleLoader.Configure(routes);
+                // _moduleLoader.Configure(routes);
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
@@ -172,7 +174,7 @@ namespace SimpleIdentityServer.Startup
             }
             */
 
-            _moduleLoader.Configure(app);
+            // _moduleLoader.Configure(app);
         }
 
         private void UseSerilogLogging(ILoggerFactory logger)

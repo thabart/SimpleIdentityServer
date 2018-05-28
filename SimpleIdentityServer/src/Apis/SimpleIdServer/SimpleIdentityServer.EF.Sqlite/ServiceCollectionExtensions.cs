@@ -7,7 +7,7 @@ namespace SimpleIdentityServer.EF.Sqlite
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOAuthSqliteEF(this IServiceCollection serviceCollection, string connectionString, Action<SqliteDbContextOptionsBuilder> callback)
+        public static IServiceCollection AddOAuthSqliteEF(this IServiceCollection serviceCollection, string connectionString, Action<SqliteDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {

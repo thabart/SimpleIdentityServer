@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.EF.SqlServer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEventStoreSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback)
+        public static IServiceCollection AddEventStoreSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {

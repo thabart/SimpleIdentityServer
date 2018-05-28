@@ -1,0 +1,15 @@
+{
+	"version": "0.1",
+	"projectName": "OpenIdProvider",
+	"modules": [
+		{
+			"moduleName": "storage",
+			"packages": [
+        {
+          "library": "SimpleIdentityServer.Store.InMemory",
+          "version": "3.0.0-rc7"
+        }
+			]		
+		}
+	]
+}

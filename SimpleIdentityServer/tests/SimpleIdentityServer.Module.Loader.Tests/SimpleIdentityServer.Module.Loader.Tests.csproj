@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Module.Tests</Description>
+    <Description>SimpleIdentityServer.Module.Loader.Tests</Description>
     <Authors>thierry habart</Authors>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>SimpleIdentityServer.Module.Tests</AssemblyName>
-    <PackageId>SimpleIdentityServer.Module.Tests</PackageId>
+    <AssemblyName>SimpleIdentityServer.Module.Loader.Tests</AssemblyName>
+    <PackageId>SimpleIdentityServer.Module.Loader.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
 
@@ -28,12 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Module.Loader\SimpleIdentityServer.Module.Loader.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="config.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

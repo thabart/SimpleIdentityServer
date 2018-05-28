@@ -30,6 +30,7 @@ dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Host
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Logging /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Store.Redis /p:PackageVersion=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Store.InMemory /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication.Email /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication.Twilio /p:PackageVersion=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection /p:PackageVersion=%packageVersion%

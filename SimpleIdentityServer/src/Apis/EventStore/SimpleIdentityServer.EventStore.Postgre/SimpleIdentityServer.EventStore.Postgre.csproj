@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
   </ItemGroup>
   
