@@ -2,14 +2,32 @@
 	"version": "0.1",
 	"projectName": "OpenIdProvider",
 	"modules": [
-		{
-			"moduleName": "storage",
-			"packages": [
+    {
+      "moduleName": "storage",
+      "packages": [
         {
           "library": "SimpleIdentityServer.Store.InMemory",
           "version": "3.0.0-rc7"
         }
-			]		
-		}
+      ]
+    },
+    {
+      "moduleName": "oauthrepository",
+      "packages": [
+        {
+          "library": "SimpleIdentityServer.EF.SqlServer",
+          "version": "3.0.0-rc7"
+        }
+      ]
+    },
+    {
+      "moduleName": "ui",
+      "packages": [
+        {
+          "library": "SimpleIdentityServer.Authenticate.Basic",
+          "version": "3.0.0-rc7"
+        }
+      ]
+    }
 	]
 }

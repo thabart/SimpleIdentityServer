@@ -1,7 +1,0 @@
-{
-	"name": "SimpleIdentityServer.EF.SqlServer",
-	"version": "1.0",
-	"references": [
-		{ "library": "SimpleIdentityServer.EF" }
-	]
-}

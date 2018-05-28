@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,11 +16,11 @@ namespace SimpleIdentityServer.Module.Loader.Integration.Tests
             {
                 NugetSources = new List<string>
                 {
-                    @"c:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\feed\",
+                    @"d:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\feed\",
                     "https://api.nuget.org/v3/index.json",
                     "https://www.myget.org/F/advance-ict/api/v3/index.json"
                 },
-                ModulePath = @"D:\Modules"
+                ModulePath = @"d:\Projects\Modules\"
             });
 
             moduleLoader.Initialize();

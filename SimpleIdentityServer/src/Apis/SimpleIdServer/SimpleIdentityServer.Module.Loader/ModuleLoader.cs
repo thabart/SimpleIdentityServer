@@ -5,13 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Module.Loader.Exceptions;
 using SimpleIdentityServer.Module.Loader.Nuget;
+using SimpleIdentityServer.Module.Loader.Nuget.DTOs.Responses;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -26,6 +29,30 @@ namespace SimpleIdentityServer.Module.Loader
         void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment env, Dictionary<string, string> opts = null);
         void Configure(IRouteBuilder routes);
         void Configure(IApplicationBuilder app);
+        event EventHandler Initialized;
+        event EventHandler<IntEventArgs> PackageRestored;
+        event EventHandler ModulesLoaded;
+        event EventHandler<StrEventArgs> ModuleInstalled;
+    }
+
+    public class StrEventArgs : EventArgs
+    {
+        public StrEventArgs(string s)
+        {
+            Value = s;
+        }
+
+        public string Value { get; private set; }
+    }
+
+    public class IntEventArgs : EventArgs
+    {
+        public IntEventArgs(long i)
+        {
+            Value = i;
+        }
+
+        public long Value { get; private set; }
     }
     
     internal sealed class ModuleLoader : IModuleLoader
@@ -57,8 +84,9 @@ namespace SimpleIdentityServer.Module.Loader
         }
 
         public event EventHandler Initialized;
-        public event EventHandler PackageRestored;
+        public event EventHandler<IntEventArgs> PackageRestored;
         public event EventHandler ModulesLoaded;
+        public event EventHandler<StrEventArgs> ModuleInstalled;
 
         /// <summary>
         /// Initialize the module loader.
@@ -117,6 +145,7 @@ namespace SimpleIdentityServer.Module.Loader
                 return;
             }
 
+            var watch = Stopwatch.StartNew();
             _installedLibs = new ConcurrentBag<string>();
             foreach (var module in _projectConfiguration.Modules)
             {
@@ -132,10 +161,12 @@ namespace SimpleIdentityServer.Module.Loader
                 }
             }
 
+            watch.Stop();
+            Trace.WriteLine($"Finish to restore the packages in {watch.ElapsedMilliseconds} ms");
             _isPackagesRestored = true;
             if (PackageRestored != null)
             {
-                PackageRestored(this, EventArgs.Empty);
+                PackageRestored(this, new IntEventArgs(watch.ElapsedMilliseconds));
             }
         }
 
@@ -243,23 +274,74 @@ namespace SimpleIdentityServer.Module.Loader
                 return assembly;
             }
 
-
-            return null;
-            /*
-            var requestingName = args.RequestingAssembly.ManifestModule.Name.Replace(".dll", "");
-            var requestingLib = _projectResolvedConfiguration.Libraries.FirstOrDefault(l => l.Name == requestingName);
-            var requestedName = args.Name.Split(',').First();
-            var requestedLib = _projectResolvedConfiguration.Libraries.FirstOrDefault(l => l.Name == requestedName);
-            var modulePath = Path.Combine(_modulePath, "lib", requestedName, "net461", requestedName + ".dll");
-            if (requestingLib == null || requestedLib == null ||
-                !File.Exists(modulePath))
+            var splittedValue = args.Name.Split(',');
+            if (splittedValue.Count() < 2)
             {
                 return null;
             }
 
-            modulePath = Path.Combine(Directory.GetCurrentDirectory(), modulePath);
-            return Assembly.LoadFile(modulePath);
-            */
+            var packageName = splittedValue.First().Replace(" ", "");
+            IEnumerable<string> splittedVersion = splittedValue.ElementAt(1).Replace(" ", "").Split('=');
+            if (splittedVersion.Count() != 2)
+            {
+                return null;
+            }
+
+            splittedVersion = splittedVersion.ElementAt(1).Split('.');
+            if (splittedVersion.Count() > 3)
+            {
+                splittedVersion = splittedVersion.Take(3);
+            }
+
+            var version = string.Join(".", splittedVersion);
+            var subVersion = string.Join(".", splittedVersion.Take(2));
+            var baseVersion = splittedVersion.ElementAt(0);
+            var moduleDirectories = Directory.GetDirectories(_options.ModulePath, $"{packageName}.{version}*");
+            if (moduleDirectories == null || !moduleDirectories.Any())
+            {
+                moduleDirectories = Directory.GetDirectories(_options.ModulePath, $"{packageName}.{subVersion}*");
+                if (moduleDirectories == null || !moduleDirectories.Any())
+                {
+                    moduleDirectories = Directory.GetDirectories(_options.ModulePath, $"{packageName}.{baseVersion}*");
+                    if (moduleDirectories == null || !moduleDirectories.Any())
+                    {
+                        return null;
+                    }
+                }
+            }            
+
+            var libPath = Path.Combine(moduleDirectories.First(), "lib");
+            if (!Directory.Exists(libPath))
+            {
+                return null;
+            }
+
+            var fkDirectories = Directory.GetDirectories(libPath);
+            var dllPath = string.Empty;
+            if (fkDirectories.Count() == 1)
+            {
+                dllPath  = Path.Combine(fkDirectories.First(), $"{packageName}.dll");
+            }
+            else
+            {
+                var supportedFrameworks = GetSupportedFrameworks();
+                var filteredFkDirectories = fkDirectories.Where(fkdir => supportedFrameworks.Any(sfk =>
+                {
+                    var dirInfo = new DirectoryInfo(fkdir);
+                    return sfk == dirInfo.Name;
+                })).OrderByDescending(s => s);
+                if (filteredFkDirectories != null && filteredFkDirectories.Any())
+                {
+                    dllPath = Path.Combine(filteredFkDirectories.First(), $"{packageName}.dll");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(dllPath) && File.Exists(dllPath))
+            {
+                return Assembly.LoadFrom(dllPath);
+            }
+
+            return null;
         }
 
         private async Task RestorePackages(string packageName, string version)
@@ -349,68 +431,95 @@ namespace SimpleIdentityServer.Module.Loader
             var pkgFilePath = GetPath(pkgFileSubPath);
             foreach (var nugetSource in _options.NugetSources)
             {
-                try
+                Uri uriResult;
+                if (!Uri.TryCreate(nugetSource, UriKind.Absolute, out uriResult))
                 {
-                    Uri uriResult;
-                    if (!Uri.TryCreate(nugetSource, UriKind.Absolute, out uriResult))
+                    continue;
+                }
+
+                if (Directory.Exists(nugetSource))
+                {
+                    var files = Directory.GetFiles(nugetSource, pkgFileSubPath);
+                    if (files == null || !files.Any())
                     {
                         continue;
                     }
 
-                    if (Directory.Exists(nugetSource))
-                    {
-                        var files = Directory.GetFiles(nugetSource, pkgFileSubPath);
-                        if (files == null || !files.Any())
-                        {
-                            continue;
-                        }
-
-                        File.Copy(files.First(), pkgFilePath);
-                    }
-                    else
-                    {
-
-                        var configuration = await _nugetClient.GetConfiguration(nugetSource);
-                        if (configuration == null)
-                        {
-                            continue;
-                        }
-
-                        var pkgBaseAdr = configuration.Resources.FirstOrDefault(r => r.Type.Contains("PackageBaseAddress"));
-                        if (pkgBaseAdr == null)
-                        {
-                            continue;
-                        }
-
-                        var flatContainerResponse = await _nugetClient.GetNugetFlatContainer(pkgBaseAdr.Id, packageName);
-                        if (flatContainerResponse == null || !flatContainerResponse.Versions.Contains(version))
-                        {
-                            continue;
-                        }
-
-                        using (var contentStream = await _nugetClient.DownloadNugetPackage(pkgBaseAdr.Id, packageName, version))
-                        {
-                            using (var stream = new FileStream(pkgFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                            {
-                                await contentStream.CopyToAsync(stream);
-                            }
-                        }
-                    }
-
-                    ZipFile.ExtractToDirectory(pkgFilePath, pkgPath);
-                    File.Delete(pkgFilePath);
-                    return;
+                    File.Copy(files.First(), pkgFilePath);
                 }
-                catch (Exception ex)
+                else
                 {
 
+                    var configuration = await _nugetClient.GetConfiguration(nugetSource);
+                    if (configuration == null)
+                    {
+                        continue;
+                    }
+
+                    var pkgBaseAdr = configuration.Resources.FirstOrDefault(r => r.Type.Contains("PackageBaseAddress"));
+                    if (pkgBaseAdr == null)
+                    {
+                        continue;
+                    }
+
+                    NugetFlatContainerResponse flatContainerResponse = null;
+                    try
+                    {
+                        flatContainerResponse = await _nugetClient.GetNugetFlatContainer(pkgBaseAdr.Id, packageName);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
+                    if (flatContainerResponse == null || !flatContainerResponse.Versions.Contains(version))
+                    {
+                        continue;
+                    }
+
+                    using (var contentStream = await _nugetClient.DownloadNugetPackage(pkgBaseAdr.Id, packageName, version))
+                    {
+                        using (var stream = new FileStream(pkgFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            await contentStream.CopyToAsync(stream);
+                        }
+                    }
                 }
+
+                ZipFile.ExtractToDirectory(pkgFilePath, pkgPath);
+                File.Delete(pkgFilePath);
+                Trace.WriteLine($"The package {packageName} is installed");
+                if (ModuleInstalled != null)
+                {
+                    ModuleInstalled(this, new StrEventArgs(pkgSubPath));
+                }
+
+                return;
             }
         }
 
         private string GetPath(string subPath)
         {
             return Path.Combine(_options.ModulePath, subPath);
+        }
+
+        private IEnumerable<string> GetSupportedFrameworks()
+        {
+#if NET461
+            return new List<string>
+            {
+                "net461",
+                "net46",
+                "net45",
+                "net40",
+                "net35"
+            };
+#else
+            return new List<string>
+            {
+                "netstandard"
+            };
+#endif
         }
 
         #endregion

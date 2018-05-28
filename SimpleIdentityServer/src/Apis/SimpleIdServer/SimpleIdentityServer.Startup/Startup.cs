@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Module.Loader;
 using System;
 using System.Collections.Generic;
 
@@ -29,7 +30,7 @@ namespace SimpleIdentityServer.Startup
 {
     public class Startup
     {
-        // private ModuleLoader _moduleLoader;
+        private IModuleLoader _moduleLoader;
         private IdentityServerOptions _options;
         private IHostingEnvironment _env;
         public IConfigurationRoot Configuration { get; set; }
@@ -55,8 +56,23 @@ namespace SimpleIdentityServer.Startup
                 }
             };
             _env = env;
-            // _moduleLoader = new ModuleLoader();
-            // _moduleLoader.LoadModules();
+            var moduleLoaderFactory = new ModuleLoaderFactory();
+            _moduleLoader = moduleLoaderFactory.BuidlerModuleLoader(new ModuleLoaderOptions
+            {
+                NugetSources = new List<string>
+                {
+                    @"d:\Projects\SimpleIdentityServer\SimpleIdentityServer\src\feed\",
+                    "https://api.nuget.org/v3/index.json",
+                    "https://www.myget.org/F/advance-ict/api/v3/index.json"
+                },
+                ModulePath = @"d:\Projects\Modules\"
+            });
+            _moduleLoader.ModuleInstalled += ModuleInstalled;
+            _moduleLoader.PackageRestored += PackageRestored;
+            _moduleLoader.ModulesLoaded += ModulesLoaded;
+            _moduleLoader.Initialize();
+            _moduleLoader.RestorePackages().Wait();
+            _moduleLoader.LoadModules();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -89,14 +105,11 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
             services.AddAuthenticationWebsite(mvcBuilder, _env);
-            // services.AddBasicAuthentication(mvcBuilder, _env);
-            /*
             _moduleLoader.ConfigureServices(services, mvcBuilder, _env, new Dictionary<string, string>
             {
                 { "OAuthConnectionString", Configuration["Db:OpenIdConnectionString"] },
                 { "EventStoreHandlerType", "openid" }
             });
-            */
         }
 
         private void ConfigureLogging(IServiceCollection services)
@@ -158,28 +171,33 @@ namespace SimpleIdentityServer.Startup
                         controller = "Error",
                         action = "Get500"
                     });
-                // _moduleLoader.Configure(routes);
+                _moduleLoader.Configure(routes);
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             UseSerilogLogging(loggerFactory);
-
-            /*
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
-            }
-            */
-
-            // _moduleLoader.Configure(app);
+            _moduleLoader.Configure(app);
         }
 
         private void UseSerilogLogging(ILoggerFactory logger)
         {
             logger.AddSerilog();
+        }
+
+        private static void ModuleInstalled(object sender, StrEventArgs e)
+        {
+            Console.WriteLine($"The nuget package {e.Value} is installed");
+        }
+
+        private static void PackageRestored(object sender, IntEventArgs e)
+        {
+            Console.WriteLine($"Finish to restore the packages in {e.Value}");
+        }
+
+        private static void ModulesLoaded(object sender, EventArgs e)
+        {
+            Console.WriteLine("The modules are loaded");
         }
     }
 }
