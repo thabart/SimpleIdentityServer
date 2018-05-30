@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Apis\SimpleIdServer\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
+    <ProjectReference Include="..\..\..\Apis\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\SimpleBus.Core\SimpleBus.Core.csproj" />
   </ItemGroup>
 

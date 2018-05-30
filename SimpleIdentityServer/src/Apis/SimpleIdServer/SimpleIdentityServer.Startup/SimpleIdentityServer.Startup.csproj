@@ -9,10 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
+    <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.EF.SqlServer\SimpleIdentityServer.EF.SqlServer.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Module.Loader\SimpleIdentityServer.Module.Loader.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +34,6 @@
 
   <ItemGroup>
       <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.0" />
-	  <Watch Include=".\Modules\**\*.dll" />
   </ItemGroup> 
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

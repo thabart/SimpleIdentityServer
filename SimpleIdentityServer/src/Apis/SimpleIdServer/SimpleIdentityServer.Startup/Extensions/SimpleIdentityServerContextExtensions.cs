@@ -1,5 +1,4 @@
-﻿/*
-using SimpleIdentityServer.EF;
+﻿using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
@@ -10,13 +9,11 @@ using SimpleIdentityServer.Core.Extensions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using SimpleIdentityServer.Core.Common.Extensions;
-*/
 
 namespace SimpleIdentityServer.Startup.Extensions
 {
     public static class SimpleIdentityServerContextExtensions
     {
-        /*
         public static void EnsureSeedData(this SimpleIdentityServerContext context)
         {
             InsertClaims(context);
@@ -1147,6 +1144,51 @@ namespace SimpleIdentityServer.Startup.Extensions
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
                     },
+                    // Protected website
+                    new EF.Models.Client
+                    {
+                        ClientId = "ProtectedWebsite",
+                        ClientName = "ProtectedWebsite",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ProtectedWebsite"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "website_api"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://website/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
                     new EF.Models.Client // Medical website.
                     {
                         ClientId = "MedicalWebsite",
@@ -1496,6 +1538,5 @@ namespace SimpleIdentityServer.Startup.Extensions
                 });
             }
         }
-        */
     }
 }
