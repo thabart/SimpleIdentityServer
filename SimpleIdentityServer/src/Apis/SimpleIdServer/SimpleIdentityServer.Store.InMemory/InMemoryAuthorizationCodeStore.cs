@@ -1,17 +1,11 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Stores
+namespace SimpleIdentityServer.Store.InMemory
 {
-    public interface IAuthorizationCodeStore
-    {
-        Task<AuthorizationCode> GetAuthorizationCode(string code);
-        Task<bool> AddAuthorizationCode(AuthorizationCode authorizationCode);
-        Task<bool> RemoveAuthorizationCode(string code);
-    }
-
     internal sealed class InMemoryAuthorizationCodeStore : IAuthorizationCodeStore
     {
         private static Dictionary<string, AuthorizationCode> _mappingStringToAuthCodes;

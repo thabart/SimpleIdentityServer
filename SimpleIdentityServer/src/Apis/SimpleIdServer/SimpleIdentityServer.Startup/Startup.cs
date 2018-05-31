@@ -23,13 +23,12 @@ using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
-using SimpleIdentityServer.Core;
 using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Startup.Extensions;
+using SimpleIdentityServer.Store.InMemory;
 using System;
 
 namespace SimpleIdentityServer.Startup

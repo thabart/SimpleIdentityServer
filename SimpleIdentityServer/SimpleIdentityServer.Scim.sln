@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.EventStore.Sqlite", "src\Apis\EventStore\SimpleIdentityServer.EventStore.Sqlite\SimpleIdentityServer.EventStore.Sqlite.csproj", "{F701F971-3BAA-4E8F-8704-8011AF24CC23}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Module", "src\Apis\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj", "{15F97349-A8F6-478F-9968-17CBB071E5A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,10 @@ Global
 		{F701F971-3BAA-4E8F-8704-8011AF24CC23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F701F971-3BAA-4E8F-8704-8011AF24CC23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F701F971-3BAA-4E8F-8704-8011AF24CC23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15F97349-A8F6-478F-9968-17CBB071E5A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15F97349-A8F6-478F-9968-17CBB071E5A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15F97349-A8F6-478F-9968-17CBB071E5A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15F97349-A8F6-478F-9968-17CBB071E5A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,6 +234,7 @@ Global
 		{3CE4DDE0-624B-4CB2-AB10-276E43265A9E} = {0D94F3D5-0D0B-49A3-AB7A-E578371A37E1}
 		{9B05E836-D3CD-4F66-800E-CC7E87022CCF} = {0D94F3D5-0D0B-49A3-AB7A-E578371A37E1}
 		{F701F971-3BAA-4E8F-8704-8011AF24CC23} = {0D94F3D5-0D0B-49A3-AB7A-E578371A37E1}
+		{15F97349-A8F6-478F-9968-17CBB071E5A7} = {E69071DD-4007-4333-950E-0988517E5426}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}

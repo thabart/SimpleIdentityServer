@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
@@ -30,7 +29,6 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Policies;
 using SimpleIdentityServer.Uma.Core.Services;
-using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Core.Validators;
 using System;
 
@@ -38,17 +36,6 @@ namespace SimpleIdentityServer.Uma.Core
 {
     public static class SimpleIdServerUmaCoreExtensions
     {
-        public static IServiceCollection AddUmaInMemoryStore(this IServiceCollection serviceCollection)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            serviceCollection.AddSingleton<ITicketStore>(new InMemoryTicketStore());
-            return serviceCollection;
-        }
-
         public static IServiceCollection AddSimpleIdServerUmaCore(
             this IServiceCollection serviceCollection,
             UmaServerOptions options = null)

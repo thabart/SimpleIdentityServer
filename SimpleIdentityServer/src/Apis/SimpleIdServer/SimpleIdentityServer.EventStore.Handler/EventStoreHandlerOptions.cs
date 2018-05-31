@@ -8,6 +8,11 @@
 
     public class EventStoreHandlerOptions
     {
+        public EventStoreHandlerOptions(string type)
+        {
+            Type = type;
+        }
+
         public EventStoreHandlerOptions(ServerTypes type)
         {
             switch(type)

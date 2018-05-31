@@ -1,18 +1,11 @@
 ﻿using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Uma.Core.Stores
+namespace SimpleIdentityServer.Uma.Store.InMemory
 {
-    public interface ITicketStore
-    {
-        Task<bool> AddAsync(IEnumerable<Ticket> tickets);
-        Task<bool> AddAsync(Ticket ticket);
-        Task<bool> RemoveAsync(string ticketId);
-        Task<Ticket> GetAsync(string ticketId);
-    }
-
     internal sealed class InMemoryTicketStore : ITicketStore
     {
         private Dictionary<string, Ticket> _mappingStrToTickets;
@@ -29,7 +22,7 @@ namespace SimpleIdentityServer.Uma.Core.Stores
                 throw new ArgumentNullException(nameof(tickets));
             }
 
-            foreach(var ticket in tickets)
+            foreach (var ticket in tickets)
             {
                 if (!await AddAsync(ticket))
                 {

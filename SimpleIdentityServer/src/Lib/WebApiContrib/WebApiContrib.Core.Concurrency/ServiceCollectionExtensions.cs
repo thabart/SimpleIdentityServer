@@ -23,9 +23,21 @@ namespace WebApiContrib.Core.Concurrency
             var builder = new StorageOptionsBuilder(serviceCollection);
             callback(builder);
             serviceCollection.AddSingleton(builder.StorageOptions);
+            serviceCollection.AddConcurrency();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddConcurrency(this IServiceCollection serviceCollection)
+        {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
             serviceCollection.AddTransient<IConcurrencyManager, ConcurrencyManager>();
             serviceCollection.AddTransient<IRepresentationManager, RepresentationManager>();
             return serviceCollection;
         }
+
     }
 }
