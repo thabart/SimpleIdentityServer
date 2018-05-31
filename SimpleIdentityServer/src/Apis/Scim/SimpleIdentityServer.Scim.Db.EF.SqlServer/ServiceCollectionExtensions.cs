@@ -7,7 +7,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback)
+        public static IServiceCollection AddScimSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {

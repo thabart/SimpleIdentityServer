@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,17 +22,17 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.Core;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.Uma.Core;
+using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
+using SimpleIdentityServer.Uma.Store.InMemory;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;

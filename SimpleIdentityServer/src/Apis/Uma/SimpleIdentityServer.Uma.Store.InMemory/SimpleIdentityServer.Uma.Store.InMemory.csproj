@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.Uma.Store.InMemory Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.Uma.Store.InMemory</AssemblyName>
+    <PackageId>SimpleIdentityServer.Uma.Store.InMemory</PackageId>
+  </PropertyGroup>  
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Core\SimpleIdentityServer.Uma.Core.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

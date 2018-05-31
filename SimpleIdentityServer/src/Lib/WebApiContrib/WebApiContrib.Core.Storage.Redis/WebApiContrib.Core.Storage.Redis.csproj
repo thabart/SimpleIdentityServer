@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Apis\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\WebApiContrib.Core.Storage\WebApiContrib.Core.Storage.csproj" />
   </ItemGroup>
 

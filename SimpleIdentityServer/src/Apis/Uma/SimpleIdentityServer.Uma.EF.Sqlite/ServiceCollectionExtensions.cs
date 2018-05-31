@@ -7,7 +7,7 @@ namespace SimpleIdentityServer.Uma.EF.Sqlite
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUmaSqlite(this IServiceCollection serviceCollection, string connectionString, Action<SqliteDbContextOptionsBuilder> callback)
+        public static IServiceCollection AddUmaSqlite(this IServiceCollection serviceCollection, string connectionString, Action<SqliteDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {

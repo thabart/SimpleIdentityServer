@@ -35,6 +35,7 @@ using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Store.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Linq;

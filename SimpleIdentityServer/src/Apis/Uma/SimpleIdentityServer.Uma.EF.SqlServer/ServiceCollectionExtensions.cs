@@ -7,7 +7,7 @@ namespace SimpleIdentityServer.Uma.EF.SqlServer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUmaSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback)
+        public static IServiceCollection AddUmaSqlServerEF(this IServiceCollection serviceCollection, string connectionString, Action<SqlServerDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {
