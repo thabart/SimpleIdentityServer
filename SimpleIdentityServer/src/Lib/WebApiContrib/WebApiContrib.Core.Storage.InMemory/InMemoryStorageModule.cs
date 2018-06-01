@@ -26,6 +26,11 @@ namespace WebApiContrib.Core.Storage.InMemory
             }
 
             var storage = new InMemoryStorage();
+            var storageOptions = new StorageOptions
+            {
+                Storage = storage
+            };
+            services.AddSingleton(storageOptions);
             services.AddSingleton<IStorage>(storage);
         }
 

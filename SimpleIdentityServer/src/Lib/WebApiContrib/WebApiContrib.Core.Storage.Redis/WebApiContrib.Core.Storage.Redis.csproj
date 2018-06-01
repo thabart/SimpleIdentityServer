@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>WebApiContrib.Core.Concurrency.Redis Class Library</Description>
     <Authors>WebApiContrib</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>WebApiContrib.Core.Storage.Redis</AssemblyName>
     <PackageId>WebApiContrib.Core.Storage.Redis</PackageId>
   </PropertyGroup>

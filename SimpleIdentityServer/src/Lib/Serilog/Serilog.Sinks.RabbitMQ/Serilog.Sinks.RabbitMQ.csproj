@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Serilog.Sinks.RabbitMQ Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Serilog.Sinks.RabbitMQ</AssemblyName>
     <PackageId>Serilog.Sinks.RabbitMQ</PackageId>
   </PropertyGroup>

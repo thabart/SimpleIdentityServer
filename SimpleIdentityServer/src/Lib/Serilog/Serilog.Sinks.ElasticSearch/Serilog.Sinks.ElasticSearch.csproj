@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Serilog.Sinks.ElasticSearch Class Library</Description>
     <Authors>thierry habart</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Serilog.Sinks.ElasticSearch</AssemblyName>
     <PackageId>Serilog.Sinks.ElasticSearch</PackageId>
   </PropertyGroup>

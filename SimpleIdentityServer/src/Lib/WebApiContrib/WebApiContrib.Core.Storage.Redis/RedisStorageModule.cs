@@ -53,7 +53,12 @@ namespace WebApiContrib.Core.Storage.Redis
                 InstanceName = options[_redisCacheInstanceName]
             };
             var storage = new RedisStorage(redisOptions, port);
+            var storageOptions = new StorageOptions
+            {
+                Storage = storage
+            };
             services.AddSingleton<IStorage>(storage);
+            services.AddSingleton(storageOptions);
         }
 
         public IEnumerable<string> GetOptionKeys()

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>WebApiContrib.Core.Concurrency Class Library</Description>
     <Authors>WebApiContrib</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>WebApiContrib.Core.Concurrency</AssemblyName>
     <PackageId>WebApiContrib.Core.Concurrency</PackageId>
   </PropertyGroup>
