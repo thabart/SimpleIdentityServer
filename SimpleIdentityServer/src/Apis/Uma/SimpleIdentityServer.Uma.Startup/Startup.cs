@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Uma.Host.Middlewares;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
@@ -29,6 +30,7 @@ using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.EF.InMemory;
+using SimpleIdentityServer.Uma.Logging;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Startup.Extensions;
@@ -72,7 +74,12 @@ namespace SimpleIdentityServer.Uma.Startup
                     opts.ClientSecret = "uma";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
                 });
+            services.AddLogging();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
             services.AddUmaHost(_umaHostConfiguration);
+	    services.AddMvc();
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -134,9 +141,19 @@ namespace SimpleIdentityServer.Uma.Startup
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseAuthentication();
-            app.UseUmaHost(loggerFactory, _umaHostConfiguration);
             UseSerilogLogging(loggerFactory);
+            app.UseAuthentication();
+            app.UseCors("AllowAll");
+            app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
+            {
+                UmaEventSource = app.ApplicationServices.GetService<IUmaServerEventSource>()
+            });
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action}/{id?}");
+            });
             // Insert the data.
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

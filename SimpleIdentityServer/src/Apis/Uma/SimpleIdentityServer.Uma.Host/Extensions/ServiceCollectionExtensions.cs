@@ -52,14 +52,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             {
                 options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
             });
-            // 3. Add the dependencies needed to enable CORS
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()));
-            // 4. Add authentication.
-            services.AddAuthentication();
-            // 5. Add the dependencies needed to run ASP.NET API.
-            services.AddMvc();
             return services;
         }
 

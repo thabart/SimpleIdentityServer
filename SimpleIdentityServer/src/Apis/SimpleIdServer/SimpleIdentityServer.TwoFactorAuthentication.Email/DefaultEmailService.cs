@@ -16,7 +16,7 @@
 
 using MailKit.Net.Smtp;
 using MimeKit;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Linq;

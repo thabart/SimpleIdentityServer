@@ -20,5 +20,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.Common.csproj" />
   </ItemGroup>
 </Project>
