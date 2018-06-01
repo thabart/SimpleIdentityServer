@@ -12,6 +12,7 @@ dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.EF.Sqlite /
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.EF.SqlServer /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Host /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Store.Redis /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
+dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Store.InMemory /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
 
 REM SIMPLEIDSERVER
 dotnet pack --output ..\..\..\feed Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.Basic /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
