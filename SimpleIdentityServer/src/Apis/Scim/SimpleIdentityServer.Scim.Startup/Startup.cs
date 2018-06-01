@@ -59,7 +59,11 @@ namespace SimpleIdentityServer.Scim.Startup
             ConfigureEventStoreSqlServerBus(services);
             ConfigureScimRepository(services);
             ConfigureCachingInMemory(services);
-            services.AddScim();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+            services.AddMvc();
+            services.AddScimHost();
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -84,13 +88,13 @@ namespace SimpleIdentityServer.Scim.Startup
             loggerFactory.AddConsole();
             app.UseAuthentication();
             app.UseStatusCodePages();
-            app.UseScimHost();
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            app.UseCors("AllowAll");
+            app.UseMvc(routes =>
             {
-                var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
-                scimDbContext.Database.EnsureCreated();
-                scimDbContext.EnsureSeedData();
-            }
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

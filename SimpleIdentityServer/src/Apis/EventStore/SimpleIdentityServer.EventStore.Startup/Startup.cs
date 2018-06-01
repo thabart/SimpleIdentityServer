@@ -25,13 +25,26 @@ namespace SimpleIdentityServer.EventStore.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;", null).AddEventStore();
+            services.AddLogging();
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;", null);
+            services.AddEventStoreHost();
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-            app.UseEventStore();
+            app.UseStatusCodePages();
+            app.UseCors("AllowAll");
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var scimDbContext = serviceScope.ServiceProvider.GetService<EventStoreContext>();

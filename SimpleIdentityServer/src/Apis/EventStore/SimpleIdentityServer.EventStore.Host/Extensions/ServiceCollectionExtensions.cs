@@ -1,36 +1,33 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.EventStore.Host.Builders;
+using SimpleIdentityServer.EventStore.Host.Parsers;
 using System;
 
 namespace SimpleIdentityServer.EventStore.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IApplicationBuilder UseEventStore(this IApplicationBuilder app)
+        public static IServiceCollection AddEventStoreHost(this IServiceCollection services)
         {
-            if (app == null)
+            if (services == null)
             {
-                throw new ArgumentNullException(nameof(app));
+                throw new ArgumentNullException(nameof(services));
             }
 
-            /*
-            if (loggerFactory != null)
-            {
-                loggerFactory.AddConsole();
-            }
-            */
+            RegisterServices(services);
+            return services;
+        }
 
-            // 1. Display status code page.
-            app.UseStatusCodePages();
-            // 2. Enable CORS
-            app.UseCors("AllowAll");
-            // 3. Launch ASP.NET MVC
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-            return app;
+        private static void RegisterServices(IServiceCollection services)
+        {
+            services.AddTransient<ISearchParameterParser, SearchParameterParser>();
+            services.AddTransient<IHalLinkBuilder, HalLinkBuilder>();
+        }
+
+        private static void RegisterDependencies(IServiceCollection services)
+        {
+            services.AddTransient<ISearchParameterParser, SearchParameterParser>();
+            services.AddTransient<IHalLinkBuilder, HalLinkBuilder>();
         }
     }
 }

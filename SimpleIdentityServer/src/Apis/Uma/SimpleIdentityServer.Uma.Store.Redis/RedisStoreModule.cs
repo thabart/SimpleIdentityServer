@@ -8,13 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Store.Redis
+namespace SimpleIdentityServer.Uma.Store.Redis
 {
     public class RedisStoreModule : IModule
     {
-        private const string _redisStorageConfiguration = "OauthRedisStorageConfiguration";
-        private const string _redisStorageInstanceName = "OauthRedisStorageInstanceName";
-        private const string _redisStoragePort = "OauthRedisStoragePort";
+        private const string _redisStorageConfiguration = "UmaRedisStorageConfiguration";
+        private const string _redisStorageInstanceName = "UmaRedisStorageInstanceName";
+        private const string _redisStoragePort = "UmaRedisStoragePort";
 
         private static readonly List<string> _configurationKeys = new List<string>
         {
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Store.Redis
             }
 
             var configuration = GetConfiguration(options);
-            services.AddRedisStorage(configuration.Key, configuration.Value);
+            services.AddUmaRedisStore(configuration.Key, configuration.Value);
         }
 
         public IEnumerable<string> GetOptionKeys()

@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             services.AddEventStoreInMemoryEF();
             services.AddSimpleBusInMemory();
             services.AddEventStoreBusHandler();
-            services.AddScim();
+            services.AddScimHost();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {
