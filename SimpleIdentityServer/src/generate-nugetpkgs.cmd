@@ -1,6 +1,9 @@
 set packageVersion=%1
 echo %packageVersion%
 
+REM COMMON
+dotnet pack --output ..\..\..\feed Apis\Common\SimpleIdentityServer.Module /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
+
 REM UMA
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Client /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
 dotnet pack --output ..\..\..\feed Apis\Uma\SimpleIdentityServer.Uma.Common /p:PackageVersion=%packageVersion% /p:Version=%packageVersion%
