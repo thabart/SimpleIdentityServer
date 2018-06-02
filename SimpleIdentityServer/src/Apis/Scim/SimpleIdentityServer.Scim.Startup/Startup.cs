@@ -23,7 +23,7 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.InMemory;
+using SimpleIdentityServer.Scim.Db.EF.SqlServer;
 using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Startup.Extensions;
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void ConfigureScimRepository(IServiceCollection services)
         {
-            services.AddScimInMemoryEF();
+            services.AddScimSqlServerEF("Data Source=.;Initial Catalog=ScimServer;Integrated Security=True;");
         }
 
         private void ConfigureCachingInMemory(IServiceCollection services)
@@ -95,6 +95,12 @@ namespace SimpleIdentityServer.Scim.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
+                scimDbContext.Database.EnsureCreated();
+                scimDbContext.EnsureSeedData();
+            }
         }
     }
 }

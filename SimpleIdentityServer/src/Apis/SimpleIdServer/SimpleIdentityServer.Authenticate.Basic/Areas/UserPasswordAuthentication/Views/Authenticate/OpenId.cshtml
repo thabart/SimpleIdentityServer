@@ -11,7 +11,7 @@
 @section PageTitle
 {
     <h1>
-        @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]
+        @ViewBag.Translations["login"]
     </h1>
 }
 
@@ -19,7 +19,7 @@
     <div class="col-md-6">
         <div>
             <h2>
-                @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount]
+                @ViewBag.Translations["login_external_account"]
             </h2>
         </div>
         <div>
@@ -42,7 +42,7 @@
     <div class="col-md-6">
         <div>
             <h2>
-                @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount]
+                @ViewBag.Translations["login_local_account"]
             </h2>
         </div>
         <div>
@@ -53,7 +53,7 @@
                     @if (userNameState != null && userNameState.Errors.Any())
                     {
                         <div class="form-group has-error">
-                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                            <label class="control-label">@ViewBag.Translations["username"]</label>
                             <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", userNameState.Errors.Select(e => e.ErrorMessage))"></span>
                             <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
                         </div>
@@ -61,7 +61,7 @@
                     else
                     {
                         <div class="form-group">
-                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode]</label>
+                            <label>@ViewBag.Translations["username"]</label>
                             <input maxlength="100" class="form-control" value="@Model.UserName" name="UserName" type="text" />
                         </div>
                     }
@@ -69,7 +69,7 @@
                     @if (passwordState != null && passwordState.Errors.Any())
                     {
                         <div class="form-group has-error">
-                            <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                            <label class="control-label">@ViewBag.Translations["password"]</label>
                             <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", passwordState.Errors.Select(e => e.ErrorMessage))"></span>
                             <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
                         </div>
@@ -77,7 +77,7 @@
                     else
                     {
                         <div class="form-group">
-                            <label>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                            <label>@ViewBag.Translations["password"]</label>
                             <input maxlength="100" class="form-control" value="@Model.Password" name="Password" type="password" />
                         </div>
                     }
@@ -85,11 +85,11 @@
                     <div class="form-group">
                         <label>
                             <input type="checkbox" value="@Model.IsChecked" name="IsChecked" />
-                            <strong>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.RememberMyLoginCode]</strong>
+                            <strong>@ViewBag.Translations["remember_my_login"]</strong>
                         </label>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</button>
+                        <button type="submit" class="btn btn-primary">@ViewBag.Translations["login"]</button>
                     </div>
                 </fieldset>
             </form>

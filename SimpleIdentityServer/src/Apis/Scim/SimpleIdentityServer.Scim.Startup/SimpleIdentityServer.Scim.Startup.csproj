@@ -17,7 +17,7 @@
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.EF\SimpleIdentityServer.EventStore.EF.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.InMemory\SimpleIdentityServer.Scim.Db.EF.InMemory.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.SqlServer\SimpleIdentityServer.Scim.Db.EF.SqlServer.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.EventStore.Handler\SimpleIdentityServer.Scim.EventStore.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Handler\SimpleIdentityServer.Scim.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />

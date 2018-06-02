@@ -58,14 +58,12 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options));
             }
 
-            app.UseAuthentication();
             app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
                 SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
             });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);
-            // app.UseXFrame();
         }
     }
 }
