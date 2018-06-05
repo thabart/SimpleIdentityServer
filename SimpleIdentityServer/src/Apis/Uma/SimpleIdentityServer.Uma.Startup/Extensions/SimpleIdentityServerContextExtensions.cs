@@ -79,7 +79,27 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         Type = ScopeType.ProtectedApi,
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
-                    }
+                    },
+					new Scope
+					{						
+                        Name = "get_parameters",
+                        Description = "Get the parameters",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = false,
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+					},
+					new Scope
+					{						
+                        Name = "add_parameters",
+                        Description = "Add the parameters",
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = false,
+                        Type = ScopeType.ProtectedApi,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+					}
                 });
             }
         }
@@ -213,7 +233,15 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                             new ClientScope
                             {
                                 ScopeName = "scim_manage"
-                            }
+                            },
+							new ClientScope
+							{
+								ScopeName = "add_parameters"
+							},
+							new ClientScope
+							{
+								ScopeName = "get_parameters"
+							}
                         },
                         GrantTypes = "3",
                         ResponseTypes = "1",
@@ -295,6 +323,40 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                             }
                         },
                         ClientName = "SCIM",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
+                    new SimpleIdentityServer.EF.Models.Client
+                    {
+                        ClientId = "OpenId",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "z4Bp!:B@rFw4Xs+]"
+                            }
+                        },
+                        ClientName = "OpenId",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
+                    new SimpleIdentityServer.EF.Models.Client
+                    {
+                        ClientId = "EventStore",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "9qj8XnSKYy8fPEkd"
+                            }
+                        },
+                        ClientName = "EventStore",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
