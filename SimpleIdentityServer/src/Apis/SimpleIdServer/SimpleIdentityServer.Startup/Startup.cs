@@ -146,6 +146,7 @@ namespace SimpleIdentityServer.Startup
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
+            app.UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
