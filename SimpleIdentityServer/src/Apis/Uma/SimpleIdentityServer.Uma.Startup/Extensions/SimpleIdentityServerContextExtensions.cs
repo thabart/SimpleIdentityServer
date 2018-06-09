@@ -198,6 +198,36 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
                     },
+                    new SimpleIdentityServer.EF.Models.Client // Configure the client which needs to access to the token edp (grant_type = uma_ticket)
+                    {
+                        ClientId = "OfficeAddin",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "Cr8cfLttLabTvezn"
+                            }
+                        },
+						ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName=  "uma_protection"
+                            }
+						},
+                        ClientName = "OfficeAddin",
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ApplicationType = ApplicationTypes.native,
+                        GrantTypes = "3,5",
+                        ResponseTypes = "1",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
                     new SimpleIdentityServer.EF.Models.Client // Configure the client which need to access to the permission endpoint.
                     {
                         ClientId = "ResourceServer",
