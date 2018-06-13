@@ -5,7 +5,7 @@
 @model SimpleIdentityServer.Host.ViewModels.ConsentViewModel
 
 @{
-    var accessToCode = ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode];
+    var accessToCode = ViewBag.Translations["application_would_like_to"];
     var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
 }
 
@@ -29,7 +29,7 @@
         @if (Model.AllowedScopeDescriptions.Any())
         {
             <div>
-                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ScopesCode]</h4>
+                <h4>@ViewBag.Translations["scopes"]</h4>
             </div>
             <div>
                 <ul class="list-group">
@@ -46,7 +46,7 @@
         @if (Model.AllowedIndividualClaims.Any())
         {
             <div class="row">
-                <h4>@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.IndividualClaimsCode]</h4>
+                <h4>@ViewBag.Translations["individual_claims"]</h4>
             </div>
             <div class="row">
                 <ul class="list-group">
@@ -66,18 +66,18 @@
             <div style="padding-bottom: 10px;">
                 @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
                 {
-                    <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LinkToThePolicy] &nbsp;</a>
+                    <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.TosUri))
                 {
-                    <a href="@Model.TosUri" target="_blank">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Tos]</a>
+                    <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
                 }
             </div>
         }
         
         <div>
-            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.CancelCode]</a>
-            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</a>
+            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["cancel"]</a>
+            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["confirm"]</a>
         </div>
     </div>
 </div>

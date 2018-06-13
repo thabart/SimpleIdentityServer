@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,13 +23,8 @@ namespace SimpleIdentityServer.OAuth2Introspection
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, AuthenticationBuilder authBuilder = null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
             if (mvcBuilder == null)
             {
                 throw new ArgumentNullException(nameof(mvcBuilder));
@@ -37,6 +33,11 @@ namespace SimpleIdentityServer.OAuth2Introspection
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
+            }
+
+            if (authBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(authBuilder));
             }
 
             if (!options.ContainsKey(OauthIntrospectClientId))
@@ -54,8 +55,7 @@ namespace SimpleIdentityServer.OAuth2Introspection
                 throw new ModuleException("configuration", $"The {OauthIntrospectAuthUrl} configuration is missing");
             }
 
-            services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
-                .AddOAuth2Introspection(opts =>
+            authBuilder.AddOAuth2Introspection(opts =>
                 {
                     opts.ClientId = options[OauthIntrospectClientId];
                     opts.ClientSecret = options[OauthIntrospectClientSecret];

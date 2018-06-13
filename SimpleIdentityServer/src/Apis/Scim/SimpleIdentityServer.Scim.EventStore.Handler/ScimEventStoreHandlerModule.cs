@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,7 @@ namespace SimpleIdentityServer.Scim.EventStore.Handler
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, AuthenticationBuilder authBuilder = null)
         {
             if (services == null)
             {
