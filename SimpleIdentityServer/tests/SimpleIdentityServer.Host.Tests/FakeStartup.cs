@@ -88,6 +88,10 @@ namespace SimpleIdentityServer.Host.Tests
                 opts.DefaultAuthenticateScheme = DefaultSchema;
                 opts.DefaultChallengeScheme = DefaultSchema;
             }).AddFakeCustomAuth(o => { });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddOpenIdSecurityPolicy(DefaultSchema);
+            });
             // 4. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
