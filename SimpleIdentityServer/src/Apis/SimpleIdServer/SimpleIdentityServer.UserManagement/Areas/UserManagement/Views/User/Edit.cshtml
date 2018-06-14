@@ -26,7 +26,7 @@
             </fieldset>
             <!-- Name -->
             <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations[""]</label>
+                <label class="control-label">@ViewBag.Translations["Name"]</label>
                 @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder = @ViewBag.Translations["your_name"] })
                 @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </fieldset>
@@ -38,7 +38,7 @@
             <!-- Password -->
             <fieldset class="form-group">
                 <label class="control-label">@ViewBag.Translations["password"]</label>
-                @Html.TextBoxFor(i => i.NewPassword, new { type = "password", @class = "form-control", placeholder = @ViewBag.Translations["your_pasword"] })
+                @Html.TextBoxFor(i => i.NewPassword, new { type = "password", @class = "form-control", placeholder = @ViewBag.Translations["your_password"] })
             </fieldset>
             <!-- Email -->
             <fieldset class="form-group">
