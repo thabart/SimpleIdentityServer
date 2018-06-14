@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.EF.SqlServer
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
             if (services == null)
             {
@@ -48,6 +48,11 @@ namespace SimpleIdentityServer.EF.SqlServer
             }
 
             services.AddEventStoreSqlServerEF(options[_evtConnectionString]);
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

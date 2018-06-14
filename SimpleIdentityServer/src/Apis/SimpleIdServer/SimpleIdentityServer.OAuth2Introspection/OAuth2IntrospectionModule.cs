@@ -64,9 +64,14 @@ namespace SimpleIdentityServer.OAuth2Introspection
 
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
 
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

@@ -14,11 +14,20 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+using System.Security.Claims;
+
 namespace SimpleIdentityServer.Core.Parameters
 {
     public class AddUserParameter
     {
+        public AddUserParameter()
+        {
+            Claims = new List<Claim>();
+        }
+
         public string Login { get; set; }
         public string Password { get; set; }
+        public ICollection<Claim> Claims { get; set; }
     }
 }

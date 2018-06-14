@@ -33,7 +33,7 @@ namespace WebApiContrib.Core.Storage.Redis
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
             if (services == null)
             {
@@ -69,6 +69,11 @@ namespace WebApiContrib.Core.Storage.Redis
             };
             services.AddSingleton<IStorage>(storage);
             services.AddSingleton(storageOptions);
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

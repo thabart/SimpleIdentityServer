@@ -78,26 +78,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
         
         [Fact]
-        public async Task When_Ro_DoesntExist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
-
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal));
-
-            // ASSERT
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
-        }
-        
-        [Fact]
         public async Task When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {
             // ARRANGE

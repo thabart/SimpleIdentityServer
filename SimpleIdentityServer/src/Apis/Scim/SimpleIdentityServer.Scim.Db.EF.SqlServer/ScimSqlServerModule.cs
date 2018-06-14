@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null,  IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
             if (services == null)
             {
@@ -48,6 +48,11 @@ namespace SimpleIdentityServer.Scim.Db.EF.SqlServer
             }
 
             services.AddScimSqlServerEF(options[ScimConnectionString]);
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

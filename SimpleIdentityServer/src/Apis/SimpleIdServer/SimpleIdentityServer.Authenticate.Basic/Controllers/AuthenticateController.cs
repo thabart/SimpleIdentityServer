@@ -27,10 +27,12 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Jwt.Extensions;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
+using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host;
@@ -46,11 +48,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 {
-    [Area("UserPasswordAuthentication")]
+    [Area("Authentication")]
     public class AuthenticateController : BaseController
     {
         private const string ExternalAuthenticateCookieName = "SimpleIdentityServer-{0}";        
         private const string DefaultLanguage = "en";        
+        private readonly IAuthenticateHelper _authenticateHelper;
         private readonly IAuthenticateActions _authenticateActions;
         private readonly IDataProtector _dataProtector;
         private readonly IEncoder _encoder;
@@ -76,7 +79,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IUserActions userActions,
             IPayloadSerializer payloadSerializer,
             AuthenticateOptions authenticateOptions,
-            IConfigurationService configurationService) : base(authenticationService, userActions, authenticateOptions)
+            IConfigurationService configurationService,
+            IAuthenticateHelper authenticateHelper) : base(authenticationService, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -88,6 +92,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _configurationService = configurationService;
+            _authenticateHelper = authenticateHelper;
         }
         
         #region Public methods
@@ -104,9 +109,9 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         public async Task<ActionResult> Index(string name)
         {
             var authenticatedUser = await SetUser();
-            if (authenticatedUser.Key == null ||
-                authenticatedUser.Key.Identity == null ||
-                !authenticatedUser.Key.Identity.IsAuthenticated)
+            if (authenticatedUser == null ||
+                authenticatedUser.Identity == null ||
+                !authenticatedUser.Identity.IsAuthenticated)
             {
                 await TranslateView(DefaultLanguage);
                 var viewModel = new AuthorizeViewModel();
@@ -114,18 +119,18 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 return View(viewModel);
             }
 
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
         
         [HttpPost]
         public async Task<ActionResult> LocalLogin(AuthorizeViewModel authorizeViewModel)
         {
             var authenticatedUser = await SetUser();
-            if (authenticatedUser.Key != null &&
-                authenticatedUser.Key.Identity != null &&
-                authenticatedUser.Key.Identity.IsAuthenticated)
+            if (authenticatedUser != null &&
+                authenticatedUser.Identity != null &&
+                authenticatedUser.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
             if (authorizeViewModel == null)
@@ -152,7 +157,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString());
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
-                    return RedirectToAction("Index", "User");
+                    return RedirectToAction("Index", "User", new { area = "UserManagement" });
                 }
 
                 // 2.1 Store temporary information in cookie
@@ -197,16 +202,15 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                     string.Format(SimpleIdentityServer.Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
-            // 1. Check if the user exists and insert it
+            // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
-            var claims = await _authenticateActions.LoginCallback(authenticatedUser);
 
             // 2. Set cookie
-            await SetLocalCookie(claims, Guid.NewGuid().ToString());
+            await SetLocalCookie(authenticatedUser.Claims.ToOpenidClaims(), Guid.NewGuid().ToString());
             await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
 
             // 3. Redirect to the profile
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
 
         [HttpGet]
@@ -312,7 +316,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
-                authenticatedUser.Key,
+                authenticatedUser,
                 code);
             var result = this.CreateRedirectionFromActionResult(actionResult,
                 request);
@@ -462,22 +466,19 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 5. Rerieve the claims
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = claimsIdentity.Claims.ToList();
+            var subject = claims.GetSubject();
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
-            var actionResult = await _authenticateActions.ExternalOpenIdUserAuthentication(
-                claims,
-                authorizationRequest.ToParameter(),
-                request);
+            var actionResult = await _authenticateHelper.ProcessRedirection(authorizationRequest.ToParameter(), request, subject, claims);
 
             // 7. Store claims into new cookie
-            if (actionResult.ActionResult != null)
+            if (actionResult != null)
             {
-                await SetLocalCookie(actionResult.Claims, authorizationRequest.SessionId);
+                await SetLocalCookie(claims.ToOpenidClaims(), authorizationRequest.SessionId);
                 await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
-                LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
-                return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
-                    authorizationRequest);
+                LogAuthenticateUser(actionResult, authorizationRequest.ProcessId);
+                return this.CreateRedirectionFromActionResult(actionResult, authorizationRequest);
             }
 
             return RedirectToAction("OpenId", "Authenticate", new { code = code });

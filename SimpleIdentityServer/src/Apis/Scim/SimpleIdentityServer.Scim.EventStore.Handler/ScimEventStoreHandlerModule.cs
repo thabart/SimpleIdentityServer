@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Scim.EventStore.Handler
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
             if (services == null)
             {
@@ -36,6 +36,11 @@ namespace SimpleIdentityServer.Scim.EventStore.Handler
             }
 
             services.AddEventStoreBusHandler();
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

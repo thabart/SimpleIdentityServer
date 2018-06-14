@@ -1,0 +1,47 @@
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Areas/Shell/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<SimpleIdentityServer.Shell.ViewModels.UiModuleViewModel>
+
+@using SimpleIdentityServer.Host.Extensions
+
+<div class="row">
+    <h1>Dashboard</h1>
+    <a href="@Url.Content("~/.well-known/openid-configuration")">
+        <section class="col-md-3 tile">
+            <div class="header"></div>
+            <div class="row clicked">
+                <div class="col-md-4 picture">
+                    <img src="@Url.Content("~/img/openid.png")" />
+                </div>
+                <div class="col-md-8 title">
+                    <h4>OpenId contract</h4>
+                </div>
+            </div>
+        </section>
+    </a>
+    @foreach (var module in Model)
+    {
+        if (module.IsAuthenticated == null || module.IsAuthenticated.Value && ViewBag.IsAuthenticated || !module.IsAuthenticated.Value && !ViewBag.IsAuthenticated)
+        {
+            <a href="@Url.Content(module.RelativeUrl)">
+                <section class="col-md-3 tile">
+                    <div class="header"></div>
+                    <div class="row clicked">
+                        <div class="col-md-4 picture">
+                            @if (!string.IsNullOrWhiteSpace(module.Picture))
+                            {
+                                <img src="@Url.Content(module.Picture)" />
+                            }
+                        </div>
+                        <div class="col-md-8 title">
+                            <h4>@module.Title</h4>
+                        </div>
+                    </div>
+                </section>
+                </a>
+        }
+    }
+</div>

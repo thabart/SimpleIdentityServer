@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public async Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
+        public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
             {
@@ -65,15 +65,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
-            if (result == null)
-            {
-                throw new IdentityServerException(
-                    Errors.ErrorCodes.UnhandledExceptionCode,
-                    Errors.ErrorDescriptions.TheRoDoesntExist);
-            }
-
-            return result;
+            return _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
         }
     }
 }

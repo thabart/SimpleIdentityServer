@@ -12,7 +12,15 @@ namespace SimpleIdentityServer.Authenticate.Basic
 {
     public class BasicAuthenticateModule : IModule
     {
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
+        {
+            Title = "Authenticate",
+            RelativeUrl = "~/Authenticate",
+            IsAuthenticated = false,
+            Picture = "~/img/Unknown.png"
+        };
+
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUIDescriptors = null)
         {
             if (services == null)
             {
@@ -57,6 +65,11 @@ namespace SimpleIdentityServer.Authenticate.Basic
         public IEnumerable<string> GetOptionKeys()
         {
             return new string[0];
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return ModuleUi;
         }
     }
 }

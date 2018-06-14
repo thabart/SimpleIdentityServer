@@ -27,8 +27,10 @@ using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
+using SimpleIdentityServer.UserManagement;
 using System;
 
 namespace SimpleIdentityServer.Startup
@@ -100,8 +102,13 @@ namespace SimpleIdentityServer.Startup
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
-            services.AddAuthenticationWebsite(mvcBuilder, _env);
-            services.AddBasicAuthentication(mvcBuilder, _env);
+            services.AddAuthenticationWebsite(mvcBuilder, _env); // API
+            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
+            {
+                Descriptors = new[] { BasicAuthenticateModule.ModuleUi, UserManagementModule.ModuleUi }
+            }); // SHELL
+            services.AddBasicAuthentication(mvcBuilder, _env); // BASIC AUTHENTICATION
+            services.AddUserManagement(mvcBuilder, _env); // USER MANAGEMENT
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
@@ -154,7 +161,7 @@ namespace SimpleIdentityServer.Startup
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
-            app.UseStaticFiles();
+            app.UseShellStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable SimpleIdentityServer
@@ -162,31 +169,9 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                routes.MapRoute("Error401Route",
-                    Host.Constants.EndPoints.Get401,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get401"
-                    });
-                routes.MapRoute("Error404Route",
-                    Host.Constants.EndPoints.Get404,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get404"
-                    });
-                routes.MapRoute("Error500Route",
-                    Host.Constants.EndPoints.Get500,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get500"
-                    });
                 routes.UseUserPasswordAuthentication();
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.UseUserManagement();
+                routes.UseShell();
             });
             UseSerilogLogging(loggerFactory);
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())

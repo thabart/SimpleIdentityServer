@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.Scim.Host
             authorizationOptions.AddScimAuthPolicy();
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null)
         {
             if (services == null)
             {
@@ -46,6 +46,11 @@ namespace SimpleIdentityServer.Scim.Host
             services.AddScimHost();
             var assembly = typeof(SchemasController).Assembly;
             mvcBuilder.AddApplicationPart(assembly);
+        }
+
+        public ModuleUIDescriptor GetModuleUI()
+        {
+            return null;
         }
 
         public IEnumerable<string> GetOptionKeys()

@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             IAuthenticationService authenticationService,
             IUserActions usersAction,
             IPayloadSerializer payloadSerializer,
-            AuthenticateOptions authenticateOptions) : base(authenticationService, usersAction, authenticateOptions)
+            AuthenticateOptions authenticateOptions) : base(authenticationService, authenticateOptions)
         {
             _consentActions = consentActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
             var client = new Core.Common.Models.Client();
             var authenticatedUser = await SetUser();
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser.Key);
+                authenticatedUser);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)

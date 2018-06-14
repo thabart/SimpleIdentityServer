@@ -1,0 +1,62 @@
+@{
+    ViewBag.Title = "Edit user";
+    ViewBag.IsEditDisplayed = true;
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = false;
+}
+
+@model SimpleIdentityServer.UserManagement.ViewModels.UpdateResourceOwnerViewModel
+@using SimpleIdentityServer.Core.Common.Models
+
+<div class="tab-pane active" id="edit-ro">
+    <div class="col-md-8 col-md-offset-2">
+        <h1>
+            @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.EditResourceOwner]
+        </h1>
+        @if (ViewBag.IsUpdated)
+        {
+            <span class="text-success">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserIsUpdated]</span>
+        }
+        @using (Html.BeginForm("Edit", "User", null, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <!-- Login -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode]</label>
+                @Html.TextBoxFor(i => i.Login, new { type = "text", @class = "form-control", @readonly = true })
+            </fieldset>
+            <!-- Name -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.NameCode]</label>
+                @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourName] })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+            </fieldset>
+            <!-- Hashed password -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.HashedPassword]</label>
+                @Html.TextBoxFor(i => i.Password, new { type = "password", @class = "form-control", @readonly = true })
+            </fieldset>
+            <!-- Password -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode]</label>
+                @Html.TextBoxFor(i => i.NewPassword, new { type = "password", @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourPassword] })
+            </fieldset>
+            <!-- Email -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Email]</label>
+                @Html.TextBoxFor(i => i.Email, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.YourEmail] })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </fieldset>
+            <!-- Phone -->
+            <fieldset class="form-group">
+                <label class="control-label">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Phone]</label>
+                @Html.TextBoxFor(i => i.PhoneNumber, new { @class = "form-control", placeholder = @ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Phone] })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+            </fieldset>
+            <!-- Submit -->
+            <fieldset class="form-group">
+                <button type="submit" class="btn btn-primary">@ViewBag.Translations[SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode]</button>
+            </fieldset>
+        }
+    </div>
+</div>

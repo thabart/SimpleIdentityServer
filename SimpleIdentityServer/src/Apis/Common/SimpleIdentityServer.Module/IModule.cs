@@ -10,11 +10,12 @@ namespace SimpleIdentityServer.Module
 {
     public interface IModule
     {
-        void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null);
+        void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUiDescriptors = null);
         void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null);
         void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null);
         void Configure(IApplicationBuilder applicationBuilder);
         void Configure(IRouteBuilder routeBuilder);
         IEnumerable<string> GetOptionKeys();
+        ModuleUIDescriptor GetModuleUI();
     }
 }

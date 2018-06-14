@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
         Task<bool> DeleteConsent(string consentId);
         Task<Common.Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
-        Task ConfirmUser(ClaimsPrincipal claimsPrincipal);
+        Task<bool> AddUser(AddUserParameter addUserParameter);
     }
 
     internal class UserActions : IUserActions
@@ -37,20 +37,20 @@ namespace SimpleIdentityServer.Core.WebSite.User
         private readonly IRemoveConsentOperation _removeConsentOperation;
         private readonly IGetUserOperation _getUserOperation;
         private readonly IUpdateUserOperation _updateUserOperation;
-        private readonly IConfirmUserOperation _confirmUserOperation;
+        private readonly IAddUserOperation _addUserOperation;
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
             IRemoveConsentOperation removeConsentOperation,
             IGetUserOperation getUserOperation,
             IUpdateUserOperation updateUserOperation,
-            IConfirmUserOperation confirmUserOperation)
+            IAddUserOperation addUserOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
             _getUserOperation = getUserOperation;
             _updateUserOperation = updateUserOperation;
-            _confirmUserOperation = confirmUserOperation;
+            _addUserOperation = addUserOperation;
         }
 
         public async Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
@@ -73,9 +73,9 @@ namespace SimpleIdentityServer.Core.WebSite.User
             return await _updateUserOperation.Execute(updateUserParameter);
         }
 
-        public async Task ConfirmUser(ClaimsPrincipal claimsPrincipal)
+        public Task<bool> AddUser(AddUserParameter claimsPrincipal)
         {
-            await _confirmUserOperation.Execute(claimsPrincipal);
+            return _addUserOperation.Execute(claimsPrincipal);
         }
     }
 }

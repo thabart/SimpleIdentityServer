@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>  
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+  </ItemGroup>
+  <ItemGroup>  
+    <EmbeddedResource Include="Areas\**\*.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Areas\UserManagement\Views\User\Profiles.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Areas\UserManagement\Views\Shared\_UserLayout.cshtml" />
+    <None Remove="Areas\UserManagement\Views\User\Consent.cshtml" />
+    <None Remove="Areas\UserManagement\Views\User\Edit.cshtml" />
+    <None Remove="Areas\UserManagement\Views\User\Index.cshtml" />
+    <None Remove="Areas\UserManagement\Views\User\Profiles.cshtml" />
+    <None Remove="Areas\UserManagement\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\UserManagement\Views\Shared\_UserLayout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\UserManagement\Views\User\Consent.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\UserManagement\Views\User\Profiles.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\UserManagement\Views\User\Edit.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\UserManagement\Views\User\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
