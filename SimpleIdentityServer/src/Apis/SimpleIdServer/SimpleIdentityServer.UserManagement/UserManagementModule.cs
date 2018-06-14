@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Module;
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.UserManagement
@@ -25,6 +26,12 @@ namespace SimpleIdentityServer.UserManagement
 
         public void Configure(IRouteBuilder routeBuilder)
         {
+            if (routeBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(routeBuilder));
+            }
+
+            routeBuilder.UseUserManagement();
         }
 
         public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
@@ -37,6 +44,22 @@ namespace SimpleIdentityServer.UserManagement
 
         public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, IEnumerable<ModuleUIDescriptor> moduleUIDescriptors = null)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (mvcBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(mvcBuilder));
+            }
+
+            if (env == null)
+            {
+                throw new ArgumentNullException(nameof(env));
+            }
+
+            services.AddUserManagement(mvcBuilder, env);
         }
 
         public IEnumerable<string> GetOptionKeys()

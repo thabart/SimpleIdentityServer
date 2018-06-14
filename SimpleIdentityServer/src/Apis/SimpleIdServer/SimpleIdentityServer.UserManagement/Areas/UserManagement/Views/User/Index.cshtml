@@ -1,16 +1,15 @@
 @using System.Security.Claims
-@using SimpleIdentityServer.Core.Jwt
 
 @{
     ViewBag.IsEditDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = true;
     var identity = User.Identity as ClaimsIdentity;
-    var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
-    var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.GivenName);
-    var familyNameClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.FamilyName);
-    var pictureClaim = identity.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Picture);
-    var roles = identity.Claims.Where(c => c.Type == Constants.StandardResourceOwnerClaimNames.Role).Select(c => c.Value).ToList();
+    var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == "name");
+    var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == "given_name");
+    var familyNameClaim = identity.Claims.FirstOrDefault(c => c.Type == "family_name");
+    var pictureClaim = identity.Claims.FirstOrDefault(c => c.Type == "picture");
+    var roles = identity.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList();
     var name = nameClaim == null ? "Unknown" : nameClaim.Value;
     var givenName = givenNameClaim == null ? " - " : givenNameClaim.Value;
     var familyName = familyNameClaim == null ? " - " : familyNameClaim.Value;

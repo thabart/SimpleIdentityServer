@@ -14,10 +14,12 @@ namespace SimpleIdentityServer.Shell
     {
         public void Configure(IApplicationBuilder applicationBuilder)
         {
+            applicationBuilder.UseShellStaticFiles();
         }
 
         public void Configure(IRouteBuilder routeBuilder)
         {
+            routeBuilder.UseShell();
         }
 
         public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
