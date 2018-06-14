@@ -9,7 +9,6 @@ using SimpleIdentityServer.EventStore.Host.Extensions;
 
 namespace SimpleIdentityServer.EventStore.Startup
 {
-
     public class Startup
     {
         public Startup(IHostingEnvironment env)

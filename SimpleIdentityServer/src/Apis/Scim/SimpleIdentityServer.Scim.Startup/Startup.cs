@@ -56,6 +56,10 @@ namespace SimpleIdentityServer.Scim.Startup
                     opts.ClientSecret = "~V*nH{q4;qL/=8+Z";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
                 });
+            services.AddAuthorization(opts =>
+            {
+                opts.AddScimAuthPolicy();
+            });
             ConfigureEventStoreSqlServerBus(services);
             ConfigureScimRepository(services);
             ConfigureCachingInMemory(services);

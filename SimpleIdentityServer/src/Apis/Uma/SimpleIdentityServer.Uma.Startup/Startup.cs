@@ -74,12 +74,16 @@ namespace SimpleIdentityServer.Uma.Startup
                     opts.ClientSecret = "uma";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
                 });
+            services.AddAuthorization(opts =>
+            {
+                opts.AddUmaSecurityPolicy();
+            });
             services.AddLogging();
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
             services.AddUmaHost(_umaHostConfiguration);
-	    services.AddMvc();
+	        services.AddMvc();
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)

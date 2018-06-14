@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Scim.Core;
 using System;
 
@@ -14,12 +15,19 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
             }
 
             RegisterServices(services);
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("scim_manage", policy => policy.RequireClaim("scope", "scim_manage"));
-                options.AddPolicy("scim_read", policy => policy.RequireClaim("scope", "scim_read"));
-            });
             return services;
+        }
+
+        public static AuthorizationOptions AddScimAuthPolicy(this AuthorizationOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            options.AddPolicy("scim_manage", policy => policy.RequireClaim("scope", "scim_manage"));
+            options.AddPolicy("scim_read", policy => policy.RequireClaim("scope", "scim_read"));
+            return options;
         }
 
         private static void RegisterServices(IServiceCollection services)

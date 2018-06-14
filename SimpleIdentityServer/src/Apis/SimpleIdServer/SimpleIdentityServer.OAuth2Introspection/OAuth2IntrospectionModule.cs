@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
@@ -23,21 +24,16 @@ namespace SimpleIdentityServer.OAuth2Introspection
         {
         }
 
-        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null, AuthenticationBuilder authBuilder = null)
+        public void ConfigureAuthentication(AuthenticationBuilder authBuilder, IDictionary<string, string> options = null)
         {
-            if (mvcBuilder == null)
+            if (authBuilder == null)
             {
-                throw new ArgumentNullException(nameof(mvcBuilder));
+                throw new ArgumentNullException(nameof(authBuilder));
             }
 
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
-            }
-
-            if (authBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(authBuilder));
             }
 
             if (!options.ContainsKey(OauthIntrospectClientId))
@@ -56,11 +52,21 @@ namespace SimpleIdentityServer.OAuth2Introspection
             }
 
             authBuilder.AddOAuth2Introspection(opts =>
-                {
-                    opts.ClientId = options[OauthIntrospectClientId];
-                    opts.ClientSecret = options[OauthIntrospectClientSecret];
-                    opts.WellKnownConfigurationUrl = options[OauthIntrospectAuthUrl];
-                });
+            {
+                opts.ClientId = options[OauthIntrospectClientId];
+                opts.ClientSecret = options[OauthIntrospectClientSecret];
+                opts.WellKnownConfigurationUrl = options[OauthIntrospectAuthUrl];
+            });
+        }
+
+        public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)
+        {
+
+        }
+
+        public void ConfigureServices(IServiceCollection services, IMvcBuilder mvcBuilder = null, IHostingEnvironment env = null, IDictionary<string, string> options = null)
+        {
+
         }
 
         public IEnumerable<string> GetOptionKeys()

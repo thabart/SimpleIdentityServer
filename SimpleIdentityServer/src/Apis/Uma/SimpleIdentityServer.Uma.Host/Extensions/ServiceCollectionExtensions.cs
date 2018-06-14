@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Client;
@@ -47,12 +48,18 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
             // 1. Add the dependencies.
             RegisterServices(services, configuration);
-            // 2. Add authorization policies.
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
-            });
             return services;
+        }
+
+        public static AuthorizationOptions AddUmaSecurityPolicy(this AuthorizationOptions authorizationOptions)
+        {
+            if (authorizationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationOptions));
+            }
+
+            authorizationOptions.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
+            return authorizationOptions;
         }
 
         private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)

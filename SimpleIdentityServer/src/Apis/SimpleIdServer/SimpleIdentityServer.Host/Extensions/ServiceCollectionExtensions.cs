@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -105,6 +106,19 @@ namespace SimpleIdentityServer.Host
             return services;
         }
 
+        public static AuthorizationOptions AddOpenIdSecurityPolicy(this AuthorizationOptions authenticateOptions, string cookieName)
+        {
+            if (authenticateOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authenticateOptions));
+            }
+
+            authenticateOptions.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
+                return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == cookieName;
+            }));
+            return authenticateOptions;
+        }
+
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             IdentityServerOptions options)
@@ -177,13 +191,6 @@ namespace SimpleIdentityServer.Host
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddDataProtection();
-            serviceCollection.AddAuthorization(opts =>
-            {
-                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == options.Authenticate.CookieName;
-                }));
-            });
-
             return serviceCollection;
         }
     }

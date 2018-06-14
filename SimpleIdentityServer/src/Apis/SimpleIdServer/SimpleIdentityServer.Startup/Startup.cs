@@ -94,6 +94,10 @@ namespace SimpleIdentityServer.Startup
                 {
                     opts.LoginPath = "/Authenticate";
                 });
+            services.AddAuthorization(opts =>
+            {
+                opts.AddOpenIdSecurityPolicy(Constants.CookieName);
+            });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
             services.AddAuthenticationWebsite(mvcBuilder, _env);
