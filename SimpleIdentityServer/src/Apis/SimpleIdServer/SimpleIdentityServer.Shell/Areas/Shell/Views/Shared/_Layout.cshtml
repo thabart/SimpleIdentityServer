@@ -47,8 +47,8 @@
                 @RenderBody()
             </div>
         </div>
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script type="text/javascript" src="@Url.Content("~/lib/jquery/jquery.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/lib/bootstrap/bootstrap.js")"></script>
         @RenderSection("Scripts", required:false)
         <script type="text/javascript">
             $(document).ready(function() {
