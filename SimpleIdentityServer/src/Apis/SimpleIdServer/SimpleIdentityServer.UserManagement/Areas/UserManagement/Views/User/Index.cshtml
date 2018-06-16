@@ -4,6 +4,7 @@
     ViewBag.IsEditDisplayed = false;
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = true;
+    ViewBag.IsProfileDisplayed = false;
     var identity = User.Identity as ClaimsIdentity;
     var nameClaim = identity.Claims.FirstOrDefault(c => c.Type == "name");
     var givenNameClaim = identity.Claims.FirstOrDefault(c => c.Type == "given_name");

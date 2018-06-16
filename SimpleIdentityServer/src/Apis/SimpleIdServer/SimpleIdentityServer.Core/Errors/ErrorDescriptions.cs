@@ -126,5 +126,8 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheBulkPublicClaimsIsNotWorking = "the bulk operation is not working ...";
+        public const string TheResourceOwnerDoesntExist = "the resource owner doesn't exist";
+        public const string TheProfileAlreadyAssigned = "the profile is already linked to your account";
+        public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
     }
 }

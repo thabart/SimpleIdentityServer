@@ -36,6 +36,11 @@ namespace SimpleIdentityServer.EF.Mappings
                 .WithOne(c => c.ResourceOwner)
                 .HasForeignKey(a => a.ResourceOwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ResourceOwner>()
+                .HasMany(r => r.Profiles)
+                .WithOne(r => r.ResourceOwner)
+                .HasForeignKey(a => a.ResourceOwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

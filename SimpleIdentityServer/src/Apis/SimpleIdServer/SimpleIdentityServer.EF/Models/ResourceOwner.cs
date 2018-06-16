@@ -45,7 +45,17 @@ namespace SimpleIdentityServer.EF.Models
         /// Gets or sets the list of consents
         /// </summary>
         public virtual List<Consent> Consents { get; set; } 
+        /// <summary>
+        /// Gets or sets the profiles.
+        /// </summary>
+        public virtual ICollection<Profile> Profiles { get; set; }
+        /// <summary>
+        /// Gets or sets the create datetime.
+        /// </summary>
         public DateTime CreateDateTime { get; set; }
+        /// <summary>
+        /// Gets or sets the update datetime.
+        /// </summary>
         public DateTime UpdateDateTime { get; set; }
     }
 }

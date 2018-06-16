@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.EF
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
             serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
             serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();
+            serviceCollection.AddTransient<IProfileRepository, ProfileRepository>();
             return serviceCollection;
         }
     }

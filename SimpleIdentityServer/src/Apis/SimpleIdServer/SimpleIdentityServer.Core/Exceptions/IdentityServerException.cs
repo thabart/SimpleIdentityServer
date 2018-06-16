@@ -20,6 +20,8 @@ namespace SimpleIdentityServer.Core.Exceptions
 {
     public class IdentityServerException : Exception
     {
+        public IdentityServerException() { }
+
         public IdentityServerException(string code, string message) : base(message)
         {
             Code = code;

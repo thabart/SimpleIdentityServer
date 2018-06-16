@@ -24,6 +24,8 @@ using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
+using SimpleIdentityServer.Core.Api.Profile;
+using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Api.Token;
@@ -143,6 +145,10 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
             serviceCollection.AddTransient<IPayloadSerializer, PayloadSerializer>();
+            serviceCollection.AddTransient<IProfileActions, ProfileActions>();
+            serviceCollection.AddTransient<ILinkProfileAction, LinkProfileAction>();
+            serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();
+            serviceCollection.AddTransient<IGetProfileAction, GetProfileAction>();
             return serviceCollection;
         }
     }

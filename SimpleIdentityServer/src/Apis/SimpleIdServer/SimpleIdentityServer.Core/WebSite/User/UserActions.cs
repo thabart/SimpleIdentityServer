@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
     {
         Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
         Task<bool> DeleteConsent(string consentId);
-        Task<Common.Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
+        Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
         Task<bool> AddUser(AddUserParameter addUserParameter);
     }

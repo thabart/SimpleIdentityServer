@@ -12,6 +12,21 @@ namespace SimpleIdentityServer.EF.Extensions
     {
         #region To Domain Objects
 
+        public static Domain.ResourceOwnerProfile ToDomain(this Model.Profile profile)
+        {
+            if (profile == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
+            return new Domain.ResourceOwnerProfile
+            {
+                Issuer = profile.Issuer,
+                ResourceOwnerId = profile.ResourceOwnerId,
+                Subject = profile.Subject
+            };
+        }
+
         public static Domain.ClaimAggregate ToDomain(this Model.Claim claim)
         {
             if (claim == null)
@@ -242,6 +257,21 @@ namespace SimpleIdentityServer.EF.Extensions
         #endregion
 
         #region To models
+
+        public static Model.Profile ToModel(this Domain.ResourceOwnerProfile profile)
+        {
+            if (profile == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
+            return new Model.Profile
+            {
+                Issuer = profile.Issuer,
+                ResourceOwnerId = profile.ResourceOwnerId,
+                Subject = profile.Subject
+            };
+        }
 
         public static Model.Scope ToModel(this Domain.Scope scope)
         {
