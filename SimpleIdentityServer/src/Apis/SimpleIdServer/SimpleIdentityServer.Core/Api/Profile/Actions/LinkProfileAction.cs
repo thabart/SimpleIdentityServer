@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
             var resourceOwner = await _resourceOwnerRepository.GetAsync(localSubject);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
+                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);
             }
 
             var profile = await _profileRepository.Get(externalSubject);
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
 
             if (profile != null)
             {
-                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyAssigned);
+                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheProfileAlreadyLinked);
             }
 
             return await _profileRepository.Add(new[]

@@ -1,14 +1,12 @@
-﻿using SimpleIdentityServer.EF;
+﻿using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Core.Extensions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using SimpleIdentityServer.Core.Common.Extensions;
 
 namespace SimpleIdentityServer.Startup.Extensions
 {

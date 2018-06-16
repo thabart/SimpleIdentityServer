@@ -9,37 +9,4 @@
   <ItemGroup>  
     <EmbeddedResource Include="Areas\**\*.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Areas\UserManagement\Views\User\LinkProfileConfirmation.cshtml" />
-    <EmbeddedResource Remove="Areas\UserManagement\Views\User\Profile.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Areas\UserManagement\Views\Shared\_UserLayout.cshtml" />
-    <None Remove="Areas\UserManagement\Views\User\Consent.cshtml" />
-    <None Remove="Areas\UserManagement\Views\User\Edit.cshtml" />
-    <None Remove="Areas\UserManagement\Views\User\Index.cshtml" />
-    <None Remove="Areas\UserManagement\Views\User\LinkProfileConfirmation.cshtml" />
-    <None Remove="Areas\UserManagement\Views\User\Profile.cshtml" />
-    <None Remove="Areas\UserManagement\Views\_ViewStart.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Areas\UserManagement\Views\Shared\_UserLayout.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Areas\UserManagement\Views\User\LinkProfileConfirmation.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Areas\UserManagement\Views\User\Profile.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Areas\UserManagement\Views\User\Consent.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Areas\UserManagement\Views\User\Edit.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Areas\UserManagement\Views\User\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@
                 <ul class="list-group">
                     @foreach (var linkedIdProvider in Model.LinkedIdentityProviders)
                     {
-                        <form method="post" action="@Url.Action("Unlink", new { @id = linkedIdProvider.DisplayName })">
+                        <form method="post" action="@Url.Action("Unlink", new { @id = linkedIdProvider.ExternalSubject })">
                             <li class="list-group-item">@linkedIdProvider.DisplayName <input type="submit" class="btn btn-danger" value="unlink" /></li>
                         </form>
                     }

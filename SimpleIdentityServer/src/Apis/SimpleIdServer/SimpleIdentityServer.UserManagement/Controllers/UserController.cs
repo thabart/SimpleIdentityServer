@@ -151,13 +151,14 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 foreach (var profile in profiles)
                 {
-                    viewModel.LinkedIdentityProviders.Add(new IdentityProviderViewModel(profile.Issuer, profile.Subject));
+                    var record = new IdentityProviderViewModel(profile.Issuer, profile.Subject);
+                    viewModel.LinkedIdentityProviders.Add(record);
                 }
             }
-
+            
             viewModel.UnlinkedIdentityProviders = authenticationSchemes.Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name))
                 .Select(p => new IdentityProviderViewModel(p.Name)).ToList();
-            return View(viewModel);
+            return View("Profile", viewModel);
         }
 
         /// <summary>
@@ -199,7 +200,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 var externalClaims = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);                
                 var resourceOwner = await _profileActions.Link(authenticatedUser.GetSubject(), externalClaims.GetSubject(), externalClaims.Identity.AuthenticationType, false);
                 await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
-                return RedirectToAction("Index", "User", new { area = "UserManagement" });
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
             catch (ProfileAssignedAnotherAccountException)
             {
@@ -225,7 +226,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 !externalClaims.Identity.IsAuthenticated ||
                 !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Index", "Home", new { area = "Shell" });
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
 
             await SetUser();
@@ -247,14 +248,14 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 !externalClaims.Identity.IsAuthenticated ||
                 !(externalClaims.Identity is ClaimsIdentity))
             {
-                return RedirectToAction("Index", "Home", new { area = "Shell" });
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
 
             var authenticatedUser = await SetUser();
             try
             {
                 await _profileActions.Link(authenticatedUser.GetSubject(), externalClaims.GetSubject(), externalClaims.Identity.AuthenticationType, true);
-                return RedirectToAction("Index");
+                return RedirectToAction("Profile", "User", new { area = "UserManagement" });
             }
             finally
             {
@@ -277,7 +278,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             
             var authenticatedUser = await SetUser();
             await _profileActions.Unlink(authenticatedUser.GetSubject(), id);
-            return await Index();
+            return await Profile();
         }
 
         #endregion
