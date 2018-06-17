@@ -21,7 +21,19 @@ namespace SimpleIdentityServer.Core.Parameters
 {
     public class AddUserParameter
     {
+        public AddUserParameter(string login, string password)
+        {
+            Login = login;
+            Password = password;
+        }
+
+        public AddUserParameter(string login, string password, IEnumerable<Claim> claims) : this(login, password)
+        {
+            Claims = claims;
+        }
+
         public string Login { get; set; }
         public string Password { get; set; }
+        public IEnumerable<Claim> Claims { get; set; }
     }
 }

@@ -16,7 +16,6 @@
 
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -34,13 +33,16 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IClaimRepository _claimRepository;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public UpdateUserClaimsOperation(
             IResourceOwnerRepository resourceOwnerRepository,
+            IClaimRepository claimRepository,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
+            _claimRepository = claimRepository;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
@@ -62,9 +64,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
+            var supportedClaims = await _claimRepository.GetAllAsync();
+            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Type && !Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(c.Type)));
             var claimsToBeRemoved = resourceOwner.Claims
                 .Where(cl => claims.Any(c => c.Type == cl.Type))
                 .Select(cl => resourceOwner.Claims.IndexOf(cl))
+                .OrderByDescending(p => p)
                 .ToList();
             foreach(var index in claimsToBeRemoved)
             {

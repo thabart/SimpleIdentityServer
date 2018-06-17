@@ -65,8 +65,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(addUserParameter.Password));
             }
 
-            if (await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(addUserParameter.Login,
-                addUserParameter.Password) != null)
+            if (await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(addUserParameter.Login, addUserParameter.Password) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -78,6 +77,14 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
             };
+            foreach(var claim in addUserParameter.Claims)
+            {
+                if (!newClaims.Any(nc => nc.Type == claim.Type))
+                {
+                    newClaims.Add(claim);
+                }
+            }
+
             var newResourceOwner = new ResourceOwner
             {
                 Id = addUserParameter.Login,
@@ -86,8 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };
-
-            newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login));
+                        
             await _resourceOwnerRepository.InsertAsync(newResourceOwner);
             return true;
         }

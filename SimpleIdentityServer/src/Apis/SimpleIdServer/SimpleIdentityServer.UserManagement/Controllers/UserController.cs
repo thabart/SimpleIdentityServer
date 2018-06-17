@@ -76,7 +76,9 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             return RedirectToAction("Consent");
         }
 
-        [HttpGet]
+        [HttpGet("User/Edit")]
+        [HttpGet("User/UpdateClaims")]
+        [HttpGet("User/UpdateCredentials")]
         public async Task<IActionResult> Edit()
         {
             var authenticatedUser = await SetUser();
@@ -113,6 +115,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 var record = viewModel.ToAddUserParameter();
                 record.Login = authenticatedUser.GetSubject();
+                record.Claims = authenticatedUser.Claims;
                 await _userActions.AddUser(record);
                 ViewBag.IsCreated = true;
             }
@@ -127,11 +130,11 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateClaims(UpdateResourceOwnerClaimsViewModel updateResourceOwnerClaimsViewModel)
+        public async Task<IActionResult> UpdateClaims(Dictionary<string, string> dic)
         {
-            if (updateResourceOwnerClaimsViewModel == null)
+            if (dic == null)
             {
-                throw new ArgumentNullException(nameof(updateResourceOwnerClaimsViewModel));
+                throw new ArgumentNullException(nameof(dic));
             }
             
             await TranslateUserEditView(DefaultLanguage);
@@ -139,11 +142,11 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
             var claims = new List<Claim>();
-            if (updateResourceOwnerClaimsViewModel.Claims != null)
+            if (dic != null)
             {
-                foreach(var claim in updateResourceOwnerClaimsViewModel.Claims)
+                foreach(var kvp in dic)
                 {
-                    claims.Add(new Claim(claim.Key, claim.Value));
+                    claims.Add(new Claim(kvp.Key, kvp.Value));
                 }
             }
 
@@ -160,6 +163,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         public async Task<IActionResult> Profile()
         {
             var authenticatedUser = await SetUser();
+            var actualScheme = authenticatedUser.Identity.AuthenticationType;
             var profiles = await _profileActions.GetProfiles(authenticatedUser.GetSubject());
             var authenticationSchemes = (await _authenticationSchemeProvider.GetAllSchemesAsync()).Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel();
@@ -172,7 +176,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 }
             }
             
-            viewModel.UnlinkedIdentityProviders = authenticationSchemes.Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name))
+            viewModel.UnlinkedIdentityProviders = authenticationSchemes.Where(a => profiles != null && !profiles.Any(p => p.Issuer == a.Name && a.Name != actualScheme))
                 .Select(p => new IdentityProviderViewModel(p.Name)).ToList();
             return View("Profile", viewModel);
         }
@@ -311,7 +315,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 return View("Edit", viewModel);
             }
 
-            viewModel = BuildViewModel(authenticatedUser.GetSubject(), User.Claims, true);
+            viewModel = BuildViewModel(authenticatedUser.GetSubject(), resourceOwner.Claims, true);
             viewModel.IsLocalAccount = true;
             return View("Edit", viewModel);
         }
@@ -377,13 +381,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         private static UpdateResourceOwnerViewModel BuildViewModel(string subject, IEnumerable<Claim> claims, bool isLocalAccount)
         {
-            var cls = new Dictionary<string, string>();
+            var editableClaims = new Dictionary<string, string>();
+            var notEditableClaims = new Dictionary<string, string>();
             foreach(var claim in claims)
             {
-                cls.Add(claim.Type, claim.Value);
+                if (Core.Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(claim.Type))
+                {
+                    notEditableClaims.Add(claim.Type, claim.Value);
+                }
+                else
+                {
+                    editableClaims.Add(claim.Type, claim.Value);
+                }
             }
-
-            return new UpdateResourceOwnerViewModel(subject, cls, isLocalAccount);
+            
+            return new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
         }
 
         #endregion

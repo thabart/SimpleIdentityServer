@@ -13,13 +13,7 @@ namespace SimpleIdentityServer.UserManagement.Extensions
                 throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
             }
 
-            var result = new AddUserParameter
-            {
-                Login = updateResourceOwnerViewModel.Login,
-                Password = updateResourceOwnerViewModel.Password
-            };
-
-            return result;
+            return new AddUserParameter(updateResourceOwnerViewModel.Login, updateResourceOwnerViewModel.Password);
         }
     }
 }

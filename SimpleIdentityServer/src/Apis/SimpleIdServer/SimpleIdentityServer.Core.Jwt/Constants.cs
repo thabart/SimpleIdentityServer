@@ -49,6 +49,16 @@ namespace SimpleIdentityServer.Core.Jwt
             public static string ScimLocation = "scim_location";
         }
 
+        public static IEnumerable<string> NotEditableResourceOwnerClaimNames = new List<string>
+        {
+            StandardResourceOwnerClaimNames.Subject,
+            StandardResourceOwnerClaimNames.EmailVerified,
+            StandardResourceOwnerClaimNames.PhoneNumberVerified,
+            StandardResourceOwnerClaimNames.UpdatedAt,
+            StandardResourceOwnerClaimNames.ScimId,
+            StandardResourceOwnerClaimNames.ScimLocation
+        };
+
         public static class StandardAddressClaimNames
         {
             public const string StreetAddress = "street_address";

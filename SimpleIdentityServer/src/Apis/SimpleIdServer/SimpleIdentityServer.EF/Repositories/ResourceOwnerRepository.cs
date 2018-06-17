@@ -200,6 +200,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     record.IsLocalAccount = resourceOwner.IsLocalAccount;
                     record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
                     record.UpdateDateTime = DateTime.UtcNow;
+                    record.Claims = new List<ResourceOwnerClaim>();
                     _context.ResourceOwnerClaims.RemoveRange(record.Claims);
                     if (resourceOwner.Claims != null)
                     {

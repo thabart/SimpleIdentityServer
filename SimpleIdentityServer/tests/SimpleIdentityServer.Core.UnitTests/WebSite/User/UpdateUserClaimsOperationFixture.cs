@@ -16,6 +16,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class UpdateUserClaimsOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+        private Mock<IClaimRepository> _claimRepositoryStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IUpdateUserClaimsOperation _updateUserClaimsOperation;
 
@@ -61,6 +62,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                         new Claim("type1", "value")
                     }
                 }));
+            _claimRepositoryStub.Setup(r => r.GetAllAsync()).Returns(Task.FromResult((IEnumerable<ClaimAggregate>)new List<ClaimAggregate>
+            {
+                new ClaimAggregate
+                {
+                    Code = "type"
+                }
+            }));
 
             // ACT
             await _updateUserClaimsOperation.Execute("subjet", new List<Claim>
@@ -75,8 +83,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _claimRepositoryStub = new Mock<IClaimRepository>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _updateUserClaimsOperation = new UpdateUserClaimsOperation(_resourceOwnerRepositoryStub.Object,
+                _claimRepositoryStub.Object,
                 _authenticateResourceOwnerServiceStub.Object);
         }
     }

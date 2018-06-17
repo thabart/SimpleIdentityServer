@@ -22,6 +22,8 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -42,11 +44,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 
             // ACTS & ASSERTS
             await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter()));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter
-            {
-                Login = "name"
-            }));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null)));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null)));
         }
 
         [Fact]
@@ -54,11 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new AddUserParameter
-            {
-                Login = "name",
-                Password = "password"
-            };
+            var parameter = new AddUserParameter("name", "password");
 
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
@@ -77,11 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new AddUserParameter
-            {
-                Login = "name",
-                Password = "password"
-            };
+            var parameter = new AddUserParameter("name", "password", new List<Claim>());
 
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));

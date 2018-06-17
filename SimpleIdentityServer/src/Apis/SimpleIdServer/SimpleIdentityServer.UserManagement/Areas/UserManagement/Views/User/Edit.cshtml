@@ -4,6 +4,14 @@
     ViewBag.IsConsentDisplayed = false;
     ViewBag.IsIndexDisplayed = false;
     ViewBag.IsProfileDisplayed = false;
+    var errors = new List<string>();
+    foreach(var node in ViewData.ModelState)
+    {
+        foreach(var error in node.Value.Errors)
+        {
+            errors.Add(error.ErrorMessage);
+        }
+    }
 }
 
 @model SimpleIdentityServer.UserManagement.ViewModels.UpdateResourceOwnerViewModel
@@ -12,27 +20,24 @@
     <div class="col-md-8 col-md-offset-2">
         @if (Model.IsLocalAccount)
         {
-        <h1>
-            @ViewBag.Translations["edit_resource_owner"]
-        </h1>
+            <h1>
+                @ViewBag.Translations["edit_resource_owner"]
+            </h1>
         }
         else
         {
-        <h1>
-            @ViewBag.Translations["create_resource_owner"]
-        </h1>
+            <h1>
+                @ViewBag.Translations["create_resource_owner"]
+            </h1>
         }
 
-        @if(ViewData.ModelState.Count > 0)
+        @if (errors.Count > 0)
         {
             <div class="alert alert-danger">
                 <ul>
-                    @foreach (var node in ViewData.ModelState)
+                    @foreach (var error in errors)
                     {
-                        foreach (var error in node.Value.Errors)
-                        {
-                            <li>@node.Key : @error.ErrorMessage</li>
-                        }
+                        <li>@error</li>
                     }
                 </ul>
             </div>
@@ -40,12 +45,12 @@
 
         @if (ViewBag.IsUpdated)
         {
-            <span class="text-success">@ViewBag.Translations["user_is_updated"]</span>
+            <div class="alert alert-success">@ViewBag.Translations["user_is_updated"]</div>
         }
 
         @if (ViewBag.IsCreated)
         {
-            <span class="text-success">@ViewBag.Translations["user_is_created"]</span>
+            <div class="alert alert-success">@ViewBag.Translations["user_is_created"]</div>
         }
 
         @using (Html.BeginForm("UpdateCredentials", "User", null, FormMethod.Post))
@@ -85,11 +90,18 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">@ViewBag.Translations["claims"]</div>
                     <div class="panel-body">
-                        @foreach (var claim in Model.Claims.Claims)
+                        @foreach (var claim in Model.EditableClaims)
                         {
                             <fieldset class="form-group">
                                 <label class="control-label">@claim.Key</label>
-                                <input type="text" name="@("Claims[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
+                                <input type="text" name="@("[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
+                            </fieldset>
+                        }
+                        @foreach (var notEditableClaim in Model.NotEditableClaims)
+                        {
+                            <fieldset class="form-group">
+                                <label class="control-label">@notEditableClaim.Key</label>
+                                <input type="text" value="@notEditableClaim.Value" class="form-control" readonly />
                             </fieldset>
                         }
                         <!-- Submit -->
@@ -102,15 +114,21 @@
         }
         else
         {
-
             <div class="panel panel-default">
                 <div class="panel-heading">@ViewBag.Translations["claims"]</div>
                 <div class="panel-body">
-                    @foreach (var claim in Model.Claims.Claims)
+                    @foreach (var claim in Model.EditableClaims)
                     {
                         <fieldset class="form-group">
                             <label class="control-label">@claim.Key</label>
-                            <input type="text" value="@claim.Value" class="form-control"  readonly />
+                            <input type="text" value="@claim.Value" class="form-control" readonly />
+                        </fieldset>
+                    }
+                    @foreach (var notEditableClaim in Model.NotEditableClaims)
+                    {
+                        <fieldset class="form-group">
+                            <label class="control-label">@notEditableClaim.Key</label>
+                            <input type="text" value="@notEditableClaim.Value" class="form-control" readonly />
                         </fieldset>
                     }
                 </div>
