@@ -138,7 +138,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
             serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
-            serviceCollection.AddTransient<IUpdateUserOperation, UpdateUserOperation>();
+            serviceCollection.AddTransient<IUpdateUserCredentialsOperation, UpdateUserCredentialsOperation>();
+            serviceCollection.AddTransient<IUpdateUserClaimsOperation, UpdateUserClaimsOperation>();
             serviceCollection.AddTransient<IAddUserOperation, AddUserOperation>();
             serviceCollection.AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>();
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
@@ -148,7 +149,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IProfileActions, ProfileActions>();
             serviceCollection.AddTransient<ILinkProfileAction, LinkProfileAction>();
             serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();
-            serviceCollection.AddTransient<IGetProfileAction, GetProfileAction>();
+            serviceCollection.AddTransient<IGetUserProfilesAction, GetUserProfilesAction>();
+            serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
             return serviceCollection;
         }
     }

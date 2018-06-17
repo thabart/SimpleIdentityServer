@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Profile.Actions
 {
-    public interface IGetProfileAction
+    public interface IGetUserProfilesAction
     {
         Task<IEnumerable<ResourceOwnerProfile>> Execute(string subject);
     }
 
-    internal sealed class GetProfileAction : IGetProfileAction
+    internal sealed class GetUserProfilesAction : IGetUserProfilesAction
     {
         private readonly IProfileRepository _profileRepository;
 
-        public GetProfileAction(IProfileRepository profileRepository)
+        public GetUserProfilesAction(IProfileRepository profileRepository)
         {
             _profileRepository = profileRepository;
         }

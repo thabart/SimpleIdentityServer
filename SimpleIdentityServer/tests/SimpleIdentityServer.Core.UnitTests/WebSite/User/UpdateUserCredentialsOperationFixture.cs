@@ -27,11 +27,11 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
 {
-    public class UpdateUserOperationFixture
+    public class UpdateUserCredentialsOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
-        private IUpdateUserOperation _updateUserOperation;
+        private IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
         
         [Fact]
         public async Task When_Passing_Null_Parameters_Then_Exceptions_Are_Thrown()
@@ -40,8 +40,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(new UpdateUserParameter()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute("subject", null));
         }
 
         [Fact]
@@ -49,16 +49,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new UpdateUserParameter
-            {
-                Login = "id",
-                Password = "password"
-            };
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserOperation.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserCredentialsOperation.Execute("subject", "password"));
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -71,16 +66,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            var parameter = new UpdateUserParameter
-            {
-                Login = "id",
-                Password = "password"
-            };
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _updateUserOperation.Execute(parameter);
+            await _updateUserCredentialsOperation.Execute("subject", "password");
 
             // ASSERTS
             _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));
@@ -90,7 +80,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
-            _updateUserOperation = new UpdateUserOperation(
+            _updateUserCredentialsOperation = new UpdateUserCredentialsOperation(
                 _resourceOwnerRepositoryStub.Object,
                 _authenticateResourceOwnerServiceStub.Object);
         }

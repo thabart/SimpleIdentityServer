@@ -77,63 +77,79 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Edit()
+        public async Task<IActionResult> Edit()
         {
             var authenticatedUser = await SetUser();
-            var resourceOwner = await _userActions.GetUser(authenticatedUser);
             await TranslateUserEditView(DefaultLanguage);
-            UpdateResourceOwnerViewModel viewModel = null;
             ViewBag.IsUpdated = false;
-            if (resourceOwner == null)
-            {
-                viewModel = BuildViewModel(authenticatedUser.Claims);
-                return View(viewModel);
-            }
-
-            viewModel = BuildViewModel(User.Claims);
-            viewModel.Password = resourceOwner.Password;
-            return View(viewModel);
+            ViewBag.IsCreated = false;
+            return await GetEditView(authenticatedUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(UpdateResourceOwnerViewModel viewModel)
+        public async Task<IActionResult> UpdateCredentials(UpdateResourceOwnerCredentialsViewModel viewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
-
+            
+            // 1. Validate the view model.
             await TranslateUserEditView(DefaultLanguage);
             var authenticatedUser = await SetUser();
+            ViewBag.IsUpdated = false;
+            ViewBag.IsCreated = false;
+            viewModel.Validate(ModelState);
             if (!ModelState.IsValid)
             {
-                ViewBag.IsUpdated = false;
-                return View(viewModel);
+                return await GetEditView(authenticatedUser);
             }
 
+            // 2. Create a new user if he doesn't exist or update the credentials.
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             var subject = authenticatedUser.GetSubject();
             if (resourceOwner == null)
             {
                 var record = viewModel.ToAddUserParameter();
+                record.Login = authenticatedUser.GetSubject();
                 await _userActions.AddUser(record);
+                ViewBag.IsCreated = true;
             }
             else
             {
-                var parameter = viewModel.ToParameter();
-                foreach (var newClaim in resourceOwner.Claims.Where(uc => !parameter.Claims.Any(pc => pc.Type == uc.Type)))
-                {
-                    parameter.Claims.Add(newClaim);
-                }
-
-                parameter.Login = subject;
-                await _userActions.UpdateUser(parameter);
-
+                await _userActions.UpdateCredentials(subject, viewModel.Password);
+                ViewBag.IsUpdated = true;
             }
 
+            return await GetEditView(authenticatedUser);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateClaims(UpdateResourceOwnerClaimsViewModel updateResourceOwnerClaimsViewModel)
+        {
+            if (updateResourceOwnerClaimsViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(updateResourceOwnerClaimsViewModel));
+            }
+            
+            await TranslateUserEditView(DefaultLanguage);
+            var authenticatedUser = await SetUser();
+            ViewBag.IsUpdated = false;
+            ViewBag.IsCreated = false;
+            var claims = new List<Claim>();
+            if (updateResourceOwnerClaimsViewModel.Claims != null)
+            {
+                foreach(var claim in updateResourceOwnerClaimsViewModel.Claims)
+                {
+                    claims.Add(new Claim(claim.Key, claim.Value));
+                }
+            }
+
+            await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claims);
             ViewBag.IsUpdated = true;
-            return View(viewModel);
+            return await GetEditView(authenticatedUser);
         }
 
         /// <summary>
@@ -144,7 +160,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         public async Task<IActionResult> Profile()
         {
             var authenticatedUser = await SetUser();
-            var profiles = await _profileActions.Get(authenticatedUser.GetSubject());
+            var profiles = await _profileActions.GetProfiles(authenticatedUser.GetSubject());
             var authenticationSchemes = (await _authenticationSchemeProvider.GetAllSchemesAsync()).Where(a => !string.IsNullOrWhiteSpace(a.DisplayName));
             var viewModel = new ProfileViewModel();
             if (profiles != null && profiles.Any())
@@ -285,6 +301,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         #region Private methods
 
+        private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
+        {
+            var resourceOwner = await _userActions.GetUser(authenticatedUser);
+            UpdateResourceOwnerViewModel viewModel = null;
+            if (resourceOwner == null)
+            {
+                viewModel = BuildViewModel(authenticatedUser.GetSubject(), authenticatedUser.Claims, false);
+                return View("Edit", viewModel);
+            }
+
+            viewModel = BuildViewModel(authenticatedUser.GetSubject(), User.Claims, true);
+            viewModel.IsLocalAccount = true;
+            return View("Edit", viewModel);
+        }
+
         private async Task<ActionResult> GetConsents()
         {
             var authenticatedUser = await SetUser();
@@ -333,54 +364,26 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 Core.Constants.StandardTranslationCodes.TwoAuthenticationFactor,
                 Core.Constants.StandardTranslationCodes.UserIsUpdated,
                 Core.Constants.StandardTranslationCodes.Phone,
-                Core.Constants.StandardTranslationCodes.HashedPassword
+                Core.Constants.StandardTranslationCodes.HashedPassword,
+                Core.Constants.StandardTranslationCodes.CreateResourceOwner,
+                Core.Constants.StandardTranslationCodes.Credentials,
+                Core.Constants.StandardTranslationCodes.RepeatPassword,
+                Core.Constants.StandardTranslationCodes.Claims,
+                Core.Constants.StandardTranslationCodes.UserIsCreated
             });
 
             ViewBag.Translations = translations;
         }
 
-        private static UpdateResourceOwnerViewModel BuildViewModel(IEnumerable<Claim> claims)
+        private static UpdateResourceOwnerViewModel BuildViewModel(string subject, IEnumerable<Claim> claims, bool isLocalAccount)
         {
-            string subject = string.Empty,
-                email = string.Empty,
-                phoneNumber = string.Empty,
-                name = string.Empty;
-            if (claims != null)
+            var cls = new Dictionary<string, string>();
+            foreach(var claim in claims)
             {
-                var subjectClaim = claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
-                var emailClaim = claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
-                var phoneNumberClaim = claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
-                var nameClaim = claims.FirstOrDefault(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
-                if (subjectClaim != null)
-                {
-                    subject = subjectClaim.Value;
-                }
-
-                if (emailClaim != null)
-                {
-                    email = emailClaim.Value;
-                }
-
-                if (phoneNumberClaim != null)
-                {
-                    phoneNumber = phoneNumberClaim.Value;
-                }
-
-                if (nameClaim != null)
-                {
-                    name = nameClaim.Value;
-                }
+                cls.Add(claim.Type, claim.Value);
             }
 
-            return new UpdateResourceOwnerViewModel
-            {
-                Login = subject,
-                Email = email,
-                Name = name,
-                // Password = user.Value.Password,
-                // TwoAuthenticationFactor = user.Value.TwoFactorAuthentication,
-                PhoneNumber = phoneNumber
-            };
+            return new UpdateResourceOwnerViewModel(subject, cls, isLocalAccount);
         }
 
         #endregion

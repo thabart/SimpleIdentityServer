@@ -28,7 +28,8 @@ namespace SimpleIdentityServer.Core.WebSite.User
         Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
         Task<bool> DeleteConsent(string consentId);
         Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
-        Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
+        Task<bool> UpdateCredentials(string subject, string newPassword);
+        Task<bool> UpdateClaims(string subject, IEnumerable<Claim> claims);
         Task<bool> AddUser(AddUserParameter addUserParameter);
     }
 
@@ -37,41 +38,49 @@ namespace SimpleIdentityServer.Core.WebSite.User
         private readonly IGetConsentsOperation _getConsentsOperation;
         private readonly IRemoveConsentOperation _removeConsentOperation;
         private readonly IGetUserOperation _getUserOperation;
-        private readonly IUpdateUserOperation _updateUserOperation;
+        private readonly IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
+        private readonly IUpdateUserClaimsOperation _updateUserClaimsOperation;
         private readonly IAddUserOperation _addUserOperation;
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
             IRemoveConsentOperation removeConsentOperation,
             IGetUserOperation getUserOperation,
-            IUpdateUserOperation updateUserOperation,
+            IUpdateUserCredentialsOperation updateUserCredentialsOperation,
+            IUpdateUserClaimsOperation updateUserClaimsOperation,
             IAddUserOperation addUserOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
             _getUserOperation = getUserOperation;
-            _updateUserOperation = updateUserOperation;
+            _updateUserCredentialsOperation = updateUserCredentialsOperation;
+            _updateUserClaimsOperation = updateUserClaimsOperation;
             _addUserOperation = addUserOperation;
         }
 
-        public async Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
+        public Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getConsentsOperation.Execute(claimsPrincipal);
+            return _getConsentsOperation.Execute(claimsPrincipal);
         }
 
-        public async Task<bool> DeleteConsent(string consentId)
+        public Task<bool> DeleteConsent(string consentId)
         {
-            return await _removeConsentOperation.Execute(consentId);
+            return _removeConsentOperation.Execute(consentId);
         }
 
-        public async Task<Common.Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
+        public Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getUserOperation.Execute(claimsPrincipal);
+            return _getUserOperation.Execute(claimsPrincipal);
         }
 
-        public async Task<bool> UpdateUser(UpdateUserParameter updateUserParameter)
+        public Task<bool> UpdateCredentials(string subject, string newPassword)
         {
-            return await _updateUserOperation.Execute(updateUserParameter);
+            return _updateUserCredentialsOperation.Execute(subject, newPassword);
+        }
+
+        public Task<bool> UpdateClaims(string subject, IEnumerable<Claim> claims)
+        {
+            return _updateUserClaimsOperation.Execute(subject, claims);
         }
 
         public Task<bool> AddUser(AddUserParameter claimsPrincipal)

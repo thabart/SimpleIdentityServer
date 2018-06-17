@@ -22,9 +22,6 @@ namespace SimpleIdentityServer.Core.Parameters
 {
     public class UpdateUserParameter
     {
-        public string Login { get; set; }
-        public string Password { get; set; }
         public IList<Claim> Claims { get; set; }
-        public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
     }
 }

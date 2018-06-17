@@ -9,21 +9,24 @@ namespace SimpleIdentityServer.Core.Api.Profile
     {
         Task<bool> Unlink(string localSubject, string externalSubject);
         Task<bool> Link(string localSubject, string externalSubject, string issuer, bool force = false);
-        Task<IEnumerable<ResourceOwnerProfile>> Get(string subject);
+        Task<IEnumerable<ResourceOwnerProfile>> GetProfiles(string subject);
+        Task<ResourceOwner> GetResourceOwner(string externalSubject);
     }
 
     internal sealed class ProfileActions : IProfileActions
     {
         private readonly IUnlinkProfileAction _unlinkProfileAction;
         private readonly ILinkProfileAction _linkProfileAction;
-        private readonly IGetProfileAction _getProfileAction;
+        private readonly IGetUserProfilesAction _getUserProfilesAction;
+        private readonly IGetResourceOwnerClaimsAction _getResourceOwnerClaimsAction;
 
         public ProfileActions(IUnlinkProfileAction unlinkProfileAction, ILinkProfileAction linkProfileAction,
-            IGetProfileAction getProfileAction)
+            IGetUserProfilesAction getProfileAction, IGetResourceOwnerClaimsAction getResourceOwnerClaimsAction)
         {
             _unlinkProfileAction = unlinkProfileAction;
             _linkProfileAction = linkProfileAction;
-            _getProfileAction = getProfileAction;
+            _getUserProfilesAction = getProfileAction;
+            _getResourceOwnerClaimsAction = getResourceOwnerClaimsAction;
         }
 
         public Task<bool> Unlink(string localSubject, string externalSubject)
@@ -36,9 +39,14 @@ namespace SimpleIdentityServer.Core.Api.Profile
             return _linkProfileAction.Execute(localSubject, externalSubject, issuer, force);
         }
 
-        public Task<IEnumerable<ResourceOwnerProfile>> Get(string subject)
+        public Task<IEnumerable<ResourceOwnerProfile>> GetProfiles(string subject)
         {
-            return _getProfileAction.Execute(subject);
+            return _getUserProfilesAction.Execute(subject);
+        }
+
+        public Task<ResourceOwner> GetResourceOwner(string externalSubject)
+        {
+            return _getResourceOwnerClaimsAction.Execute(externalSubject);
         }
     }
 }

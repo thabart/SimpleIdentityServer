@@ -297,6 +297,11 @@ namespace SimpleIdentityServer.Core
             public const string SendConfirmationCode = "send_confirmation_code";
             public const string Phone = "phone";
             public const string HashedPassword = "hashed_password";
+            public const string CreateResourceOwner = "create_resource_owner";
+            public const string Credentials = "credentials";
+            public const string RepeatPassword = "repeat_password";
+            public const string Claims = "claims";
+            public const string UserIsCreated = "user_is_created";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

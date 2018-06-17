@@ -10,53 +10,111 @@
 
 <div class="tab-pane active" id="edit-ro">
     <div class="col-md-8 col-md-offset-2">
+        @if (Model.IsLocalAccount)
+        {
         <h1>
             @ViewBag.Translations["edit_resource_owner"]
         </h1>
+        }
+        else
+        {
+        <h1>
+            @ViewBag.Translations["create_resource_owner"]
+        </h1>
+        }
+
+        @if(ViewData.ModelState.Count > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var node in ViewData.ModelState)
+                    {
+                        foreach (var error in node.Value.Errors)
+                        {
+                            <li>@node.Key : @error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
         @if (ViewBag.IsUpdated)
         {
             <span class="text-success">@ViewBag.Translations["user_is_updated"]</span>
         }
-        @using (Html.BeginForm("Edit", "User", null, FormMethod.Post))
+
+        @if (ViewBag.IsCreated)
+        {
+            <span class="text-success">@ViewBag.Translations["user_is_created"]</span>
+        }
+
+        @using (Html.BeginForm("UpdateCredentials", "User", null, FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            <!-- Login -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["login"]</label>
-                @Html.TextBoxFor(i => i.Login, new { type = "text", @class = "form-control", @readonly = true })
-            </fieldset>
-            <!-- Name -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["Name"]</label>
-                @Html.TextBoxFor(i => i.Name, new { @class = "form-control", placeholder = @ViewBag.Translations["your_name"] })
-                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-            </fieldset>
-            <!-- Hashed password -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["hashed_password"]</label>
-                @Html.TextBoxFor(i => i.Password, new { type = "password", @class = "form-control", @readonly = true })
-            </fieldset>
-            <!-- Password -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["password"]</label>
-                @Html.TextBoxFor(i => i.NewPassword, new { type = "password", @class = "form-control", placeholder = @ViewBag.Translations["your_password"] })
-            </fieldset>
-            <!-- Email -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["email"]</label>
-                @Html.TextBoxFor(i => i.Email, new { @class = "form-control", placeholder = @ViewBag.Translations["your_email"] })
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-            </fieldset>
-            <!-- Phone -->
-            <fieldset class="form-group">
-                <label class="control-label">@ViewBag.Translations["phone"]</label>
-                @Html.TextBoxFor(i => i.PhoneNumber, new { @class = "form-control", placeholder = @ViewBag.Translations["phone"] })
-                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
-            </fieldset>
-            <!-- Submit -->
-            <fieldset class="form-group">
-                <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
-            </fieldset>
+            <div class="panel panel-default">
+                <div class="panel-heading">@ViewBag.Translations["credentials"]</div>
+                <div class="panel-body">
+                    <!-- Login -->
+                    <fieldset class="form-group">
+                        <label class="control-label">@ViewBag.Translations["login"]</label>
+                        <input type="text" class="form-control" value="@Model.Credentials.Login" readonly />
+                    </fieldset>
+                    <!-- Password -->
+                    <fieldset class="form-group">
+                        <label class="control-label">@ViewBag.Translations["password"]</label>
+                        <input type="password" class="form-control" value="@Model.Credentials.Password" name="Password" placeholder="@ViewBag.Translations["your_password"]" />
+                    </fieldset>
+                    <!-- Repeat password -->
+                    <fieldset class="form-group">
+                        <label class="control-label">@ViewBag.Translations["repeat_password"]</label>
+                        <input type="password" class="form-control" value="@Model.Credentials.RepeatPassword" name="RepeatPassword" placeholder="@ViewBag.Translations["repeat_password"]" />
+                    </fieldset>
+                    <!-- Submit -->
+                    <fieldset class="form-group">
+                        <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
+                    </fieldset>
+                </div>
+            </div>
+        }
+
+        @if (Model.IsLocalAccount)
+        {
+            @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="panel panel-default">
+                    <div class="panel-heading">@ViewBag.Translations["claims"]</div>
+                    <div class="panel-body">
+                        @foreach (var claim in Model.Claims.Claims)
+                        {
+                            <fieldset class="form-group">
+                                <label class="control-label">@claim.Key</label>
+                                <input type="text" name="@("Claims[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
+                            </fieldset>
+                        }
+                        <!-- Submit -->
+                        <fieldset class="form-group">
+                            <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
+                        </fieldset>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+
+            <div class="panel panel-default">
+                <div class="panel-heading">@ViewBag.Translations["claims"]</div>
+                <div class="panel-body">
+                    @foreach (var claim in Model.Claims.Claims)
+                    {
+                        <fieldset class="form-group">
+                            <label class="control-label">@claim.Key</label>
+                            <input type="text" value="@claim.Value" class="form-control"  readonly />
+                        </fieldset>
+                    }
+                </div>
+            </div>
         }
     </div>
 </div>

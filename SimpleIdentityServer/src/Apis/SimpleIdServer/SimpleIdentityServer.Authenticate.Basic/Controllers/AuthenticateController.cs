@@ -24,6 +24,7 @@ using SimpleBus.Core;
 using SimpleIdentityServer.Authenticate.Basic.Extensions;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -55,6 +56,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private const string DefaultLanguage = "en";        
         private readonly IAuthenticateHelper _authenticateHelper;
         private readonly IAuthenticateActions _authenticateActions;
+        private readonly IProfileActions _profileActions;
         private readonly IDataProtector _dataProtector;
         private readonly IEncoder _encoder;
         private readonly ITranslationManager _translationManager;        
@@ -67,6 +69,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
+            IProfileActions profileActions,
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
@@ -83,6 +86,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IAuthenticateHelper authenticateHelper) : base(authenticationService, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
+            _profileActions = profileActions;
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _translationManager = translationManager;
@@ -204,10 +208,17 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
+            var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            IEnumerable<Claim> claims = authenticatedUser.Claims;
+            if (resourceOwner != null)
+            {
+                claims = resourceOwner.Claims;
+            }
+
 
             // 2. Set cookie
-            await SetLocalCookie(authenticatedUser.Claims.ToOpenidClaims(), Guid.NewGuid().ToString());
-            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await SetLocalCookie(claims.ToOpenidClaims(), Guid.NewGuid().ToString());
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
 
             // 3. Redirect to the profile
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
@@ -416,7 +427,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 2. Redirect the User agent
             var redirectUrl = _urlHelper.AbsoluteAction("LoginCallbackOpenId", "Authenticate", new { code = cookieValue });
-            await _authenticationService.ChallengeAsync(HttpContext, provider, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
+            await _authenticationService.ChallengeAsync(HttpContext, provider, new AuthenticationProperties
             {
                 RedirectUri = redirectUrl
             });
@@ -459,13 +470,19 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity)) {
                   throw new IdentityServerException(
-                        SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                        SimpleIdentityServer.Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                        Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                        Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
             
             // 5. Rerieve the claims
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
-            var claims = claimsIdentity.Claims.ToList();
+            var claims = authenticatedUser.Claims.ToList();
+            var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            if (resourceOwner != null)
+            {
+                claims = resourceOwner.Claims.ToList();
+            }
+
             var subject = claims.GetSubject();
 
             // 6. Try to authenticate the resource owner & returns the claims.

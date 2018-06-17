@@ -86,20 +86,8 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };
-            var claims = (await _claimRepository.GetAllAsync()).Select(c => c.Code);
-            if (addUserParameter.Claims != null)
-            {
-                foreach (var claim in addUserParameter.Claims.Where(c => claims.Contains(c.Type)))
-                {
-                    newResourceOwner.Claims.Add(claim);
-                }
-            }
 
-            if (!newResourceOwner.Claims.Any(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.Subject))
-            {
-                newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login));
-            }
-
+            newResourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login));
             await _resourceOwnerRepository.InsertAsync(newResourceOwner);
             return true;
         }

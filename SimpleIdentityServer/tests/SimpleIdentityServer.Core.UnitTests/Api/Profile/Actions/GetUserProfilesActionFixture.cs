@@ -9,10 +9,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
 {
-    public class GetProfileActionFixture
+    public class GetUserProfilesActionFixture
     {
         private Mock<IProfileRepository> _profileRepositoryStub;
-        private IGetProfileAction _getProfileAction;
+        private IGetUserProfilesAction _getProfileAction;
 
         [Fact]
         public async Task WhenPassingNullParameterThenExceptionIsThrown()
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         private void InitializeFakeObjects()
         {
             _profileRepositoryStub = new Mock<IProfileRepository>();
-            _getProfileAction = new GetProfileAction(_profileRepositoryStub.Object);
+            _getProfileAction = new GetUserProfilesAction(_profileRepositoryStub.Object);
         }
     }
 }
