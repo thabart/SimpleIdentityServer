@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.UserManagement
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUserManagement(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
+        public static IServiceCollection AddUserManagement(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting, UserManagementOptions userManagementOptions)
         {
             if (services == null)
             {
@@ -26,6 +26,11 @@ namespace SimpleIdentityServer.UserManagement
                 throw new ArgumentNullException(nameof(hosting));
             }
 
+            if (userManagementOptions == null)
+            {
+                throw new ArgumentNullException(nameof(userManagementOptions));
+            }
+
             var assembly = typeof(UserController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
@@ -34,6 +39,7 @@ namespace SimpleIdentityServer.UserManagement
                 options.FileProviders.Add(compositeProvider);
             });
 
+            services.AddSingleton(userManagementOptions);
             mvcBuilder.AddApplicationPart(assembly);
             return services;
         }

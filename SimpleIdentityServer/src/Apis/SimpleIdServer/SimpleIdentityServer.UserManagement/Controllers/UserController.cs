@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -12,6 +13,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Scim.Client;
 using SimpleIdentityServer.UserManagement.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
@@ -32,18 +34,25 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IUrlHelper _urlHelper;
+        private readonly IScimClientFactory _scimClientFactory;
+        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+        private readonly UserManagementOptions _userManagementOptions;
 
         #region Constructor
 
         public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
             IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, AuthenticateOptions options) : base(authenticationService, options)
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
+            IScimClientFactory scimClientFactory, IIdentityServerClientFactory identityServerClientFactory, UserManagementOptions userManagementOptions, AuthenticateOptions options) : base(authenticationService, options)
         {
             _userActions = userActions;
             _profileActions = profileActions;
             _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _scimClientFactory = scimClientFactory;
+            _identityServerClientFactory = identityServerClientFactory;
+            _userManagementOptions = userManagementOptions;
         }
 
         #endregion
@@ -116,6 +125,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 var record = viewModel.ToAddUserParameter();
                 record.Login = authenticatedUser.GetSubject();
                 record.Claims = authenticatedUser.Claims;
+                
                 await _userActions.AddUser(record);
                 ViewBag.IsCreated = true;
             }
@@ -304,6 +314,18 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         #endregion
 
         #region Private methods
+
+        private async Task GetScimResource(string subject)
+        {
+            var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
+                .UseClientSecretPostAuth(_userManagementOptions.Scim.ClientId, _userManagementOptions.Scim.ClientSecret)
+                .UseClientCredentials()
+                .ResolveAsync(_userManagementOptions.Scim.AuthorizationWellKnownConfiguration);
+
+            var scimResponse = await _scimClientFactory.GetUserClient().AddUser(_userManagementOptions.Scim.ScimBaseUrl, grantedToken.AccessToken)
+                .SetCommonAttributes(subject)
+                .Execute();
+        }
 
         private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
         {

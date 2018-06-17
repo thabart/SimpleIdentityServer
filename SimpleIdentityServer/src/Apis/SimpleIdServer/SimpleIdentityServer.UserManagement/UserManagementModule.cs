@@ -12,6 +12,12 @@ namespace SimpleIdentityServer.UserManagement
 {
     public class UserManagementModule : IModule
     {
+        private const string CreateScimResourceWhenAccountIsAdded = "CreateScimResourceWhenAccountIsAdded";
+        private const string ScimClientId = "ScimClientId";
+        private const string ScimClientSecret = "ScimClientSecret";
+        private const string ScimBaseUrl = "ScimBaseUrl";
+        private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
+
         public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
         {
             Title = "UserManagement",
@@ -59,17 +65,57 @@ namespace SimpleIdentityServer.UserManagement
                 throw new ArgumentNullException(nameof(env));
             }
 
-            services.AddUserManagement(mvcBuilder, env);
+            var opts = GetOptions(options);
+            services.AddUserManagement(mvcBuilder, env, opts);
         }
 
         public IEnumerable<string> GetOptionKeys()
         {
-            return new string[0];
+            return new[]
+            {
+                CreateScimResourceWhenAccountIsAdded,
+                ScimClientId,
+                ScimClientSecret,
+                ScimBaseUrl,
+                AuthorizationWellKnownConfiguration
+            };
         }
 
         public ModuleUIDescriptor GetModuleUI()
         {
             return ModuleUi;
+        }
+
+        private static UserManagementOptions GetOptions(IDictionary<string, string> options)
+        {
+            var result = new UserManagementOptions
+            {
+                Scim = new ScimOptions
+                {
+                     AuthorizationWellKnownConfiguration = TryGetStr(options, AuthorizationWellKnownConfiguration),
+                     ScimBaseUrl = TryGetStr(options, ScimBaseUrl),
+                     ClientId = TryGetStr(options, ScimClientId),
+                     ClientSecret = TryGetStr(options, ScimClientSecret)
+                }
+            };
+            bool createScimResourceWhenAccountIsAdded = false;
+            if (options.ContainsKey(CreateScimResourceWhenAccountIsAdded))
+            {
+                bool.TryParse(options[CreateScimResourceWhenAccountIsAdded], out createScimResourceWhenAccountIsAdded);
+            }
+
+            result.CreateScimResourceWhenAccountIsAdded = createScimResourceWhenAccountIsAdded;
+            return result;
+        }
+
+        private static string TryGetStr(IDictionary<string, string> opts, string name)
+        {
+            if (opts.ContainsKey(name))
+            {
+                return opts[name];
+            }
+
+            return null;
         }
     }
 }
