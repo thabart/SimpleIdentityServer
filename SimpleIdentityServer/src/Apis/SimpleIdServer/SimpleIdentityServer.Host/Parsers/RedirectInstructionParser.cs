@@ -33,15 +33,15 @@ namespace SimpleIdentityServer.Host.Parsers
         {
             {
                 IdentityServerEndPoints.ConsentIndex,
-                new ActionInformation("Consent", "Index")
+                new ActionInformation("Consent", "Index", "Shell")
             }, 
             {
                 IdentityServerEndPoints.AuthenticateIndex,
-                new ActionInformation("Authenticate", "Index")
+                new ActionInformation("Authenticate", "Index", "Authentication")
             },
             {
                 IdentityServerEndPoints.FormIndex,
-                new ActionInformation("Form", "Index")
+                new ActionInformation("Form", "Index", "Shell")
             }
         };
 

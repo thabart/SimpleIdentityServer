@@ -34,6 +34,7 @@ namespace SimpleIdentityServer.Core.Parameters
 
         public string Login { get; set; }
         public string Password { get; set; }
+        public string TwoFactorAuthentication { get; set; }
         public IEnumerable<Claim> Claims { get; set; }
     }
 }

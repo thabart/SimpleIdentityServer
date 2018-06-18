@@ -82,42 +82,6 @@ namespace SimpleIdentityServer.Host
                 options);
             return serviceCollection;
         }
-   
-        /// <summary>
-        /// Add the consent and form screens.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="mvcBuilder"></param>
-        /// <param name="hosting"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddOpenIdWebsite(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if(mvcBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(mvcBuilder));
-            }
-
-            if (hosting == null)
-            {
-                throw new ArgumentNullException(nameof(hosting));
-            }
-
-            var assembly = typeof(ConsentController).Assembly;
-            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.FileProviders.Add(compositeProvider);
-            });
-
-            mvcBuilder.AddApplicationPart(assembly);
-            return services;
-        }
 
         public static AuthorizationOptions AddOpenIdSecurityPolicy(this AuthorizationOptions authenticateOptions, string cookieName)
         {

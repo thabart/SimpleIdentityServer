@@ -69,6 +69,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private readonly IPayloadSerializer _payloadSerializer;
         private readonly IConfigurationService _configurationService;
         private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
+        private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -87,7 +88,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             AuthenticateOptions authenticateOptions,
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
-            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticationService, authenticateOptions)
+            BasicAuthenticateOptions basicAuthenticateOptions,
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _profileActions = profileActions;
@@ -103,6 +105,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _configurationService = configurationService;
             _authenticateHelper = authenticateHelper;
             _basicAuthenticateOptions = basicAuthenticateOptions;
+            _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             Check();
         }
         
@@ -216,17 +219,23 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
-            if (resourceOwner == null) // Automatically create the resource owner.
+
+            // 2. Automatically create the resource owner.
+            if (resourceOwner == null)
             {
-                if (_basicAuthenticateOptions.IsExternalAccountAutomaticallyCreated)
+                var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
+                if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
                 {
-                    var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
                     await _userActions.AddUser(record, new AuthenticationParameter
                     {
                         ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
                         ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
                         WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
                     }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                }
+                else
+                {
+                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
                 }
             }
 
@@ -237,36 +246,58 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
-            if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Two factor authentication.
+
+            // 3. Two factor authentication.
+            if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 await SetTwoFactorCookie(claims);
-                var code = await _authenticateActions.GenerateAndSendCode(claims.GetSubject());
-                _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                return RedirectToAction("SendCode");
+                try
+                {
+                    var code = await _authenticateActions.GenerateAndSendCode(claims.GetSubject());
+                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    return RedirectToAction("SendCode");
+                }
+                catch(ClaimRequiredException)
+                {
+                    return RedirectToAction("SendCode");
+                }
             }
 
-            // 2. Set cookie
+            // 4. Set cookie
             await SetLocalCookie(claims.ToOpenidClaims(), Guid.NewGuid().ToString());
             await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
 
-            // 3. Redirect to the profile
+            // 5. Redirect to the profile
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
 
         [HttpGet]
-        public async Task<ActionResult> SendCode()
+        public async Task<ActionResult> SendCode(string code)
         {
             // 1. Retrieve user
-            await SetUser();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
-            // 2. Return translated view
+            // 2. Return translated view.
+            var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
+            var viewModel = new CodeViewModel
+            {
+                AuthRequestCode = code,
+                ClaimName = service.RequiredClaim
+            };
+            var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == service.RequiredClaim);
+            if (claim != null)
+            {
+                viewModel.ClaimValue = claim.Value;
+            }
+
+            ViewBag.IsAuthenticated = false;
             await TranslateView(DefaultLanguage);
-            return View();
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -274,12 +305,10 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         public async Task<ActionResult> ResendCode()
         {
             // 1. Retrieve user
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(
-                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Send the code
@@ -300,7 +329,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 throw new ArgumentNullException(nameof(codeViewModel));
             }
 
-            await SetUser();
+            ViewBag.IsAuthenticated = false;
+            codeViewModel.Validate(ModelState);
             if (!ModelState.IsValid)
             {
                 await TranslateView(DefaultLanguage);
@@ -308,12 +338,16 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             // 1. Check user is authenticated
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(
-                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+            }
+
+            if (codeViewModel.Action == "resend")
+            {
+                var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject()); // UPDATE THE CLAIMS
+                // RESEND THE CODE
             }
 
             // 2. Validate the code
@@ -334,8 +368,20 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             // 4. Authenticate the resource owner
-            await _authenticationService.SignOutAsync(HttpContext, SimpleIdentityServer.Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
+
+            // 5. Redirect the user agent
+            if (!string.IsNullOrWhiteSpace(codeViewModel.AuthRequestCode))
+            {
+                var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
+                var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), codeViewModel.AuthRequestCode, authenticatedUser.GetSubject(), authenticatedUser.Claims.ToList());
+                LogAuthenticateUser(actionResult, request.ProcessId);
+                var result = this.CreateRedirectionFromActionResult(actionResult, request);
+                return result;
+            }
+
+            // 4. Authenticate the resource owner
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
         
@@ -410,21 +456,22 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
                     authorizeOpenId.Code);
-                if (!string.IsNullOrWhiteSpace(actionResult.TwoFactor)) // Redirect the user agent to the send code.
+                var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+
+                // 5. Two factor authentication.
+                if (!string.IsNullOrWhiteSpace(actionResult.TwoFactor))
                 {
                     await SetTwoFactorCookie(actionResult.Claims);
-                    var code = await _authenticateActions.GenerateAndSendCode(string.Empty);
+                    var code = await _authenticateActions.GenerateAndSendCode(subject);
                     _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
                 }
-
-                var subject = actionResult.Claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-
-                // 5. Authenticate the user by adding a cookie
+                
+                // 6. Authenticate the user by adding a cookie
                 await SetLocalCookie(actionResult.Claims, request.SessionId);
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
-                // 6. Redirect the user agent
+                // 7. Redirect the user agent
                 var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     request);
                 if (result != null)
@@ -482,7 +529,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var request = Request.Cookies[string.Format(ExternalAuthenticateCookieName, code)];
             if (request == null)
             {
-                throw new IdentityServerException(SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode,
                     Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
 
@@ -495,9 +542,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 3 : Raise an exception is there's an authentication error
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode, 
-                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }            
             
             // 4. Check if the user is authenticated
@@ -505,24 +550,29 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (authenticatedUser == null ||
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity)) {
-                  throw new IdentityServerException(
-                        Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                        Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
+                  throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TheUserNeedsToBeAuthenticated);
             }
             
-            // 5. Rerieve the claims
+            // 5. Rerieve the claims & insert the resource owner if needed.
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToList();
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
             if (resourceOwner == null)
             {
                 var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
-                await _userActions.AddUser(record, new AuthenticationParameter
+                if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
                 {
-                    ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
-                    ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
-                    WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                    await _userActions.AddUser(record, new AuthenticationParameter
+                    {
+                        ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
+                        ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
+                        WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
+                    }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                }
+                else
+                {
+                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
+                }
             }
 
             if (resourceOwner != null)
@@ -531,6 +581,14 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             var subject = claims.GetSubject();
+
+            if (resourceOwner != null)
+            {
+                await SetTwoFactorCookie(claims);
+                var confirmationCode = await _authenticateActions.GenerateAndSendCode(subject);
+                _simpleIdentityServerEventSource.GetConfirmationCode(confirmationCode);
+                return RedirectToAction("SendCode", new { code = request });
+            }
 
             // 6. Try to authenticate the resource owner & returns the claims.
             var authorizationRequest = _dataProtector.Unprotect<AuthorizationRequest>(request);
@@ -556,7 +614,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         private void Check()
         {
-            if (_basicAuthenticateOptions.IsExternalAccountAutomaticallyCreated && (_basicAuthenticateOptions.AuthenticationOptions == null ||
+            if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated && (_basicAuthenticateOptions.AuthenticationOptions == null ||
                 string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration) ||
                 string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.ClientId) ||
                 string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.ClientSecret) ||
@@ -589,7 +647,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 Core.Constants.StandardTranslationCodes.SendCode,
                 Core.Constants.StandardTranslationCodes.Code,
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.SendConfirmationCode
+                Core.Constants.StandardTranslationCodes.SendConfirmationCode,
+                Core.Constants.StandardTranslationCodes.UpdateClaim,
+                Core.Constants.StandardTranslationCodes.ConfirmationCode,
+                Core.Constants.StandardTranslationCodes.ResetConfirmationCode,
+                Core.Constants.StandardTranslationCodes.ValidateConfirmationCode
             });
 
             ViewBag.Translations = translations;

@@ -15,10 +15,11 @@
 #endregion
 
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Shell.ViewModels;
 
 namespace SimpleIdentityServer.Host.Controllers.Website
 {
+    [Area("Shell")]
     public class FormController : Controller
     {
         public ActionResult Index(dynamic parameters)

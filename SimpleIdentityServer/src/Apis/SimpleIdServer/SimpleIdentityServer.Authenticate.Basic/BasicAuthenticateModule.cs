@@ -16,7 +16,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
         private const string ClientSecret = "ClientSecret";
         private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
         private const string BaseScimUrl = "BaseScimUrl";
-        private const string IsExternalAccountAutomaticallyCreated = "IsExternalAccountAutomaticallyCreated";
+        private const string IsScimResourceAutomaticallyCreated = "IsScimResourceAutomaticallyCreated";
 
         public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
         {
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 ClientSecret,
                 AuthorizationWellKnownConfiguration,
                 BaseScimUrl,
-                IsExternalAccountAutomaticallyCreated
+                IsScimResourceAutomaticallyCreated
             };
         }
 
@@ -94,28 +94,20 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 return result;
             }
 
-            bool b = false;
-            var str = TryGetStr(options, IsExternalAccountAutomaticallyCreated);
-            bool.TryParse(str, out b);
             result.AuthenticationOptions = new BasicAuthenticationOptions
             {
-                AuthorizationWellKnownConfiguration = TryGetStr(options, AuthorizationWellKnownConfiguration),
-                ClientId = TryGetStr(options, ClientId),
-                ClientSecret = TryGetStr(options, ClientSecret)
+                AuthorizationWellKnownConfiguration = options.TryGetValue(AuthorizationWellKnownConfiguration),
+                ClientId = options.TryGetValue(ClientId),
+                ClientSecret = options.TryGetValue(ClientSecret)
             };
-            result.ScimBaseUrl = TryGetStr(options, BaseScimUrl);
-            result.IsExternalAccountAutomaticallyCreated = b;
-            return result;
-        }
-
-        private static string TryGetStr(IDictionary<string, string> opts, string name)
-        {
-            if (opts.ContainsKey(name))
+            result.ScimBaseUrl = options.TryGetValue(BaseScimUrl);
+            bool isScimResourceAutomaticallyCreated;
+            if (options.TryGetValue(IsScimResourceAutomaticallyCreated, out isScimResourceAutomaticallyCreated))
             {
-                return opts[name];
+                result.IsScimResourceAutomaticallyCreated = isScimResourceAutomaticallyCreated;
             }
 
-            return null;
+            return result;
         }
     }
 }

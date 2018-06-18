@@ -50,6 +50,8 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
             _options = options;
         }
 
+        public string RequiredClaim { get { return SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email; } }
+
         public async Task SendAsync(string code, ResourceOwner user)
         {
             if (string.IsNullOrWhiteSpace(code))
@@ -68,7 +70,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
             }
 
             // 1. Try to fetch the email.
-            var emailClaim = user.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email);
+            var emailClaim = user.Claims.FirstOrDefault(c => c.Type == RequiredClaim);
             if (emailClaim == null)
             {
                 throw new ArgumentException("the email is not present");

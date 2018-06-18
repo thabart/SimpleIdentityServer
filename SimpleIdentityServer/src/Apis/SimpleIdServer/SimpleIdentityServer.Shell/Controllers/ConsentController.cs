@@ -27,15 +27,18 @@ using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.EventStore.Core.Models;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
+using SimpleIdentityServer.Shell.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Host.Controllers.Website
+namespace SimpleIdentityServer.Shell.Controllers
 {
+    [Area("Shell")]
     [Authorize("Connected")]
     public class ConsentController : BaseController
     {

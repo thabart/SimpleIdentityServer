@@ -303,6 +303,10 @@ namespace SimpleIdentityServer.Core
             public const string Claims = "claims";
             public const string UserIsCreated = "user_is_created";
             public const string TwoFactor = "two_factor";
+            public const string UpdateClaim = "update_claim";
+            public const string ConfirmationCode = "confirmation_code";
+            public const string ResetConfirmationCode = "resend_confirmation_code";
+            public const string ValidateConfirmationCode = "validate_confirmation_code";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

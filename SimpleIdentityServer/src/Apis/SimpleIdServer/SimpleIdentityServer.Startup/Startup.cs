@@ -114,14 +114,13 @@ namespace SimpleIdentityServer.Startup
             });
             TwoFactorServiceStore.Instance().Add("SMS", twoFactor);
             services.AddOpenIdApi(_options); // API
-            services.AddOpenIdWebsite(mvcBuilder, _env); // CONSENTS
             services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
             {
                 Descriptors = new[] { BasicAuthenticateModule.ModuleUi, UserManagementModule.ModuleUi }
             });  // SHELL
             services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
-                IsExternalAccountAutomaticallyCreated = true,
+                IsScimResourceAutomaticallyCreated = false,
                 AuthenticationOptions = new BasicAuthenticationOptions
                 {
                     AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",

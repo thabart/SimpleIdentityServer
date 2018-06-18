@@ -13,7 +13,6 @@ using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Host.ViewModels;
 using SimpleIdentityServer.UserManagement.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;

@@ -14,14 +14,41 @@
 // limitations under the License.
 #endregion
 
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 
 namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
 {
     public class CodeViewModel
     {
-        [Required]
-        [Display(Name = "Code")]
         public string Code { get; set; }
+        public string AuthRequestCode { get; set; }
+        public string ClaimName { get; set; }
+        public string ClaimValue { get; set; }
+        public string Action { get; set; }
+
+        public void Validate(ModelStateDictionary modelState)
+        {
+            if (modelState == null)
+            {
+                throw new ArgumentNullException(nameof(modelState));
+            }
+
+            if (Action == "resend")
+            {
+                if (string.IsNullOrWhiteSpace(ClaimValue))
+                {
+                    modelState.AddModelError("ClaimValue", "The claim must be specified");
+                }
+            }
+
+            if (Action == "submit")
+            {
+                if (string.IsNullOrWhiteSpace(Code))
+                {
+                    modelState.AddModelError("Code", "The confirmation code must be specified");
+                }
+            }
+        }
     }
 }

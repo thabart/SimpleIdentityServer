@@ -59,6 +59,8 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             _clientFactory = new HttpClientFactory();
         }
 
+        public string RequiredClaim { get { return Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber; } }
+
         public async Task SendAsync(string code, ResourceOwner user)
         {
             if (user == null)
@@ -71,7 +73,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
                 throw new ArgumentNullException(nameof(user.Claims));
             }
 
-            var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == "phone_number");
+            var phoneNumberClaim = user.Claims.FirstOrDefault(c => c.Type == RequiredClaim);
             if (phoneNumberClaim == null)
             {
                 throw new ArgumentException("the phone number is missing");

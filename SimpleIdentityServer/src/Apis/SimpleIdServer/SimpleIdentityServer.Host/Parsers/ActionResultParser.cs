@@ -22,7 +22,6 @@ namespace SimpleIdentityServer.Host.Parsers
     public interface IActionResultParser
     {
         ActionInformation GetControllerAndActionFromRedirectionActionResult(ActionResult actionResult);
-
         RouteValueDictionary GetRedirectionParameters(ActionResult actionResult);
     }
 

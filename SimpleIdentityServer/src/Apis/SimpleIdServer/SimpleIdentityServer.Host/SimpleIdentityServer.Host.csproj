@@ -20,38 +20,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\CheckSession.html" />
-    <None Remove="Views\Consent\Index.cshtml" />
-    <None Remove="Views\Form\Index.cshtml" />
-    <None Remove="Views\RevokeSession.html" />
-    <None Remove="Views\RevokeSessionCallback.html" />
-    <None Remove="Views\UserNotConnected.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Consent\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Form\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Views\CheckSession.html" />
-    <EmbeddedResource Include="Views\UserNotConnected.html" />
-    <EmbeddedResource Include="Views\RevokeSessionCallback.html" />
-    <EmbeddedResource Include="Views\RevokeSession.html" />
-    <EmbeddedResource Include="Views\**\*.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
-
+  
   <ItemGroup>
+    <EmbeddedResource Include="Views\**\*.html" />
+  </ItemGroup>
+
+    <ItemGroup>
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
@@ -84,13 +62,4 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <DefineConstants>$(DefineConstants);CORE</DefineConstants>
   </PropertyGroup>
-
-  <!--
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <PackageReference Include="Microsoft.AspNet.WebUtilities" Version="1.0.0-*" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.IO" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
-  </ItemGroup>
-	-->
 </Project>

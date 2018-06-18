@@ -59,7 +59,6 @@ namespace SimpleIdentityServer.Host
 
             var opts = GetOptions(options);
             services.AddOpenIdApi(opts);
-            services.AddOpenIdWebsite(mvcBuilder, env);
         }
 
         public void ConfigureAuthorization(AuthorizationOptions authorizationOptions, IDictionary<string, string> options = null)

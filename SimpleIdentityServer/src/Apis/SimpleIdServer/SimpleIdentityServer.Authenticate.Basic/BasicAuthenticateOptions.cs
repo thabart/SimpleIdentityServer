@@ -11,11 +11,11 @@
     {
         public BasicAuthenticateOptions()
         {
-            IsExternalAccountAutomaticallyCreated = false;
+            IsScimResourceAutomaticallyCreated = false;
         }
 
-        public bool IsExternalAccountAutomaticallyCreated { get; set; }
         public string ScimBaseUrl { get; set; }
         public BasicAuthenticationOptions AuthenticationOptions { get; set; }
+        public bool IsScimResourceAutomaticallyCreated { get; set; }
     }
 }

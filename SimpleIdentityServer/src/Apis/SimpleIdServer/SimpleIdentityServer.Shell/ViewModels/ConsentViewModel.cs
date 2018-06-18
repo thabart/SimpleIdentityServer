@@ -14,26 +14,19 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Routing;
+using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Host.Parsers
+namespace SimpleIdentityServer.Shell.ViewModels
 {
-    public class ActionInformation
+    public class ConsentViewModel
     {
-        public ActionInformation()
-        {
-        }
-
-        public ActionInformation(string controllerName, string actionName, string area)
-        {
-            ControllerName = controllerName;
-            ActionName = actionName;
-            Area = area;
-        }
-
-        public string ControllerName { get; set; }
-        public string ActionName { get; set; }
-        public string Area { get; set; }
-        public RouteValueDictionary RouteValueDictionary { get; set; }
+        public string Id { get; set; }
+        public string ClientDisplayName { get; set; }
+        public ICollection<string> AllowedScopeDescriptions { get; set; }
+        public ICollection<string> AllowedIndividualClaims { get; set; }
+        public string LogoUri { get; set; }
+        public string PolicyUri { get; set; }
+        public string TosUri { get; set; }
+        public string Code { get; set; }
     }
 }

@@ -2,7 +2,7 @@
     ViewBag.Title = "Form";
 }
 
-@model SimpleIdentityServer.Host.ViewModels.FormViewModel
+@model SimpleIdentityServer.Shell.ViewModels.FormViewModel
 
 <form method="post" action="@Model.RedirectUri" id="form">
     @if (!string.IsNullOrWhiteSpace(Model.State))

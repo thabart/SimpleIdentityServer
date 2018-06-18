@@ -87,13 +87,13 @@ namespace SimpleIdentityServer.Host.Extensions
                 return new RedirectResult(redirectUrl);
             }
 
-            var actionInformation =
-                actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
+            var actionInformation = actionResultParser.GetControllerAndActionFromRedirectionActionResult(actionResult);
             if (actionInformation != null)
             {
                 var routeValueDic = actionInformation.RouteValueDictionary;
                 routeValueDic.Add("controller", actionInformation.ControllerName);
                 routeValueDic.Add("action", actionInformation.ActionName);
+                routeValueDic.Add("area", actionInformation.Area);
                 return new RedirectToRouteResult(routeValueDic);
             }
 

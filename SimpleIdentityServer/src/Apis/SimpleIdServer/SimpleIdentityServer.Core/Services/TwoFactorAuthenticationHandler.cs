@@ -23,12 +23,23 @@ namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorAuthenticationHandler
     {
+        ITwoFactorAuthenticationService Get(string twoFactorAuthType);
         Task SendCode(string code, string twoFactorAuthType, ResourceOwner user);
     }
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
         public TwoFactorAuthenticationHandler() { }
+
+        public ITwoFactorAuthenticationService Get(string twoFactorAuthType)
+        {
+            if (string.IsNullOrWhiteSpace(twoFactorAuthType))
+            {
+                throw new ArgumentNullException(nameof(twoFactorAuthType));
+            }
+
+            return TwoFactorServiceStore.Instance().Get(twoFactorAuthType);
+        }
 
         public async Task SendCode(string code, string twoFactorAuthType, ResourceOwner user)
         {
