@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.EF.Models
         /// <summary>
         /// Gets or sets the two factor authentication
         /// </summary>
-        public int TwoFactorAuthentication { get; set; }
+        public string TwoFactorAuthentication { get; set; }
         /// <summary>
         /// Gets or sets the list of claims.
         /// </summary>

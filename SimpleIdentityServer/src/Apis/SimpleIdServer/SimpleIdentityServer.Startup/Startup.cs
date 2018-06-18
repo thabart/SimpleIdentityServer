@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
+using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
@@ -30,7 +31,8 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
-using SimpleIdentityServer.Token.Store.InMemory;
+using SimpleIdentityServer.TwoFactorAuthentication;
+using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
 using SimpleIdentityServer.UserManagement;
 using System;
 
@@ -77,6 +79,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
+            services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)
@@ -102,14 +105,21 @@ namespace SimpleIdentityServer.Startup
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
-            services.AddInMemoryTokenStore();
+            var twoFactor = new DefaultTwilioSmsService(new TwilioOptions
+            {
+                TwilioAccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
+                TwilioAuthToken = "0c006b20fa2459200274229b2b655746",
+                TwilioFromNumber = "+19103562002",
+                TwilioMessage = "The activation code is {0}"
+            });
+            TwoFactorServiceStore.Instance().Add("SMS", twoFactor);
             services.AddOpenIdApi(_options); // API
-            services.AddOpenIdWebsite(mvcBuilder, _env); // Consents
-            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions // SHELL
+            services.AddOpenIdWebsite(mvcBuilder, _env); // CONSENTS
+            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
             {
                 Descriptors = new[] { BasicAuthenticateModule.ModuleUi, UserManagementModule.ModuleUi }
-            });
-            services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions // BASIC AUTHENTICATION
+            });  // SHELL
+            services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsExternalAccountAutomaticallyCreated = true,
                 AuthenticationOptions = new BasicAuthenticationOptions
@@ -119,8 +129,8 @@ namespace SimpleIdentityServer.Startup
                     ClientSecret = "z4Bp!:B@rFw4Xs+]"
                 },
                 ScimBaseUrl = "http://localhost:60001"
-            });
-            services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions  // USER MANAGEMENT
+            });  // BASIC AUTHENTICATION
+            services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
             {
                 CreateScimResourceWhenAccountIsAdded = true,
                 AuthenticationOptions = new UserManagementAuthenticationOptions
@@ -130,7 +140,7 @@ namespace SimpleIdentityServer.Startup
                     ClientSecret = "z4Bp!:B@rFw4Xs+]"
                 },
                 ScimBaseUrl = "http://localhost:60001"
-            });
+            });  // USER MANAGEMENT
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)

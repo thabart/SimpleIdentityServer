@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Token.Store Class Library</Description>
+    <Description>SimpleIdentityServer.AccessToken.Store Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Token.Store</AssemblyName>
-    <PackageId>SimpleIdentityServer.Token.Store</PackageId>
+    <AssemblyName>SimpleIdentityServer.AccessToken.Store</AssemblyName>
+    <PackageId>SimpleIdentityServer.AccessToken.Store</PackageId>
   </PropertyGroup>
   
   <ItemGroup>

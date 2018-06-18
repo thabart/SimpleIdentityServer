@@ -392,7 +392,8 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 Core.Constants.StandardTranslationCodes.Credentials,
                 Core.Constants.StandardTranslationCodes.RepeatPassword,
                 Core.Constants.StandardTranslationCodes.Claims,
-                Core.Constants.StandardTranslationCodes.UserIsCreated
+                Core.Constants.StandardTranslationCodes.UserIsCreated,
+                Core.Constants.StandardTranslationCodes.TwoFactor
             });
 
             ViewBag.Translations = translations;

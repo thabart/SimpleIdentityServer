@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     ErrorDescriptions.TheRoDoesntExist);
             }
 
-            if (resourceOwner.TwoFactorAuthentication ==  TwoFactorAuthentications.NONE)
+            if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner);
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, resourceOwner.TwoFactorAuthentication, resourceOwner);
             return confirmationCode.Code;
         }
         

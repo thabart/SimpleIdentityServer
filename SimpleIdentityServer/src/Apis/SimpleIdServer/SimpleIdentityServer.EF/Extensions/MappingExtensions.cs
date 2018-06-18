@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.EF.Extensions
             {
                 Id = resourceOwner.Id,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
-                TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
+                TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
                 Claims = claims,
                 Password = resourceOwner.Password,
                 CreateDateTime = resourceOwner.CreateDateTime,

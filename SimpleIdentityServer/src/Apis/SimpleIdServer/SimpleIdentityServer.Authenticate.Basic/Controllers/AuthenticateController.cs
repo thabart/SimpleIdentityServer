@@ -163,8 +163,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
                     ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-                if (resourceOwner.TwoFactorAuthentication == SimpleIdentityServer.Core.Common.Models.TwoFactorAuthentications.NONE)
+                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
+                if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString());
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
@@ -236,6 +236,14 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 claims = resourceOwner.Claims;
             }
 
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.ExternalCookieName, new AuthenticationProperties());
+            if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Two factor authentication.
+            {
+                await SetTwoFactorCookie(claims);
+                var code = await _authenticateActions.GenerateAndSendCode(claims.GetSubject());
+                _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                return RedirectToAction("SendCode");
+            }
 
             // 2. Set cookie
             await SetLocalCookie(claims.ToOpenidClaims(), Guid.NewGuid().ToString());
@@ -249,12 +257,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         public async Task<ActionResult> SendCode()
         {
             // 1. Retrieve user
+            await SetUser();
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, SimpleIdentityServer.Host.Constants.TwoFactorCookieName);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                throw new IdentityServerException(
-                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
+                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
             // 2. Return translated view
@@ -329,7 +336,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 4. Authenticate the resource owner
             await _authenticationService.SignOutAsync(HttpContext, SimpleIdentityServer.Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
-            return RedirectToAction("Index", "User");
+            return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
         
         #endregion
@@ -403,6 +410,14 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
                     authorizeOpenId.Code);
+                if (!string.IsNullOrWhiteSpace(actionResult.TwoFactor)) // Redirect the user agent to the send code.
+                {
+                    await SetTwoFactorCookie(actionResult.Claims);
+                    var code = await _authenticateActions.GenerateAndSendCode(string.Empty);
+                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
+                }
+
                 var subject = actionResult.Claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie

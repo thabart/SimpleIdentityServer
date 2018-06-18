@@ -22,6 +22,8 @@ namespace SimpleIdentityServer.Core.Results
         // Authenticate screen
         AuthenticateIndex,
         // Form screen
-        FormIndex
+        FormIndex,
+        // Send code screen
+        SendCode
     }
 }

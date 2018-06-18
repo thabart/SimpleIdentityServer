@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Extensions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Services
 {

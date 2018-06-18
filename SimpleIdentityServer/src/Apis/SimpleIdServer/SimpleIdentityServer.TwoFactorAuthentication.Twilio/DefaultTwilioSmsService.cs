@@ -14,9 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Factories;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,9 +34,10 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
         public string TwilioFromNumber { get; set; }
         public string TwilioMessage { get; set; }
     }
+
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
-        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages";
+        private const string TwilioSmsEndpointFormat = "https://api.twilio.com/2010-04-01/Accounts/{0}/Messages.json";
         private class TwilioSmsCredentials
         {
             public string AccountSid { get; set; } = string.Empty;
@@ -57,14 +57,6 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 
             _options = options;
             _clientFactory = new HttpClientFactory();
-        }
-
-        public int Code
-        {
-            get
-            {
-                return (int)TwoFactorAuthentications.Sms;
-            }
         }
 
         public async Task SendAsync(string code, ResourceOwner user)
@@ -109,32 +101,23 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             }
 
             var client = _clientFactory.GetHttpClient();
-            client.DefaultRequestHeaders.Authorization = CreateBasicAuthenticationHeader(
-                credentials.AccountSid, 
-                credentials.AuthToken);
-
-            // https://api.twilio.com/2010-04-01/Accounts/{0}/Messages
-            // /2010-04-01/Accounts/{AccountSid}/Messages
-            // To
-            // From
-            // Body
-
             var keyValues = new List<KeyValuePair<string, string>>();
             keyValues.Add(new KeyValuePair<string, string>("To", toPhoneNumber));
             keyValues.Add(new KeyValuePair<string, string>("From", credentials.FromNumber));
             keyValues.Add(new KeyValuePair<string, string>("Body", message));
-
-            var content = new FormUrlEncodedContent(keyValues);
-            
-            var postUrl = string.Format(
-                    CultureInfo.InvariantCulture,
-                    TwilioSmsEndpointFormat,
-                    credentials.AccountSid);
-
-            var response = await client.PostAsync(
-                postUrl, 
-                content).ConfigureAwait(false);
-            var xxx = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var content = new FormUrlEncodedContent(keyValues);            
+            var postUrl = string.Format(CultureInfo.InvariantCulture, TwilioSmsEndpointFormat, credentials.AccountSid);
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = content,
+                RequestUri = new Uri(postUrl)
+            };
+            httpRequest.Headers.Add("User-Agent", "twilio-csharp/5.13.4 (.NET Framework 4.5.1+)");
+            httpRequest.Headers.Add("Accept", "application/json");
+            httpRequest.Headers.Add("Accept-Encoding", "utf-8");
+            httpRequest.Headers.Add("Authorization", "Basic " + CreateBasicAuthenticationHeader(credentials.AccountSid, credentials.AuthToken));
+            var response = await client.SendAsync(httpRequest).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -142,19 +125,14 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             else
             {
                 return false;
-            }
-            
+            }            
         }
 
-        private AuthenticationHeaderValue CreateBasicAuthenticationHeader(string username, string password)
+        private string CreateBasicAuthenticationHeader(string username, string password)
         {
-            return new AuthenticationHeaderValue(
-                "Basic",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                     string.Format("{0}:{1}", username, password)
-                     )
-                 )
-            );
+            var credentials = username + ":" + password;
+            var encoded = System.Text.Encoding.UTF8.GetBytes(credentials);
+            return Convert.ToBase64String(encoded);
         }
     }
 }

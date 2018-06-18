@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Stores;
 using System;
 
 namespace SimpleIdentityServer.Store.InMemory

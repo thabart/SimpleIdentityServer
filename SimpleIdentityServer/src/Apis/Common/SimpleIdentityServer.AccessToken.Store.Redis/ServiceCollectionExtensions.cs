@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace SimpleIdentityServer.Token.Store.Redis
+namespace SimpleIdentityServer.AccessToken.Store.Redis
 {
     public static class ServiceCollectionExtensions
     {
@@ -12,7 +12,7 @@ namespace SimpleIdentityServer.Token.Store.Redis
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<ITokenStore, RedisTokenStore>();
+            services.AddTransient<IAccessTokenStore, RedisTokenStore>();
             return services;
         }
     }

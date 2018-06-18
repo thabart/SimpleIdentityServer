@@ -302,6 +302,7 @@ namespace SimpleIdentityServer.Core
             public const string RepeatPassword = "repeat_password";
             public const string Claims = "claims";
             public const string UserIsCreated = "user_is_created";
+            public const string TwoFactor = "two_factor";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

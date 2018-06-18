@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 

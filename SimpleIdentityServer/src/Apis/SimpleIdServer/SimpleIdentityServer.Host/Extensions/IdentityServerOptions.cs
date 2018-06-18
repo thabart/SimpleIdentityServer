@@ -40,12 +40,6 @@ namespace SimpleIdentityServer.Host
         public IEnumerable<Type> Handlers { get; set; }
     }
 
-    public class TwoFactorAuthenticationOptions
-    {
-        public ITwoFactorAuthenticationService TwoFactorAuthenticationService { get; set; }
-        public TwoFactorAuthentications TwoFactorAuthType { get; set; }
-    }
-
     public class IdentityServerOptions
     {
         public IdentityServerOptions()
@@ -78,9 +72,5 @@ namespace SimpleIdentityServer.Host
         /// Service used to encrypt the password
         /// </summary>
         public Type PasswordService { get; set; }
-        /// <summary>
-        /// Store the two factor authentication methods.
-        /// </summary>
-        public IEnumerable<TwoFactorAuthenticationOptions> TwoFactorAuthentications { get; set; }
     }
 }

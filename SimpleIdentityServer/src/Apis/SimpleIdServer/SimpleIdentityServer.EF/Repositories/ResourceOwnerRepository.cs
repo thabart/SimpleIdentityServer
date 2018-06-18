@@ -150,7 +150,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     Id = resourceOwner.Id,
                     Password = resourceOwner.Password,
                     IsLocalAccount = resourceOwner.IsLocalAccount,
-                    TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication,
+                    TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
                     Claims = new List<ResourceOwnerClaim>(),
                     CreateDateTime = DateTime.UtcNow,
                     UpdateDateTime = DateTime.UtcNow
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.EF.Repositories
 
                     record.Password = resourceOwner.Password;
                     record.IsLocalAccount = resourceOwner.IsLocalAccount;
-                    record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
+                    record.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
                     record.UpdateDateTime = DateTime.UtcNow;
                     record.Claims = new List<ResourceOwnerClaim>();
                     _context.ResourceOwnerClaims.RemoveRange(record.Claims);

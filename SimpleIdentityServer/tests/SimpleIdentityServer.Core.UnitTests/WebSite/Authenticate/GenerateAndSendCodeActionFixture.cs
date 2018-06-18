@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.NONE
+                    TwoFactorAuthentication = string.Empty
                 }));
 
             // ACT & ASSERTS
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.Email
+                    TwoFactorAuthentication = "email"
                 }));
             _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
             _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.Email
+                    TwoFactorAuthentication = "email"
                 }));
             _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
             _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             await _generateAndSendCodeAction.ExecuteAsync("subject");
 
             // ASSERTS
-            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<ResourceOwner>()));
+            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
         }
 
         private void InitializeFakeObjects()

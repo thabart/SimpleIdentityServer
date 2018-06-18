@@ -1,7 +1,7 @@
 ﻿using SimpleIdentityServer.Core.Common.Models;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Core.Stores
+namespace SimpleIdentityServer.Store
 {
     public interface IAuthorizationCodeStore
     {

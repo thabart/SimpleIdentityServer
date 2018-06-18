@@ -14,13 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Scim.Client;
-using SimpleIdentityServer.Token.Store;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         private readonly IProfileRepository _profileRepository;
         private readonly IClaimRepository _claimRepository;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
-        private readonly ITokenStore _tokenStore;
+        private readonly IAccessTokenStore _tokenStore;
         private readonly IScimClientFactory _scimClientFactory;
 
         public AddUserOperation(
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             IProfileRepository profileRepository,
             IClaimRepository claimRepository,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService,
-            ITokenStore tokenStore,
+            IAccessTokenStore tokenStore,
             IScimClientFactory scimClientFactory)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             {
                 Id = addUserParameter.Login,
                 Claims = newClaims,
-                TwoFactorAuthentication = TwoFactorAuthentications.NONE,
+                TwoFactorAuthentication = string.Empty,
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };

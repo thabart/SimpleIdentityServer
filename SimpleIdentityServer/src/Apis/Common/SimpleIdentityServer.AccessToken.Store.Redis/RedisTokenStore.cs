@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using SimpleIdentityServer.Client.DTOs.Response;
 
-namespace SimpleIdentityServer.Token.Store.Redis
+namespace SimpleIdentityServer.AccessToken.Store.Redis
 {
-    internal sealed class RedisTokenStore : ITokenStore
+    internal sealed class RedisTokenStore : IAccessTokenStore
     {
         public Task<GrantedToken> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
         {

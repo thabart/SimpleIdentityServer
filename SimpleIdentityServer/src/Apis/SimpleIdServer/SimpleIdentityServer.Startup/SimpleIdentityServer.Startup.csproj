@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
-    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Token.Store.InMemory\SimpleIdentityServer.Token.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
@@ -19,6 +19,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Shell\SimpleIdentityServer.Shell.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication.Twilio\SimpleIdentityServer.TwoFactorAuthentication.Twilio.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.UserManagement\SimpleIdentityServer.UserManagement.csproj" />
   </ItemGroup>
 

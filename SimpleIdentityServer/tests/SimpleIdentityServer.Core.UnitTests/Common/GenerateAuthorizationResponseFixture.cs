@@ -14,27 +14,25 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using Moq;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Helpers;
+using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
-using Xunit;
-using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Stores;
-using System.Text;
+using SimpleIdentityServer.Store;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Common
 {

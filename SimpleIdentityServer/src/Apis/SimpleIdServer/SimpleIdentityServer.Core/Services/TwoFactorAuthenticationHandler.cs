@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
 using System.Threading.Tasks;
 
@@ -22,28 +23,23 @@ namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorAuthenticationHandler
     {
-        Task SendCode(string code, int twoFactorAuthType, ResourceOwner user);
+        Task SendCode(string code, string twoFactorAuthType, ResourceOwner user);
     }
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
-        private readonly ITwoFactorServiceStore _twoFactorServiceStore;
+        public TwoFactorAuthenticationHandler() { }
 
-        public TwoFactorAuthenticationHandler(ITwoFactorServiceStore twoFactorServiceStore)
-        {
-            if (twoFactorServiceStore == null)
-            {
-                throw new ArgumentNullException(nameof(twoFactorServiceStore));
-            }
-
-            _twoFactorServiceStore = twoFactorServiceStore;
-        }
-
-        public async Task SendCode(string code, int twoFactorAuthType, ResourceOwner user)
+        public async Task SendCode(string code, string twoFactorAuthType, ResourceOwner user)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentNullException(nameof(code));
+            }
+
+            if (string.IsNullOrWhiteSpace(twoFactorAuthType))
+            {
+                throw new ArgumentNullException(nameof(twoFactorAuthType));
             }
 
             if (user == null)
@@ -52,7 +48,7 @@ namespace SimpleIdentityServer.Core.Services
             }
 
 
-            await _twoFactorServiceStore.Get(twoFactorAuthType).SendAsync(code, user);
+            await TwoFactorServiceStore.Instance().Get(twoFactorAuthType).SendAsync(code, user);
         }
     }
 }

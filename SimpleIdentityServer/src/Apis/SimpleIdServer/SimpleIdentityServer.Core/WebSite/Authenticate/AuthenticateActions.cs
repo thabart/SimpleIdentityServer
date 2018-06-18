@@ -21,8 +21,6 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.EventStore.Core.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 

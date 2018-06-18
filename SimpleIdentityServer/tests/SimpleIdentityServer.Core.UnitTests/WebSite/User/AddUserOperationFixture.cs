@@ -15,6 +15,7 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
@@ -22,7 +23,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.Scim.Client;
-using SimpleIdentityServer.Token.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private Mock<IProfileRepository> _profileRepositoryStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
-        private Mock<ITokenStore> _tokenStoreStub;
+        private Mock<IAccessTokenStore> _tokenStoreStub;
         private Mock<IScimClientFactory> _scimClientFactoryStub;
         private IAddUserOperation _addResourceOwnerAction;
         
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _profileRepositoryStub = new Mock<IProfileRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
-            _tokenStoreStub = new Mock<ITokenStore>();
+            _tokenStoreStub = new Mock<IAccessTokenStore>();
             _scimClientFactoryStub = new Mock<IScimClientFactory>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,

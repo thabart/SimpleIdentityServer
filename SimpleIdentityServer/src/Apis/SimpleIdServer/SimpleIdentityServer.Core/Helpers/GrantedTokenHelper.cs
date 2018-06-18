@@ -16,8 +16,8 @@
 
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 

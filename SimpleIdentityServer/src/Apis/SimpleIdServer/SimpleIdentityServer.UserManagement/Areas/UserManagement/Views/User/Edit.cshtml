@@ -82,6 +82,13 @@
             </div>
         }
 
+        <div class="panel panel-default">
+            <div class="panel-heading">@ViewBag.Translations["two_factor"]</div>
+            <div class="panel-body">
+
+            </div>
+        </div>
+
         @if (Model.IsLocalAccount)
         {
             @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))

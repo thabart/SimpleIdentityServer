@@ -182,20 +182,7 @@ namespace SimpleIdentityServer.Host
             {
                 serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
             }
-
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            if (options.TwoFactorAuthentications != null)
-            {
-                foreach (var twoFactorAuthentication in options.TwoFactorAuthentications)
-                {
-                    if (twoFactorAuthentication.TwoFactorAuthType != Core.Common.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
-                    {
-                        twoFactorServiceStore.Add(twoFactorAuthentication.TwoFactorAuthenticationService);
-                    }
-                }
-            }
-
-            serviceCollection.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
+                        
             serviceCollection
                 .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)

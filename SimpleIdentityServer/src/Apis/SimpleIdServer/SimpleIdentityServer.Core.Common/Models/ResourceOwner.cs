@@ -37,19 +37,18 @@ namespace SimpleIdentityServer.Core.Common.Models
         /// <summary>
         /// Gets or sets the two factor authentications
         /// </summary>
-        public TwoFactorAuthentications TwoFactorAuthentication { get; set; }
+        public string TwoFactorAuthentication { get; set; }
         /// <summary>
         /// Gets or sets if the resource owner is local or external
         /// </summary>
         public bool IsLocalAccount { get; set; }
+        /// <summary>
+        /// Gets or sets the create datetime.
+        /// </summary>
         public DateTime CreateDateTime { get; set; }
+        /// <summary>
+        /// Gets or sets the update datetime.
+        /// </summary>
         public DateTime UpdateDateTime { get; set; }
-    }
-
-    public enum TwoFactorAuthentications
-    {
-        NONE,
-        Email,
-        Sms
     }
 }

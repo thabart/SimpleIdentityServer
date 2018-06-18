@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;

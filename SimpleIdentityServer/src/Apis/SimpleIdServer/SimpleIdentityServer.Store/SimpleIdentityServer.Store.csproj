@@ -1,17 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Store.InMemory Class Library</Description>
+    <Description>SimpleIdentityServer.Store Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Store.InMemory</AssemblyName>
-    <PackageId>SimpleIdentityServer.Store.InMemory</PackageId>
+    <AssemblyName>SimpleIdentityServer.Store</AssemblyName>
+    <PackageId>SimpleIdentityServer.Store</PackageId>
   </PropertyGroup>  
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Store\SimpleIdentityServer.Store.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.DTOs.Response;
 
-namespace SimpleIdentityServer.Token.Store.InMemory
+namespace SimpleIdentityServer.AccessToken.Store.InMemory
 {
-    internal sealed class InMemoryTokenStore : ITokenStore
+    internal sealed class InMemoryTokenStore : IAccessTokenStore
     {
         private class StoredToken
         {

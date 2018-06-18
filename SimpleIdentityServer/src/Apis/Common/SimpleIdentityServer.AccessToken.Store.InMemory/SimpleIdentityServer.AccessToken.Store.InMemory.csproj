@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Token.Store.Redis Class Library</Description>
+    <Description>SimpleIdentityServer.AccessToken.Store.InMemory Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Token.Store.Redis</AssemblyName>
-    <PackageId>SimpleIdentityServer.Token.Store.Redis</PackageId>
+    <AssemblyName>SimpleIdentityServer.AccessToken.Store.InMemory</AssemblyName>
+    <PackageId>SimpleIdentityServer.AccessToken.Store.InMemory</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Token.Store\SimpleIdentityServer.Token.Store.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.AccessToken.Store\SimpleIdentityServer.AccessToken.Store.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
   </ItemGroup>
 </Project>

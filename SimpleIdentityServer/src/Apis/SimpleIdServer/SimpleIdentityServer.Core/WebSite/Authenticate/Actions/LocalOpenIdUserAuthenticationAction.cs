@@ -52,6 +52,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     {
         public ActionResult ActionResult { get; set; }
         public ICollection<Claim> Claims { get; set; }
+        public string TwoFactor { get; set; }
     }
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
@@ -114,7 +115,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                                 code,
                                 resourceOwner.Id,
                                 claims),
-                Claims = claims
+                Claims = claims,
+                TwoFactor = resourceOwner.TwoFactorAuthentication
             };
         }
 

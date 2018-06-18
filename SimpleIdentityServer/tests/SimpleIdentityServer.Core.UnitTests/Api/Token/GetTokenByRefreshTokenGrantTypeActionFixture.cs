@@ -16,15 +16,15 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;

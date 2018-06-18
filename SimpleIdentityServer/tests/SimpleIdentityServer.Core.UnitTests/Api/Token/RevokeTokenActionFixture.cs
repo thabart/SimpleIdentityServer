@@ -17,12 +17,12 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Token.Actions;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Common.Repositories;
-using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
