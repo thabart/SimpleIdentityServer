@@ -29,8 +29,8 @@ namespace SimpleIdentityServer.Core.WebSite.User
         Task<bool> DeleteConsent(string consentId);
         Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<bool> UpdateCredentials(string subject, string newPassword);
-        Task<bool> UpdateClaims(string subject, IEnumerable<Claim> claims);
-        Task<bool> AddUser(AddUserParameter addUserParameter);
+        Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims);
+        Task<bool> AddUser(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
     }
 
     internal class UserActions : IUserActions
@@ -78,14 +78,14 @@ namespace SimpleIdentityServer.Core.WebSite.User
             return _updateUserCredentialsOperation.Execute(subject, newPassword);
         }
 
-        public Task<bool> UpdateClaims(string subject, IEnumerable<Claim> claims)
+        public Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims)
         {
             return _updateUserClaimsOperation.Execute(subject, claims);
         }
 
-        public Task<bool> AddUser(AddUserParameter claimsPrincipal)
+        public Task<bool> AddUser(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
         {
-            return _addUserOperation.Execute(claimsPrincipal);
+            return _addUserOperation.Execute(addUserParameter, authenticationParameter, scimBaseUrl, addScimResource, issuer);
         }
     }
 }

@@ -29,6 +29,7 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Extensions;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
@@ -64,8 +65,10 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
+        private readonly IUserActions _userActions;
         private readonly IPayloadSerializer _payloadSerializer;
         private readonly IConfigurationService _configurationService;
+        private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -83,7 +86,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IPayloadSerializer payloadSerializer,
             AuthenticateOptions authenticateOptions,
             IConfigurationService configurationService,
-            IAuthenticateHelper authenticateHelper) : base(authenticationService, authenticateOptions)
+            IAuthenticateHelper authenticateHelper,
+            BasicAuthenticateOptions basicAuthenticateOptions) : base(authenticationService, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _profileActions = profileActions;
@@ -95,8 +99,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
             _authenticationSchemeProvider = authenticationSchemeProvider;
+            _userActions = userActions;
             _configurationService = configurationService;
             _authenticateHelper = authenticateHelper;
+            _basicAuthenticateOptions = basicAuthenticateOptions;
+            Check();
         }
         
         #region Public methods
@@ -202,13 +209,27 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    string.Format(SimpleIdentityServer.Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
+                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Get the authenticated user.
             var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.ExternalCookieName);
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            if (resourceOwner == null) // Automatically create the resource owner.
+            {
+                if (_basicAuthenticateOptions.IsExternalAccountAutomaticallyCreated)
+                {
+                    var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
+                    await _userActions.AddUser(record, new AuthenticationParameter
+                    {
+                        ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
+                        ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
+                        WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
+                    }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                }
+            }
+
             IEnumerable<Claim> claims = authenticatedUser.Claims;
             if (resourceOwner != null)
             {
@@ -447,7 +468,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (request == null)
             {
                 throw new IdentityServerException(SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    SimpleIdentityServer.Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
+                    Core.Errors.ErrorDescriptions.TheRequestCannotBeExtractedFromTheCookie);
             }
 
             // 2 : remove the cookie
@@ -460,8 +481,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    SimpleIdentityServer.Core.Errors.ErrorCodes.UnhandledExceptionCode, 
-                    string.Format(SimpleIdentityServer.Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode, 
+                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }            
             
             // 4. Check if the user is authenticated
@@ -478,6 +499,17 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var claimsIdentity = authenticatedUser.Identity as ClaimsIdentity;
             var claims = authenticatedUser.Claims.ToList();
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            if (resourceOwner == null)
+            {
+                var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
+                await _userActions.AddUser(record, new AuthenticationParameter
+                {
+                    ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
+                    ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
+                    WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
+                }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+            }
+
             if (resourceOwner != null)
             {
                 claims = resourceOwner.Claims.ToList();
@@ -507,6 +539,18 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
         #region Private methods
 
+        private void Check()
+        {
+            if (_basicAuthenticateOptions.IsExternalAccountAutomaticallyCreated && (_basicAuthenticateOptions.AuthenticationOptions == null ||
+                string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration) ||
+                string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.ClientId) ||
+                string.IsNullOrWhiteSpace(_basicAuthenticateOptions.AuthenticationOptions.ClientSecret) ||
+                string.IsNullOrWhiteSpace(_basicAuthenticateOptions.ScimBaseUrl)))
+            {
+                throw new IdentityServerException(Core.Errors.ErrorCodes.InternalError, Core.Errors.ErrorDescriptions.TheScimConfigurationMustBeSpecified);
+            }
+        }
+
         private void LogAuthenticateUser(Core.Results.ActionResult act, string processId)
         {
             if (string.IsNullOrWhiteSpace(processId))
@@ -521,16 +565,16 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         {
             var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.UserNameCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.PasswordCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginLocalAccount,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.LoginExternalAccount,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.Code,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.ConfirmCode,
-                SimpleIdentityServer.Core.Constants.StandardTranslationCodes.SendConfirmationCode
+                Core.Constants.StandardTranslationCodes.LoginCode,
+                Core.Constants.StandardTranslationCodes.UserNameCode,
+                Core.Constants.StandardTranslationCodes.PasswordCode,
+                Core.Constants.StandardTranslationCodes.RememberMyLoginCode,
+                Core.Constants.StandardTranslationCodes.LoginLocalAccount,
+                Core.Constants.StandardTranslationCodes.LoginExternalAccount,
+                Core.Constants.StandardTranslationCodes.SendCode,
+                Core.Constants.StandardTranslationCodes.Code,
+                Core.Constants.StandardTranslationCodes.ConfirmCode,
+                Core.Constants.StandardTranslationCodes.SendConfirmationCode
             });
 
             ViewBag.Translations = translations;

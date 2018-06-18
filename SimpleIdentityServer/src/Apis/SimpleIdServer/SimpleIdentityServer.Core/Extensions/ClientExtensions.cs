@@ -25,55 +25,55 @@ namespace SimpleIdentityServer.Core.Extensions
     {
         #region Public static methods
         
-        public static JwsAlg? GetIdTokenSignedResponseAlg(this Client client)
+        public static JwsAlg? GetIdTokenSignedResponseAlg(this Core.Common.Models.Client client)
         {
             var algName = client.IdTokenSignedResponseAlg;
             return GetDefaultJwsAlg(algName);
         }
 
-        public static JweAlg? GetIdTokenEncryptedResponseAlg(this Client client)
+        public static JweAlg? GetIdTokenEncryptedResponseAlg(this Core.Common.Models.Client client)
         {
             var algName = client.IdTokenEncryptedResponseAlg;
             return GetDefaultEncryptAlg(algName);
         }
 
-        public static JweEnc? GetIdTokenEncryptedResponseEnc(this Client client)
+        public static JweEnc? GetIdTokenEncryptedResponseEnc(this Core.Common.Models.Client client)
         {
             var encName = client.IdTokenEncryptedResponseEnc;
             return GetDefaultEncryptEnc(encName);
         }
 
-        public static JwsAlg? GetUserInfoSignedResponseAlg(this Client client)
+        public static JwsAlg? GetUserInfoSignedResponseAlg(this Core.Common.Models.Client client)
         {
             var algName = client.UserInfoSignedResponseAlg;
             return GetDefaultJwsAlg(algName);
         }
 
-        public static JweAlg? GetUserInfoEncryptedResponseAlg(this Client client)
+        public static JweAlg? GetUserInfoEncryptedResponseAlg(this Core.Common.Models.Client client)
         {
             var algName = client.UserInfoEncryptedResponseAlg;
             return GetDefaultEncryptAlg(algName);
         }
 
-        public static JweEnc? GetUserInfoEncryptedResponseEnc(this Client client)
+        public static JweEnc? GetUserInfoEncryptedResponseEnc(this Core.Common.Models.Client client)
         {
             var encName = client.UserInfoEncryptedResponseEnc;
             return GetDefaultEncryptEnc(encName);
         }
 
-        public static JwsAlg? GetRequestObjectSigningAlg(this Client client)
+        public static JwsAlg? GetRequestObjectSigningAlg(this Core.Common.Models.Client client)
         {
             var algName = client.RequestObjectSigningAlg;
             return GetDefaultJwsAlg(algName);
         }
         
-        public static JweAlg? GetRequestObjectEncryptionAlg(this Client client)
+        public static JweAlg? GetRequestObjectEncryptionAlg(this Core.Common.Models.Client client)
         {
             var algName = client.RequestObjectEncryptionAlg;
             return GetDefaultEncryptAlg(algName);
         }
 
-        public static JweEnc? GetRequestObjectEncryptionEnc(this Client client)
+        public static JweEnc? GetRequestObjectEncryptionEnc(this Core.Common.Models.Client client)
         {
             var encName = client.RequestObjectEncryptionEnc;
             return GetDefaultEncryptEnc(encName);

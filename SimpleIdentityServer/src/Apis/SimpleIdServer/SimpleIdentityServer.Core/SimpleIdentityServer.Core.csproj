@@ -22,7 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Token.Store\SimpleIdentityServer.Token.Store.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj" />
+    <ProjectReference Include="..\..\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Handler\SimpleIdentityServer.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />

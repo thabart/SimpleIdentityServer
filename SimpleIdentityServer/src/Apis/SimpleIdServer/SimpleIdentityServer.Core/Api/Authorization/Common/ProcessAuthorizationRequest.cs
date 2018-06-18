@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     public interface IProcessAuthorizationRequest
     {
-        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client);
     }
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
+        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client)
         {
             if (authorizationParameter == null)
             {

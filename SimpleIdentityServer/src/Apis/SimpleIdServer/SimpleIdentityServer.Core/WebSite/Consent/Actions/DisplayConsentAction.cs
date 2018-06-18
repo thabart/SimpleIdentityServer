@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
     public class DisplayContentResult
     {
-        public Client Client { get; set; }
+        public Core.Common.Models.Client Client { get; set; }
         public ICollection<Scope> Scopes { get; set; }
         public ICollection<string> AllowedClaims { get; set; }
         public ActionResult ActionResult { get; set; }

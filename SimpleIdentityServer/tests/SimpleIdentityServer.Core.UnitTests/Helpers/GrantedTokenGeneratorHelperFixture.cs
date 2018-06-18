@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult((Client)null));
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>())).Returns(Task.FromResult((Core.Common.Models.Client)null));
 
             // ACTS & ASSERTS
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("invalid_client", null));
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         [Fact]
         public async Task When_ExpirationTime_Is_Set_Then_ExpiresInProperty_Is_Set()
         {
-            var client = new Client
+            var client = new Core.Common.Models.Client
             {
                 ClientId = "client_id"
             };

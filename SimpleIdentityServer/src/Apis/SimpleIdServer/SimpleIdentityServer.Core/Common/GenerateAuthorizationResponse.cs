@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Common
 {
     public interface IGenerateAuthorizationResponse
     {
-        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
+        Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client);
     }
 
     public class GenerateAuthorizationResponse : IGenerateAuthorizationResponse
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Common
             _grantedTokenHelper = grantedTokenHelper;
         }
 
-        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
+        public async Task ExecuteAsync(ActionResult actionResult, AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client)
         {
             if (actionResult == null || actionResult.RedirectInstruction == null)
             {

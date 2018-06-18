@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedToken()));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));

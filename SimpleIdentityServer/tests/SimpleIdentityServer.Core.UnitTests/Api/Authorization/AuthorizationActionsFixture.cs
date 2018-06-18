@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             const string scope = "openid";
             InitializeFakeObjects();
             _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+                .Returns(Task.FromResult(new Core.Common.Models.Client
                 {
                     RequirePkce = true,
                     ClientId = clientId
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+                .Returns(Task.FromResult(new Core.Common.Models.Client
                 {
                     RequirePkce = false
                 }));
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getTokenViaImplicitWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.ImplicitFlow);
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+                .Returns(Task.FromResult(new Core.Common.Models.Client
                 {
                     RequirePkce = false
                 }));
@@ -154,7 +154,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.AuthorizationCodeFlow);
@@ -197,7 +197,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Setup(a => a.ValidateAsync(It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult(new Client
+                .Returns(Task.FromResult(new Core.Common.Models.Client
                 {
                     RequirePkce = false
                 }));
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     ResponseType.id_token
                 });
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Setup(g => g.Execute(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<IPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
+                It.IsAny<IPrincipal>(), It.IsAny<Core.Common.Models.Client>())).Returns(Task.FromResult(actionResult));
             _authorizationFlowHelperFake.Setup(a => a.GetAuthorizationFlow(It.IsAny<ICollection<ResponseType>>(),
                 It.IsAny<string>()))
                 .Returns(AuthorizationFlow.HybridFlow);

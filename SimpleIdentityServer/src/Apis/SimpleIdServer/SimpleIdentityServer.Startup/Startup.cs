@@ -30,6 +30,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
+using SimpleIdentityServer.Token.Store.InMemory;
 using SimpleIdentityServer.UserManagement;
 using System;
 
@@ -76,7 +77,6 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            services.AddOpenIdApi(_options);
             // 4. Enable logging
             services.AddLogging();
             services.AddAuthentication(Constants.ExternalCookieName)
@@ -102,13 +102,35 @@ namespace SimpleIdentityServer.Startup
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
-            services.AddAuthenticationWebsite(mvcBuilder, _env); // API
-            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
+            services.AddInMemoryTokenStore();
+            services.AddOpenIdApi(_options); // API
+            services.AddOpenIdWebsite(mvcBuilder, _env); // Consents
+            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions // SHELL
             {
                 Descriptors = new[] { BasicAuthenticateModule.ModuleUi, UserManagementModule.ModuleUi }
-            }); // SHELL
-            services.AddBasicAuthentication(mvcBuilder, _env); // BASIC AUTHENTICATION
-            services.AddUserManagement(mvcBuilder, _env); // USER MANAGEMENT
+            });
+            services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions // BASIC AUTHENTICATION
+            {
+                IsExternalAccountAutomaticallyCreated = true,
+                AuthenticationOptions = new BasicAuthenticationOptions
+                {
+                    AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",
+                    ClientId = "OpenId",
+                    ClientSecret = "z4Bp!:B@rFw4Xs+]"
+                },
+                ScimBaseUrl = "http://localhost:60001"
+            });
+            services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions  // USER MANAGEMENT
+            {
+                CreateScimResourceWhenAccountIsAdded = true,
+                AuthenticationOptions = new UserManagementAuthenticationOptions
+                {
+                    AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",
+                    ClientId = "OpenId",
+                    ClientSecret = "z4Bp!:B@rFw4Xs+]"
+                },
+                ScimBaseUrl = "http://localhost:60001"
+            });
         }
 
         private void ConfigureEventStoreSqlServerBus(IServiceCollection services)

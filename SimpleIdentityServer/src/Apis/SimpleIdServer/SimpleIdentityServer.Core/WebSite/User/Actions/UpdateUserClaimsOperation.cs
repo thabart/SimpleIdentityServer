@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
@@ -27,7 +28,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
 {
     public interface IUpdateUserClaimsOperation
     {
-        Task<bool> Execute(string subject, IEnumerable<Claim> claims);
+        Task<bool> Execute(string subject, IEnumerable<ClaimAggregate> claims);
     }
 
     internal class UpdateUserClaimsOperation : IUpdateUserClaimsOperation
@@ -46,7 +47,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public async Task<bool> Execute(string subject, IEnumerable<Claim> claims)
+        public async Task<bool> Execute(string subject, IEnumerable<ClaimAggregate> claims)
         {
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -65,9 +66,9 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             var supportedClaims = await _claimRepository.GetAllAsync();
-            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Type && !Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(c.Type)));
+            claims = claims.Where(c => supportedClaims.Any(sp => sp.Code == c.Code && !Jwt.Constants.NotEditableResourceOwnerClaimNames.Contains(c.Code)));
             var claimsToBeRemoved = resourceOwner.Claims
-                .Where(cl => claims.Any(c => c.Type == cl.Type))
+                .Where(cl => claims.Any(c => c.Code == cl.Type))
                 .Select(cl => resourceOwner.Claims.IndexOf(cl))
                 .OrderByDescending(p => p)
                 .ToList();
@@ -78,7 +79,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             
             foreach(var claim in claims)
             {
-                resourceOwner.Claims.Add(claim);
+                if (string.IsNullOrWhiteSpace(claim.Value))
+                {
+                    continue;
+                }
+
+                resourceOwner.Claims.Add(new Claim(claim.Code, claim.Value));
             }
 
             Claim updatedClaim;

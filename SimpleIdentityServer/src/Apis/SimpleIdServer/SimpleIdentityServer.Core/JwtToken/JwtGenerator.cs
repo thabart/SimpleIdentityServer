@@ -43,12 +43,12 @@ namespace SimpleIdentityServer.Core.JwtToken
     public interface IJwtGenerator
     {
         Task<JwsPayload> UpdatePayloadDate(JwsPayload jwsPayload);
-        Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes);
+        Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes);
         Task<JwsPayload> GenerateIdTokenPayloadForScopesAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         Task<JwsPayload> GenerateFilteredIdTokenPayloadAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter, List<ClaimParameter> claimParameters);
         Task<JwsPayload> GenerateUserInfoPayloadForScopeAsync(ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
         JwsPayload GenerateFilteredUserInfoPayload(List<ClaimParameter> claimParameters, ClaimsPrincipal claimsPrincipal, AuthorizationParameter authorizationParameter);
-        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, AuthorizationParameter authorizationParameter, Client client);
+        void FillInOtherClaimsIdentityTokenPayload(JwsPayload jwsPayload, string authorizationCode, string accessToken, AuthorizationParameter authorizationParameter, Core.Common.Models.Client client);
         Task<string> SignAsync(JwsPayload jwsPayload, JwsAlg alg);
         Task<string> EncryptAsync(string jwe, JweAlg jweAlg, JweEnc jweEnc);
     }
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             return jwsPayload;
         }
 
-        public async Task<JwsPayload> GenerateAccessToken(Client client, IEnumerable<string> scopes)
+        public async Task<JwsPayload> GenerateAccessToken(Core.Common.Models.Client client, IEnumerable<string> scopes)
         {
             if (client == null)
             {
@@ -265,7 +265,7 @@ namespace SimpleIdentityServer.Core.JwtToken
             string authorizationCode,
             string accessToken,
             AuthorizationParameter authorizationParameter,
-            Client client)
+            Core.Common.Models.Client client)
         {
             if (jwsPayload == null)
             {

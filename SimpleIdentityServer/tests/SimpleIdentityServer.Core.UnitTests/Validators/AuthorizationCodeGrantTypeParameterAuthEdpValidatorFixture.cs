@@ -230,7 +230,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                     PromptParameter.none
                 });
             _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));

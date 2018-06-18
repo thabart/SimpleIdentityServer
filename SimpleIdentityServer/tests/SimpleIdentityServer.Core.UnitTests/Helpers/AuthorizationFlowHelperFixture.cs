@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using SimpleIdentityServer.Core.Api.Authorization;
+﻿using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Common;
+using System.Collections.Generic;
 using Xunit;
-using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {

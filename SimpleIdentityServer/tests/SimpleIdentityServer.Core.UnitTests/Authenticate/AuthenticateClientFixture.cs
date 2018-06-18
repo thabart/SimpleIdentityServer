@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns("clientId");
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
             var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);

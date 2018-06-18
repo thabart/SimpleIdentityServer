@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((Client)null));
+                .Returns(Task.FromResult((Core.Common.Models.Client)null));
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "client_id"
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
@@ -147,7 +147,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))

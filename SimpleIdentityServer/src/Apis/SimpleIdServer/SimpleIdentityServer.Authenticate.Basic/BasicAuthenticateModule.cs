@@ -12,6 +12,12 @@ namespace SimpleIdentityServer.Authenticate.Basic
 {
     public class BasicAuthenticateModule : IModule
     {
+        private const string ClientId = "ClientId";
+        private const string ClientSecret = "ClientSecret";
+        private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
+        private const string BaseScimUrl = "BaseScimUrl";
+        private const string IsExternalAccountAutomaticallyCreated = "IsExternalAccountAutomaticallyCreated";
+
         public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
         {
             Title = "Authenticate",
@@ -37,7 +43,8 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 throw new ArgumentNullException(nameof(env));
             }
 
-            services.AddBasicAuthentication(mvcBuilder, env);
+            var opts = GetOptions(options);
+            services.AddBasicAuthentication(mvcBuilder, env, opts);
         }
 
         public void Configure(IApplicationBuilder applicationBuilder)
@@ -64,12 +71,51 @@ namespace SimpleIdentityServer.Authenticate.Basic
 
         public IEnumerable<string> GetOptionKeys()
         {
-            return new string[0];
+            return new[]
+            {
+                ClientId,
+                ClientSecret,
+                AuthorizationWellKnownConfiguration,
+                BaseScimUrl,
+                IsExternalAccountAutomaticallyCreated
+            };
         }
 
         public ModuleUIDescriptor GetModuleUI()
         {
             return ModuleUi;
+        }
+
+        private static BasicAuthenticateOptions GetOptions(IDictionary<string, string> options)
+        {
+            var result = new BasicAuthenticateOptions();
+            if (options == null)
+            {
+                return result;
+            }
+
+            bool b = false;
+            var str = TryGetStr(options, IsExternalAccountAutomaticallyCreated);
+            bool.TryParse(str, out b);
+            result.AuthenticationOptions = new BasicAuthenticationOptions
+            {
+                AuthorizationWellKnownConfiguration = TryGetStr(options, AuthorizationWellKnownConfiguration),
+                ClientId = TryGetStr(options, ClientId),
+                ClientSecret = TryGetStr(options, ClientSecret)
+            };
+            result.ScimBaseUrl = TryGetStr(options, BaseScimUrl);
+            result.IsExternalAccountAutomaticallyCreated = b;
+            return result;
+        }
+
+        private static string TryGetStr(IDictionary<string, string> opts, string name)
+        {
+            if (opts.ContainsKey(name))
+            {
+                return opts[name];
+            }
+
+            return null;
         }
     }
 }

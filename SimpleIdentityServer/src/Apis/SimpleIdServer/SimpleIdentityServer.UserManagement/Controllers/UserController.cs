@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Api.Profile;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.ViewModels;
-using SimpleIdentityServer.Scim.Client;
 using SimpleIdentityServer.UserManagement.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
@@ -34,25 +34,22 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IUrlHelper _urlHelper;
-        private readonly IScimClientFactory _scimClientFactory;
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly UserManagementOptions _userManagementOptions;
 
         #region Constructor
 
         public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
             IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
-            IScimClientFactory scimClientFactory, IIdentityServerClientFactory identityServerClientFactory, UserManagementOptions userManagementOptions, AuthenticateOptions options) : base(authenticationService, options)
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, UserManagementOptions userManagementOptions, 
+            AuthenticateOptions options) : base(authenticationService, options)
         {
             _userActions = userActions;
             _profileActions = profileActions;
             _translationManager = translationManager;
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-            _scimClientFactory = scimClientFactory;
-            _identityServerClientFactory = identityServerClientFactory;
             _userManagementOptions = userManagementOptions;
+            Check();
         }
 
         #endregion
@@ -124,9 +121,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             {
                 var record = viewModel.ToAddUserParameter();
                 record.Login = authenticatedUser.GetSubject();
-                record.Claims = authenticatedUser.Claims;
-                
-                await _userActions.AddUser(record);
+                record.Claims = authenticatedUser.Claims;       
+                if (_userManagementOptions.CreateScimResourceWhenAccountIsAdded)
+                {
+                    await _userActions.AddUser(record, new AuthenticationParameter
+                    {
+                        ClientId = _userManagementOptions.AuthenticationOptions.ClientId,
+                        ClientSecret = _userManagementOptions.AuthenticationOptions.ClientSecret,
+                        WellKnownAuthorizationUrl = _userManagementOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
+                    }, _userManagementOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+                }
+                else
+                {
+                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
+                }
+
                 ViewBag.IsCreated = true;
             }
             else
@@ -151,12 +160,12 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var authenticatedUser = await SetUser();
             ViewBag.IsUpdated = false;
             ViewBag.IsCreated = false;
-            var claims = new List<Claim>();
+            var claims = new List<ClaimAggregate>();
             if (dic != null)
             {
                 foreach(var kvp in dic)
                 {
-                    claims.Add(new Claim(kvp.Key, kvp.Value));
+                    claims.Add(new ClaimAggregate(kvp.Key, kvp.Value));
                 }
             }
 
@@ -315,18 +324,6 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         #region Private methods
 
-        private async Task GetScimResource(string subject)
-        {
-            var grantedToken = await _identityServerClientFactory.CreateAuthSelector()
-                .UseClientSecretPostAuth(_userManagementOptions.Scim.ClientId, _userManagementOptions.Scim.ClientSecret)
-                .UseClientCredentials()
-                .ResolveAsync(_userManagementOptions.Scim.AuthorizationWellKnownConfiguration);
-
-            var scimResponse = await _scimClientFactory.GetUserClient().AddUser(_userManagementOptions.Scim.ScimBaseUrl, grantedToken.AccessToken)
-                .SetCommonAttributes(subject)
-                .Execute();
-        }
-
         private async Task<IActionResult> GetEditView(ClaimsPrincipal authenticatedUser)
         {
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
@@ -418,6 +415,21 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             
             return new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
+        }
+
+        /// <summary>
+        /// Check the parameters.
+        /// </summary>
+        private void Check()
+        {
+            if (_userManagementOptions.CreateScimResourceWhenAccountIsAdded && (_userManagementOptions.AuthenticationOptions == null ||
+                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration) ||
+                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.ClientId) ||
+                string.IsNullOrWhiteSpace(_userManagementOptions.AuthenticationOptions.ClientSecret) ||
+                string.IsNullOrWhiteSpace(_userManagementOptions.ScimBaseUrl)))
+            {
+                throw new IdentityServerException(Core.Errors.ErrorCodes.InternalError, Core.Errors.ErrorDescriptions.TheScimConfigurationMustBeSpecified);
+            }
         }
 
         #endregion

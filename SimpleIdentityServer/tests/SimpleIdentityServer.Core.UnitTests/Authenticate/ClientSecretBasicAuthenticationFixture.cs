@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader = clientSecret
             };
-            var client = new Client
+            var client = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {

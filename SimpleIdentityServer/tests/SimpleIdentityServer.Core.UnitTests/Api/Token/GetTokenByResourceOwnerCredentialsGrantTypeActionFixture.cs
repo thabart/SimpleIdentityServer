@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
@@ -217,7 +217,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -229,7 +229,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ASSERT
             _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
             _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
-            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
+            _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Core.Common.Models.Client>(), It.IsAny<JwsPayload>()));
         }
 
         #endregion

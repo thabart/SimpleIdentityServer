@@ -172,7 +172,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(authenticateInstruction);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
-            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Client>(), It.IsAny<string[]>())).Returns(new string[0]);
+            _clientValidatorStub.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>())).Returns(new string[0]);
             _scopeValidatorStub.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => new ScopeValidationResult(false)
                 {
@@ -231,7 +231,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 {
                     Scopes = scopes
                 });
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
@@ -287,13 +287,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 {
                     Scopes = scopes
                 });
-            _jwtGeneratorStub.Setup(g => g.GenerateAccessToken(It.IsAny<Client>(),
+            _jwtGeneratorStub.Setup(g => g.GenerateAccessToken(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(jwsPayload));
-            _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Client>(),
+            _clientHelperStub.Setup(g => g.GenerateIdTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(accessToken));
-            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperStub.Setup(g => g.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));

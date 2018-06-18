@@ -28,8 +28,8 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IAuthorizationCodeGrantTypeParameterAuthEdpValidator
     {
-        Client Validate(AuthorizationParameter parameter);
-        Task<Client> ValidateAsync(AuthorizationParameter parameter);
+        Core.Common.Models.Client Validate(AuthorizationParameter parameter);
+        Task<Core.Common.Models.Client> ValidateAsync(AuthorizationParameter parameter);
     }
 
     public sealed class AuthorizationCodeGrantTypeParameterAuthEdpValidator : IAuthorizationCodeGrantTypeParameterAuthEdpValidator
@@ -47,12 +47,12 @@ namespace SimpleIdentityServer.Core.Validators
             _clientValidator = clientValidator;
         }
 
-        public Client Validate(AuthorizationParameter parameter)
+        public Core.Common.Models.Client Validate(AuthorizationParameter parameter)
         {
             return ValidateAsync(parameter).Result;
         }
 
-        public async Task<Client> ValidateAsync(AuthorizationParameter parameter)
+        public async Task<Core.Common.Models.Client> ValidateAsync(AuthorizationParameter parameter)
         {
             // Check the required parameters. Read this RFC : http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
             if (string.IsNullOrWhiteSpace(parameter.Scope))

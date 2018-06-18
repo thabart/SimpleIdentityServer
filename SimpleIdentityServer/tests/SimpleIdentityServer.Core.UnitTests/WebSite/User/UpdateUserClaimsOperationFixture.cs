@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<Claim>()));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>()));
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -71,9 +71,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             }));
 
             // ACT
-            await _updateUserClaimsOperation.Execute("subjet", new List<Claim>
+            await _updateUserClaimsOperation.Execute("subjet", new List<ClaimAggregate>
             {
-                new Claim("type", "value1")
+                new ClaimAggregate("type", "value1")
             });
 
             // ASSERT

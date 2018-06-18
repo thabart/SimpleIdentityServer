@@ -57,6 +57,12 @@ namespace SimpleIdentityServer.Host
             return serviceCollection;
         }
         
+        /// <summary>
+        /// Add the OPENID API.
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static IServiceCollection AddOpenIdApi(
             this IServiceCollection serviceCollection,
             IdentityServerOptions options)
@@ -77,7 +83,14 @@ namespace SimpleIdentityServer.Host
             return serviceCollection;
         }
    
-        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
+        /// <summary>
+        /// Add the consent and form screens.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="mvcBuilder"></param>
+        /// <param name="hosting"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddOpenIdWebsite(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
         {
             if (services == null)
             {

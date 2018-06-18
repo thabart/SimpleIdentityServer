@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.AccessToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Client(), null);
+            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
             _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(Task.FromResult(client));
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Client
+            var client = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);
@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Client
+            var client = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);

@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACTS & ASSERTS
             Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Client(), null, null));
+            Assert.Throws<ArgumentNullException>(() => _clientValidator.CheckPkce(new Core.Common.Models.Client(), null, null));
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Client
+            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
             {
                 RequirePkce = false
             }, null, new AuthorizationCode());
@@ -213,7 +213,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Client
+            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
             {
                 RequirePkce = true
             }, "invalid_code", new AuthorizationCode
@@ -233,7 +233,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeMockingObjects();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Client
+            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
             {
                 RequirePkce = true
             }, "code", new AuthorizationCode
@@ -255,7 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             var codeChallenge = hashed.Base64EncodeBytes();
 
             // ACT
-            var result = _clientValidator.CheckPkce(new Client
+            var result = _clientValidator.CheckPkce(new Core.Common.Models.Client
             {
                 RequirePkce = true
             }, "code", new AuthorizationCode

@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Core.Common.Models.Client client);
     }
 
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperation : IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client)
         {
             if (authorizationParameter == null)
             {

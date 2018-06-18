@@ -31,11 +31,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromAuthorizationHeader = "notCorrectClientSecret"
             };
-            var firstClient = new Client
+            var firstClient = new Core.Common.Models.Client
             {
                 Secrets = null
             };
-            var secondClient = new Client
+            var secondClient = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromHttpRequestBody = "notCorrectClientSecret"
             };
-            var client = new Client
+            var client = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             {
                 ClientSecretFromHttpRequestBody = clientSecret
             };
-            var client = new Client
+            var client = new Core.Common.Models.Client
             {
                 Secrets = new List<ClientSecret>
                 {

@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Core.Common.Models.Client client);
     }
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client)
         {
             if (authorizationParameter == null)
             {

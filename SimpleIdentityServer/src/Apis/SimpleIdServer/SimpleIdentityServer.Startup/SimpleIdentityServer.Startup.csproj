@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Token.Store.InMemory\SimpleIdentityServer.Token.Store.InMemory.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />

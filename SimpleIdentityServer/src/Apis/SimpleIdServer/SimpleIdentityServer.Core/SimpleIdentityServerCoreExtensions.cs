@@ -49,6 +49,7 @@ using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
+using SimpleIdentityServer.Scim.Client;
 using System;
 
 namespace SimpleIdentityServer.Core
@@ -62,6 +63,7 @@ namespace SimpleIdentityServer.Core
                 throw new ArgumentNullException("serviceCollection");
             }
 
+            serviceCollection.AddScimClient();
 			serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();

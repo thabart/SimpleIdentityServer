@@ -13,10 +13,10 @@ namespace SimpleIdentityServer.UserManagement
     public class UserManagementModule : IModule
     {
         private const string CreateScimResourceWhenAccountIsAdded = "CreateScimResourceWhenAccountIsAdded";
-        private const string ScimClientId = "ScimClientId";
-        private const string ScimClientSecret = "ScimClientSecret";
-        private const string ScimBaseUrl = "ScimBaseUrl";
+        private const string ClientId = "ClientId";
+        private const string ClientSecret = "ClientSecret";
         private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
+        private const string ScimBaseUrl = "ScimBaseUrl";
 
         public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
         {
@@ -74,10 +74,10 @@ namespace SimpleIdentityServer.UserManagement
             return new[]
             {
                 CreateScimResourceWhenAccountIsAdded,
-                ScimClientId,
-                ScimClientSecret,
+                ClientId,
+                ClientSecret,
+                AuthorizationWellKnownConfiguration,
                 ScimBaseUrl,
-                AuthorizationWellKnownConfiguration
             };
         }
 
@@ -88,22 +88,25 @@ namespace SimpleIdentityServer.UserManagement
 
         private static UserManagementOptions GetOptions(IDictionary<string, string> options)
         {
-            var result = new UserManagementOptions
+            var result = new UserManagementOptions();
+            if (options == null)
             {
-                Scim = new ScimOptions
-                {
-                     AuthorizationWellKnownConfiguration = TryGetStr(options, AuthorizationWellKnownConfiguration),
-                     ScimBaseUrl = TryGetStr(options, ScimBaseUrl),
-                     ClientId = TryGetStr(options, ScimClientId),
-                     ClientSecret = TryGetStr(options, ScimClientSecret)
-                }
-            };
+                return result;
+            }
+
             bool createScimResourceWhenAccountIsAdded = false;
             if (options.ContainsKey(CreateScimResourceWhenAccountIsAdded))
             {
                 bool.TryParse(options[CreateScimResourceWhenAccountIsAdded], out createScimResourceWhenAccountIsAdded);
             }
 
+            result.AuthenticationOptions = new UserManagementAuthenticationOptions
+            {
+                AuthorizationWellKnownConfiguration = TryGetStr(options, AuthorizationWellKnownConfiguration),
+                ClientId = TryGetStr(options, ClientId),
+                ClientSecret = TryGetStr(options, ClientSecret)
+            };
+            result.ScimBaseUrl = TryGetStr(options, ScimBaseUrl);
             result.CreateScimResourceWhenAccountIsAdded = createScimResourceWhenAccountIsAdded;
             return result;
         }

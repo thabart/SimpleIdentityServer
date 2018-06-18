@@ -173,7 +173,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
@@ -223,14 +223,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult((GrantedToken)null));
-            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<Client>(),
+            _grantedTokenGeneratorHelperFake.Setup(r => r.GenerateTokenAsync(It.IsAny<Core.Common.Models.Client>(),
                 It.IsAny<string>(),
                 It.IsAny<JwsPayload>(),
                 It.IsAny<JwsPayload>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -284,7 +284,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -329,7 +329,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(consent));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
@@ -379,7 +379,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERT
             _simpleIdentityServerEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
@@ -433,7 +433,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);

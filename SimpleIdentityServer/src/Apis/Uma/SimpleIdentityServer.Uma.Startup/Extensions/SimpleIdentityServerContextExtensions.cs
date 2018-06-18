@@ -400,7 +400,20 @@ namespace SimpleIdentityServer.Uma.Startup.Extensions
                                 Value = "z4Bp!:B@rFw4Xs+]"
                             }
                         },
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "scim_read"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim_manage"
+                            }
+			},
                         ClientName = "OpenId",
+                        GrantTypes = "3",
+                        ResponseTypes = "1",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow

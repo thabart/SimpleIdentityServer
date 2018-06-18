@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(new Client(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtGenerator.GenerateAccessToken(new Core.Common.Models.Client(), null));
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             const string clientId = "client_id";
             var scopes = new List<string> { "openid", "role" };
             InitializeMockObjects();
-            var client = new Client
+            var client = new Core.Common.Models.Client
             {
                 ClientId = clientId
             };
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 ClientId = clientId
             };
             _simpleIdentityServerConfigurator.Setup(s => s.GetIssuerNameAsync()).Returns(Task.FromResult(issuerName));
-            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult((IEnumerable<Client>)new List<Core.Common.Models.Client>()));
+            _clientRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult((IEnumerable<Core.Common.Models.Client>)new List<Core.Common.Models.Client>()));
 
             // ACT
             var result = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(
@@ -902,7 +902,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             };
 
             // ACT & ASSERT
-            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, authorizationParameter, new Client());
+            _jwtGenerator.FillInOtherClaimsIdentityTokenPayload(jwsPayload, null, null, authorizationParameter, new Core.Common.Models.Client());
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.AtHash));
             Assert.False(jwsPayload.ContainsKey(StandardClaimNames.CHash));
         }

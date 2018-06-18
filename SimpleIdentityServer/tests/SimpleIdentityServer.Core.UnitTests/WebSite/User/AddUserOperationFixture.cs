@@ -21,6 +21,8 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
+using SimpleIdentityServer.Scim.Client;
+using SimpleIdentityServer.Token.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -32,8 +34,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class AddUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
+        private Mock<IProfileRepository> _profileRepositoryStub;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
+        private Mock<ITokenStore> _tokenStoreStub;
+        private Mock<IScimClientFactory> _scimClientFactoryStub;
         private IAddUserOperation _addResourceOwnerAction;
         
         [Fact]
@@ -43,9 +48,11 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null)));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null)));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter(null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), null, null, true));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addResourceOwnerAction.Execute(new AddUserParameter("name", "password"), new AuthenticationParameter(), null, true));
         }
 
         [Fact]
@@ -59,7 +66,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null));
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -78,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            await _addResourceOwnerAction.Execute(parameter);
+            await _addResourceOwnerAction.Execute(parameter, null);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
@@ -87,12 +94,18 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
+            _profileRepositoryStub = new Mock<IProfileRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
+            _tokenStoreStub = new Mock<ITokenStore>();
+            _scimClientFactoryStub = new Mock<IScimClientFactory>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
+                _profileRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _authenticateResourceOwnerServiceStub.Object,
+                _tokenStoreStub.Object,
+                _scimClientFactoryStub.Object);
         }
     }
 }
