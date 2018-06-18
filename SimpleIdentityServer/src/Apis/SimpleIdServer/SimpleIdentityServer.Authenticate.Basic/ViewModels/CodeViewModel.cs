@@ -21,6 +21,9 @@ namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
 {
     public class CodeViewModel
     {
+        public const string RESEND_ACTION = "resend";
+        public const string SUBMIT_ACTION = "submit";
+
         public string Code { get; set; }
         public string AuthRequestCode { get; set; }
         public string ClaimName { get; set; }
@@ -34,7 +37,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
                 throw new ArgumentNullException(nameof(modelState));
             }
 
-            if (Action == "resend")
+            if (Action == RESEND_ACTION)
             {
                 if (string.IsNullOrWhiteSpace(ClaimValue))
                 {
@@ -42,7 +45,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
                 }
             }
 
-            if (Action == "submit")
+            if (Action == SUBMIT_ACTION)
             {
                 if (string.IsNullOrWhiteSpace(Code))
                 {

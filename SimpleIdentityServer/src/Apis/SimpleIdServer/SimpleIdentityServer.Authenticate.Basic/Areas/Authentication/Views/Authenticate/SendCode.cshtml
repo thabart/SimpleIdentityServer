@@ -19,7 +19,8 @@
                 @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
-                        <!-- Claim -->
+                    <!-- Claim -->
+                    @Html.TextBoxFor(i => i.ClaimName, new { @type = "hidden" })
                     <fieldset class="form-group">
                         <label class="control-label">@Model.ClaimName</label>
                         @Html.TextBoxFor(i => i.ClaimValue, new { @type = "text", @class = "form-control" })
@@ -39,4 +40,5 @@
                 }
             </div>
         </div>
+    </div>
 </div>

@@ -26,6 +26,7 @@ using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Extensions;
@@ -282,7 +283,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
 
             // 2. Return translated view.
-            var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
+            var resourceOwner = await _userActions.GetUser(authenticatedUser);
             var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
             var viewModel = new CodeViewModel
             {
@@ -298,26 +299,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             ViewBag.IsAuthenticated = false;
             await TranslateView(DefaultLanguage);
             return View(viewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResendCode()
-        {
-            // 1. Retrieve user
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Host.Constants.TwoFactorCookieName);
-            if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
-            {
-                throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
-            }
-
-            // 2. Send the code
-            var subject = authenticatedUser.Claims.First(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-            var code = await _authenticateActions.GenerateAndSendCode(subject);
-            _simpleIdentityServerEventSource.GetConfirmationCode(code);
-
-            // 3. Redirect to code view
-            return RedirectToAction("SendCode");
         }
 
         [HttpPost]
@@ -344,13 +325,26 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, Core.Errors.ErrorDescriptions.TwoFactorAuthenticationCannotBePerformed);
             }
 
-            if (codeViewModel.Action == "resend")
+            // 2. Resend the confirmation code.
+            if (codeViewModel.Action == CodeViewModel.RESEND_ACTION)
             {
-                var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject()); // UPDATE THE CLAIMS
-                // RESEND THE CODE
+                await TranslateView(DefaultLanguage);
+                var resourceOwner = await _userActions.GetUser(authenticatedUser);
+                var claim = resourceOwner.Claims.FirstOrDefault(c => c.Type == codeViewModel.ClaimName);
+                if (claim != null)
+                {
+                    resourceOwner.Claims.Remove(claim);
+                }
+
+                resourceOwner.Claims.Add(new Claim(codeViewModel.ClaimName, codeViewModel.ClaimValue));
+                var claimsLst = resourceOwner.Claims.Select(c => new ClaimAggregate(c.Type, c.Value));
+                await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claimsLst);
+                var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject());
+                _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                return View(codeViewModel);
             }
 
-            // 2. Validate the code
+            // 3. Validate the confirmation code
             if (!await _authenticateActions.ValidateCode(codeViewModel.Code))
             {
                 await TranslateView(DefaultLanguage);
@@ -359,7 +353,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 return View(codeViewModel);
             }
 
-            // 3. Remove the code
+            // 4. Remove the code
             if (!await _authenticateActions.RemoveCode(codeViewModel.Code))
             {
                 await TranslateView(DefaultLanguage);
@@ -367,11 +361,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 return View(codeViewModel);
             }
 
-            // 4. Authenticate the resource owner
+            // 5. Authenticate the resource owner
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
 
-            // 5. Redirect the user agent
+            // 6. Redirect the user agent
             if (!string.IsNullOrWhiteSpace(codeViewModel.AuthRequestCode))
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
@@ -381,7 +375,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 return result;
             }
 
-            // 4. Authenticate the resource owner
+            // 7. Redirect the user agent to the User view.
             return RedirectToAction("Index", "User", new { area = "UserManagement" });
         }
         
