@@ -15,18 +15,14 @@
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Configuration;
-using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
@@ -75,8 +71,8 @@ namespace SimpleIdentityServer.Host
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
-            }   
-
+            }
+            
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 options);

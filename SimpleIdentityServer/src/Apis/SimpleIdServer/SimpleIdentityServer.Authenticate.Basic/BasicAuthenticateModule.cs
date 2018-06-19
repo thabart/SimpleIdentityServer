@@ -17,6 +17,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
         private const string AuthorizationWellKnownConfiguration = "AuthorizationWellKnownConfiguration";
         private const string BaseScimUrl = "BaseScimUrl";
         private const string IsScimResourceAutomaticallyCreated = "IsScimResourceAutomaticallyCreated";
+        private const string ClaimsIncludedInUserCreation = "ClaimsIncludedInUserCreation";
 
         public static ModuleUIDescriptor ModuleUi = new ModuleUIDescriptor
         {
@@ -77,7 +78,8 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 ClientSecret,
                 AuthorizationWellKnownConfiguration,
                 BaseScimUrl,
-                IsScimResourceAutomaticallyCreated
+                IsScimResourceAutomaticallyCreated,
+                ClaimsIncludedInUserCreation
             };
         }
 
@@ -101,6 +103,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 ClientSecret = options.TryGetValue(ClientSecret)
             };
             result.ScimBaseUrl = options.TryGetValue(BaseScimUrl);
+            result.ClaimsIncludedInUserCreation = options.TryGetArr(ClaimsIncludedInUserCreation);
             bool isScimResourceAutomaticallyCreated;
             if (options.TryGetValue(IsScimResourceAutomaticallyCreated, out isScimResourceAutomaticallyCreated))
             {

@@ -5,7 +5,7 @@ using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Common;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;

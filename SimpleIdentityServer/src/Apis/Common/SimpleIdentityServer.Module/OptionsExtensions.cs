@@ -35,5 +35,15 @@ namespace SimpleIdentityServer.Module
 
             return bool.TryParse(opts[name], out val);
         }
+
+        public static IEnumerable<string> TryGetArr(this IDictionary<string, string> opts, string name)
+        {
+            if (!opts.ContainsKey(name))
+            {
+                return new string[0];
+            }
+
+            return opts[name].Split(',');
+        }
     }
 }

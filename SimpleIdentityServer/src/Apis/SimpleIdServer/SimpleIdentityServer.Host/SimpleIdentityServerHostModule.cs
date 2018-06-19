@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Host.MiddleWare;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Module;
@@ -58,6 +61,14 @@ namespace SimpleIdentityServer.Host
             }
 
             var opts = GetOptions(options);
+            var assembly = typeof(AuthorizationController).Assembly;
+            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
+            services.Configure<RazorViewEngineOptions>(o =>
+            {
+                o.FileProviders.Add(embeddedFileProvider);
+            });
+
+            mvcBuilder.AddApplicationPart(assembly);
             services.AddOpenIdApi(opts);
         }
 
