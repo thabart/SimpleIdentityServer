@@ -110,11 +110,15 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
             };
-            foreach(var claim in addUserParameter.Claims)
+
+            if (addUserParameter.Claims != null)
             {
-                if (!newClaims.Any(nc => nc.Type == claim.Type))
+                foreach (var claim in addUserParameter.Claims)
                 {
-                    newClaims.Add(claim);
+                    if (!newClaims.Any(nc => nc.Type == claim.Type))
+                    {
+                        newClaims.Add(claim);
+                    }
                 }
             }
 

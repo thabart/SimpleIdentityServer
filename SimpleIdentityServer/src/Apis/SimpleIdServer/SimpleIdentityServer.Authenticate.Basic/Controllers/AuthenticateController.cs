@@ -241,7 +241,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 await SetTwoFactorCookie(claims);
                 try
                 {
-                    var code = await _authenticateActions.GenerateAndSendCode(claims.GetSubject());
+                    var code = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id);
                     _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
@@ -350,16 +350,20 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             // 5. Authenticate the resource owner
             await _authenticationService.SignOutAsync(HttpContext, Host.Constants.TwoFactorCookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
-            await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
 
             // 6. Redirect the user agent
             if (!string.IsNullOrWhiteSpace(codeViewModel.AuthRequestCode))
             {
                 var request = _dataProtector.Unprotect<AuthorizationRequest>(codeViewModel.AuthRequestCode);
+                await SetLocalCookie(authenticatedUser.Claims, request.SessionId);
                 var actionResult = await _authenticateHelper.ProcessRedirection(request.ToParameter(), codeViewModel.AuthRequestCode, authenticatedUser.GetSubject(), authenticatedUser.Claims.ToList());
                 LogAuthenticateUser(actionResult, request.ProcessId);
                 var result = this.CreateRedirectionFromActionResult(actionResult, request);
                 return result;
+            }
+            else
+            {
+                await SetLocalCookie(authenticatedUser.Claims, Guid.NewGuid().ToString());
             }
 
             // 7. Redirect the user agent to the User view.
@@ -550,10 +554,10 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             var subject = claims.GetSubject();
 
-            if (resourceOwner != null)
+            if (resourceOwner != null && !string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 await SetTwoFactorCookie(claims);
-                var confirmationCode = await _authenticateActions.GenerateAndSendCode(subject);
+                var confirmationCode = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id);
                 _simpleIdentityServerEventSource.GetConfirmationCode(confirmationCode);
                 return RedirectToAction("SendCode", new { code = request });
             }
