@@ -130,5 +130,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
         public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
         public const string TheScimConfigurationMustBeSpecified = "the scim configuration is not correct";
+        public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
     }
 }

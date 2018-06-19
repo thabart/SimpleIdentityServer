@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Store.InMemory
 
             serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
             serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
+            serviceCollection.AddSingleton<IConfirmationCodeStore>(new InMemoryConfirmationCode());
             return serviceCollection;
         }
     }

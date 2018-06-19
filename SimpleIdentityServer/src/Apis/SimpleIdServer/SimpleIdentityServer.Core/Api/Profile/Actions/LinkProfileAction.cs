@@ -55,6 +55,11 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 else
                 {
                     await _profileRepository.Remove(new[] { externalSubject });
+                    if (profile.ResourceOwnerId == profile.Subject)
+                    {
+                        await _resourceOwnerRepository.DeleteAsync(profile.ResourceOwnerId);
+                    }
+
                     profile = null;
                 }
             }

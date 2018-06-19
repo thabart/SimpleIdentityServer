@@ -42,7 +42,6 @@ namespace SimpleIdentityServer.EF
         public virtual DbSet<ConsentScope> ConsentScopes { get; set; }
         public virtual DbSet<ScopeClaim> ScopeClaims { get; set; }
         public virtual DbSet<ResourceOwnerClaim> ResourceOwnerClaims { get; set; }
-        public virtual DbSet<ConfirmationCode> ConfirmationCodes { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,7 +58,6 @@ namespace SimpleIdentityServer.EF
             modelBuilder.AddTranslationMapping();
             modelBuilder.AddClientScopeMapping();
             modelBuilder.AddResourceOwnerClaimMapping();
-            modelBuilder.AddConfirmationCodeMapping();
             modelBuilder.AddClientSecretMapping();
             modelBuilder.AddProfileMapping();
             base.OnModelCreating(modelBuilder);

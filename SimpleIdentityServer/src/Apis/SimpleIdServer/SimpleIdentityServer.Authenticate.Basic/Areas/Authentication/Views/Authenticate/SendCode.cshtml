@@ -19,6 +19,8 @@
                 @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
+                    <!-- Authorization request code -->
+                    @Html.TextBoxFor(i => i.AuthRequestCode, new { @type = "hidden" })
                     <!-- Claim -->
                     @Html.TextBoxFor(i => i.ClaimName, new { @type = "hidden" })
                     <fieldset class="form-group">
@@ -34,8 +36,8 @@
                     </fieldset>
                     <!-- Submit buttons code -->
                     <fieldset class="form-group">
-                        <button type="submit" class="btn btn-primary" name="Action" value="resend">@ViewBag.Translations["resend_confirmation_code"]</button>
                         <button type="submit" class="btn btn-primary" name="Action" value="submit">@ViewBag.Translations["validate_confirmation_code"]</button>
+                        <button type="submit" class="btn btn-primary" name="Action" value="resend">@ViewBag.Translations["resend_confirmation_code"]</button>
                     </fieldset>
                 }
             </div>

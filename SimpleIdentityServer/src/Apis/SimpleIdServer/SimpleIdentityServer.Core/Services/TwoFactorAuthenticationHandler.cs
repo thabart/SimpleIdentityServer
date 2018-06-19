@@ -17,12 +17,14 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorAuthenticationHandler
     {
+        Dictionary<string, ITwoFactorAuthenticationService> GetAll();
         ITwoFactorAuthenticationService Get(string twoFactorAuthType);
         Task SendCode(string code, string twoFactorAuthType, ResourceOwner user);
     }
@@ -39,6 +41,11 @@ namespace SimpleIdentityServer.Core.Services
             }
 
             return TwoFactorServiceStore.Instance().Get(twoFactorAuthType);
+        }
+
+        public Dictionary<string, ITwoFactorAuthenticationService> GetAll()
+        {
+            return TwoFactorServiceStore.Instance().GetAll();
         }
 
         public async Task SendCode(string code, string twoFactorAuthType, ResourceOwner user)

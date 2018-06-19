@@ -153,6 +153,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();
             serviceCollection.AddTransient<IGetUserProfilesAction, GetUserProfilesAction>();
             serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
+            serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
             return serviceCollection;
         }
     }

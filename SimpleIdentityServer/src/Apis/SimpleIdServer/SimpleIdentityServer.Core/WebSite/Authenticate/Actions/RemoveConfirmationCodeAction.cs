@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
@@ -27,11 +27,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     internal class RemoveConfirmationCodeAction : IRemoveConfirmationCodeAction
     {
-        private readonly IConfirmationCodeRepository _confirmationCodeRepository;
+        private readonly IConfirmationCodeStore _confirmationCodeStore;
 
-        public RemoveConfirmationCodeAction(IConfirmationCodeRepository confirmationCodeRepository)
+        public RemoveConfirmationCodeAction(IConfirmationCodeStore confirmationCodeStore)
         {
-            _confirmationCodeRepository = confirmationCodeRepository;
+            _confirmationCodeStore = confirmationCodeStore;
         }
 
         public async Task<bool> Execute(string code)
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(code));
             }
 
-            return await _confirmationCodeRepository.RemoveAsync(code);
+            return await _confirmationCodeStore.Remove(code);
         }
     }
 }

@@ -45,6 +45,11 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
             }
 
+            if (profile.Subject == localSubject)
+            {
+                throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
+            }
+
             return await _profileRepository.Remove(new[] { externalSubject });
         }
     }

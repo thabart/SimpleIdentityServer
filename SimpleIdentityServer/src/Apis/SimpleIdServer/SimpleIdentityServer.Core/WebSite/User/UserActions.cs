@@ -30,6 +30,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
         Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
         Task<bool> UpdateCredentials(string subject, string newPassword);
         Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims);
+        Task<bool> UpdateTwoFactor(string subject, string twoFactorAuth);
         Task<bool> AddUser(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null);
     }
 
@@ -41,6 +42,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
         private readonly IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
         private readonly IUpdateUserClaimsOperation _updateUserClaimsOperation;
         private readonly IAddUserOperation _addUserOperation;
+        private readonly IUpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
@@ -48,7 +50,8 @@ namespace SimpleIdentityServer.Core.WebSite.User
             IGetUserOperation getUserOperation,
             IUpdateUserCredentialsOperation updateUserCredentialsOperation,
             IUpdateUserClaimsOperation updateUserClaimsOperation,
-            IAddUserOperation addUserOperation)
+            IAddUserOperation addUserOperation,
+            IUpdateUserTwoFactorAuthenticatorOperation updateUserTwoFactorAuthenticatorOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
@@ -56,6 +59,7 @@ namespace SimpleIdentityServer.Core.WebSite.User
             _updateUserCredentialsOperation = updateUserCredentialsOperation;
             _updateUserClaimsOperation = updateUserClaimsOperation;
             _addUserOperation = addUserOperation;
+            _updateUserTwoFactorAuthenticatorOperation = updateUserTwoFactorAuthenticatorOperation;
         }
 
         public Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
@@ -81,6 +85,11 @@ namespace SimpleIdentityServer.Core.WebSite.User
         public Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims)
         {
             return _updateUserClaimsOperation.Execute(subject, claims);
+        }
+
+        public Task<bool> UpdateTwoFactor(string subject, string twoFactorAuth)
+        {
+            return _updateUserTwoFactorAuthenticatorOperation.Execute(subject, twoFactorAuth);
         }
 
         public Task<bool> AddUser(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)

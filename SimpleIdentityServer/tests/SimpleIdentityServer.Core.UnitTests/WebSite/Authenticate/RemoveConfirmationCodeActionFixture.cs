@@ -15,8 +15,8 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public class RemoveConfirmationCodeActionFixture
     {
-        private Mock<IConfirmationCodeRepository> _confirmationCodeRepositoryStub;
+        private Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
 
         [Fact]
@@ -48,13 +48,13 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             await _removeConfirmationCodeAction.Execute("code");
 
             // ASSERT
-            _confirmationCodeRepositoryStub.Verify(c => c.RemoveAsync("code"));
+            _confirmationCodeStoreStub.Verify(c => c.Remove("code"));
         }
 
         private void InitializeFakeObjects()
         {
-            _confirmationCodeRepositoryStub = new Mock<IConfirmationCodeRepository>();
-            _removeConfirmationCodeAction = new RemoveConfirmationCodeAction(_confirmationCodeRepositoryStub.Object);
+            _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
+            _removeConfirmationCodeAction = new RemoveConfirmationCodeAction(_confirmationCodeStoreStub.Object);
         }
     }
 }

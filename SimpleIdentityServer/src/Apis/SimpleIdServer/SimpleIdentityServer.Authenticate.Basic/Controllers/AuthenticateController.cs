@@ -69,8 +69,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private readonly IUserActions _userActions;
         private readonly IPayloadSerializer _payloadSerializer;
         private readonly IConfigurationService _configurationService;
-        private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
+        private readonly BasicAuthenticateOptions _basicAuthenticateOptions;
 
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
@@ -86,11 +86,11 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IAuthenticationSchemeProvider authenticationSchemeProvider,
             IUserActions userActions,
             IPayloadSerializer payloadSerializer,
-            AuthenticateOptions authenticateOptions,
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             BasicAuthenticateOptions basicAuthenticateOptions,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler) : base(authenticationService, authenticateOptions)
+            AuthenticateOptions authenticateOptions) : base(authenticationService, authenticateOptions)
         {
             _authenticateActions = authenticateActions;
             _profileActions = profileActions;
@@ -224,20 +224,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 2. Automatically create the resource owner.
             if (resourceOwner == null)
             {
-                var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
-                if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
-                {
-                    await _userActions.AddUser(record, new AuthenticationParameter
-                    {
-                        ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
-                        ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
-                        WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                    }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
-                }
-                else
-                {
-                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
-                }
+                await AddExternalUser(authenticatedUser);
             }
 
             IEnumerable<Claim> claims = authenticatedUser.Claims;
@@ -553,20 +540,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
             if (resourceOwner == null)
             {
-                var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), authenticatedUser.Claims.ToOpenidClaims());
-                if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
-                {
-                    await _userActions.AddUser(record, new AuthenticationParameter
-                    {
-                        ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
-                        ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
-                        WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                    }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
-                }
-                else
-                {
-                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
-                }
+                await AddExternalUser(authenticatedUser);
             }
 
             if (resourceOwner != null)
@@ -605,6 +579,41 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         #endregion
 
         #region Private methods
+
+        /// <summary>
+        /// Add an external account.
+        /// </summary>
+        /// <param name="authenticatedUser"></param>
+        /// <returns></returns>
+        private async Task AddExternalUser(ClaimsPrincipal authenticatedUser)
+        {
+            var openidClaims = authenticatedUser.Claims.ToOpenidClaims().ToList();
+            if (_basicAuthenticateOptions.ClaimsIncludedInUserCreation != null && _basicAuthenticateOptions.ClaimsIncludedInUserCreation.Any())
+            {
+                var lstIndexesToRemove = openidClaims.Where(oc => !_basicAuthenticateOptions.ClaimsIncludedInUserCreation.Contains(oc.Type))
+                    .Select(oc => openidClaims.IndexOf(oc))
+                    .OrderByDescending(oc => oc);
+                foreach(var index in lstIndexesToRemove)
+                {
+                    openidClaims.RemoveAt(index);
+                }
+            }
+
+            var record = new AddUserParameter(authenticatedUser.GetSubject(), Guid.NewGuid().ToString(), openidClaims);
+            if (_basicAuthenticateOptions.IsScimResourceAutomaticallyCreated)
+            {
+                await _userActions.AddUser(record, new AuthenticationParameter
+                {
+                    ClientId = _basicAuthenticateOptions.AuthenticationOptions.ClientId,
+                    ClientSecret = _basicAuthenticateOptions.AuthenticationOptions.ClientSecret,
+                    WellKnownAuthorizationUrl = _basicAuthenticateOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
+                }, _basicAuthenticateOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
+            }
+            else
+            {
+                await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
+            }
+        }
 
         private void Check()
         {

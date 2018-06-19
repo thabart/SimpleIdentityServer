@@ -13,11 +13,14 @@ namespace SimpleIdentityServer.UserManagement.ViewModels
             };
             EditableClaims = editableClaims;
             NotEditableClaims = notEditableClaims;
+            TwoFactorAuthTypes = new List<string>();
         }
 
         public bool IsLocalAccount { get; set; }
         public UpdateResourceOwnerCredentialsViewModel Credentials { get; set; }
         public Dictionary<string, string> EditableClaims { get; set; }
         public Dictionary<string, string> NotEditableClaims { get; set; }
+        public string SelectedTwoFactorAuthType { get; set; }
+        public ICollection<string> TwoFactorAuthTypes { get; set; }
     }
 }

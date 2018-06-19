@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,18 +33,18 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IConfirmationCodeRepository _confirmationCodeRepository;
+        private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public GenerateAndSendCodeAction(
             IResourceOwnerRepository resourceOwnerRepository,
-            IConfirmationCodeRepository confirmationCodeRepository,
+            IConfirmationCodeStore confirmationCodeStore,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _confirmationCodeRepository = confirmationCodeRepository;
+            _confirmationCodeStore = confirmationCodeStore;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
@@ -72,10 +72,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Code = await GetCode(),
-                CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = 300,
-                IsConfirmed = false
+                Value = await GetCode(),
+                IssueAt = DateTime.UtcNow,
+                ExpiresIn = 300
             };
 
             var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
@@ -84,20 +83,20 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ClaimRequiredException(service.RequiredClaim);
             }
 
-            if (!await _confirmationCodeRepository.AddAsync(confirmationCode))
+            if (!await _confirmationCodeStore.Add(confirmationCode))
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, resourceOwner.TwoFactorAuthentication, resourceOwner);
-            return confirmationCode.Code;
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner);
+            return confirmationCode.Value;
         }
         
         private async Task<string> GetCode()
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeRepository.GetAsync(number.ToString()) != null)
+            if (await _confirmationCodeStore.Get(number.ToString()) != null)
             {
                 return await GetCode();
             }

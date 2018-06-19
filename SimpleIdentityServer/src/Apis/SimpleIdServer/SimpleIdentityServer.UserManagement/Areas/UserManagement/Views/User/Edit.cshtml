@@ -29,7 +29,7 @@
             @ViewBag.Translations["create_resource_owner"]
         </h1>
     }
-    
+
     @if (errors.Count > 0)
     {
         <div class="alert alert-danger">
@@ -41,17 +41,17 @@
             </ul>
         </div>
     }
-    
+
     @if (ViewBag.IsUpdated)
     {
         <div class="alert alert-success">@ViewBag.Translations["user_is_updated"]</div>
     }
-    
+
     @if (ViewBag.IsCreated)
     {
         <div class="alert alert-success">@ViewBag.Translations["user_is_created"]</div>
     }
-    
+
     @using (Html.BeginForm("UpdateCredentials", "User", null, FormMethod.Post))
     {
         @Html.AntiForgeryToken()
@@ -80,14 +80,42 @@
             </div>
         </div>
     }
-    
-    <div class="panel panel-default">
-        <div class="panel-heading">@ViewBag.Translations["two_factor"]</div>
-        <div class="panel-body">
-    
+
+    @using (Html.BeginForm("UpdateTwoFactor", "User", null, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel panel-default">
+            <div class="panel-heading">@ViewBag.Translations["two_factor"]</div>
+            <div class="panel-body">
+                @if (Model.TwoFactorAuthTypes == null || !Model.TwoFactorAuthTypes.Any())
+                {
+                    <i>@ViewBag.Translations["no_two_factor_authenticator"]</i>
+                }
+                else
+                {
+                    <select class="form-control" value="@Model.SelectedTwoFactorAuthType" name="SelectedTwoFactorAuthType">
+                        <option value="">@ViewBag.Translations["no_two_factor_authenticator_selected"]</option>
+                        @foreach (var twoFactorAuthType in Model.TwoFactorAuthTypes)
+                        {
+                            @if (twoFactorAuthType == Model.SelectedTwoFactorAuthType)
+                            {
+                                <option value="@twoFactorAuthType" selected>@twoFactorAuthType</option>
+                            }
+                            else
+                            {
+                                <option value="@twoFactorAuthType">@twoFactorAuthType</option>
+                            }
+                        }
+                    </select>
+                }
+                <!-- Submit -->
+                <fieldset class="form-group">
+                    <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
+                </fieldset>
+            </div>
         </div>
-    </div>
-    
+    }
+
     @if (Model.IsLocalAccount)
     {
         @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))

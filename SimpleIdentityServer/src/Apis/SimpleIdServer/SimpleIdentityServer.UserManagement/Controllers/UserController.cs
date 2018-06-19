@@ -8,6 +8,7 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
@@ -33,13 +34,14 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         private readonly ITranslationManager _translationManager;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly IUrlHelper _urlHelper;
+        private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
         private readonly UserManagementOptions _userManagementOptions;
 
         #region Constructor
 
         public UserController(IUserActions userActions, IProfileActions profileActions, ITranslationManager translationManager, 
             IAuthenticationService authenticationService, IAuthenticationSchemeProvider authenticationSchemeProvider,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, UserManagementOptions userManagementOptions, 
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor, ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler, UserManagementOptions userManagementOptions, 
             AuthenticateOptions options) : base(authenticationService, options)
         {
             _userActions = userActions;
@@ -48,6 +50,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             _authenticationSchemeProvider = authenticationSchemeProvider;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManagementOptions = userManagementOptions;
+            _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
             Check();
         }
 
@@ -84,6 +87,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet("User/Edit")]
         [HttpGet("User/UpdateClaims")]
         [HttpGet("User/UpdateCredentials")]
+        [HttpGet("User/UpdateTwoFactor")]
         public async Task<IActionResult> Edit()
         {
             var authenticatedUser = await SetUser();
@@ -169,6 +173,24 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
 
             await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claims);
+            ViewBag.IsUpdated = true;
+            return await GetEditView(authenticatedUser);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTwoFactor(UpdateTwoFactorAuthenticatorViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+            
+            await TranslateUserEditView(DefaultLanguage);
+            var authenticatedUser = await SetUser();
+            ViewBag.IsUpdated = false;
+            ViewBag.IsCreated = false;
+            await _userActions.UpdateTwoFactor(authenticatedUser.GetSubject(), viewModel.SelectedTwoFactorAuthType);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser);
         }
@@ -329,11 +351,11 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             UpdateResourceOwnerViewModel viewModel = null;
             if (resourceOwner == null)
             {
-                viewModel = BuildViewModel(authenticatedUser.GetSubject(), authenticatedUser.Claims, false);
+                viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication, authenticatedUser.GetSubject(), authenticatedUser.Claims, false);
                 return View("Edit", viewModel);
             }
 
-            viewModel = BuildViewModel(authenticatedUser.GetSubject(), resourceOwner.Claims, true);
+            viewModel = BuildViewModel(resourceOwner.TwoFactorAuthentication, authenticatedUser.GetSubject(), resourceOwner.Claims, true);
             viewModel.IsLocalAccount = true;
             return View("Edit", viewModel);
         }
@@ -392,13 +414,15 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 Core.Constants.StandardTranslationCodes.RepeatPassword,
                 Core.Constants.StandardTranslationCodes.Claims,
                 Core.Constants.StandardTranslationCodes.UserIsCreated,
-                Core.Constants.StandardTranslationCodes.TwoFactor
+                Core.Constants.StandardTranslationCodes.TwoFactor,
+                Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticator,
+                Core.Constants.StandardTranslationCodes.NoTwoFactorAuthenticatorSelected
             });
 
             ViewBag.Translations = translations;
         }
 
-        private static UpdateResourceOwnerViewModel BuildViewModel(string subject, IEnumerable<Claim> claims, bool isLocalAccount)
+        private UpdateResourceOwnerViewModel BuildViewModel(string twoFactorAuthType, string subject, IEnumerable<Claim> claims, bool isLocalAccount)
         {
             var editableClaims = new Dictionary<string, string>();
             var notEditableClaims = new Dictionary<string, string>();
@@ -414,7 +438,10 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 }
             }
             
-            return new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
+            var result = new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
+            result.SelectedTwoFactorAuthType = twoFactorAuthType;
+            result.TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Keys.ToList();
+            return result;
         }
 
         /// <summary>

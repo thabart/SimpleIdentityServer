@@ -127,7 +127,11 @@ namespace SimpleIdentityServer.Startup
                     ClientId = "OpenId",
                     ClientSecret = "z4Bp!:B@rFw4Xs+]"
                 },
-                ScimBaseUrl = "http://localhost:60001"
+                ScimBaseUrl = "http://localhost:60001",
+                ClaimsIncludedInUserCreation = new []
+                {
+                    "sub"
+                }
             });  // BASIC AUTHENTICATION
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
             {

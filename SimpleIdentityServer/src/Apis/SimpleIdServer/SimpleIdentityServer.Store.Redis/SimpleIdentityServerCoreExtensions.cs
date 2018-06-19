@@ -74,6 +74,7 @@ namespace SimpleIdentityServer.Store.Redis
             var redisStorage = new RedisStorage(options, port);
             serviceCollection.AddSingleton<IAuthorizationCodeStore>(new RedisAuthorizationCodeStore(redisStorage));
             serviceCollection.AddSingleton<ITokenStore>(new RedisTokenStore(redisStorage));
+            serviceCollection.AddSingleton<IConfirmationCodeStore>(new RedisConfirmationCodeStore(redisStorage));
             return serviceCollection;
         }
 

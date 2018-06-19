@@ -133,22 +133,6 @@ namespace SimpleIdentityServer.EF.Extensions
             };
         }
 
-        public static Domain.ConfirmationCode ToDomain(this Model.ConfirmationCode confirmationCode)
-        {
-            if (confirmationCode == null)
-            {
-                throw new ArgumentNullException(nameof(confirmationCode));
-            }
-
-            return new Domain.ConfirmationCode
-            {
-                Code = confirmationCode.Code,
-                CreateDateTime = confirmationCode.CreateDateTime,
-                ExpiresIn = confirmationCode.ExpiresIn,
-                IsConfirmed = confirmationCode.IsConfirmed
-            };
-        }
-
         public static Domain.ClientSecret ToDomain(this Model.ClientSecret secret)
         {
             return new Domain.ClientSecret
@@ -291,22 +275,6 @@ namespace SimpleIdentityServer.EF.Extensions
                             Code = c
                         }
                     }).ToList()
-            };
-        }
-        
-        public static Model.ConfirmationCode ToModel(this Domain.ConfirmationCode confirmationCode)
-        {
-            if (confirmationCode == null)
-            {
-                throw new ArgumentNullException(nameof(confirmationCode));
-            }
-
-            return new Model.ConfirmationCode
-            {
-                Code = confirmationCode.Code,
-                CreateDateTime = confirmationCode.CreateDateTime,
-                ExpiresIn = confirmationCode.ExpiresIn,
-                IsConfirmed = confirmationCode.IsConfirmed
             };
         }
 

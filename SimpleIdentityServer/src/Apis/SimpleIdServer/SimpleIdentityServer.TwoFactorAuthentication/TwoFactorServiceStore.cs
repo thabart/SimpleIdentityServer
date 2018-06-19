@@ -23,6 +23,11 @@ namespace SimpleIdentityServer.TwoFactorAuthentication
             return _instance;
         }
 
+        public Dictionary<string, ITwoFactorAuthenticationService> GetAll()
+        {
+            return _twoFactorAuthenticationServices;
+        }
+
         public bool Add(string serviceType, ITwoFactorAuthenticationService service)
         {
             if (string.IsNullOrWhiteSpace(serviceType))

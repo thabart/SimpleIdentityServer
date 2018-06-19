@@ -307,6 +307,8 @@ namespace SimpleIdentityServer.Core
             public const string ConfirmationCode = "confirmation_code";
             public const string ResetConfirmationCode = "resend_confirmation_code";
             public const string ValidateConfirmationCode = "validate_confirmation_code";
+            public const string NoTwoFactorAuthenticator = "no_two_factor_authenticator";
+            public const string NoTwoFactorAuthenticatorSelected = "no_two_factor_authenticator_selected";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>
