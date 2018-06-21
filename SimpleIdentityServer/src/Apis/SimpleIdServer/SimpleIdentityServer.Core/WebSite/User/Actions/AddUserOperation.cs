@@ -111,11 +111,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
             };
 
+            var existedClaims = await _claimRepository.GetAllAsync();
             if (addUserParameter.Claims != null)
             {
                 foreach (var claim in addUserParameter.Claims)
                 {
-                    if (!newClaims.Any(nc => nc.Type == claim.Type))
+                    if (!newClaims.Any(nc => nc.Type == claim.Type) && existedClaims.Any(c => c.Code == claim.Type))
                     {
                         newClaims.Add(claim);
                     }
