@@ -178,9 +178,16 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 // 2.1 Store temporary information in cookie
                 await SetTwoFactorCookie(claims);
                 // 2.2. Send confirmation code
-                var code = await _authenticateActions.GenerateAndSendCode(subject);
-                _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                return RedirectToAction("SendCode");
+                try
+                {
+                    var code = await _authenticateActions.GenerateAndSendCode(subject);
+                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    return RedirectToAction("SendCode");
+                }
+                catch(ClaimRequiredException)
+                {
+                    return RedirectToAction("SendCode");
+                }
             }
             catch (Exception exception)
             {
@@ -446,10 +453,17 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 // 5. Two factor authentication.
                 if (!string.IsNullOrWhiteSpace(actionResult.TwoFactor))
                 {
-                    await SetTwoFactorCookie(actionResult.Claims);
-                    var code = await _authenticateActions.GenerateAndSendCode(subject);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                    return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
+					try
+					{
+						await SetTwoFactorCookie(actionResult.Claims);
+						var code = await _authenticateActions.GenerateAndSendCode(subject);
+						_simpleIdentityServerEventSource.GetConfirmationCode(code);
+						return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
+					}
+					catch(ClaimRequiredException)
+					{
+						return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
+					}
                 }
                 
                 // 6. Authenticate the user by adding a cookie
