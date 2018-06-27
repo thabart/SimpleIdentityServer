@@ -1,0 +1,136 @@
+<html>
+	<head>	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+		<style>
+			.red .vertical-menu {
+				color: white;
+			}
+			
+			.red .vertical-menu .header {
+				background-color: #ee676b;
+			}
+			
+			.red .cover {
+				background-color: #ee676b;
+			}
+			
+			.cover {
+				height: 200px;
+				position: relative;
+			}
+			
+			.cover .cover-banner {
+				
+			}
+			
+			.cover .profile-img {
+				position: absolute;
+				bottom: -10px;
+				left: 10px;
+			}
+			
+			.cover .profile-img img {
+				width: 150px;
+				height: 150px;
+			}
+			
+			.section {
+				box-shadow: 0 6px 12px rgba(0,0,0,.175);
+				border: 1px solid #ddd;
+				padding: 10px;
+			}
+		</style>
+	</head>
+	<body class="red">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand">SimpleIdentityServer</a>
+			<ul class="nav navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="#">Authenticate<a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Disconnect<a>						
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Choose languages</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="container">
+			<div class="cover">
+				<div class="cover-banner"></div>
+				<div class="profile-img">
+					<img src="http://www.stickpng.com/assets/images/585e4bf3cb11b227491c339a.png" class="img-thumbnail" />
+				</div>
+				<ul class="nav">
+					<li class="nav-item">
+						<a class="nav-link">Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link">Consents</a>
+					</li>
+				</ul>
+			</div>
+			<div class="section" style="margin-top: 20px;">
+				<h3>Reset password</h3>
+				<form>
+					<div class="form-group">
+						<input type="password" class="form-control" placeholder="Enter your password" />
+					</div>
+					<div class="form-group">
+						<input type="password" class="form-control" placeholder="Repeat the password" />
+					</div>
+					<button type="submit" class="btn btn-secondary">Update</button>
+				</form>
+			</div>
+			<div class="section" style="margin-top: 20px;">
+				<h3>Two factor authentication</h3>
+				<form>
+					<div class="row form-group">
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">NO</h5>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">SMS</h5>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">EMAIL</h5>
+								</div>
+							</div>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-secondary">Update</button>
+				</form>
+			</div>
+			<div class="section" style="margin-top: 20px;">
+				<h3>Claims</h3>
+				<div class="form-group">
+					<label>Subject</label>
+					<input type="text" class="form-control" />
+				</div>
+				<div class="form-group">
+					<label>Role</label>
+					<input type="text" class="form-control" />
+				</div>
+				<button type="submit" class="btn btn-secondary">Update</button>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+	</script>
+</html>

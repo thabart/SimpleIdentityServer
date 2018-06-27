@@ -1,7 +1,8 @@
 <html>
-	<head>
+	<head>	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
@@ -11,38 +12,41 @@
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content">
 					<form>
-						<div class="modal-header">
-							<h5 class="modal-title">Authenticate</h5>	
+						<div class="modal-header" style="text-align:center; display:block;">
+							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Openid.svg/2000px-Openid.svg.png"  width="80" />
+							<h5 class="modal-title">Client</h5>	
 						</div>
 						<div class="modal-body">
 							<div>
-								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">
-									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
-										<span class="material-icons" style="padding-top:10px;">email</span>
+								<button type="button" class="btn btn-secondary btn-lg btn-block" style="position:relative;">
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #3a3d40;">
+										<span class="fab fa-google" style="padding-top:10px;"></span>
 									</div>
 									Google
 								</button>
-								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">								
-									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
-										<span class="material-icons" style="padding-top:10px;">email</span>
+								<button type="button" class="btn btn-secondary btn-lg btn-block" style="position:relative;">								
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #3a3d40;">
+										<span class="fab fa-git" style="padding-top:10px;"></span>
 									</div>
 									Github
 								</button>
-								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">								
-									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
-										<span class="material-icons" style="padding-top:10px;">email</span>
+								<button type="button" class="btn btn-secondary btn-lg btn-block" style="position:relative;">								
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #3a3d40;">
+										<span class="fab fa-microsoft" style="padding-top:10px;"></span>
 									</div>
 									Hotmail
 								</button>
 							</div>
-							<div>
+							<div style="padding-top: 10px; padding-bottom: 10px;text-align: center;font-style:italic;">
 								Or
 							</div>
 							<div>
 								<div class="form-group">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text" id="basic-addon1">@</span>
+											<span class="input-group-text" id="basic-addon1">
+												<span class="far fa-id-card"></span>
+											</span>
 										</div>
 										<input type="text" class="form-control" placeholder="Your login" />
 									</div>
@@ -50,7 +54,9 @@
 								<div class="form-group">
 									<div class="input-group">
 										<div class="input-group-prepend">
-											<span class="input-group-text" id="basic-addon1">@</span>
+											<span class="input-group-text" id="basic-addon1">
+												<span class="fas fa-user-secret"></span>
+											</span>
 										</div>									
 										<input type="password" class="form-control" placeholder="Your password" />
 									</div>
@@ -68,7 +74,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#authenticate").modal({
-				show: true
+				show: true,
+				keyboard: false,
+				backdrop: 'static'
 			});
 		});
 	</script>
