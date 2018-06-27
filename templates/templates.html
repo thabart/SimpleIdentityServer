@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<div class="modal fade" id="authenticate">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<form>
+						<div class="modal-header">
+							<h5 class="modal-title">Authenticate</h5>	
+						</div>
+						<div class="modal-body">
+							<div>
+								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
+										<span class="material-icons" style="padding-top:10px;">email</span>
+									</div>
+									Google
+								</button>
+								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">								
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
+										<span class="material-icons" style="padding-top:10px;">email</span>
+									</div>
+									Github
+								</button>
+								<button type="button" class="btn btn-primary btn-lg btn-block" style="position:relative;">								
+									<div style="position:absolute;top:0; left:0; height:100%; width: 50px; border-right: 1px solid #0e60b7;">
+										<span class="material-icons" style="padding-top:10px;">email</span>
+									</div>
+									Hotmail
+								</button>
+							</div>
+							<div>
+								Or
+							</div>
+							<div>
+								<div class="form-group">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text" id="basic-addon1">@</span>
+										</div>
+										<input type="text" class="form-control" placeholder="Your login" />
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<span class="input-group-text" id="basic-addon1">@</span>
+										</div>									
+										<input type="password" class="form-control" placeholder="Your password" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary">Authenticate</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#authenticate").modal({
+				show: true
+			});
+		});
+	</script>
+</html>

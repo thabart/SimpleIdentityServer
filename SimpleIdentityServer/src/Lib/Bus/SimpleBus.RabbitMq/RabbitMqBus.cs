@@ -2,6 +2,7 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SimpleBus.Core;
+using SimpleBus.RabbitMq.Exceptions;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,25 +22,27 @@ namespace SimpleBus.RabbitMq
         public RabbitMqBus(IEvtHandlerStore evtHandlerStore)
         {
             _evtHandlerStore = evtHandlerStore;
-            Init();
-            _consumeChannel = CreateConsumerChannel();
         }
 
-        private void Init()
+        public void Init()
         {
             var factory = new ConnectionFactory() { HostName = _connectionString };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
+            _consumeChannel = CreateConsumerChannel();
         }
 
         public void Publish<T>(T evt) where T : Event
         {
+            if (_connection == null || !_connection.IsOpen)
+            {
+                throw new ConnectionNotOpenedException();
+            }
+
             var eventName = typeof(T).Name;
-            var factory = new ConnectionFactory() { HostName = _connectionString };
             using (var channel = _connection.CreateModel())
             {
-                channel.ExchangeDeclare(exchange: _brokerName,
-                    type: "direct");
+                channel.ExchangeDeclare(exchange: _brokerName, type: "direct");
                 string message = JsonConvert.SerializeObject(evt);
                 var body = Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(exchange: _brokerName,
