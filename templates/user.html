@@ -34,14 +34,26 @@
 			}	
 			
 			.red .sid-btn-primary {
-				background-color: rgba(231,39,45,.7)!important;
+				background-color: rgba(231,39,45,.7) !important;
 				color: white;
-				border-bottom: 3px solid #e7272d!important;
+				border-bottom: 3px solid #e7272d !important;
 			}
 			
 			.red .sid-btn-primary:hover,
 			.red .sid-btn-primary:active {
 				outline: 2px solid #808080b0 !important;
+			}
+			
+			.red .selectable-list .element {
+				cursor: pointer;
+			}
+			
+			.red .selectable-list .element.active {
+				border: 1px solid #e7272d;
+			}
+			
+			.red .sid-btn.with-icon .icon {
+				border-right: 1px solid #e7272d;
 			}
 			
 			/* ORANGE */	
@@ -81,6 +93,18 @@
 				outline: 2px solid #808080b0 !important;
 			}
 			
+			.orange .selectable-list .element {
+				cursor: pointer;
+			}
+			
+			.orange .selectable-list .element.active {
+				border: 1px solid rgb(247,147,30);
+			}
+			
+			.orange sid-btn.with-icon .icon {
+				border-right: 1px solid #f7931e;
+			}
+			
 			/* PRINCIPAL */			
 			.sid-btn  {
 				border-left: none;
@@ -88,6 +112,19 @@
 				border-right: none;
 				border-radius: 0;
 				padding: 5px 10px 5px 10px;
+			}
+			
+			.sid-btn.with-icon {
+				position: relative;
+			}
+			
+			.sid-btn.with-icon .icon {
+				position:absolute;
+				top:0;
+				left:0;
+				height:100%; 
+				width: 50px; 
+				border-right: 1px solid #f7931e;
 			}
 			
 			a.nav-link {
@@ -213,28 +250,63 @@
 				</form>
 			</div>
 			<div class="section" style="margin-top: 20px;">
-				<h3>Profiles</h3>
+				<h3>Link the profiles</h3>
+				<div>			
+					<button type="button" class="sid-btn sid-btn-primary with-icon col-md-2" style="position:relative;">
+						<div class="icon">
+							<span class="fab fa-google" style="padding-top:10px;"></span>
+						</div>
+						Google
+					</button>				
+				</div>
+				<h3>Unlink the profiles</h3>
+				<div>		
+					<button type="button" class="sid-btn sid-btn-primary with-icon col-md-2" style="position:relative;">
+						<div class="icon">
+							<span class="fab fa-google" style="padding-top:10px;"></span>
+						</div>
+						Google
+					</button>	
+					<button type="button" class="sid-btn sid-btn-primary with-icon col-md-2" style="position:relative;">
+						<div class="icon">
+							<span class="fab fa-google" style="padding-top:10px;"></span>
+						</div>
+						Google
+					</button>
+					<button type="button" class="sid-btn sid-btn-primary with-icon col-md-2" style="position:relative;">
+						<div class="icon">
+							<span class="fab fa-google" style="padding-top:10px;"></span>
+						</div>
+						Google
+					</button>	
+					<button type="button" class="sid-btn sid-btn-primary with-icon col-md-2" style="position:relative;">
+						<div class="icon">
+							<span class="fab fa-google" style="padding-top:10px;"></span>
+						</div>
+						Google
+					</button>	
+				</div>
 			</div>
 			<div class="section" style="margin-top: 20px;">
 				<h3>Two factor authentication</h3>
 				<form>
-					<div class="row form-group">
+					<div class="row form-group selectable-list">
 						<div class="col-md-2">
-							<div class="card">
-								<div class="card-body">
-									<h5 class="card-title">NO</h5>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-2">
-							<div class="card">
+							<div class="card element active">
 								<div class="card-body">
 									<h5 class="card-title">SMS</h5>
 								</div>
 							</div>
 						</div>
 						<div class="col-md-2">
-							<div class="card">
+							<div class="card element">
+								<div class="card-body">
+									<h5 class="card-title">SMS</h5>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="card element">
 								<div class="card-body">
 									<h5 class="card-title">EMAIL</h5>
 								</div>
@@ -252,6 +324,10 @@
 				</div>
 				<div class="form-group">
 					<label>Role</label>
+					<input type="text" class="form-control" />
+				</div>
+				<div class="form-group">
+					<label>Birthdate</label>
 					<input type="text" class="form-control" />
 				</div>
 				<button type="submit" class="sid-btn sid-btn-primary">Update</button>
