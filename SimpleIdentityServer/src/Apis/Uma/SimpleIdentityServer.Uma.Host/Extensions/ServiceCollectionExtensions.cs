@@ -29,6 +29,7 @@ using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
@@ -58,7 +59,25 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 throw new ArgumentNullException(nameof(authorizationOptions));
             }
 
-            authorizationOptions.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
+            authorizationOptions.AddPolicy("UmaProtection", policy =>
+            {
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                    if (claimRole == null && claimScope == null)
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "uma_protection";
+                });
+            });
             return authorizationOptions;
         }
 
