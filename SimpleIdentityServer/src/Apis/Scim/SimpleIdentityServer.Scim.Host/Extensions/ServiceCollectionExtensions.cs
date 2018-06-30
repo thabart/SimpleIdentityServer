@@ -28,6 +28,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
 
             options.AddPolicy("scim_manage", policy =>
             {
+				policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
@@ -47,6 +48,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
             });
             options.AddPolicy("scim_read", policy =>
             {
+				policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)

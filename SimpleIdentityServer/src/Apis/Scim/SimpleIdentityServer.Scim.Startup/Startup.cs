@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
+using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.SqlServer;
 using SimpleIdentityServer.Scim.EventStore.Handler;
@@ -55,6 +56,10 @@ namespace SimpleIdentityServer.Scim.Startup
                     opts.ClientId = "Scim";
                     opts.ClientSecret = "~V*nH{q4;qL/=8+Z";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
+                })
+		        .AddUserInfoIntrospection(opts =>
+                {
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
             services.AddAuthorization(opts =>
             {
