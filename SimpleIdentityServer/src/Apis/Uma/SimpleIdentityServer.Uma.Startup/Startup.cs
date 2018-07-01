@@ -27,6 +27,7 @@ using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
+using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.EF.InMemory;
@@ -73,6 +74,10 @@ namespace SimpleIdentityServer.Uma.Startup
                     opts.ClientId = "uma";
                     opts.ClientSecret = "uma";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
+                })
+		        .AddUserInfoIntrospection(opts =>
+                {
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
             services.AddAuthorization(opts =>
             {

@@ -60,7 +60,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             }
 
             authorizationOptions.AddPolicy("UmaProtection", policy =>
-            {
+            {				
+				policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
