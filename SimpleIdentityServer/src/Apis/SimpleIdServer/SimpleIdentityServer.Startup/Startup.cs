@@ -24,6 +24,7 @@ using Serilog.Events;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
+using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
@@ -116,7 +117,7 @@ namespace SimpleIdentityServer.Startup
             services.AddOpenIdApi(_options); // API
             services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
             {
-                Descriptors = new[] { BasicAuthenticateModule.ModuleUi, UserManagementModule.ModuleUi }
+                Descriptors = new[] { UserManagementModule.ModuleUi }
             });  // SHELL
             services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
@@ -128,11 +129,12 @@ namespace SimpleIdentityServer.Startup
                     ClientSecret = "z4Bp!:B@rFw4Xs+]"
                 },
                 ScimBaseUrl = "http://localhost:60001",
-                ClaimsIncludedInUserCreation = new []
+                ClaimsIncludedInUserCreation = new[]
                 {
                     "sub"
                 }
-            });  // BASIC AUTHENTICATION
+            }); // BASIC AUTHENTICATION
+            services.AddLoginPasswordAuthentication(mvcBuilder, _env);  // LOGIN & PASSWORD
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
             {
                 CreateScimResourceWhenAccountIsAdded = true,
@@ -204,7 +206,7 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                routes.UseUserPasswordAuthentication();
+                routes.UseAuthentication();
                 routes.UseUserManagement();
                 routes.UseShell();
             });

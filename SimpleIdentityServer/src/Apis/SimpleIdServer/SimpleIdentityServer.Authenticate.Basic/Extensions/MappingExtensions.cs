@@ -6,6 +6,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Extensions
 {
     public static class MappingExtensions
     {
+        /*
         public static LocalAuthenticationParameter ToParameter(this AuthorizeViewModel viewModel)
         {
             if (viewModel == null)
@@ -33,5 +34,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Extensions
                 Password = viewModel.Password
             };
         }
+        */
     }
 }

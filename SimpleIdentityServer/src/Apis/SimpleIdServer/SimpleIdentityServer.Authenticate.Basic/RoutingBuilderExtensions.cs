@@ -6,7 +6,7 @@ namespace SimpleIdentityServer.Authenticate.Basic
 {
     public static class RoutingBuilderExtensions
     {
-        public static IRouteBuilder UseUserPasswordAuthentication(this IRouteBuilder routeBuilder)
+        public static IRouteBuilder UseAuthentication(this IRouteBuilder routeBuilder)
         {
             if (routeBuilder == null)
             {
@@ -14,9 +14,11 @@ namespace SimpleIdentityServer.Authenticate.Basic
             }
 
             routeBuilder.MapRoute("Authentication",
+                "{area:exists}/Authenticate/{action}/{id?}",
+                new { controller = "Authenticate", action = "Index" });
+            routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = "Authentication" },
-                constraints: new { area = "Authentication" });
+                new { controller = "Authenticate", action = "Index" });
             return routeBuilder;
         }
     }

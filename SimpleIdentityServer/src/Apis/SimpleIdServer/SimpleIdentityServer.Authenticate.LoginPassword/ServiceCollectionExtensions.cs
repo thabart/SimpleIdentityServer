@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Authenticate.Basic.Controllers;
+using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
 using System;
 
-namespace SimpleIdentityServer.Authenticate.Basic
+namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions)
+        public static IServiceCollection AddLoginPasswordAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
         {
             if (services == null)
             {
@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 throw new ArgumentNullException(nameof(hosting));
             }
 
-            if (basicAuthenticateOptions == null)
-            {
-                throw new ArgumentNullException(nameof(basicAuthenticateOptions));
-            }
-
             var assembly = typeof(AuthenticateController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             services.Configure<RazorViewEngineOptions>(opts =>
@@ -39,7 +34,6 @@ namespace SimpleIdentityServer.Authenticate.Basic
             });
 
             mvcBuilder.AddApplicationPart(assembly);
-            services.AddSingleton(basicAuthenticateOptions);
             return services;
         }
     }

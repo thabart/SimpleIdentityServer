@@ -27,11 +27,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.ViewModels
         }
 
         public string Code { get; set; }
-        [Required(ErrorMessage = "the user name is required")]
-        public string UserName { get; set; }
-        [Required(ErrorMessage = "the password is required")]
-        public string Password { get; set; }
-        public bool IsChecked { get; set; }
         public List<IdProviderViewModel> IdProviders { get; set; }
     }
 }

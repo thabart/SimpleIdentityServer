@@ -135,6 +135,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "09. TwoFactors", "09. TwoFa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.TwoFactorAuthentication", "src\Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication\SimpleIdentityServer.TwoFactorAuthentication.csproj", "{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Authenticate", "01. Authenticate", "{A96DF71E-A7A1-4C3E-BE58-50A3D4227562}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.LoginPassword", "src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.LoginPassword\SimpleIdentityServer.Authenticate.LoginPassword.csproj", "{70AD687C-044D-4DD2-AE35-2E8649A46137}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -430,6 +434,12 @@ Global
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70AD687C-044D-4DD2-AE35-2E8649A46137}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -496,6 +506,8 @@ Global
 		{0B476456-C706-4F06-93D9-BE1288BB64AF} = {0624016A-3CA6-4975-9A07-4536DF02ECA3}
 		{81286157-43CD-4B13-9341-8EDEC90521C7} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31} = {81286157-43CD-4B13-9341-8EDEC90521C7}
+		{A96DF71E-A7A1-4C3E-BE58-50A3D4227562} = {23A3451A-FBA1-4ACD-BA64-923B791AA606}
+		{70AD687C-044D-4DD2-AE35-2E8649A46137} = {A96DF71E-A7A1-4C3E-BE58-50A3D4227562}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}
