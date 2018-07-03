@@ -3,8 +3,6 @@
     Layout = "~/Areas/Shell/Views/Shared/_Layout.cshtml";
 }
 
-@model IEnumerable<SimpleIdentityServer.Shell.ViewModels.UiModuleViewModel>
-
 <div class="row">
     <h1>Dashboard</h1>
     <a href="@Url.Content("~/.well-known/openid-configuration")">
@@ -20,26 +18,36 @@
             </div>
         </section>
     </a>
-    @foreach (var module in Model)
+    @if (!ViewBag.IsAuthenticated)
     {
-        if (module.IsAuthenticated == null || module.IsAuthenticated.Value && ViewBag.IsAuthenticated || !module.IsAuthenticated.Value && !ViewBag.IsAuthenticated)
-        {
-            <a href="@Url.Content(module.RelativeUrl)">
-                <section class="col-md-3 tile">
-                    <div class="header"></div>
-                    <div class="row clicked">
-                        <div class="col-md-4 picture">
-                            @if (!string.IsNullOrWhiteSpace(module.Picture))
-                            {
-                                <img src="@Url.Content(module.Picture)" />
-                            }
-                        </div>
-                        <div class="col-md-8 title">
-                            <h4>@module.Title</h4>
-                        </div>
+        <a href="@Url.Content("~/Authenticate")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
                     </div>
-                </section>
-                </a>
-        }
+                    <div class="col-md-8 title">
+                        <h4>Authenticate</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
+    }
+    else
+    {
+        <a href="@Url.Content("~/User")">
+            <section class="col-md-3 tile">
+                <div class="header"></div>
+                <div class="row clicked">
+                    <div class="col-md-4 picture">
+                        <img src="@Url.Content("~/img/Unknown.png")" />
+                    </div>
+                    <div class="col-md-8 title">
+                        <h4>Profile</h4>
+                    </div>
+                </div>
+            </section>
+        </a>
     }
 </div>

@@ -169,6 +169,9 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string OriginUrl { get; set; }
         [DataMember(Name = "session_id")]
         public string SessionId { get; set; }
+        [DataMember(Name = "amr_values")]
+        public string AmrValues { get; set; }
+
         public string GetQueryString()
         {
             var serializer = new ParamSerializer();

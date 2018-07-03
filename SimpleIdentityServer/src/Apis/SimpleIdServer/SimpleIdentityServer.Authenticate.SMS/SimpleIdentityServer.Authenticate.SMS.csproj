@@ -4,6 +4,11 @@
   </PropertyGroup>
   <ItemGroup>  
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Twilio.Client\SimpleIdentityServer.Twilio.Client.csproj" />  
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\**\*.cshtml" />
   </ItemGroup>
 </Project>

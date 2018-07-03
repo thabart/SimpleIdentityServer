@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Shell
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicShell(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicShellOptions shellOptions)
+        public static IServiceCollection AddBasicShell(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting)
         {
             if (services == null)
             {
@@ -26,11 +26,6 @@ namespace SimpleIdentityServer.Shell
                 throw new ArgumentNullException(nameof(hosting));
             }
 
-            if (shellOptions == null)
-            {
-                throw new ArgumentNullException(nameof(shellOptions));
-            }
-
             var assembly = typeof(HomeController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
@@ -39,7 +34,6 @@ namespace SimpleIdentityServer.Shell
                 options.FileProviders.Add(compositeProvider);
             });
 
-            services.AddSingleton(shellOptions);
             mvcBuilder.AddApplicationPart(assembly);
             return services;
         }

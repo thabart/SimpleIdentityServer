@@ -2,21 +2,21 @@
 using Microsoft.AspNetCore.Routing;
 using System;
 
-namespace SimpleIdentityServer.Authenticate.Basic
+namespace SimpleIdentityServer.Authenticate.SMS
 {
     public static class RoutingBuilderExtensions
     {
-        public static IRouteBuilder UseUserPasswordAuthentication(this IRouteBuilder routeBuilder)
+        public static IRouteBuilder UseSmsAuthentication(this IRouteBuilder routeBuilder)
         {
             if (routeBuilder == null)
             {
                 throw new ArgumentNullException(nameof(routeBuilder));
             }
-
-            routeBuilder.MapRoute("Authentication",
+            
+            routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = "Authentication" },
-                constraints: new { area = "Authentication" });
+                new { controller = "Authenticate", action = "Index", area = "sms" },
+                constraints: new { area = "sms" });
             return routeBuilder;
         }
     }

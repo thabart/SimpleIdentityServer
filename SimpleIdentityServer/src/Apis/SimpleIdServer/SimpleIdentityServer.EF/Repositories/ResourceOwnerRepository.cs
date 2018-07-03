@@ -41,6 +41,37 @@ namespace SimpleIdentityServer.EF.Repositories
             _context = context;
             _managerEventSource = managerEventSource;
         }
+
+        public async Task<Domains.ResourceOwner> GetResourceOwnerByClaim(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            try
+            {
+                var result = await _context.ResourceOwners.Include(r => r.Claims)
+                    .FirstOrDefaultAsync(r => r.Claims.Any(c => c.ClaimCode == key && c.Value == value))
+                    .ConfigureAwait(false);
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return result.ToDomain();
+            }
+            catch(Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return null;
+            }
+        }
         
         public async Task<Domains.ResourceOwner> GetAsync(string id)
         {

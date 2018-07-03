@@ -2,14 +2,16 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Authenticate.Basic.Controllers;
+using SimpleIdentityServer.Authenticate.Basic;
+using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
 using System;
 
-namespace SimpleIdentityServer.Authenticate.Basic
+namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions options)
+        public static IServiceCollection AddLoginPasswordAuthentication(this IServiceCollection services, 
+            IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions)
         {
             if (services == null)
             {
@@ -26,21 +28,19 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 throw new ArgumentNullException(nameof(hosting));
             }
 
-            if (options == null)
+            if (basicAuthenticateOptions == null)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(basicAuthenticateOptions));
             }
 
             var assembly = typeof(AuthenticateController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
             services.Configure<RazorViewEngineOptions>(opts =>
             {
-                opts.FileProviders.Add(compositeProvider);
+                opts.FileProviders.Add(embeddedFileProvider);
             });
-
+            services.AddSingleton(basicAuthenticateOptions);
             mvcBuilder.AddApplicationPart(assembly);
-            services.AddSingleton(options);
             return services;
         }
     }

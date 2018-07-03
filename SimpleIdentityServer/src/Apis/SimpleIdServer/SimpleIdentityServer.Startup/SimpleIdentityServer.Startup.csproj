@@ -13,8 +13,10 @@
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
     <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.SqlServer\SimpleIdentityServer.EventStore.SqlServer.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Authenticate.Basic\SimpleIdentityServer.Authenticate.Basic.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.LoginPassword\SimpleIdentityServer.Authenticate.LoginPassword.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.EF.SqlServer\SimpleIdentityServer.EF.SqlServer.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.EF.Postgre\SimpleIdentityServer.EF.Postgre.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Shell\SimpleIdentityServer.Shell.csproj" />

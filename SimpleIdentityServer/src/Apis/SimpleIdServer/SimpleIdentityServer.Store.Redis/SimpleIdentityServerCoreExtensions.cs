@@ -16,7 +16,6 @@
 
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Stores;
 using System;
 using System.Net;
 using System.Text.RegularExpressions;
