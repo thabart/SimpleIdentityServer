@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Authenticate";
-    var userNameState = ViewData.ModelState["UserName"];
+    var loginState = ViewData.ModelState["Login"];
     var passwordState = ViewData.ModelState["Password"];
 }
 
@@ -50,19 +50,19 @@
             <form name="form" method="POST" action="@Url.Action("LocalLoginOpenId")">
                 <fieldset>
                     <input type="hidden" value="@Model.Code" name="Code" />
-                    @if (userNameState != null && userNameState.Errors.Any())
+                    @if (loginState != null && loginState.Errors.Any())
                     {
                         <div class="form-group has-error">
                             <label class="control-label">@ViewBag.Translations["username"]</label>
-                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", userNameState.Errors.Select(e => e.ErrorMessage))"></span>
-                            <input maxlength="100" class="form-control" name="UserName" type="text" />
+                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" title="@string.Join(",", loginState.Errors.Select(e => e.ErrorMessage))"></span>
+                            <input maxlength="100" class="form-control" name="Login" type="text" />
                         </div>
                     }
                     else
                     {
                         <div class="form-group">
                             <label>@ViewBag.Translations["username"]</label>
-                            <input maxlength="100" class="form-control" name="UserName" type="text" />
+                            <input maxlength="100" class="form-control" name="Login" type="text" />
                         </div>
                     }
 

@@ -52,10 +52,7 @@ namespace SimpleIdentityServer.Shell
                 throw new ArgumentNullException(nameof(moduleUiDescriptors));
             }
 
-            services.AddBasicShell(mvcBuilder, env, new BasicShellOptions
-            {
-                Descriptors = moduleUiDescriptors
-            });
+            services.AddBasicShell(mvcBuilder, env);
         }
 
         public ModuleUIDescriptor GetModuleUI()

@@ -25,6 +25,7 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
+using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EventStore.Handler;
@@ -95,6 +96,8 @@ namespace SimpleIdentityServer.Startup
                 });
             services.AddAuthentication(Host.Constants.TwoFactorCookieName)
                 .AddCookie(Host.Constants.TwoFactorCookieName);
+            services.AddAuthentication("SimpleIdentityServer-PasswordLess")
+                .AddCookie("SimpleIdentityServer-PasswordLess");
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
@@ -115,11 +118,8 @@ namespace SimpleIdentityServer.Startup
             });
             TwoFactorServiceStore.Instance().Add("SMS", twoFactor);
             services.AddOpenIdApi(_options); // API
-            services.AddBasicShell(mvcBuilder, _env, new BasicShellOptions
-            {
-                Descriptors = new[] { UserManagementModule.ModuleUi }
-            });  // SHELL
-            services.AddBasicAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
+            services.AddBasicShell(mvcBuilder, _env);  // SHELL
+            services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = false,
                 AuthenticationOptions = new BasicAuthenticationOptions
@@ -133,8 +133,33 @@ namespace SimpleIdentityServer.Startup
                 {
                     "sub"
                 }
-            }); // BASIC AUTHENTICATION
-            services.AddLoginPasswordAuthentication(mvcBuilder, _env);  // LOGIN & PASSWORD
+            });  // LOGIN & PASSWORD
+            /*
+            services.AddSmsAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
+            {
+                IsScimResourceAutomaticallyCreated = false,
+                AuthenticationOptions = new BasicAuthenticationOptions
+                {
+                    AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",
+                    ClientId = "OpenId",
+                    ClientSecret = "z4Bp!:B@rFw4Xs+]"
+                },
+                ScimBaseUrl = "http://localhost:60001",
+                ClaimsIncludedInUserCreation = new[]
+                {
+                    "sub"
+                }
+            }, new SmsAuthenticationOptions
+            {
+                Message = "The activation code is {0}",
+                TwilioSmsCredentials = new Twilio.Client.TwilioSmsCredentials
+                {
+                    AccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
+                    AuthToken = "0c006b20fa2459200274229b2b655746",
+                    FromNumber = "+19103562002",
+                }
+            }); // SMS AUTHENTICATION.
+            */
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
             {
                 CreateScimResourceWhenAccountIsAdded = true,
@@ -206,7 +231,8 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                routes.UseAuthentication();
+                // routes.UseSmsAuthentication();
+                routes.UseLoginPasswordAuthentication();
                 routes.UseUserManagement();
                 routes.UseShell();
             });

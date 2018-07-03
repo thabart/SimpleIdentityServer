@@ -2,14 +2,18 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Authenticate.Basic.Controllers;
+using SimpleIdentityServer.Authenticate.Basic;
+using SimpleIdentityServer.Authenticate.SMS.Actions;
+using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using System;
 
-namespace SimpleIdentityServer.Authenticate.Basic
+namespace SimpleIdentityServer.Authenticate.SMS
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicAuthentication(this IServiceCollection services, IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions)
+        public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, 
+            IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions,
+            SmsAuthenticationOptions smsAuthenticationOptions)
         {
             if (services == null)
             {
@@ -31,15 +35,22 @@ namespace SimpleIdentityServer.Authenticate.Basic
                 throw new ArgumentNullException(nameof(basicAuthenticateOptions));
             }
 
+            if (smsAuthenticationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(smsAuthenticationOptions));
+            }
+
             var assembly = typeof(AuthenticateController).Assembly;
             var embeddedFileProvider = new EmbeddedFileProvider(assembly);
             services.Configure<RazorViewEngineOptions>(opts =>
             {
                 opts.FileProviders.Add(embeddedFileProvider);
             });
-
-            mvcBuilder.AddApplicationPart(assembly);
             services.AddSingleton(basicAuthenticateOptions);
+            services.AddSingleton(smsAuthenticationOptions);
+            services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
+            services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
+            mvcBuilder.AddApplicationPart(assembly);
             return services;
         }
     }

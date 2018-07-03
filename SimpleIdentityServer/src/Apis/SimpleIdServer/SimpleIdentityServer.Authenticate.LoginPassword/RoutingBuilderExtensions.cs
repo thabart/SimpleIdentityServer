@@ -2,23 +2,21 @@
 using Microsoft.AspNetCore.Routing;
 using System;
 
-namespace SimpleIdentityServer.Authenticate.Basic
+namespace SimpleIdentityServer.Authenticate.LoginPassword
 {
     public static class RoutingBuilderExtensions
     {
-        public static IRouteBuilder UseAuthentication(this IRouteBuilder routeBuilder)
+        public static IRouteBuilder UseLoginPasswordAuthentication(this IRouteBuilder routeBuilder)
         {
             if (routeBuilder == null)
             {
                 throw new ArgumentNullException(nameof(routeBuilder));
             }
-
-            routeBuilder.MapRoute("Authentication",
-                "{area:exists}/Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index" });
+            
             routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index" });
+                new { controller = "Authenticate", action = "Index", area = "AuthLoginPassword" },
+                constraints: new { area = "AuthLoginPassword" });
             return routeBuilder;
         }
     }
