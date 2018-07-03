@@ -49,7 +49,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 State = request.State,
                 UiLocales = request.UiLocales,
                 OriginUrl = request.OriginUrl,
-                SessionId = request.SessionId
+                SessionId = request.SessionId,
+                AmrValues = request.AmrValues
             };
 
             if (!string.IsNullOrWhiteSpace(request.ProcessId))

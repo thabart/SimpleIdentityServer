@@ -13,10 +13,10 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 throw new ArgumentNullException(nameof(routeBuilder));
             }
             
-            routeBuilder.MapRoute("BasicAuthentication",
+            routeBuilder.MapRoute("PasswordAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = "AuthLoginPassword" },
-                constraints: new { area = "AuthLoginPassword" });
+                new { controller = "Authenticate", action = "Index", area = "pwd" },
+                constraints: new { area = "pwd" });
             return routeBuilder;
         }
     }

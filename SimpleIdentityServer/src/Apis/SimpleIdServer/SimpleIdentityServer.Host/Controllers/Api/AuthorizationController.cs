@@ -30,6 +30,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -113,11 +114,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
                     // Add the encoded request into the query string
                     var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
-                        encryptedRequest);
+                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, encryptedRequest);
                 }
 
-                var url = GetRedirectionUrl(this.Request, actionResult.RedirectInstruction.Action);
+                var url = GetRedirectionUrl(Request, authorizationRequest.AmrValues, actionResult.RedirectInstruction.Action);
                 var uri = new Uri(url);
                 var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
                 return new RedirectResult(redirectionUrl.AbsoluteUri);
@@ -148,12 +148,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
         
-        private static string GetRedirectionUrl(
-            Microsoft.AspNetCore.Http.HttpRequest request,
-            IdentityServerEndPoints identityServerEndPoints)
+        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amrValues, IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
+            if (!string.IsNullOrWhiteSpace(amrValues))
+            {
+                var amr = amrValues.Split(' ').First();
+                partialUri = "/" + amr + partialUri;
+            }
+
             return uri + partialUri;
         }
 

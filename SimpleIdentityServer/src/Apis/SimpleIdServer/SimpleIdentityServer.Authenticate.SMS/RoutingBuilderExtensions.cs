@@ -15,8 +15,8 @@ namespace SimpleIdentityServer.Authenticate.SMS
             
             routeBuilder.MapRoute("BasicAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = "AuthSMS" },
-                constraints: new { area = "AuthSMS" });
+                new { controller = "Authenticate", action = "Index", area = "sms" },
+                constraints: new { area = "sms" });
             return routeBuilder;
         }
     }

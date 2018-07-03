@@ -28,6 +28,7 @@ using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
+using SimpleIdentityServer.EF.Postgre;
 using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
@@ -134,7 +135,6 @@ namespace SimpleIdentityServer.Startup
                     "sub"
                 }
             });  // LOGIN & PASSWORD
-            /*
             services.AddSmsAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = false,
@@ -159,7 +159,6 @@ namespace SimpleIdentityServer.Startup
                     FromNumber = "+19103562002",
                 }
             }); // SMS AUTHENTICATION.
-            */
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
             {
                 CreateScimResourceWhenAccountIsAdded = true,
@@ -183,8 +182,8 @@ namespace SimpleIdentityServer.Startup
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
-            var connectionString = Configuration["Db:OpenIdConnectionString"];
-            services.AddOAuthSqlServerEF(connectionString, null);
+            var connectionString = "User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=idserver;Pooling=true;";
+            services.AddOAuthPostgresqlEF(connectionString, null);
         }
 
         private void ConfigureStorageInMemory(IServiceCollection services)
@@ -231,8 +230,11 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                // routes.UseSmsAuthentication();
-                routes.UseLoginPasswordAuthentication();
+                routes.UseSmsAuthentication();
+                // routes.UseLoginPasswordAuthentication();
+                routes.MapRoute("AuthArea",
+                    "{area:exists}/Authenticate/{action}/{id?}",
+                    new { controller = "Authenticate", action = "Index" });
                 routes.UseUserManagement();
                 routes.UseShell();
             });

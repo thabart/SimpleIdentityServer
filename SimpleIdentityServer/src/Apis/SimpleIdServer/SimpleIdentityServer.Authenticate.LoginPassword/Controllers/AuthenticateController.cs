@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
-    [Area("AuthLoginPassword")]
+    [Area("pwd")]
     public class AuthenticateController : BaseAuthenticateController
     {
         public AuthenticateController(

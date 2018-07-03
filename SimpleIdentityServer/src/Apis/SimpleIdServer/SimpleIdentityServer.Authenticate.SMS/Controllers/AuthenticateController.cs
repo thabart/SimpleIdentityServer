@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 {
-    [Area("AuthSMS")]
+    [Area("sms")]
     public class AuthenticateController : BaseAuthenticateController
     {
         private const string _passwordLessCookieName = "SimpleIdentityServer-PasswordLess";
