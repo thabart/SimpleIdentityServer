@@ -1,0 +1,289 @@
+<html>
+	<head>	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+		<style>	
+			/* RED */
+			.red .cover {
+				background-color: rgb(247,178,181);
+			}
+			
+			.red .cover a.nav-link {
+				color: white;
+			}
+			
+			.red .navbar-toggler,
+			.red .navbar a.nav-link,
+			.red .secondary-menu a.nav-link{
+				color: #444;
+			}
+			
+			.red .navbar-toggler:hover,
+			.red .navbar a.nav-link:hover,
+			.red .secondary-menu a.nav-link:hover,
+			.red .cover a.nav-link:hover {
+				color: #e7272d!important;
+			}
+			
+			.red .secondary-menu {
+				background-color: #fff;
+			}	
+			
+			.red .sid-btn-primary {
+				background-color: rgba(231,39,45,.7) !important;
+				color: white;
+				border-bottom: 3px solid #e7272d !important;
+			}
+			
+			.red .sid-btn-primary:hover,
+			.red .sid-btn-primary:active {
+				outline: 2px solid #808080b0 !important;
+			}
+			
+			.red .selectable-list .element {
+				cursor: pointer;
+			}
+			
+			.red .selectable-list .element.active {
+				border: 1px solid #e7272d;
+			}
+			
+			.red .sid-btn.with-icon .icon {
+				border-right: 1px solid #e7272d;
+			}
+			
+			/* ORANGE */	
+			.orange .cover {
+				background-color: rgba(247, 147, 30, 0.6);
+			}
+			
+			.orange .cover a.nav-link {
+				color: white;
+			}
+			
+			.orange .navbar-toggler,
+			.orange .navbar a.nav-link,
+			.orange .secondary-menu a.nav-link{
+				color: #444;
+			}
+			
+			.orange .navbar-toggler:hover,
+			.orange .navbar a.nav-link:hover,
+			.orange .secondary-menu a.nav-link:hover,
+			.orange .cover a.nav-link:hover {
+				color: rgb(247,147,30) !important;
+			}
+			
+			.orange .secondary-menu {
+				background-color: #fff;
+			}	
+			
+			.orange .sid-btn-primary {
+				background-color: rgba(247, 147, 30, 0.6) !important;
+				color: white;
+				border-bottom: 3px solid rgb(247,147,30) !important;
+			}
+			
+			.orange .sid-btn-primary:hover,
+			.orange .sid-btn-primary:active {
+				outline: 2px solid #808080b0 !important;
+			}
+			
+			.orange .selectable-list .element {
+				cursor: pointer;
+			}
+			
+			.orange .selectable-list .element.active {
+				border: 1px solid rgb(247,147,30);
+			}
+			
+			.orange sid-btn.with-icon .icon {
+				border-right: 1px solid #f7931e;
+			}
+			
+			/* PRINCIPAL */			
+			.sid-btn  {
+				border-left: none;
+				border-top: none;
+				border-right: none;
+				border-radius: 0;
+				padding: 5px 10px 5px 10px;
+			}
+			
+			.sid-btn.with-icon {
+				position: relative;
+			}
+			
+			.sid-btn.with-icon .icon {
+				position:absolute;
+				top:0;
+				left:0;
+				height:100%; 
+				width: 50px; 
+				border-right: 1px solid #f7931e;
+			}
+			
+			a.nav-link {
+				text-transform: uppercase;
+				font-weight: 700;
+			}
+			
+			.navbar {
+				height: 100px;
+			}
+			
+			.secondary-menu {
+				position: fixed;
+				top: 100px;
+				left: 0px;
+				width: 100%;
+				z-index: 2;
+			}
+			
+			@media (min-width: 1200px) {
+				.navbar {
+					background-image: url('https://shopingamewebsite.azurewebsites.net/images/sketch-header.png');
+					background-size: auto 100%;
+					background-position: bottom;
+				}
+				
+				.navbar {
+					transition: all .5s ease; 
+				}
+				
+				.secondary-menu {
+					display: none;
+				}
+			}
+			
+			@media (max-width: 1200px) {
+				.navbar {
+					background-color: #fff;
+				}
+			}
+			
+			.container {
+				margin-top: 100px;
+			}
+			
+			.cover {
+				height: 200px;
+				position: relative;
+			}
+			
+			.cover .cover-banner {
+				
+			}
+			
+			.cover .profile-img {
+				position: absolute;
+				bottom: -10px;
+				left: 10px;
+			}
+			
+			.cover .profile-img img {
+				width: 150px;
+				height: 150px;
+			}
+			
+			.section {
+				box-shadow: 0 6px 12px rgba(0,0,0,.175);
+				border: 1px solid #ddd;
+				padding: 10px;
+			}
+		</style>
+	</head>
+	<body class="orange">
+		<nav class="navbar navbar-expand-lg fixed-top">
+			<a class="navbar-brand">SimpleIdentityServer</a>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Authenticate<a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Disconnect<a>						
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Choose languages</a>
+					</li>
+				</ul>
+			</div>
+			<button class="navbar-toggler" type="button"  id="collapseBtn" data-target="#secondaryMenu" data-toggle="collapse">
+				<span class="fas fa-bars"></span>
+			</button>
+		</nav>
+		<ul class="list-group secondary-menu collapse" id="secondaryMenu">
+			<li class="list-group-item">					
+				<a class="nav-link" href="#">Authenticate<a>
+			</li>
+		</ul>
+		<div class="container">
+			<div class="cover">
+				<div class="cover-banner"></div>
+				<div class="profile-img">
+					<img src="http://www.stickpng.com/assets/images/585e4bf3cb11b227491c339a.png" class="img-thumbnail" />
+				</div>
+				<ul class="nav">
+					<li class="nav-item">
+						<a class="nav-link">Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link">Consents</a>
+					</li>
+				</ul>
+			</div>
+			<div class="section" style="margin-top: 20px;">
+				<h3>Consents</h3>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Client1</h5>
+								<div class="card-body">
+									<div class="card-text">
+										<p>Claims</p>	
+										<ul class="list-group">
+											<li class="list-group-item">claim1</li>
+										</ul>
+										<p>Scopes</p>
+										<ul class="list-group">
+											<li class="list-group-item">scope1</li>
+										</ul>
+									</div>
+								</div>
+								<button type="submit" class="sid-btn sid-btn-primary">Remove</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Client1</h5>
+								<div class="card-body">
+									<div class="card-text">
+										<p>Claims</p>	
+										<ul class="list-group">
+											<li class="list-group-item">claim1</li>
+										</ul>
+										<p>Scopes</p>
+										<ul class="list-group">
+											<li class="list-group-item">scope1</li>
+										</ul>
+									</div>
+								</div>
+								<button type="submit" class="sid-btn sid-btn-primary">Remove</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+	</script>
+</html>

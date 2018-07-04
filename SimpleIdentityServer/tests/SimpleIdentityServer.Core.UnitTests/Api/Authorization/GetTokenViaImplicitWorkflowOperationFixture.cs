@@ -13,6 +13,7 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
+using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -21,7 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
         private Mock<IClientValidator> _clientValidatorFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private IGetTokenViaImplicitWorkflowOperation _getTokenViaImplicitWorkflowOperation;
 
         [Fact]
@@ -108,8 +109,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             await _getTokenViaImplicitWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndImplicitFlow(clientId, "RedirectToAction", "ConsentIndex"));
+            _oauthEventSource.Verify(s => s.StartImplicitFlow(clientId, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndImplicitFlow(clientId, "RedirectToAction", "ConsentIndex"));
         }
 
         private void InitializeFakeObjects()
@@ -117,12 +118,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _clientValidatorFake = new Mock<IClientValidator>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _getTokenViaImplicitWorkflowOperation = new GetTokenViaImplicitWorkflowOperation(
                 _processAuthorizationRequestFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _clientValidatorFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _oauthEventSource.Object);
         }
     }
 }

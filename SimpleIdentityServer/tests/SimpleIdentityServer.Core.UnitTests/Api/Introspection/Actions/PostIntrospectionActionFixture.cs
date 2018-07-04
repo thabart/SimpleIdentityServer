@@ -24,7 +24,7 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 {
     public class PostIntrospectionActionFixture
     {
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
         private Mock<ITokenStore> _tokenStoreStub;
@@ -214,12 +214,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _postIntrospectionAction = new PostIntrospectionAction(
-                _simpleIdentityServerEventSourceStub.Object,
+                _oauthEventSource.Object,
                 _authenticateClientStub.Object,
                 _introspectionParameterValidatorStub.Object,
                 _tokenStoreStub.Object);

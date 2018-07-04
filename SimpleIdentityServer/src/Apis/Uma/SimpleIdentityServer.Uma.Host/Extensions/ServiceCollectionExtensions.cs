@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Host.Configuration;
@@ -61,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
 
             authorizationOptions.AddPolicy("UmaProtection", policy =>
             {				
-				policy.AddAuthenticationSchemes("UserInfoIntrospection");
+				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
                 policy.RequireAssertion(p =>
                 {
                     if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
@@ -88,7 +89,9 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 .AddSimpleIdentityServerCore()
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerClient();
-            services.AddIdServerLogging();
+            services.AddTechnicalLogging();
+            services.AddOAuthLogging();
+            services.AddUmaLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();

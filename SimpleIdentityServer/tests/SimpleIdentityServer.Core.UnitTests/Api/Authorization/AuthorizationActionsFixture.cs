@@ -26,7 +26,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake;
         private Mock<IAuthorizationCodeGrantTypeParameterAuthEdpValidator> _authorizationCodeGrantTypeParameterAuthEdpValidatorFake;
         private Mock<IParameterParserHelper> _parameterParserHelperFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
         private Mock<IPayloadSerializer> _payloadSerializerStub;
@@ -125,8 +125,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _authorizationActions.GetAuthorization(authorizationParameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
@@ -178,8 +178,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _authorizationActions.GetAuthorization(authorizationParameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         [Fact]
@@ -231,8 +231,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _authorizationActions.GetAuthorization(authorizationParameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
+            _oauthEventSource.Verify(s => s.StartAuthorization(clientId, responseType, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndAuthorization(actionType, controllerAction, serializedParameter));
         }
 
         private void InitializeFakeObjects()
@@ -243,7 +243,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _authorizationCodeGrantTypeParameterAuthEdpValidatorFake =
                 new Mock<IAuthorizationCodeGrantTypeParameterAuthEdpValidator>();
             _parameterParserHelperFake = new Mock<IParameterParserHelper>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
             _payloadSerializerStub = new Mock<IPayloadSerializer>();
@@ -253,7 +253,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 _getAuthorizationCodeAndTokenViaHybridWorkflowOperationFake.Object,
                 _authorizationCodeGrantTypeParameterAuthEdpValidatorFake.Object,
                 _parameterParserHelperFake.Object,
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
                 _payloadSerializerStub.Object);

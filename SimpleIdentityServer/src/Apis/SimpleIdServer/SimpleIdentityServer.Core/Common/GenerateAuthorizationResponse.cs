@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace SimpleIdentityServer.Core.Common
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IConsentHelper _consentHelper;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IClientHelper _clientHelper;
         private readonly IGrantedTokenHelper _grantedTokenHelper;
 
@@ -58,7 +59,7 @@ namespace SimpleIdentityServer.Core.Common
             IJwtGenerator jwtGenerator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IConsentHelper consentHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IClientHelper clientHelper,
             IGrantedTokenHelper grantedTokenHelper)
@@ -69,7 +70,7 @@ namespace SimpleIdentityServer.Core.Common
             _jwtGenerator = jwtGenerator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _consentHelper = consentHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
             _clientHelper = clientHelper;
             _grantedTokenHelper = grantedTokenHelper;
@@ -102,7 +103,7 @@ namespace SimpleIdentityServer.Core.Common
             GrantedToken grantedToken = null;
             var newAuthorizationCodeGranted = false;
             AuthorizationCode authorizationCode = null;
-            _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
+            _oauthEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
             var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
@@ -161,7 +162,7 @@ namespace SimpleIdentityServer.Core.Common
             if (newAccessTokenGranted) // 3. Insert the stateful access token into the DB OR insert the access token into the caching.
             {
                 await _tokenStore.AddToken(grantedToken);
-                _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
+                _oauthEventSource.GrantAccessToClient(authorizationParameter.ClientId,
                     grantedToken.AccessToken,
                     allowedTokenScopes);
             }
@@ -175,7 +176,7 @@ namespace SimpleIdentityServer.Core.Common
                 }
 
                 await _authorizationCodeStore.AddAuthorizationCode(authorizationCode);
-                _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
+                _oauthEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
                     authorizationCode.Code,
                     authorizationParameter.Scope);
             }
@@ -219,7 +220,7 @@ namespace SimpleIdentityServer.Core.Common
                 actionResult.RedirectInstruction.ResponseMode = responseMode;
             }
 
-            _simpleIdentityServerEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
+            _oauthEventSource.EndGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                actionResult.RedirectInstruction.Parameters.SerializeWithJavascript());
         }
 

@@ -9,7 +9,6 @@ using SimpleIdentityServer.Authenticate.Basic.Controllers;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
-using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
@@ -22,7 +21,8 @@ using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,

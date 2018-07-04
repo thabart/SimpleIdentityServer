@@ -23,7 +23,7 @@ using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             ISmsAuthenticationOperation smsAuthenticationOperation,
             IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation,
-            BasicAuthenticateOptions basicAuthenticateOptions,
+            SmsAuthenticationOptions basicAuthenticateOptions,
             AuthenticateOptions authenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
                 translationManager, simpleIdentityServerEventSource, urlHelperFactory, actionContextAccessor, eventPublisher,
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
@@ -312,75 +312,5 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 IsPersistent = false
             });
         }
-
-        /*
-        [HttpPost]
-        public async Task<ActionResult> LocalLogin(LocalAuthenticationViewModel authorizeViewModel)
-        {
-            var authenticatedUser = await SetUser();
-            if (authenticatedUser != null &&
-                authenticatedUser.Identity != null &&
-                authenticatedUser.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "User", new { area = "UserManagement" });
-            }
-
-            if (authorizeViewModel == null)
-            {
-                throw new ArgumentNullException(nameof(authorizeViewModel));
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await TranslateView(DefaultLanguage);
-                var viewModel = new AuthorizeViewModel();
-                await SetIdProviders(viewModel);
-                return View("Index", authorizeViewModel);
-            }
-
-            try
-            {
-                var resourceOwner = await _authenticateActions.LocalUserAuthentication(new LocalAuthenticationParameter
-                {
-                    UserName = authorizeViewModel.Login,
-                    Password = authorizeViewModel.Password
-                });
-                var claims = resourceOwner.Claims;
-                claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                    DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer));
-                var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-                if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
-                {
-                    await SetLocalCookie(claims, Guid.NewGuid().ToString());
-                    _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
-                    return RedirectToAction("Index", "User", new { area = "UserManagement" });
-                }
-
-                // 2.1 Store temporary information in cookie
-                await SetTwoFactorCookie(claims);
-                // 2.2. Send confirmation code
-                try
-                {
-                    var code = await _authenticateActions.GenerateAndSendCode(subject);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                    return RedirectToAction("SendCode");
-                }
-                catch (ClaimRequiredException)
-                {
-                    return RedirectToAction("SendCode");
-                }
-            }
-            catch (Exception exception)
-            {
-                var viewModel = new AuthorizeViewModel();
-                _simpleIdentityServerEventSource.Failure(exception.Message);
-                await TranslateView("en");
-                ModelState.AddModelError("invalid_credentials", exception.Message);
-                await SetIdProviders(viewModel);
-                return View("Index", viewModel);
-            }
-        }
-        */
     }
 }

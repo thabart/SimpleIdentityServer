@@ -24,7 +24,7 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
@@ -40,18 +40,18 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
         private readonly ITokenStore _tokenStore;
 
         public PostIntrospectionAction(
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
             IIntrospectionParameterValidator introspectionParameterValidator,
             ITokenStore tokenStore)
         {
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _introspectionParameterValidator = introspectionParameterValidator;
             _tokenStore = tokenStore;

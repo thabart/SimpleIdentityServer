@@ -27,9 +27,7 @@ using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.EF.Postgre;
-using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
@@ -78,7 +76,7 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyHeader()));
 
             // 3. Configure Simple identity server
-            ConfigureEventStoreSqlServerBus(services);
+            ConfigureBus(services);
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
@@ -122,7 +120,7 @@ namespace SimpleIdentityServer.Startup
             services.AddBasicShell(mvcBuilder, _env);  // SHELL
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
-                IsScimResourceAutomaticallyCreated = false,
+                IsScimResourceAutomaticallyCreated = true,
                 AuthenticationOptions = new BasicAuthenticationOptions
                 {
                     AuthorizationWellKnownConfiguration = "http://localhost:60004/.well-known/uma2-configuration",
@@ -135,8 +133,15 @@ namespace SimpleIdentityServer.Startup
                     "sub"
                 }
             });  // LOGIN & PASSWORD
-            services.AddSmsAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
+            services.AddSmsAuthentication(mvcBuilder, _env, new SmsAuthenticationOptions
             {
+                Message = "The activation code is {0}",
+                TwilioSmsCredentials = new Twilio.Client.TwilioSmsCredentials
+                {
+                    AccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
+                    AuthToken = "0c006b20fa2459200274229b2b655746",
+                    FromNumber = "+19103562002",
+                },
                 IsScimResourceAutomaticallyCreated = false,
                 AuthenticationOptions = new BasicAuthenticationOptions
                 {
@@ -148,15 +153,6 @@ namespace SimpleIdentityServer.Startup
                 ClaimsIncludedInUserCreation = new[]
                 {
                     "sub"
-                }
-            }, new SmsAuthenticationOptions
-            {
-                Message = "The activation code is {0}",
-                TwilioSmsCredentials = new Twilio.Client.TwilioSmsCredentials
-                {
-                    AccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
-                    AuthToken = "0c006b20fa2459200274229b2b655746",
-                    FromNumber = "+19103562002",
                 }
             }); // SMS AUTHENTICATION.
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions
@@ -172,12 +168,12 @@ namespace SimpleIdentityServer.Startup
             });  // USER MANAGEMENT
         }
 
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        private void ConfigureBus(IServiceCollection services)
         {
-            var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServerEF(connectionString, null);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID));
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "openid"
+            });
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

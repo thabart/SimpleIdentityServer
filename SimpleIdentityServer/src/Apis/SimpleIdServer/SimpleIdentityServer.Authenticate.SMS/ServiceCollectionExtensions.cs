@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using System;
@@ -12,8 +11,7 @@ namespace SimpleIdentityServer.Authenticate.SMS
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddSmsAuthentication(this IServiceCollection services, 
-            IMvcBuilder mvcBuilder, IHostingEnvironment hosting, BasicAuthenticateOptions basicAuthenticateOptions,
-            SmsAuthenticationOptions smsAuthenticationOptions)
+            IMvcBuilder mvcBuilder, IHostingEnvironment hosting, SmsAuthenticationOptions smsAuthenticationOptions)
         {
             if (services == null)
             {
@@ -30,11 +28,6 @@ namespace SimpleIdentityServer.Authenticate.SMS
                 throw new ArgumentNullException(nameof(hosting));
             }
 
-            if (basicAuthenticateOptions == null)
-            {
-                throw new ArgumentNullException(nameof(basicAuthenticateOptions));
-            }
-
             if (smsAuthenticationOptions == null)
             {
                 throw new ArgumentNullException(nameof(smsAuthenticationOptions));
@@ -46,7 +39,6 @@ namespace SimpleIdentityServer.Authenticate.SMS
             {
                 opts.FileProviders.Add(embeddedFileProvider);
             });
-            services.AddSingleton(basicAuthenticateOptions);
             services.AddSingleton(smsAuthenticationOptions);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();

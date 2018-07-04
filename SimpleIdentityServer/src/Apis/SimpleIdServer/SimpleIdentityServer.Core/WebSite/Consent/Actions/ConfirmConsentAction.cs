@@ -14,24 +14,24 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Logging;
-using System;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.OpenId.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Common.Repositories;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         private readonly IActionResultFactory _actionResultFactory;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentHelper _consentHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOpenIdEventSource _openidEventSource;
         private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public ConfirmConsentAction(
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource openidEventSource,
             IAuthenticateResourceOwnerService authenticateResourceOwnerService)
         {
             _consentRepository = consentRepository;
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             _actionResultFactory = actionResultFactory;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _openidEventSource = openidEventSource;
             _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
 
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 // A consent can be given to a set of claims
                 await _consentRepository.InsertAsync(assignedConsent);
 
-                _simpleIdentityServerEventSource.GiveConsent(subject,
+                _openidEventSource.GiveConsent(subject,
                     authorizationParameter.ClientId,
                     assignedConsent.Id);
             }

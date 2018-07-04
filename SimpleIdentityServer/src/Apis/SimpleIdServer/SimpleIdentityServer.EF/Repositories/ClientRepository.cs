@@ -31,14 +31,13 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ClientRepository : IClientRepository
     {
         private readonly SimpleIdentityServerContext _context;
-
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         #region Constructor
 
         public ClientRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

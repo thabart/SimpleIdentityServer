@@ -17,7 +17,7 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
         private readonly IClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientRepository _clientRepository;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
 
         public AuthenticateClient(
             IClientSecretBasicAuthentication clientSecretBasicAuthentication,
@@ -44,14 +44,14 @@ namespace SimpleIdentityServer.Core.Authenticate
             IClientAssertionAuthentication clientAssertionAuthentication,
             IClientTlsAuthentication clientTlsAuthentication,
             IClientRepository clientRepository,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oAuthEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
             _clientSecretPostAuthentication = clientSecretPostAuthentication;
             _clientAssertionAuthentication = clientAssertionAuthentication;
             _clientTlsAuthentication = clientTlsAuthentication;
             _clientRepository = clientRepository;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oAuthEventSource;
         }
 
         public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction)
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
             var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),
                 tokenEndPointAuthMethod);
-            _simpleIdentityServerEventSource.StartToAuthenticateTheClient(client.ClientId,
+            _oauthEventSource.StartToAuthenticateTheClient(client.ClientId,
                 authenticationType);
             var errorMessage = string.Empty;
             switch (tokenEndPointAuthMethod)
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             if (client != null)
             {
-                _simpleIdentityServerEventSource.FinishToAuthenticateTheClient(client.ClientId,
+                _oauthEventSource.FinishToAuthenticateTheClient(client.ClientId,
                     authenticationType);
             }
 

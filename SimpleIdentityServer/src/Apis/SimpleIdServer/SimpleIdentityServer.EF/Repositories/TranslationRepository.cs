@@ -28,12 +28,11 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class TranslationRepository : ITranslationRepository
     {         
         private readonly SimpleIdentityServerContext _context;
-
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         public TranslationRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

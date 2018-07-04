@@ -19,7 +19,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.EventStore.Core.Repositories;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,7 +44,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IEventAggregateRepository _eventAggregateRepository;
 
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,

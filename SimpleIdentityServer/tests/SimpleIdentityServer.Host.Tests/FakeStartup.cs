@@ -29,12 +29,12 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
-using SimpleIdentityServer.EventStore.Handler;
-using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Host.Tests.Extensions;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store.InMemory;
 using System;
 using System.Collections.Generic;
@@ -147,12 +147,12 @@ namespace SimpleIdentityServer.Host.Tests
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerLogging()
+                .AddTechnicalLogging()
+                .AddOpenidLogging()
+                .AddOAuthLogging()
                 .AddLogging()
                 .AddOAuthInMemoryEF()
-                .AddSimpleBusInMemory()
-                .AddEventStoreInMemoryEF()
-                .AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID))
+                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions())
                 .AddInMemoryStorage();
                 // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
         }

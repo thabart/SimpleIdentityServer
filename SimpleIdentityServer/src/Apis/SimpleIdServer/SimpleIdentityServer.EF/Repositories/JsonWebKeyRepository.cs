@@ -28,10 +28,9 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class JsonWebKeyRepository : IJsonWebKeyRepository
     {       
         private readonly SimpleIdentityServerContext _context;
+        private readonly ITechnicalEventSource _managerEventSource;
 
-        private readonly IManagerEventSource _managerEventSource;
-
-        public JsonWebKeyRepository(SimpleIdentityServerContext context, IManagerEventSource managerEventSource)
+        public JsonWebKeyRepository(SimpleIdentityServerContext context, ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

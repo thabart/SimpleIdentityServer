@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Module;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -32,7 +32,7 @@ namespace SimpleIdentityServer.Host
 
             applicationBuilder.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                SimpleIdentityServerEventSource = applicationBuilder.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
+                SimpleIdentityServerEventSource = applicationBuilder.ApplicationServices.GetService<IOpenIdEventSource>()
             });
             var httpContextAccessor = applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);

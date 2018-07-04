@@ -20,8 +20,8 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Handler.Events;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Events;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         private readonly IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IRevokeTokenAction _revokeTokenAction;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPayloadSerializer _payloadSerializer;
 
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
             IGetTokenByClientCredentialsGrantTypeAction getTokenByClientCredentialsGrantTypeAction,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
             IPayloadSerializer payloadSerializer)
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _authorizationCodeGrantTypeParameterTokenEdpValidator = authorizationCodeGrantTypeParameterTokenEdpValidator;
             _refreshTokenGrantTypeParameterValidator = refreshTokenGrantTypeParameterValidator;
             _getTokenByRefreshTokenGrantTypeAction = getTokenByRefreshTokenGrantTypeAction;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _getTokenByClientCredentialsGrantTypeAction = getTokenByClientCredentialsGrantTypeAction;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _revokeTokenAction = revokeTokenAction;
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             try
             {
                 _eventPublisher.Publish(new GrantTokenViaResourceOwnerCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(resourceOwnerGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
-                _simpleIdentityServerEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
+                _oauthEventSource.StartGetTokenByResourceOwnerCredentials(resourceOwnerGrantTypeParameter.ClientId,
                     resourceOwnerGrantTypeParameter.UserName,
                     resourceOwnerGrantTypeParameter.Password);
                 _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
@@ -114,13 +114,13 @@ namespace SimpleIdentityServer.Core.Api.Token
                     authenticationHeaderValue, certificate);
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
-                _simpleIdentityServerEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
+                _oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -138,12 +138,12 @@ namespace SimpleIdentityServer.Core.Api.Token
             try
             {
                 _eventPublisher.Publish(new GrantTokenViaAuthorizationCodeReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(authorizationCodeGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
-                _simpleIdentityServerEventSource.StartGetTokenByAuthorizationCode(
+                _oauthEventSource.StartGetTokenByAuthorizationCode(
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
                 _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
                 var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
-                _simpleIdentityServerEventSource.EndGetTokenByAuthorizationCode(
+                _oauthEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -167,16 +167,16 @@ namespace SimpleIdentityServer.Core.Api.Token
             try
             {
                 _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
-                _simpleIdentityServerEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
+                _oauthEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
                 _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
                 var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter);
-                _simpleIdentityServerEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
+                _oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -195,10 +195,10 @@ namespace SimpleIdentityServer.Core.Api.Token
             try
             {
                 _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
-                _simpleIdentityServerEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
+                _oauthEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
                 var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue);
-                _simpleIdentityServerEventSource.EndGetTokenByClientCredentials(
+                _oauthEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
@@ -206,7 +206,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }
@@ -224,15 +224,15 @@ namespace SimpleIdentityServer.Core.Api.Token
             try
             {
                 _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(revokeTokenParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
-                _simpleIdentityServerEventSource.StartRevokeToken(revokeTokenParameter.Token);
+                _oauthEventSource.StartRevokeToken(revokeTokenParameter.Token);
                 var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue);
-                _simpleIdentityServerEventSource.EndRevokeToken(revokeTokenParameter.Token);
+                _oauthEventSource.EndRevokeToken(revokeTokenParameter.Token);
                 _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));
                 return result;
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

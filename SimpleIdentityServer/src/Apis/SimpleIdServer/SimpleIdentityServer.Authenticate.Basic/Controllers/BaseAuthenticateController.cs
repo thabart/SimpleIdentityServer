@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleBus.Core;
-using SimpleIdentityServer.Authenticate.Basic.Extensions;
 using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
@@ -37,14 +36,13 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Events;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -61,7 +59,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         protected readonly IDataProtector _dataProtector;
         protected readonly IEncoder _encoder;
         protected readonly ITranslationManager _translationManager;        
-        protected readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        protected readonly IOpenIdEventSource _simpleIdentityServerEventSource;        
         protected readonly IUrlHelper _urlHelper;
         protected readonly IEventPublisher _eventPublisher;
         protected readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -77,7 +75,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource simpleIdentityServerEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -109,18 +107,15 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             Check();
         }
 
-        #region Public methods
-
-        #region Normal authentication process
-
         public async Task<ActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(Core.Constants.SESSION_ID);
             await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
             return RedirectToAction("Index", "Authenticate");
         }
-
-        [HttpPost]
+                
+        #region Normal authentication process
+        
         [HttpPost]
         public async Task ExternalLogin(string provider)
         {
@@ -334,7 +329,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             await SetIdProviders(viewModel);
             return View(viewModel);
         }
-                
+        
         [HttpPost]
         public async Task ExternalLoginOpenId(string provider, string code)
         {
@@ -436,8 +431,6 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 
             return RedirectToAction("OpenId", "Authenticate", new { code = code });
         }
-
-        #endregion
 
         #endregion
 

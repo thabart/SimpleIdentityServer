@@ -29,9 +29,9 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ConsentRepository : IConsentRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
-        public ConsentRepository(SimpleIdentityServerContext context, IManagerEventSource managerEventSource)
+        public ConsentRepository(SimpleIdentityServerContext context, ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

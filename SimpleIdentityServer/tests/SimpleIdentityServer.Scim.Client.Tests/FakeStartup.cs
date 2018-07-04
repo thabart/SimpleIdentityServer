@@ -19,15 +19,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.EventStore.EF;
-using SimpleIdentityServer.EventStore.InMemory;
 using SimpleIdentityServer.Scim.Client.Tests.Extensions;
-using SimpleIdentityServer.Scim.Host.Extensions;
-using SimpleIdentityServer.Scim.Core;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.InMemory;
-using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Controllers;
+using SimpleIdentityServer.Scim.Host.Extensions;
 using System.Reflection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
@@ -40,9 +36,10 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         {
             services.AddConcurrency(opt => opt.UseInMemory());
             services.AddScimInMemoryEF();
-            services.AddEventStoreInMemoryEF();
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "scim"
+            });
             services.AddScimHost();
             services.AddAuthorization(options =>
             {

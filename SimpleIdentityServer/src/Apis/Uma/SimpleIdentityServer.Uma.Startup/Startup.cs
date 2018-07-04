@@ -19,21 +19,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Uma.Host.Middlewares;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.EF.InMemory;
-using SimpleIdentityServer.Uma.Logging;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
+using SimpleIdentityServer.Uma.Host.Middlewares;
+using SimpleIdentityServer.Uma.Logging;
 using SimpleIdentityServer.Uma.Startup.Extensions;
 using SimpleIdentityServer.Uma.Store.InMemory;
 using System;
@@ -61,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Startup
         
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureEventStoreSqlServerBus(services);
+            ConfigureBus(services);
             ConfigureOauthRepositorySqlServer(services);
             ConfigureUmaInMemoryEF(services);
             ConfigureUmaInMemoryStore(services);
@@ -91,11 +90,12 @@ namespace SimpleIdentityServer.Uma.Startup
 	        services.AddMvc();
         }
 
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        private void ConfigureBus(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False", null);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.AUTH));
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "auth"
+            });
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

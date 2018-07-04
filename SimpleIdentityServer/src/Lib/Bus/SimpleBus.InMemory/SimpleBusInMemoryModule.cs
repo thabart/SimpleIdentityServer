@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.Core;
 using SimpleIdentityServer.Module;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace SimpleBus.InMemory
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddSimpleBusInMemory();
+            services.AddSimpleBusInMemory(new SimpleBusOptions());
         }
 
         public ModuleUIDescriptor GetModuleUI()

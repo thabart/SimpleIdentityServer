@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Uma.Core.Extensions
 {
     internal static class DateTimeExtensions
     {
-        #region Publis static methods
+        #region Public static methods
 
         public static DateTime ConvertFromUnixTimestamp(this double timestamp)
         {

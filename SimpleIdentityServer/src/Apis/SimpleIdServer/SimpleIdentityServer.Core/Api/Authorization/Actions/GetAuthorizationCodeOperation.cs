@@ -22,7 +22,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -40,18 +40,18 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly IClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetAuthorizationCodeOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IClientValidator clientValidator,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oAuthEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = clientValidator;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oAuthEventSource = oAuthEventSource;
         }
 
         public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client)
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
-            _simpleIdentityServerEventSource.StartAuthorizationCodeFlow(
+            _oAuthEventSource.StartAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _simpleIdentityServerEventSource.EndAuthorizationCodeFlow(
+            _oAuthEventSource.EndAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 actionTypeName,
                 result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));

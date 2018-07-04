@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 
 namespace SimpleIdentityServer.Host
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Host
 
             app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
+                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
             });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);

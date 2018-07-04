@@ -24,6 +24,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     public sealed class GetTokenByRefreshTokenGrantTypeActionFixture
     {
         private Mock<IClientHelper> _clientHelperFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
         private Mock<ITokenStore> _tokenStoreStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -103,13 +104,13 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private void InitializeFakeObjects()
         {
             _clientHelperFake = new Mock<IClientHelper>();
-            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
             _getTokenByRefreshTokenGrantTypeAction = new GetTokenByRefreshTokenGrantTypeAction(
                 _clientHelperFake.Object,
-                _simpleIdentityServerEventSourceStub.Object,
+                _oauthEventSource.Object,
                 _grantedTokenGeneratorHelperStub.Object,
                 _tokenStoreStub.Object,
                 _jwtGeneratorStub.Object);

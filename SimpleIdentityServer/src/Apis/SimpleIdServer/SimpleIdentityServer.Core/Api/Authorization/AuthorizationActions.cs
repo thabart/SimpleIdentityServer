@@ -23,8 +23,8 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Handler.Events;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Events;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
         private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPayloadSerializer _payloadSerializer;
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation getAuthorizationCodeAndTokenViaHybridWorkflowOperation,
             IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
             IParameterParserHelper parameterParserHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
             IPayloadSerializer payloadSerializer)
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
             _authorizationCodeGrantTypeParameterValidator = authorizationCodeGrantTypeParameterValidator;
             _parameterParserHelper = parameterParserHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
                 ActionResult actionResult = null;
-                _simpleIdentityServerEventSource.StartAuthorization(parameter.ClientId,
+                _oauthEventSource.StartAuthorization(parameter.ClientId,
                     parameter.ResponseType,
                     parameter.Scope,
                     parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
                     var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? String.Empty :
                         actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
-                    _simpleIdentityServerEventSource.EndAuthorization(actionTypeName,
+                    _oauthEventSource.EndAuthorization(actionTypeName,
                         actionName,
                         serializedParameters);
                 }
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

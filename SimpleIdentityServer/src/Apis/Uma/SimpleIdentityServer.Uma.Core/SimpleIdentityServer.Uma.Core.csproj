@@ -15,6 +15,7 @@
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Uma.Logging\SimpleIdentityServer.Uma.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

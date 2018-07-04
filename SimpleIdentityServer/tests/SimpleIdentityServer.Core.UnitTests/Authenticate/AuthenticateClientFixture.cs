@@ -4,6 +4,7 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,7 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private Mock<IClientAssertionAuthentication> _clientAssertionAuthenticationFake;
         private Mock<IClientTlsAuthentication> _clientTlsAuthenticationStub;
         private Mock<IClientRepository> _clientRepositoryStub;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private IAuthenticateClient _authenticateClient;
 
         [Fact]
@@ -92,8 +93,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
             // ASSERTS
             Assert.NotNull(result.Client);
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
         }
 
         [Fact]
@@ -122,8 +123,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             
             // ASSERTS
             Assert.Null(result.Client);
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         private void InitializeFakeObjects()
@@ -133,14 +134,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientAssertionAuthenticationFake = new Mock<IClientAssertionAuthentication>();
             _clientTlsAuthenticationStub = new Mock<IClientTlsAuthentication>();
             _clientRepositoryStub = new Mock<IClientRepository>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClient = new AuthenticateClient(
                 _clientSecretBasicAuthenticationFake.Object,
                 _clientSecretPostAuthenticationFake.Object,
                 _clientAssertionAuthenticationFake.Object,
                 _clientTlsAuthenticationStub.Object,
                 _clientRepositoryStub.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _oauthEventSource.Object);
         }
     }
 }

@@ -26,7 +26,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private readonly IConsentHelper _consentHelper;
         private readonly IJwtParser _jwtParser;
         private readonly IConfigurationService _configurationService;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
 
         public ProcessAuthorizationRequest(
             IParameterParserHelper parameterParserHelper,
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IConsentHelper consentHelper,
             IJwtParser jwtParser,
             IConfigurationService configurationService,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oauthEventSource)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _consentHelper = consentHelper;
             _jwtParser = jwtParser;
             _configurationService = configurationService;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
         }
 
         public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client)
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
-            _simpleIdentityServerEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
+            _oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             ActionResult result = null;
             var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
@@ -195,7 +195,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             var actionName = result.RedirectInstruction == null 
                 ? string.Empty 
                 : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action);
-            _simpleIdentityServerEventSource.EndProcessingAuthorizationRequest(
+            _oauthEventSource.EndProcessingAuthorizationRequest(
                 serializedAuthorizationParameter,
                 actionTypeName,
                 actionName);

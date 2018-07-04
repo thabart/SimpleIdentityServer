@@ -31,11 +31,10 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ScopeRepository : IScopeRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
-        public ScopeRepository(
-            SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource) {
+        public ScopeRepository(SimpleIdentityServerContext context, ITechnicalEventSource managerEventSource)
+        {
             _context = context;
             _managerEventSource = managerEventSource;
         }

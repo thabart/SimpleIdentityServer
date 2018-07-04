@@ -1,6 +1,5 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -16,7 +15,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private JwtGenerator _jwtGenerator;
 
         #region TEST FAILURES
@@ -624,7 +623,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         {
             var clientValidator = new ClientValidator();
             _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
-            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             var scopeRepository = new Mock<IScopeRepository>();
             var clientRepository = new Mock<IClientRepository>();
             var consentRepository = new Mock<IConsentRepository>();
@@ -659,7 +658,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 consentHelper,
                 jwtParser,
                 _simpleIdentityServerConfiguratorStub.Object,
-                _simpleIdentityServerEventSource.Object);
+                _oauthEventSource.Object);
             _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfiguratorStub.Object,
                 clientRepository.Object,
                 clientValidator,
