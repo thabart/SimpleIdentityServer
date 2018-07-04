@@ -23,6 +23,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -40,17 +41,17 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IClientValidator _clientValidator;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetTokenViaImplicitWorkflowOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IClientValidator clientValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oAuthEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oAuthEventSource = oAuthEventSource;
             _clientValidator = clientValidator;
         }
 
@@ -74,7 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            _simpleIdentityServerEventSource.StartImplicitFlow(
+            _oAuthEventSource.StartImplicitFlow(
                 authorizationParameter.ClientId, 
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
@@ -97,7 +98,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
             
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _simpleIdentityServerEventSource.EndImplicitFlow(
+            _oAuthEventSource.EndImplicitFlow(
                 authorizationParameter.ClientId,
                 actionTypeName,
                 result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));

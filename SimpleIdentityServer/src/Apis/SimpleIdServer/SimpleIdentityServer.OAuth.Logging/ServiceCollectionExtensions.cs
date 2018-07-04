@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2018 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,19 +17,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace SimpleIdentityServer.Logging
+namespace SimpleIdentityServer.OAuth.Logging
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddIdServerLogging(this IServiceCollection services)
+        public static IServiceCollection AddOAuthLogging(this IServiceCollection services)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddTransient<ISimpleIdentityServerEventSource, SimpleIdentityServerEventSource>()
-                    .AddTransient<IManagerEventSource, ManagerEventSource>();
+            services.AddTransient<IOAuthEventSource, OAuthEventSource>();
             return services;
         }
     }

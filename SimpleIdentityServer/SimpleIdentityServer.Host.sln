@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Core.Jwt", "src\Apis\SimpleIdServer\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj", "{19960628-A045-486E-8EF4-6FDC4E176026}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\Apis\SimpleIdServer\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{5031AA32-351A-429C-A40C-0E5650C035A1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Other", "04. Other", "{DB912BAD-F454-47D1-ACD1-8B0D39AB74D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Algorithms.Extensions", "src\Lib\System.Security.Cryptography.Algorithms.Extensions\System.Security.Cryptography.Algorithms.Extensions.csproj", "{DA9314EA-30C7-4D62-8A86-6356B8E36117}"
@@ -135,6 +133,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "09. TwoFactors", "09. TwoFa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.TwoFactorAuthentication", "src\Apis\SimpleIdServer\SimpleIdentityServer.TwoFactorAuthentication\SimpleIdentityServer.TwoFactorAuthentication.csproj", "{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth.Logging", "src\Apis\SimpleIdServer\SimpleIdentityServer.OAuth.Logging\SimpleIdentityServer.OAuth.Logging.csproj", "{499A4DC7-A881-46A9-9970-38C6F3A97938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,12 +184,6 @@ Global
 		{19960628-A045-486E-8EF4-6FDC4E176026}.Fake|Any CPU.Build.0 = Release|Any CPU
 		{19960628-A045-486E-8EF4-6FDC4E176026}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19960628-A045-486E-8EF4-6FDC4E176026}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Fake|Any CPU.ActiveCfg = Release|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Fake|Any CPU.Build.0 = Release|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5031AA32-351A-429C-A40C-0E5650C035A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA9314EA-30C7-4D62-8A86-6356B8E36117}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA9314EA-30C7-4D62-8A86-6356B8E36117}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA9314EA-30C7-4D62-8A86-6356B8E36117}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
@@ -430,6 +424,12 @@ Global
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499A4DC7-A881-46A9-9970-38C6F3A97938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -446,7 +446,6 @@ Global
 		{D827A84E-E26A-4D3D-BBEC-BC0B8CBDF0D8} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{C23BD3A1-78CE-4531-9649-19BB87C93F53} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{19960628-A045-486E-8EF4-6FDC4E176026} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
-		{5031AA32-351A-429C-A40C-0E5650C035A1} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{DB912BAD-F454-47D1-ACD1-8B0D39AB74D4} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{DA9314EA-30C7-4D62-8A86-6356B8E36117} = {DB912BAD-F454-47D1-ACD1-8B0D39AB74D4}
 		{5EEE7FCA-0C2E-47D6-AA88-FDD46D12FCE2} = {DB912BAD-F454-47D1-ACD1-8B0D39AB74D4}
@@ -496,6 +495,7 @@ Global
 		{0B476456-C706-4F06-93D9-BE1288BB64AF} = {0624016A-3CA6-4975-9A07-4536DF02ECA3}
 		{81286157-43CD-4B13-9341-8EDEC90521C7} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{FAABAF8D-C2DE-4AAC-8410-13867E2D5F31} = {81286157-43CD-4B13-9341-8EDEC90521C7}
+		{499A4DC7-A881-46A9-9970-38C6F3A97938} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

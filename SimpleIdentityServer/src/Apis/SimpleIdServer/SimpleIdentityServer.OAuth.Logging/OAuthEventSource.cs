@@ -17,9 +17,9 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace SimpleIdentityServer.Logging
+namespace SimpleIdentityServer.OAuth.Logging
 {
-    public interface ISimpleIdentityServerEventSource
+    public interface IOAuthEventSource
     {
         #region Events linked to the authorization process
 
@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Logging
         #endregion
     }
 
-    public class SimpleIdentityServerEventSource : ISimpleIdentityServerEventSource
+    public class OAuthEventSource : IOAuthEventSource
     {
         private static class Tasks
         {
@@ -193,9 +193,9 @@ namespace SimpleIdentityServer.Logging
 
         #region Constructor
 
-        public SimpleIdentityServerEventSource(ILoggerFactory loggerFactory)
+        public OAuthEventSource(ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<SimpleIdentityServerEventSource>();
+            _logger = loggerFactory.CreateLogger<OAuthEventSource>();
         }
 
         #endregion
