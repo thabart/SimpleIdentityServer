@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IClientValidator> _clientValidatorStub;
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperStub;
         private Mock<IScopeValidator> _scopeValidatorStub;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
         private Mock<IClientHelper> _clientHelperStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -240,7 +241,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceStub.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
+            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
         }
@@ -301,7 +302,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceStub.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
+            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
         }
@@ -315,7 +316,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _clientValidatorStub = new Mock<IClientValidator>();
             _grantedTokenGeneratorHelperStub = new Mock<IGrantedTokenGeneratorHelper>();
             _scopeValidatorStub = new Mock<IScopeValidator>();
-            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
             _clientHelperStub = new Mock<IClientHelper>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
@@ -327,7 +328,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _clientValidatorStub.Object,
                 _grantedTokenGeneratorHelperStub.Object,
                 _scopeValidatorStub.Object,
-                _simpleIdentityServerEventSourceStub.Object,
+                _oauthEventSource.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
                 _clientHelperStub.Object,
                 _jwtGeneratorStub.Object,

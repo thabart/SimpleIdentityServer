@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
         private Mock<IPayloadSerializer> _payloadSerializerStub;
-
         private IIntrospectionActions _introspectionActions;
 
         #region Exceptions

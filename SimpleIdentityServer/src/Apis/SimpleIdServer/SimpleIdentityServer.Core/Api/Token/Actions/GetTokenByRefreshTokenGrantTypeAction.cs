@@ -20,7 +20,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
@@ -35,20 +35,20 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IClientHelper _clientHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IClientHelper clientHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
             IJwtGenerator jwtGenerator)
         {
             _clientHelper = clientHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             await _tokenStore.AddToken(generatedToken);
-            _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
+            _oauthEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
                 generatedToken.Scope);
             return generatedToken;

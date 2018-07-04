@@ -31,9 +31,9 @@ namespace SimpleIdentityServer.EF.Repositories
     internal class ClaimRepository : IClaimRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
-        public ClaimRepository(SimpleIdentityServerContext context, IManagerEventSource managerEventSource)
+        public ClaimRepository(SimpleIdentityServerContext context, ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

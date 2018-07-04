@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
@@ -44,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<ITokenStore> _tokenStoreFake;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IClientHelper> _clientHelper;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
         private Mock<IJwtGenerator> _jwtGeneratorStub;
@@ -428,7 +429,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ASSERTS
             _tokenStoreFake.Verify(g => g.AddToken(grantedToken));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(
+            _oauthEventSource.Verify(s => s.GrantAccessToClient(
                 clientId,
                 accessToken,
                 identityToken));
@@ -446,7 +447,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _clientHelper = new Mock<IClientHelper>();
             _simpleIdentityServerConfiguratorFake = new Mock<IConfigurationService>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
             _jwtGeneratorStub = new Mock<IJwtGenerator>();
@@ -457,7 +458,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenGeneratorHelperFake.Object,
                 _authenticateClientFake.Object,
                 _clientHelper.Object,
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _authenticateInstructionGeneratorStub.Object,
                 _tokenStoreFake.Object,
                 _grantedTokenHelperStub.Object,

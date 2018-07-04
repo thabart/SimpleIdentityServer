@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Logging Class Library</Description>
+    <Description>SimpleIdentityServer.OAuth.Logging Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Logging</AssemblyName>
-    <PackageId>SimpleIdentityServer.Logging</PackageId>
+    <AssemblyName>SimpleIdentityServer.OAuth.Logging</AssemblyName>
+    <PackageId>SimpleIdentityServer.OAuth.Logging</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +16,9 @@
     <Reference Include="System.Runtime" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
   </ItemGroup>
 </Project>

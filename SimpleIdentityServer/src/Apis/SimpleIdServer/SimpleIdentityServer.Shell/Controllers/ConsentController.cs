@@ -24,12 +24,10 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.EventStore.Core.Models;
-using SimpleIdentityServer.EventStore.Core.Repositories;
-using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
+using SimpleIdentityServer.OpenId.Events;
 using SimpleIdentityServer.Shell.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -46,7 +44,6 @@ namespace SimpleIdentityServer.Shell.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly ITranslationManager _translationManager;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IEventAggregateRepository _eventAggregateRepository;
         private readonly IPayloadSerializer _payloadSerializer;
 
         public ConsentController(
@@ -54,7 +51,6 @@ namespace SimpleIdentityServer.Shell.Controllers
             IDataProtectionProvider dataProtectionProvider,
             ITranslationManager translationManager,
             IEventPublisher eventPublisher,
-            IEventAggregateRepository eventAggregateRepository,
             IAuthenticationService authenticationService,
             IUserActions usersAction,
             IPayloadSerializer payloadSerializer,
@@ -64,7 +60,6 @@ namespace SimpleIdentityServer.Shell.Controllers
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _translationManager = translationManager;
             _eventPublisher = eventPublisher;
-            _eventAggregateRepository = eventAggregateRepository;
             _payloadSerializer = payloadSerializer;
         }
         
@@ -144,13 +139,7 @@ namespace SimpleIdentityServer.Shell.Controllers
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
-            if (evtAggregate == null)
-            {
-                return;
-            }
-
-            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), evtAggregate.Order + 1));
+            _eventPublisher.Publish(new ConsentAccepted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(act), 10));
         }
 
         private async Task LogConsentRejected(string processId)
@@ -160,24 +149,7 @@ namespace SimpleIdentityServer.Shell.Controllers
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
-            if (evtAggregate == null)
-            {
-                return;
-            }
-
-            _eventPublisher.Publish(new ConsentRejected(Guid.NewGuid().ToString(), processId, evtAggregate.Order + 1));
-        }
-
-        private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
-        {
-            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
-            if (events == null || !events.Any())
-            {
-                return null;
-            }
-
-            return events.First();
+            _eventPublisher.Publish(new ConsentRejected(Guid.NewGuid().ToString(), processId, 10));
         }
     }
 }

@@ -20,7 +20,6 @@ namespace SimpleIdentityServer.Uma.Core.Services
 {
     public interface IConfigurationService
     {
-        Task<string> GetWellKnownConfiguration();
         Task<int> GetTicketLifeTime();
         Task<int> GetRptLifeTime();
     }

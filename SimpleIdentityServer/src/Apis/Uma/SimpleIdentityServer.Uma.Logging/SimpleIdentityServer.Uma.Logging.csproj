@@ -16,4 +16,8 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
+  </ItemGroup>
 </Project>

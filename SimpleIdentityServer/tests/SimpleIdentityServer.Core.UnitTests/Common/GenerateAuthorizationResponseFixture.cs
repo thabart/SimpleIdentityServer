@@ -23,7 +23,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<ITokenStore> _grantedTokenRepositoryFake;
         private Mock<IConsentHelper> _consentHelperFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;                
         private Mock<IClientHelper> _clientHelperFake;
         private Mock<IGrantedTokenHelper> _grantedTokenHelperStub;
@@ -234,7 +234,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Value == grantedToken.AccessToken));
             _grantedTokenRepositoryFake.Verify(g => g.AddToken(grantedToken));
-            _simpleIdentityServerEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
+            _oauthEventSource.Verify(e => e.GrantAccessToClient(clientId, grantedToken.AccessToken, scope));
         }
 
         [Fact]
@@ -332,7 +332,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
             _authorizationCodeRepositoryFake.Verify(a => a.AddAuthorizationCode(It.IsAny<AuthorizationCode>()));
-            _simpleIdentityServerEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
+            _oauthEventSource.Verify(s => s.GrantAuthorizationCodeToClient(clientId, It.IsAny<string>(), scope));
         }
 
         [Fact]
@@ -380,8 +380,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
 
             // ASSERT
-            _simpleIdentityServerEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
-            _simpleIdentityServerEventSource.Verify(s => s.EndGeneratingAuthorizationResponseToClient(clientId, actionResult.RedirectInstruction.Parameters.SerializeWithJavascript()));
+            _oauthEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
+            _oauthEventSource.Verify(s => s.EndGeneratingAuthorizationResponseToClient(clientId, actionResult.RedirectInstruction.Parameters.SerializeWithJavascript()));
         }
 
         [Fact]
@@ -445,7 +445,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _grantedTokenRepositoryFake = new Mock<ITokenStore>();
             _consentHelperFake = new Mock<IConsentHelper>();
-            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _clientHelperFake = new Mock<IClientHelper>();
             _grantedTokenHelperStub = new Mock<IGrantedTokenHelper>();
@@ -456,7 +456,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 _jwtGeneratorFake.Object,
                 _grantedTokenGeneratorHelperFake.Object,
                 _consentHelperFake.Object,
-                _simpleIdentityServerEventSource.Object,
+                _oauthEventSource.Object,
                 _authorizationFlowHelperFake.Object,
                 _clientHelperFake.Object,
                 _grantedTokenHelperStub.Object);

@@ -1,19 +1,19 @@
-﻿using System;
-using System.Security.Claims;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
-using Xunit;
+using SimpleIdentityServer.OAuth.Logging;
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
         private Mock<IClientValidator> _clientValidatorFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
 
         [Fact]
@@ -123,8 +123,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
+            _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
         }
 
         public void InitializeFakeObjects()
@@ -132,12 +132,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _clientValidatorFake = new Mock<IClientValidator>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 _processAuthorizationRequestFake.Object,
                 _clientValidatorFake.Object,
                 _generateAuthorizationResponseFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _oauthEventSource.Object);
         }
     }
 }

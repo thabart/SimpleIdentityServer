@@ -22,7 +22,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IClientValidator _clientValidator;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IScopeValidator _scopeValidator;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IClientHelper _clientHelper;
         private readonly IJwtGenerator _jwtGenerator;
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IClientValidator clientValidator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IClientHelper clientHelper,
             IJwtGenerator jwtGenerator,
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientValidator = clientValidator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = scopeValidator;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _clientHelper = clientHelper;
             _jwtGenerator = jwtGenerator;
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             {
                 grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes);
                 await _tokenStore.AddToken(grantedToken);
-                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
+                _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 
             return grantedToken;

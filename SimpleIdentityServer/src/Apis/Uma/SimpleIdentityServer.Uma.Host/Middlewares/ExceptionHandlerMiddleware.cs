@@ -30,9 +30,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
         private readonly RequestDelegate _next;
         private readonly ExceptionHandlerMiddlewareOptions _options;
 
-        public ExceptionHandlerMiddleware(
-            RequestDelegate next,
-            ExceptionHandlerMiddlewareOptions options)
+        public ExceptionHandlerMiddleware(RequestDelegate next, ExceptionHandlerMiddlewareOptions options)
         {
             if (next == null)
             {

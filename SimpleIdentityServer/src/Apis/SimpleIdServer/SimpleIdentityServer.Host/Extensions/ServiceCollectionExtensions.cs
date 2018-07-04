@@ -26,6 +26,8 @@ using SimpleIdentityServer.Host.Configuration;
 using SimpleIdentityServer.Host.Parsers;
 using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 
 namespace SimpleIdentityServer.Host
@@ -100,7 +102,9 @@ namespace SimpleIdentityServer.Host
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
                 .AddIdServerClient()
-                .AddIdServerLogging()
+                .AddTechnicalLogging()
+                .AddOpenidLogging()
+                .AddOAuthLogging()
                 .AddDataProtection();
         }
 

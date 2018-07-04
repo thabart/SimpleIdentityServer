@@ -28,6 +28,7 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<IScopeValidator> _scopeValidatorFake;
         private Mock<IAuthenticateResourceOwnerService> _resourceOwnerValidatorFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
         private Mock<IAuthenticateInstructionGenerator> _authenticateInstructionGeneratorStub;
@@ -90,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.Info(ErrorDescriptions.TheClientCannotBeAuthenticated));
+            _oauthEventSource.Verify(s => s.Info(ErrorDescriptions.TheClientCannotBeAuthenticated));
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
         }
@@ -228,7 +229,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ASSERT
             _tokenStoreStub.Verify(g => g.AddToken(grantedToken));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
+            _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, invalidScope));
             _clientHelperStub.Verify(c => c.GenerateIdTokenAsync(It.IsAny<Core.Common.Models.Client>(), It.IsAny<JwsPayload>()));
         }
 
@@ -239,7 +240,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _scopeValidatorFake = new Mock<IScopeValidator>();
             _resourceOwnerValidatorFake = new Mock<IAuthenticateResourceOwnerService>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
             _authenticateInstructionGeneratorStub = new Mock<IAuthenticateInstructionGenerator>();
@@ -252,7 +253,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _grantedTokenGeneratorHelperFake.Object,
                 _scopeValidatorFake.Object,
                 _resourceOwnerValidatorFake.Object,
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,
                 _authenticateInstructionGeneratorStub.Object,

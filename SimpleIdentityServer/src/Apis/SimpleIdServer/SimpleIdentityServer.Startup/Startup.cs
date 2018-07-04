@@ -26,7 +26,6 @@ using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
@@ -75,7 +74,7 @@ namespace SimpleIdentityServer.Startup
                 .AllowAnyHeader()));
 
             // 3. Configure Simple identity server
-            ConfigureEventStoreSqlServerBus(services);
+            ConfigureBus(services);
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
@@ -146,12 +145,12 @@ namespace SimpleIdentityServer.Startup
             });  // USER MANAGEMENT
         }
 
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        private void ConfigureBus(IServiceCollection services)
         {
-            var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServerEF(connectionString, null);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.OPENID));
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "openid"
+            });
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.EventStore.Handler.Handlers
 {
-    public class OpenIdErrorHandler : IHandle<OpenIdErrorReceived>
+    public class OpenIdErrorHandler : IHandle<OAuthErrorReceived>
     {
         private class Error
         {
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.EventStore.Handler.Handlers
             _options = options;
         }
 
-        public async Task Handle(OpenIdErrorReceived evt)
+        public async Task Handle(OAuthErrorReceived evt)
         {
             if (evt == null)
             {

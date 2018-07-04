@@ -19,7 +19,7 @@ using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.OAuth.Events;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             }
             catch (IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

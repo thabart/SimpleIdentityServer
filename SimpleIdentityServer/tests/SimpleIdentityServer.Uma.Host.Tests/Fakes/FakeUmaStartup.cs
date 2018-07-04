@@ -26,8 +26,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.EventStore.Handler;
-using SimpleIdentityServer.EventStore.InMemory;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
@@ -160,15 +159,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddUmaInMemoryStore();
             services.AddInMemoryStorage();
 
-            services.AddEventStoreInMemoryEF();
-            services.AddSimpleBusInMemory()
-                .AddEventStoreBusHandler(new EventStoreHandlerOptions(ServerTypes.AUTH));
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
 
             services.AddConcurrency(opt => opt.UseInMemory());
 
             // 3. Enable logging.
             services.AddLogging();
-            services.AddIdServerLogging();
+            services.AddOAuthLogging();
+            services.AddUmaLogging();
             // 4. Register the services.
             services.AddTransient<SimpleIdentityServer.Core.Services.IConfigurationService, DefaultConfigurationService>();
             services.AddTransient<SimpleIdentityServer.Core.Services.IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwnerService>();

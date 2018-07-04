@@ -23,7 +23,7 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.OAuth.Events;
 using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Principal;
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

@@ -32,11 +32,11 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ResourceOwnerRepository : IResourceOwnerRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         public ResourceOwnerRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

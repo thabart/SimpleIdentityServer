@@ -22,7 +22,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Claims;

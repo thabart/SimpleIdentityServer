@@ -19,5 +19,6 @@ namespace SimpleBus.Core
     public class Event : Message
     {
         public string Version { get; set; }
+        public string ServerName { get; set; }
     }
 }

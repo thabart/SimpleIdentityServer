@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using SimpleBus.Core;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 {
@@ -22,7 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         private Mock<IResourceOwnerGrantTypeParameterValidator> _resourceOwnerGrantTypeParameterValidatorFake;
         private Mock<IAuthorizationCodeGrantTypeParameterTokenEdpValidator>
             _authorizationCodeGrantTypeParameterTokenEdptValidatorFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IGetTokenByRefreshTokenGrantTypeAction> _getTokenByRefreshTokenGrantTypeActionFake;
         private Mock<IRefreshTokenGrantTypeParameterValidator> _refreshTokenGrantTypeParameterValidatorFake;
         private Mock<IClientCredentialsGrantTypeParameterValidator> _clientCredentialsGrantTypeParameterValidatorStub;
@@ -70,8 +71,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken));
+            _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
+            _oauthEventSource.Verify(s => s.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken));
         }
 
         [Fact]
@@ -111,8 +112,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByAuthorizationCode(accessToken, identityToken));
+            _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
+            _oauthEventSource.Verify(s => s.EndGetTokenByAuthorizationCode(accessToken, identityToken));
         }
 
         [Fact]
@@ -150,8 +151,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             await _tokenActions.GetTokenByRefreshTokenGrantType(parameter);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
+            _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
+            _oauthEventSource.Verify(s => s.EndGetTokenByRefreshToken(accessToken, identityToken));
         }
 
         [Fact]
@@ -186,8 +187,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartGetTokenByClientCredentials(scope));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndGetTokenByClientCredentials(clientId, scope));
+            _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
+            _oauthEventSource.Verify(s => s.EndGetTokenByClientCredentials(clientId, scope));
             Assert.NotNull(result);
             Assert.True(result.ClientId == clientId);
         }
@@ -216,8 +217,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             }, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartRevokeToken(accessToken));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndRevokeToken(accessToken));
+            _oauthEventSource.Verify(s => s.StartRevokeToken(accessToken));
+            _oauthEventSource.Verify(s => s.EndRevokeToken(accessToken));
         }
 
         private void InitializeFakeObjects()
@@ -226,7 +227,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _getTokenByAuthorizationCodeGrantTypeActionFake = new Mock<IGetTokenByAuthorizationCodeGrantTypeAction>();
             _resourceOwnerGrantTypeParameterValidatorFake = new Mock<IResourceOwnerGrantTypeParameterValidator>();
             _authorizationCodeGrantTypeParameterTokenEdptValidatorFake = new Mock<IAuthorizationCodeGrantTypeParameterTokenEdpValidator>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _getTokenByRefreshTokenGrantTypeActionFake = new Mock<IGetTokenByRefreshTokenGrantTypeAction>();
             _refreshTokenGrantTypeParameterValidatorFake = new Mock<IRefreshTokenGrantTypeParameterValidator>();
             _clientCredentialsGrantTypeParameterValidatorStub = new Mock<IClientCredentialsGrantTypeParameterValidator>();
@@ -242,7 +243,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 _getTokenByRefreshTokenGrantTypeActionFake.Object,
                 _getTokenByClientCredentialsGrantTypeActionStub.Object,
                 _clientCredentialsGrantTypeParameterValidatorStub.Object,
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _revokeTokenActionStub.Object,
                 eventPublisher.Object,
                 _payloadSerializerStub.Object);

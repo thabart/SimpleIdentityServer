@@ -16,11 +16,10 @@
 
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Logging;
-using System;
 
 namespace SimpleIdentityServer.Uma.Logging
 {
-    public interface IUmaServerEventSource
+    public interface IUmaServerEventSource : IEventSource
     {
         #region Events linked to the authorization
 
@@ -89,18 +88,10 @@ namespace SimpleIdentityServer.Uma.Logging
         void FinishToRemoveScope(string scope);
 
         #endregion
-
-        void Failure(string message);
-
-        void Failure(Exception exception);
     }
 
-    public class UmaServerEventSource : IUmaServerEventSource
+    public class UmaServerEventSource : BaseEventSource, IUmaServerEventSource
     {
-        private readonly ILogger _logger;
-
-        private const string MessagePattern = "{Id} : {Task}, {Message} : {Operation}";
-
         private static class Tasks
         {
             public const string Authorization = "Authorization";
@@ -114,9 +105,8 @@ namespace SimpleIdentityServer.Uma.Logging
 
         #region Constructor
 
-        public UmaServerEventSource(ILoggerFactory loggerFactory)
+        public UmaServerEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<UmaServerEventSource>())
         {
-            _logger = loggerFactory.CreateLogger<UmaServerEventSource>();
         }
 
         #endregion
@@ -407,49 +397,6 @@ namespace SimpleIdentityServer.Uma.Logging
             };
 
             LogInformation(evt);
-        }
-
-        #endregion
-
-        public void Failure(string message)
-        {
-            var evt = new Event
-            {
-                Id = 998,
-                Task = Tasks.Failure,
-                Message = $"Something goes wrong, code : {message}"
-            };
-
-            LogError(evt);
-        }
-
-        public void Failure(Exception exception)
-        {
-            var evt = new Event
-            {
-                Id = 999,
-                Task = Tasks.Failure,
-                Message = "an error occured"
-            };
-
-            LogError(evt, new EventId(999), exception);
-        }
-
-        #region Private methods
-
-        private void LogInformation(Event evt)
-        {
-            _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
-        }
-
-        private void LogError(Event evt)
-        {
-            _logger.LogError(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
-        }
-
-        private void LogError(Event evt, EventId evtId, Exception ex)
-        {
-            _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
 
         #endregion

@@ -20,11 +20,6 @@ namespace SimpleIdentityServer.Uma.Core.Services
 {
     public class DefaultConfigurationService : IConfigurationService
     {
-        public Task<string> GetWellKnownConfiguration()
-        {
-            return Task.FromResult("https://localhost:5443/.well-known/openid-configuration");
-        }
-
         public Task<int> GetRptLifeTime()
         {
             return Task.FromResult(3000);

@@ -13,12 +13,13 @@ using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.Logging;
 using Xunit;
 using System.Threading.Tasks;
+using SimpleIdentityServer.OAuth.Logging;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
     public sealed class GetAuthorizationCodeAndTokenViaHybridWorkflowOperationFixture
     {
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
         private Mock<IClientValidator> _clientValidatorFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
@@ -138,23 +139,23 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT
             await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(authorizationParameter, claimsPrincipal, new Core.Common.Models.Client());
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,
+            _oauthEventSource.Verify(s => s.StartHybridFlow(authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 string.Empty));
             _generateAuthorizationResponseFake.Verify(g => g.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, It.IsAny<Core.Common.Models.Client>()));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
+            _oauthEventSource.Verify(s => s.EndHybridFlow(authorizationParameter.ClientId,
                 Enum.GetName(typeof(TypeActionResult), actionResult.Type),
                 Enum.GetName(typeof(IdentityServerEndPoints), actionResult.RedirectInstruction.Action)));
         }
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _clientValidatorFake = new Mock<IClientValidator>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation = new GetAuthorizationCodeAndTokenViaHybridWorkflowOperation(
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _processAuthorizationRequestFake.Object,
                 _clientValidatorFake.Object,
                 _generateAuthorizationResponseFake.Object);

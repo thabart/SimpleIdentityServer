@@ -37,11 +37,11 @@ using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using SimpleIdentityServer.Core.WebSite.User;
-using SimpleIdentityServer.Handler.Events;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Events;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly IEncoder _encoder;
         private readonly ITranslationManager _translationManager;        
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;        
+        private readonly IOpenIdEventSource _openIdEventSource;        
         private readonly IUrlHelper _urlHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEncoder encoder,
             ITranslationManager translationManager,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOpenIdEventSource openIdEventSource,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IEventPublisher eventPublisher,
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             _dataProtector = dataProtectionProvider.CreateProtector("Request");
             _encoder = encoder;
             _translationManager = translationManager;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;            
+            _openIdEventSource = openIdEventSource;            
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
@@ -171,7 +171,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
                     await SetLocalCookie(claims, Guid.NewGuid().ToString());
-                    _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+                    _openIdEventSource.AuthenticateResourceOwner(subject);
                     return RedirectToAction("Index", "User", new { area = "UserManagement" });
                 }
 
@@ -181,7 +181,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 try
                 {
                     var code = await _authenticateActions.GenerateAndSendCode(subject);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    _openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch(ClaimRequiredException)
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
             catch (Exception exception)
             {
-                _simpleIdentityServerEventSource.Failure(exception.Message);
+                _openIdEventSource.Failure(exception.Message);
                 await TranslateView("en");
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 await SetIdProviders(authorizeViewModel);
@@ -249,7 +249,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 try
                 {
                     var code = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                    _openIdEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
                 catch(ClaimRequiredException)
@@ -334,7 +334,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 var claimsLst = resourceOwner.Claims.Select(c => new ClaimAggregate(c.Type, c.Value));
                 await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claimsLst);
                 var code = await _authenticateActions.GenerateAndSendCode(authenticatedUser.GetSubject());
-                _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                _openIdEventSource.GetConfirmationCode(code);
                 return View(codeViewModel);
             }
 
@@ -343,7 +343,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 await TranslateView(DefaultLanguage);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
-                _simpleIdentityServerEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
+                _openIdEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
                 return View(codeViewModel);
             }
 
@@ -457,7 +457,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
 					{
 						await SetTwoFactorCookie(actionResult.Claims);
 						var code = await _authenticateActions.GenerateAndSendCode(subject);
-						_simpleIdentityServerEventSource.GetConfirmationCode(code);
+                        _openIdEventSource.GetConfirmationCode(code);
 						return RedirectToAction("SendCode", new { code = authorizeOpenId.Code });
 					}
 					catch(ClaimRequiredException)
@@ -468,7 +468,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
                 
                 // 6. Authenticate the user by adding a cookie
                 await SetLocalCookie(actionResult.Claims, request.SessionId);
-                _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
+                _openIdEventSource.AuthenticateResourceOwner(subject);
 
                 // 7. Redirect the user agent
                 var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult,
@@ -481,7 +481,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             }
             catch (Exception ex)
             {
-                _simpleIdentityServerEventSource.Failure(ex.Message);
+                _openIdEventSource.Failure(ex.Message);
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
@@ -572,7 +572,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             {
                 await SetTwoFactorCookie(claims);
                 var confirmationCode = await _authenticateActions.GenerateAndSendCode(resourceOwner.Id);
-                _simpleIdentityServerEventSource.GetConfirmationCode(confirmationCode);
+                _openIdEventSource.GetConfirmationCode(confirmationCode);
                 return RedirectToAction("SendCode", new { code = request });
             }
 

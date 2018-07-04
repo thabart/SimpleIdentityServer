@@ -15,11 +15,11 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using System;
+using SimpleIdentityServer.Logging;
 
 namespace SimpleIdentityServer.OAuth.Logging
 {
-    public interface IOAuthEventSource
+    public interface IOAuthEventSource : IEventSource
     {
         #region Events linked to the authorization process
 
@@ -45,11 +45,6 @@ namespace SimpleIdentityServer.OAuth.Logging
         void StartGeneratingAuthorizationResponseToClient(
             string clientId,
             string responseTypes);
-
-        void GrantAccessToClient(
-            string clientId,
-            string accessToken,
-            string scopes);
 
         void GrantAuthorizationCodeToClient(
             string clientId,
@@ -89,6 +84,8 @@ namespace SimpleIdentityServer.OAuth.Logging
             string actionType,
             string controllerAction,
             string parameters);
+
+        void GrantAccessToClient(string clientId, string accessToken, string scopes);
 
         #endregion
 
@@ -138,64 +135,31 @@ namespace SimpleIdentityServer.OAuth.Logging
 
         #endregion
 
-        void GiveConsent(string subject, 
-            string clientId,
-            string consentId);
-
-        void OpenIdFailure(string code, 
-            string description, 
-            string state);
-
-        void Failure(string message);
-
-        void Failure(Exception exception);
-
-        void Info(string message);
-
-        #region Events linked to the registration process
+        #region Event linked to client registration
 
         void StartRegistration(string clientName);
-
-        void EndRegistration(
-            string clientId,
-            string clientName);
+        void EndRegistration(string clientId, string clientName);
 
         #endregion
 
-        #region Event linked to Authentication
-
-        void AuthenticateResourceOwner(string subject);
-
-        void GetConfirmationCode(string code);
-
-        void InvalidateConfirmationCode(string code);
-
-        void ConfirmationCodeNotValid(string code);
-
-        #endregion
+        void OAuthFailure(string code, 
+            string description, 
+            string state);
     }
 
-    public class OAuthEventSource : IOAuthEventSource
+    public class OAuthEventSource : BaseEventSource, IOAuthEventSource
     {
         private static class Tasks
         {
             public const string Authorization = "Authorization";
             public const string Token = "Token";
-            public const string Failure = "Failure";
-            public const string Information = "Info";
-            public const string Other = "Other";
-            public const string Authentication = "Authentication";
+            public const string ClientRegistration = "ClientRegistration";
         }
-
-        private readonly ILogger _logger;
-
-        private const string MessagePattern = "{Id} : {Task}, {Message} : {Operation}";
 
         #region Constructor
 
-        public OAuthEventSource(ILoggerFactory loggerFactory)
+        public OAuthEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<OAuthEventSource>())
         {
-            _logger = loggerFactory.CreateLogger<OAuthEventSource>();
         }
 
         #endregion
@@ -392,15 +356,28 @@ namespace SimpleIdentityServer.OAuth.Logging
             LogInformation(evt);
         }
 
-        #endregion
-
-        #region Events linked to the token endpoint
-        
-        public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
+        public void GrantAccessToClient(string clientId,
+            string accessToken,
+            string scopes)
         {
             var evt = new Event
             {
                 Id = 14,
+                Task = Tasks.Authorization,
+                Message = $"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}"
+            };
+            LogInformation(evt);
+        }
+
+        #endregion
+
+        #region Events linked to the token endpoint
+
+        public void StartGetTokenByResourceOwnerCredentials(string clientId, string userName, string password)
+        {
+            var evt = new Event
+            {
+                Id = 15,
                 Task = Tasks.Token,
                 Message = $"Start resource owner credentials grant-type, client : {clientId}, user name : {userName}, password : {password}",
                 Operation = "resource owner credentials"
@@ -413,7 +390,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 15,
+                Id = 16,
                 Task = Tasks.Token,
                 Message = $"End of the resource owner credentials grant-type, access token : {accessToken}, identity token : {identityToken}",
                 Operation = "resource owner credentials"
@@ -428,7 +405,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 16,
+                Id = 17,
                 Task = Tasks.Token,
                 Message = $"Start authorization code grant-type, client : {clientId} and authorization code : {authorizationCode}",
                 Operation = "authorization code"
@@ -441,7 +418,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 17,
+                Id = 18,
                 Task = Tasks.Token,
                 Message = $"End of the authorization code grant-type, access token : {accessToken}, identity token : {identityToken}",
                 Operation = "authorization code"
@@ -455,7 +432,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 18,
+                Id = 19,
                 Task = Tasks.Token,
                 Message = $"Start to authenticate the client, client : {clientId}, authentication type : {authenticationType}"
             };
@@ -468,7 +445,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 19,
+                Id = 20,
                 Task = Tasks.Token,
                 Message = $"Finish to authenticate the client, client : {clientId}, authentication type : {authenticationType}"
             };
@@ -480,7 +457,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 20,
+                Id = 21,
                 Task = Tasks.Token,
                 Message = $"Start refresh token grant-type, refresh token : {refreshToken}",
                 Operation = "refresh token"
@@ -493,7 +470,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 21,
+                Id = 22,
                 Task = Tasks.Token,
                 Message = $"End refresh token grant-type, access token : {accessToken}, identity token : {identityToken}",
                 Operation = "refresh token"
@@ -506,7 +483,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 22,
+                Id = 23,
                 Task = Tasks.Token,
                 Message = $"Start get token by client credentials, scope : {scope}",
                 Operation = "client credentials"
@@ -519,7 +496,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 23,
+                Id = 24,
                 Task = Tasks.Token,
                 Message = $"End get token by client credentials, client : {clientId}, scope : {scope}",
                 Operation = "client credentials"
@@ -532,7 +509,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 24,
+                Id = 25,
                 Task = Tasks.Token,
                 Message = $"Start revoking token, token : {token}"
             };
@@ -543,7 +520,7 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 25,
+                Id = 26,
                 Task = Tasks.Token,
                 Message = $"End revoking token, token : {token}"
             };
@@ -552,105 +529,14 @@ namespace SimpleIdentityServer.OAuth.Logging
 
         #endregion
 
-        #region Failing events
-
-        public void OpenIdFailure(string code, 
-            string description, 
-            string state)
-        {
-            var evt = new Event
-            {
-                Id = 26,
-                Task = Tasks.Failure,
-                Message = $"Something goes wrong in the open-id process, code : {code}, description : {description}, state : {state}"
-            };
-
-            LogError(evt);
-        }
-        
-        public void Failure(string message)
-        {
-            var evt = new Event
-            {
-                Id = 27,
-                Task = Tasks.Failure,
-                Message = $"Something goes wrong, code : {message}"
-            };
-
-            LogError(evt);
-        }
-
-        public void Failure(Exception exception)
-        {
-            var evt = new Event
-            {
-                Id = 28,
-                Task = Tasks.Failure,
-                Message = "an error occured"
-            };
-
-            LogError(evt, new EventId(28), exception);
-        }
-
-        public void Info(string message)
-        {
-            var evt = new Event
-            {
-                Id = 29,
-                Task = Tasks.Information,
-                Message = message
-            };
-
-            LogInformation(evt);
-        }
-
-        #endregion
-
-        #region Other events
-
-        public void GrantAccessToClient(string clientId,
-            string accessToken,
-            string scopes)
-        {
-            var evt = new Event
-            {
-                Id = 30,
-                Task = Tasks.Other,
-                Message = $"Grant access to the client {clientId}, access token : {accessToken}, scopes : {scopes}"
-            };
-            LogInformation(evt);
-        }
-
-        public void AuthenticateResourceOwner(string subject)
-        {
-            var evt = new Event
-            {
-                Id = 31,
-                Task = Tasks.Other,
-                Message = $"The resource owner is authenticated {subject}"
-            };
-            LogInformation(evt);
-        }
-        
-        public void GiveConsent(string subject,
-            string clientId,
-            string consentId)
-        {
-            var evt = new Event
-            {
-                Id = 32,
-                Task = Tasks.Other,
-                Message = $"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}"
-            };
-            LogInformation(evt);
-        }
+        #region Client registration
 
         public void StartRegistration(string clientName)
         {
             var evt = new Event
             {
-                Id = 33,
-                Task = Tasks.Other,
+                Id = 27,
+                Task = Tasks.ClientRegistration,
                 Message = $"Start the registration process, client name : {clientName}"
             };
             LogInformation(evt);
@@ -662,8 +548,8 @@ namespace SimpleIdentityServer.OAuth.Logging
         {
             var evt = new Event
             {
-                Id = 34,
-                Task = Tasks.Other,
+                Id = 28,
+                Task = Tasks.ClientRegistration,
                 Message = $"End the registration process, client id : {clientId}, client name : {clientName}"
             };
             LogInformation(evt);
@@ -671,58 +557,20 @@ namespace SimpleIdentityServer.OAuth.Logging
 
         #endregion
 
-        #region Events linked to Authentication
+        #region Failing events
 
-        public void GetConfirmationCode(string code)
+        public void OAuthFailure(string code,
+            string description,
+            string state)
         {
             var evt = new Event
             {
-                Id = 35,
-                Task = Tasks.Authentication,
-                Message = $"Get confirmation code {code}"
+                Id = 100,
+                Task = EventTasks.Failure,
+                Message = $"Something goes wrong in the oauth process, code : {code}, description : {description}, state : {state}"
             };
-            LogInformation(evt);
-        }
 
-        public void InvalidateConfirmationCode(string code)
-        {
-            var evt = new Event
-            {
-                Id = 36,
-                Task = Tasks.Authentication,
-                Message = $"Remove confirmation code {code}"
-            };
-            LogInformation(evt);
-        }
-
-        public void ConfirmationCodeNotValid(string code)
-        {
-            var evt = new Event
-            {
-                Id = 37,
-                Task = Tasks.Authentication,
-                Message = $"Confirmation code is not valid {code}"
-            };
             LogError(evt);
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private void LogInformation(Event evt)
-        {
-            _logger.LogInformation(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
-        }
-
-        private void LogError(Event evt)
-        {
-            _logger.LogError(MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
-        }
-
-        private void LogError(Event evt, EventId evtId, Exception ex)
-        {
-            _logger.LogError(evtId, ex, MessagePattern, evt.Id, evt.Task, evt.Message, evt.Operation);
         }
 
         #endregion

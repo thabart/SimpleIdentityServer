@@ -3,13 +3,15 @@ using System.Threading.Tasks;
 
 namespace SimpleBus.InMemory
 {
-    public class InMemoryBus : IEventPublisher
+    internal sealed class InMemoryBus : IEventPublisher
     {
         private readonly IEvtHandlerStore _evtHandlerStore;
+        private readonly SimpleBusOptions _simpleBusOptions;
 
-        public InMemoryBus(IEvtHandlerStore evtHandlerStore)
+        public InMemoryBus(IEvtHandlerStore evtHandlerStore, SimpleBusOptions simpleBusOptions)
         {
             _evtHandlerStore = evtHandlerStore;
+            _simpleBusOptions = simpleBusOptions;
         }
 
         public void Publish<T>(T evt) where T : Event
@@ -20,6 +22,7 @@ namespace SimpleBus.InMemory
                 return;
             }
 
+            evt.ServerName = _simpleBusOptions.ServerName;
             foreach (var handler in handlers)
             {
                 var handler1 = handler;

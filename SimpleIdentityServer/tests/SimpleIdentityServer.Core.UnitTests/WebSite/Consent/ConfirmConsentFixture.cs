@@ -11,6 +11,7 @@ using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -29,7 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         private Mock<IActionResultFactory> _actionResultFactoryFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
         private Mock<IConsentHelper> _consentHelperFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IOpenIdEventSource> _openIdEventSource;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
 
         private IConfirmConsentAction _confirmConsentAction;
@@ -244,7 +245,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _consentHelperFake = new Mock<IConsentHelper>();
-            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _openIdEventSource = new Mock<IOpenIdEventSource>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _confirmConsentAction = new ConfirmConsentAction(
                 _consentRepositoryFake.Object,
@@ -255,7 +256,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 _actionResultFactoryFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _consentHelperFake.Object,
-                _simpleIdentityServerEventSource.Object,
+                _openIdEventSource.Object,
                 _authenticateResourceOwnerServiceStub.Object);
         }
     }

@@ -23,13 +23,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.AccessToken.Store\SimpleIdentityServer.AccessToken.Store.csproj" />
-    <ProjectReference Include="..\..\EventStore\SimpleIdentityServer.EventStore.Core\SimpleIdentityServer.EventStore.Core.csproj" />
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
     <ProjectReference Include="..\..\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Handler\SimpleIdentityServer.Handler.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.OAuth.Events\SimpleIdentityServer.OAuth.Events.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.OAuth.Logging\SimpleIdentityServer.OAuth.Logging.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.OpenId.Events\SimpleIdentityServer.OpenId.Events.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.OpenId.Logging\SimpleIdentityServer.OpenId.Logging.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Store\SimpleIdentityServer.Store.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication\SimpleIdentityServer.TwoFactorAuthentication.csproj" />
   </ItemGroup>
