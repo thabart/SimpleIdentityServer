@@ -25,7 +25,7 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
-using SimpleIdentityServer.EventStore.Handler;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.Core;
@@ -165,6 +165,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 
             // 3. Enable logging.
             services.AddLogging();
+            services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();
             // 4. Register the services.

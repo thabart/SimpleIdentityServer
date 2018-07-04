@@ -20,11 +20,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleBus.InMemory;
-using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.SqlServer;
-using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using WebApiContrib.Core.Concurrency;
@@ -60,7 +58,7 @@ namespace SimpleIdentityServer.Scim.Startup
             {
                 opts.AddScimAuthPolicy();
             });
-            ConfigureEventStoreSqlServerBus(services);
+            ConfigureBus(services);
             ConfigureScimRepository(services);
             ConfigureCachingInMemory(services);
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
@@ -70,11 +68,12 @@ namespace SimpleIdentityServer.Scim.Startup
             services.AddScimHost();
         }
 
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
+        private void ConfigureBus(IServiceCollection services)
         {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;", null);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "scim"
+            });
         }
 
         private void ConfigureScimRepository(IServiceCollection services)

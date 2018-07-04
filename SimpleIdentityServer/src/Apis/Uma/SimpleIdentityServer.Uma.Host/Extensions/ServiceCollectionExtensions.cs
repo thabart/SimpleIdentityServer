@@ -21,6 +21,7 @@ using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
@@ -68,6 +69,7 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 .AddSimpleIdentityServerCore()
                 .AddSimpleIdentityServerJwt()
                 .AddIdServerClient();
+            services.AddTechnicalLogging();
             services.AddOAuthLogging();
             services.AddUmaLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
