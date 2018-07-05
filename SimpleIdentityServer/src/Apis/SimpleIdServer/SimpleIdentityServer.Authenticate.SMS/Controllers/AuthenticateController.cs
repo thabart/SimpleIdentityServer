@@ -278,21 +278,24 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     ModelState.AddModelError("message_error", ex.Message);
                 }
 
-                var claims = resourceOwner.Claims;
-                claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
-                    DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
-                    ClaimValueTypes.Integer));
-                await SetPasswordLessCookie(claims);
-                try
+                if (resourceOwner != null)
                 {
-                    var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
-                    return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
-                }
-                catch (Exception ex)
-                {
-                    _simpleIdentityServerEventSource.Failure(ex.Message);
-                    ModelState.AddModelError("message_error", "TWILIO account is not valid");
+                    var claims = resourceOwner.Claims;
+                    claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
+                        DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
+                        ClaimValueTypes.Integer));
+                    await SetPasswordLessCookie(claims);
+                    try
+                    {
+                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
+                        _simpleIdentityServerEventSource.GetConfirmationCode(code);
+                        return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
+                    }
+                    catch (Exception ex)
+                    {
+                        _simpleIdentityServerEventSource.Failure(ex.Message);
+                        ModelState.AddModelError("message_error", "TWILIO account is not valid");
+                    }
                 }
             }
 
