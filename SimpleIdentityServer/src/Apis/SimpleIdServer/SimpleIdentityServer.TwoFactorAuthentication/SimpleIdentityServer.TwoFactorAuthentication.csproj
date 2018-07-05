@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.TwoFactorAuthentication Class Library</Description>
@@ -19,6 +19,5 @@
   
   <ItemGroup>
     <ProjectReference Include="..\SimpleIdentityServer.Core.Common\SimpleIdentityServer.Core.Common.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.Common.csproj" />
   </ItemGroup>
 </Project>

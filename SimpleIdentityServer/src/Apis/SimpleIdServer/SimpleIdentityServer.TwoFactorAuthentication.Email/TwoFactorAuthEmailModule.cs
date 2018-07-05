@@ -69,9 +69,9 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
             };
         }
 
-        private static EmailServiceOptions GetOptions(IDictionary<string, string> options)
+        private static TwoFactorEmailOptions GetOptions(IDictionary<string, string> options)
         {
-            var emailServiceOptions = new EmailServiceOptions
+            var emailServiceOptions = new TwoFactorEmailOptions
             {
                 EmailBody = options.TryGetValue(EmailBody),
                 EmailFromAddress = options.TryGetValue(EmailFromAddress),
