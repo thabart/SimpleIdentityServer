@@ -39,9 +39,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var opts = GetOptions(options);
-            var twoFactor = new DefaultTwilioSmsService(opts);
-            TwoFactorServiceStore.Instance().Add("SMS", twoFactor);
+            // TODO : IMPLEMENT.
         }
 
         public ModuleUIDescriptor GetModuleUI()
@@ -60,9 +58,9 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
             };
         }
 
-        private static TwilioOptions GetOptions(IDictionary<string, string> options)
+        private static TwoFactorTwilioOptions GetOptions(IDictionary<string, string> options)
         {
-            var twilioOptions = new TwilioOptions
+            var twilioOptions = new TwoFactorTwilioOptions
             {
                 TwilioAccountSid = options.TryGetValue(TwilioAccountSid),
                 TwilioAuthToken = options.TryGetValue(TwilioAuthToken),

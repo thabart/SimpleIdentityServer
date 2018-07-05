@@ -10,7 +10,6 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
@@ -89,7 +88,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(scopeNames);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -155,7 +154,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -219,7 +218,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -256,8 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 _actionResultFactoryFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _consentHelperFake.Object,
-                _openIdEventSource.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _openIdEventSource.Object);
         }
     }
 }

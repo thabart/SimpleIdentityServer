@@ -18,20 +18,26 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
     public interface ITwoFactorAuthenticationHandler
     {
-        Dictionary<string, ITwoFactorAuthenticationService> GetAll();
+        IEnumerable<ITwoFactorAuthenticationService> GetAll();
         ITwoFactorAuthenticationService Get(string twoFactorAuthType);
-        Task SendCode(string code, string twoFactorAuthType, ResourceOwner user);
+        Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user);
     }
 
     internal class TwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
     {
-        public TwoFactorAuthenticationHandler() { }
+        private readonly IEnumerable<ITwoFactorAuthenticationService> _twoFactorServices;
+
+        public TwoFactorAuthenticationHandler(IEnumerable<ITwoFactorAuthenticationService> twoFactorServices)
+        {
+            _twoFactorServices = twoFactorServices;
+        }
 
         public ITwoFactorAuthenticationService Get(string twoFactorAuthType)
         {
@@ -40,15 +46,20 @@ namespace SimpleIdentityServer.Core.Services
                 throw new ArgumentNullException(nameof(twoFactorAuthType));
             }
 
-            return TwoFactorServiceStore.Instance().Get(twoFactorAuthType);
+            if (_twoFactorServices == null)
+            {
+                return null;
+            }
+
+            return _twoFactorServices.FirstOrDefault(s => s.Name == twoFactorAuthType);
         }
 
-        public Dictionary<string, ITwoFactorAuthenticationService> GetAll()
+        public IEnumerable<ITwoFactorAuthenticationService> GetAll()
         {
-            return TwoFactorServiceStore.Instance().GetAll();
+            return _twoFactorServices;
         }
 
-        public async Task SendCode(string code, string twoFactorAuthType, ResourceOwner user)
+        public async Task<bool> SendCode(string code, string twoFactorAuthType, ResourceOwner user)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -65,8 +76,14 @@ namespace SimpleIdentityServer.Core.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
+            var service = Get(twoFactorAuthType);
+            if (service == null)
+            {
+                return false;
+            }
 
-            await TwoFactorServiceStore.Instance().Get(twoFactorAuthType).SendAsync(code, user);
+            await service.SendAsync(code, user);
+            return true;
         }
     }
 }

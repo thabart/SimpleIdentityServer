@@ -17,7 +17,6 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,16 +34,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IClaimRepository _claimRepository;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public UpdateUserClaimsOperation(
             IResourceOwnerRepository resourceOwnerRepository,
-            IClaimRepository claimRepository,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+            IClaimRepository claimRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _claimRepository = claimRepository;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
         public async Task<bool> Execute(string subject, IEnumerable<ClaimAggregate> claims)
@@ -59,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);

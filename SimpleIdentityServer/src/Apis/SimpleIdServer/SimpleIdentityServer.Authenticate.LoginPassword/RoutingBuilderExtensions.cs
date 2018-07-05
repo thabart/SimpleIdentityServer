@@ -15,8 +15,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
             
             routeBuilder.MapRoute("PasswordAuthentication",
                 "Authenticate/{action}/{id?}",
-                new { controller = "Authenticate", action = "Index", area = "pwd" },
-                constraints: new { area = "pwd" });
+                new { controller = "Authenticate", action = "Index", area = Constants.AMR },
+                constraints: new { area = Constants.AMR });
             return routeBuilder;
         }
     }

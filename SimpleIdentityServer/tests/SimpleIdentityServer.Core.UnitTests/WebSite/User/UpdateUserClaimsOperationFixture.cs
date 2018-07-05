@@ -2,7 +2,6 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IClaimRepository> _claimRepositoryStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IUpdateUserClaimsOperation _updateUserClaimsOperation;
 
         [Fact]
@@ -36,7 +34,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
@@ -53,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     Claims = new List<Claim>
@@ -84,10 +82,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _claimRepositoryStub = new Mock<IClaimRepository>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _updateUserClaimsOperation = new UpdateUserClaimsOperation(_resourceOwnerRepositoryStub.Object,
-                _claimRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _claimRepositoryStub.Object);
         }
     }
 }

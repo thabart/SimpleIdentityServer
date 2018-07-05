@@ -19,8 +19,8 @@ using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using SimpleIdentityServer.Scim.Client;
 using System;
@@ -35,7 +35,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IProfileRepository> _profileRepositoryStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
         private Mock<IAccessTokenStore> _tokenStoreStub;
         private Mock<IScimClientFactory> _scimClientFactoryStub;
@@ -62,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
             var parameter = new AddUserParameter("name", "password");
 
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
@@ -81,7 +80,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
             var parameter = new AddUserParameter("name", "password", new List<Claim>());
 
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
@@ -96,14 +95,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _profileRepositoryStub = new Mock<IProfileRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
             _scimClientFactoryStub = new Mock<IScimClientFactory>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
                 _profileRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object,
                 _tokenStoreStub.Object,
                 _scimClientFactoryStub.Object);
         }

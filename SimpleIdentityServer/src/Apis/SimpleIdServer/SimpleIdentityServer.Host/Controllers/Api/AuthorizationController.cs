@@ -22,6 +22,7 @@ using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
@@ -117,7 +118,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                     actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, encryptedRequest);
                 }
 
-                var url = GetRedirectionUrl(Request, authorizationRequest.AmrValues, actionResult.RedirectInstruction.Action);
+                var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
                 var uri = new Uri(url);
                 var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
                 return new RedirectResult(redirectionUrl.AbsoluteUri);
@@ -148,13 +149,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
         
-        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amrValues, IdentityServerEndPoints identityServerEndPoints)
+        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amr, IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
-            if (!string.IsNullOrWhiteSpace(amrValues))
+            if (!string.IsNullOrWhiteSpace(amr))
             {
-                var amr = amrValues.Split(' ').First();
                 partialUri = "/" + amr + partialUri;
             }
 

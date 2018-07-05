@@ -2,7 +2,6 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class UpdateUserTwoFactorAuthenticatorOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IUpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
 
         [Fact]
@@ -31,7 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
@@ -48,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
@@ -61,10 +59,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _updateUserTwoFactorAuthenticatorOperation = new UpdateUserTwoFactorAuthenticatorOperation(
-                _resourceOwnerRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _resourceOwnerRepositoryStub.Object);
         }
     }
 }

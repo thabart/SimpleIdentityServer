@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         public string ClientId { get; set; }
         public string Scope { get; set; }
-        public string AmrValues { get; set; }
+        public IEnumerable<string> AmrValues { get; set; }
         public string ResponseType { get; set; }
         public string RedirectUrl { get; set; }
         public string State { get; set; }

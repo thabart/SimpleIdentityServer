@@ -18,6 +18,7 @@ using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Scim.Client;
@@ -51,7 +52,6 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly IClaimRepository _claimRepository;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
         private readonly IAccessTokenStore _tokenStore;
         private readonly IScimClientFactory _scimClientFactory;
 
@@ -59,14 +59,12 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             IResourceOwnerRepository resourceOwnerRepository,
             IProfileRepository profileRepository,
             IClaimRepository claimRepository,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService,
             IAccessTokenStore tokenStore,
             IScimClientFactory scimClientFactory)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _profileRepository = profileRepository;
             _claimRepository = claimRepository;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
             _tokenStore = tokenStore;
             _scimClientFactory = scimClientFactory;
         }
@@ -98,7 +96,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(scimBaseUrl));
             }
 
-            if (await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(addUserParameter.Login, addUserParameter.Password) != null)
+            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -148,7 +146,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 Claims = newClaims,
                 TwoFactorAuthentication = string.Empty,
                 IsLocalAccount = true,
-                Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
+                Password = PasswordHelper.ComputeHash(addUserParameter.Password)
             };
                         
             await _resourceOwnerRepository.InsertAsync(newResourceOwner);

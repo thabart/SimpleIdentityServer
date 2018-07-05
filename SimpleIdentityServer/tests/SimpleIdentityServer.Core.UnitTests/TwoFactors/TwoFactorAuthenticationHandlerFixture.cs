@@ -25,7 +25,7 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
         private ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public void When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 
         private void InitializeFakeObjects()
         {
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler();
+            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(null);
         }
     }
 }

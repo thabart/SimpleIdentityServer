@@ -45,8 +45,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
             }
 
             var opts = GetOptions(options);
-            var twoFactor = new DefaultEmailService(opts);
-            TwoFactorServiceStore.Instance().Add("EMAIL", twoFactor);
+            // TODO : IMPLEMENT.
         }
 
         public ModuleUIDescriptor GetModuleUI()

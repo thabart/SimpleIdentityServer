@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 {
-    public class TwilioOptions
+    public class TwoFactorTwilioOptions
     {
         public string TwilioAccountSid { get; set; }
         public string TwilioAuthToken { get; set; }
@@ -32,10 +32,10 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
 
     public class DefaultTwilioSmsService : ITwoFactorAuthenticationService
     {
-        private readonly TwilioOptions _options;
+        private readonly TwoFactorTwilioOptions _options;
         private readonly ITwilioClient _twilioClient;
 
-        public DefaultTwilioSmsService(TwilioOptions options)
+        public DefaultTwilioSmsService(TwoFactorTwilioOptions options)
         {
             if (options == null)
             {
@@ -47,6 +47,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
         }
 
         public string RequiredClaim { get { return Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber; } }
+        public string Name => "SMS";
 
         public async Task SendAsync(string code, ResourceOwner user)
         {

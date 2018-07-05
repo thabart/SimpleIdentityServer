@@ -440,7 +440,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             
             var result = new UpdateResourceOwnerViewModel(subject, editableClaims, notEditableClaims, isLocalAccount);
             result.SelectedTwoFactorAuthType = twoFactorAuthType;
-            result.TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Keys.ToList();
+            result.TwoFactorAuthTypes = _twoFactorAuthenticationHandler.GetAll().Select(s => s.Name).ToList();
             return result;
         }
 

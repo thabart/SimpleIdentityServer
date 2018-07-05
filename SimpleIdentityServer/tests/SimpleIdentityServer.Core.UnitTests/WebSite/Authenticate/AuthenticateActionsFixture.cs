@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     {
         private Mock<IAuthenticateResourceOwnerOpenIdAction> _authenticateResourceOwnerActionFake;
         private Mock<ILocalOpenIdUserAuthenticationAction> _localOpenIdUserAuthenticationActionFake;
-        private Mock<ILocalUserAuthenticationAction> _localUserAuthenticationActionFake;
         private Mock<IGenerateAndSendCodeAction> _generateAndSendCodeActionStub;
         private Mock<IValidateConfirmationCodeAction> _validateConfirmationCodeActionStub;
         private Mock<IRemoveConfirmationCodeAction> _removeConfirmationCodeActionStub;
@@ -101,55 +100,17 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 authorizationParameter,
                 null));
         }
-
-        [Fact]
-        public async Task When_Passing_Null_Parameter_To_LocalUserAuthentication_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-
-            // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalUserAuthentication(null));
-        }
-
-        [Fact]
-        public async Task When_Passing_Needed_Parameter_To_LocalUserAuthentication_Then_Operation_Is_Called()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var localAuthenticationParameter = new LocalAuthenticationParameter
-            {
-                Password = "password",
-                UserName = "username"
-            };
-            var resourceOwner = new ResourceOwner
-            {
-                Password = "password",
-                Id = "username"
-            };
-            _localUserAuthenticationActionFake.Setup(l => l.Execute(It.IsAny<LocalAuthenticationParameter>()))
-                .Returns(Task.FromResult(resourceOwner));
-
-            // ACT
-            var result = await _authenticateActions.LocalUserAuthentication(localAuthenticationParameter);
-
-            // ASSERT
-            Assert.NotNull(result);
-            Assert.True(result.Id == "username" && result.Password == "password");
-        }
-
+        
         private void InitializeFakeObjects()
         {
             _authenticateResourceOwnerActionFake = new Mock<IAuthenticateResourceOwnerOpenIdAction>();
             _localOpenIdUserAuthenticationActionFake = new Mock<ILocalOpenIdUserAuthenticationAction>();
-            _localUserAuthenticationActionFake = new Mock<ILocalUserAuthenticationAction>();
             _generateAndSendCodeActionStub = new Mock<IGenerateAndSendCodeAction>();
             _validateConfirmationCodeActionStub = new Mock<IValidateConfirmationCodeAction>();
             _removeConfirmationCodeActionStub = new Mock<IRemoveConfirmationCodeAction>();
             _authenticateActions = new AuthenticateActions(
                 _authenticateResourceOwnerActionFake.Object,
                 _localOpenIdUserAuthenticationActionFake.Object,
-                _localUserAuthenticationActionFake.Object,
                 _generateAndSendCodeActionStub.Object,
                 _validateConfirmationCodeActionStub.Object,
                 _removeConfirmationCodeActionStub.Object);

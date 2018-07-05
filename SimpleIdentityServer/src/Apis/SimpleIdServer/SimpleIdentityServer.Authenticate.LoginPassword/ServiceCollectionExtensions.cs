@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword.Controllers;
+using SimpleIdentityServer.Authenticate.LoginPassword.Services;
+using SimpleIdentityServer.Core.Services;
 using System;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword
@@ -40,6 +42,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 opts.FileProviders.Add(embeddedFileProvider);
             });
             services.AddSingleton(basicAuthenticateOptions);
+            services.AddTransient<IAuthenticateResourceOwnerService, PasswordAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;
         }

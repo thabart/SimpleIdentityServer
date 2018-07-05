@@ -120,15 +120,6 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.AuthenticateResourceOwner == null)
-            {
-                serviceCollection.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
-            }
-
             if (options.ConfigurationService == null)
             {
                 serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();

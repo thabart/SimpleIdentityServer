@@ -51,7 +51,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentHelper _consentHelper;
         private readonly IOpenIdEventSource _openidEventSource;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
@@ -62,8 +61,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
-            IOpenIdEventSource openidEventSource,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+            IOpenIdEventSource openidEventSource)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -74,7 +72,6 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
             _openidEventSource = openidEventSource;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
 
         /// <summary>
@@ -122,7 +119,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     assignedConsent = new Common.Models.Consent
                     {
                         Client = client,
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -133,7 +130,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     {
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
                     };
                 }
 

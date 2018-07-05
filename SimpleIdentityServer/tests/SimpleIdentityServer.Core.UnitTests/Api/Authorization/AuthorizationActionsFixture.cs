@@ -46,6 +46,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<IAuthorizationFlowHelper> _authorizationFlowHelperFake;
         private Mock<IEventPublisher> _eventPublisherStub;
         private Mock<IPayloadSerializer> _payloadSerializerStub;
+        private Mock<IAmrHelper> _amrHelperStub;
+        private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private IAuthorizationActions _authorizationActions;
 
         [Fact]
@@ -247,6 +249,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _authorizationFlowHelperFake = new Mock<IAuthorizationFlowHelper>();
             _eventPublisherStub = new Mock<IEventPublisher>();
             _payloadSerializerStub = new Mock<IPayloadSerializer>();
+            _amrHelperStub = new Mock<IAmrHelper>();
+            _resourceOwnerAuthenticateHelperStub = new Mock<IResourceOwnerAuthenticateHelper>();
             _authorizationActions = new AuthorizationActions(
                 _getAuthorizationCodeOperationFake.Object,
                 _getTokenViaImplicitWorkflowOperationFake.Object,
@@ -256,7 +260,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 _oauthEventSource.Object,
                 _authorizationFlowHelperFake.Object,
                 _eventPublisherStub.Object,
-                _payloadSerializerStub.Object);
+                _payloadSerializerStub.Object,
+                _amrHelperStub.Object,
+                _resourceOwnerAuthenticateHelperStub.Object);
         }
     }
 }

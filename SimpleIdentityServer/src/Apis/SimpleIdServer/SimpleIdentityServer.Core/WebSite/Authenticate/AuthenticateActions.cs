@@ -28,7 +28,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
     public interface IAuthenticateActions
     {
         Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code);
-        Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
         Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code);
         Task<string> GenerateAndSendCode(string subject);
         Task<bool> ValidateCode(string code);
@@ -39,7 +38,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
     {
         private readonly IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
         private readonly ILocalOpenIdUserAuthenticationAction _localOpenIdUserAuthenticationAction;
-        private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
         private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
@@ -48,14 +46,12 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction,
             IGenerateAndSendCodeAction generateAndSendCodeAction,
             IValidateConfirmationCodeAction validateConfirmationCodeAction,
             IRemoveConfirmationCodeAction removeConfirmationCodeAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
-            _localUserAuthenticationAction = localUserAuthenticationAction;
             _generateAndSendCodeAction = generateAndSendCodeAction;
             _validateConfirmationCodeAction = validateConfirmationCodeAction;
             _removeConfirmationCodeAction = removeConfirmationCodeAction;
@@ -94,16 +90,6 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
                 code);
-        }
-
-        public async Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
-        {
-            if (localAuthenticationParameter == null)
-            {
-                throw new ArgumentNullException("localAuthenticationParameter");
-            }
-
-            return await _localUserAuthenticationAction.Execute(localAuthenticationParameter);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)

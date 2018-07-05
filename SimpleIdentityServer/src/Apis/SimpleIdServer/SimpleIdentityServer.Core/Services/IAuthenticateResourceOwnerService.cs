@@ -21,8 +21,7 @@ namespace SimpleIdentityServer.Core.Services
 {
     public interface IAuthenticateResourceOwnerService
     {
-        string GetHashedPassword(string password);
-        Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login);
         Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password);
+        string Amr { get; }
     }
 }

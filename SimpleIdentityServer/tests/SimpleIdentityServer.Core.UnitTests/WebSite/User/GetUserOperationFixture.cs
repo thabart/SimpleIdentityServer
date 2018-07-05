@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class GetUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IGetUserOperation _getUserOperation;
 
         [Fact]
@@ -85,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
@@ -98,10 +97,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
-            _getUserOperation = new GetUserOperation(
-                _resourceOwnerRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+            _getUserOperation = new GetUserOperation(_resourceOwnerRepositoryStub.Object);
         }
     }
 }

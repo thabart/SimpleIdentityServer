@@ -18,7 +18,6 @@ using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,12 +32,10 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class GetUserOperation : IGetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
         public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
@@ -65,7 +62,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            return _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            return _resourceOwnerRepository.GetAsync(subject);
         }
     }
 }

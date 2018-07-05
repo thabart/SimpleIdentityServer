@@ -13,20 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
-using System.Collections.Generic;
-
-namespace SimpleIdentityServer.Core.Parameters
-{
-    public sealed class ResourceOwnerGrantTypeParameter
-    {
-        public string Scope { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public string ClientId { get; set; }
-        public string ClientAssertion { get; set; }
-        public string ClientAssertionType { get; set; }
-        public string ClientSecret { get; set; }
-        public IEnumerable<string> AmrValues { get; set; }
-    }
-}
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+[assembly: InternalsVisibleTo("SimpleIdentityServer.Host.Tests")]

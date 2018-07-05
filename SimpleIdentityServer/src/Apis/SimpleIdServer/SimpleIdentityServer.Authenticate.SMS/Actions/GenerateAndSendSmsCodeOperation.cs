@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            var message = string.Format(_smsAuthenticationOptions.Message, phoneNumber);
+            var message = string.Format(_smsAuthenticationOptions.Message, confirmationCode.Value);
             await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message);
             return confirmationCode.Value;
         }

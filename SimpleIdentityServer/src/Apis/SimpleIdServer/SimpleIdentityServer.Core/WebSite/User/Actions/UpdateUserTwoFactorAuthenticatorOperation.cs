@@ -14,12 +14,10 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal sealed class UpdateUserTwoFactorAuthenticatorOperation : IUpdateUserTwoFactorAuthenticatorOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        public UpdateUserTwoFactorAuthenticatorOperation(IResourceOwnerRepository resourceOwnerRepository, IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+        public UpdateUserTwoFactorAuthenticatorOperation(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
 
         public async Task<bool> Execute(string subject, string twoFactorAuth)
@@ -29,7 +27,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);

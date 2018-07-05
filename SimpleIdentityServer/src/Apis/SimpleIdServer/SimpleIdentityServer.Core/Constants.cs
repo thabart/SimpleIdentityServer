@@ -24,6 +24,7 @@ namespace SimpleIdentityServer.Core
     public static class Constants
     {
         public const string SESSION_ID = "session_id";
+        public const string DEFAULT_AMR = "pwd";
 
         #region Standard definitions
         

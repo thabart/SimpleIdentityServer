@@ -25,9 +25,7 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
@@ -43,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
     {
         private Mock<IGrantedTokenGeneratorHelper> _grantedTokenGeneratorHelperFake;
         private Mock<IScopeValidator> _scopeValidatorFake;
-        private Mock<IAuthenticateResourceOwnerService> _resourceOwnerValidatorFake;
+        private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperFake;
         private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientFake;
         private Mock<IJwtGenerator> _jwtGeneratorFake;
@@ -117,8 +115,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _resourceOwnerAuthenticateHelperFake.Setup(
+                r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
@@ -152,8 +150,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _resourceOwnerAuthenticateHelperFake.Setup(
+                r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => new ScopeValidationResult(false));
@@ -202,8 +200,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
                 .Returns(() => Task.FromResult(client));
-            _resourceOwnerValidatorFake.Setup(
-                r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            _resourceOwnerAuthenticateHelperFake.Setup(
+                r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(() => Task.FromResult(resourceOwner));
             _scopeValidatorFake.Setup(s => s.Check(It.IsAny<string>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => new ScopeValidationResult(true)
@@ -239,7 +237,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         {
             _grantedTokenGeneratorHelperFake = new Mock<IGrantedTokenGeneratorHelper>();
             _scopeValidatorFake = new Mock<IScopeValidator>();
-            _resourceOwnerValidatorFake = new Mock<IAuthenticateResourceOwnerService>();
+            _resourceOwnerAuthenticateHelperFake = new Mock<IResourceOwnerAuthenticateHelper>();
             _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientFake = new Mock<IAuthenticateClient>();
             _jwtGeneratorFake = new Mock<IJwtGenerator>();
@@ -252,7 +250,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _getTokenByResourceOwnerCredentialsGrantTypeAction = new GetTokenByResourceOwnerCredentialsGrantTypeAction(
                 _grantedTokenGeneratorHelperFake.Object,
                 _scopeValidatorFake.Object,
-                _resourceOwnerValidatorFake.Object,
+                _resourceOwnerAuthenticateHelperFake.Object,
                 _oauthEventSource.Object,
                 _authenticateClientFake.Object,
                 _jwtGeneratorFake.Object,

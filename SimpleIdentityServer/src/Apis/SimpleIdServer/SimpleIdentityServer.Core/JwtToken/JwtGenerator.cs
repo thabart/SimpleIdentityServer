@@ -450,9 +450,9 @@ namespace SimpleIdentityServer.Core.JwtToken
             var issuedAtTime = timeKeyValuePair.Value;
             var acrValues = Constants.StandardArcParameterNames.OpenIdCustomAuthLevel + ".password=1";
             var amr = new []{ "password" };
-            if (!string.IsNullOrWhiteSpace(amrValues))
+            if (amrValues != null)
             {
-                amr = amrValues.Split(' ');
+                amr = amrValues.ToArray();
             }
 
             var azp = string.Empty;

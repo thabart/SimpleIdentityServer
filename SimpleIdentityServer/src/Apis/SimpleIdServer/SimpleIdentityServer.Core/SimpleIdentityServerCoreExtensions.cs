@@ -103,7 +103,6 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
             serviceCollection.AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
-            serviceCollection.AddTransient<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
             serviceCollection.AddTransient<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
             serviceCollection.AddTransient<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
@@ -154,6 +153,8 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IGetUserProfilesAction, GetUserProfilesAction>();
             serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
             serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
+            serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
+            serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
             return serviceCollection;
         }
     }

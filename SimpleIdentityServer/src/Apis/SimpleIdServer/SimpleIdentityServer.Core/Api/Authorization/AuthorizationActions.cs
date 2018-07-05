@@ -48,6 +48,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IAmrHelper _amrHelper;
+        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
@@ -58,7 +60,9 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             IOAuthEventSource oauthEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IPayloadSerializer payloadSerializer)
+            IPayloadSerializer payloadSerializer, 
+            IAmrHelper amrHelper,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
             _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
@@ -70,6 +74,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
+            _amrHelper = amrHelper;
+            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
         public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
@@ -123,6 +129,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
                 _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(actionResult), 1));
                 actionResult.ProcessId = processId;
+                actionResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
                 return actionResult;
             }
             catch(IdentityServerException ex)

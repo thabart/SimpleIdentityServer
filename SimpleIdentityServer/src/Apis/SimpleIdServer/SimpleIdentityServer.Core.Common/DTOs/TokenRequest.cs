@@ -46,6 +46,10 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string RedirectUri { get; set; }
         [DataMember(Name = RequestTokenNames.RefreshToken)]
         public string RefreshToken { get; set; }
+        [DataMember(Name = RequestTokenNames.CodeVerifier)]
+        public string CodeVerifier { get; set; }
+        [DataMember(Name = RequestTokenNames.AmrValues)]
+        public string AmrValues { get; set; }
         [DataMember(Name = ClientAuthNames.ClientId)]
         public string ClientId { get; set; }
         [DataMember(Name = ClientAuthNames.ClientSecret)]
@@ -54,8 +58,6 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string ClientAssertionType { get; set; }
         [DataMember(Name = ClientAuthNames.ClientAssertion)]
         public string ClientAssertion { get; set; }
-        [DataMember(Name = RequestTokenNames.CodeVerifier)]
-        public string CodeVerifier { get; set; }
         [DataMember(Name = RequestTokenUma.Ticket)]
         public string Ticket { get; set; }
         [DataMember(Name = RequestTokenUma.ClaimToken)]

@@ -13,6 +13,7 @@ using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
 using SimpleIdentityServer.Core.Services;
@@ -31,9 +32,11 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 {
-    [Area("pwd")]
+    [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
+        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
+
         public AuthenticateController(
             IAuthenticateActions authenticateActions,
             IProfileActions profileActions,
@@ -50,6 +53,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             IPayloadSerializer payloadSerializer,
             IConfigurationService configurationService,
             IAuthenticateHelper authenticateHelper,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
             BasicAuthenticateOptions basicAuthenticateOptions,
             AuthenticateOptions authenticateOptions) : base(authenticateActions, profileActions, dataProtectionProvider, encoder,
@@ -57,7 +61,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 authenticationService, authenticationSchemeProvider, userActions, payloadSerializer, configurationService,
                 authenticateHelper, twoFactorAuthenticationHandler, basicAuthenticateOptions, authenticateOptions)
         {
-
+            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
         public async Task<IActionResult> Index()
@@ -102,11 +106,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 
             try
             {
-                var resourceOwner = await _authenticateActions.LocalUserAuthentication(new LocalAuthenticationParameter
-                {
-                    UserName = authorizeViewModel.Login,
-                    Password = authorizeViewModel.Password
-                });
+                var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(authorizeViewModel.Login, authorizeViewModel.Password, new[] { Constants.AMR });
                 var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),

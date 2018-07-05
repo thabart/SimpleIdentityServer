@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Host.Tests.Extensions;
@@ -66,8 +67,7 @@ namespace SimpleIdentityServer.Host.Tests
                 {
                     IsEnabled = true,
                     EndPoint = ScimEndPoint
-                },
-                AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
+                }
             };
             _jsonWebKeyEnricher = new JsonWebKeyEnricher();
             _context = context;
@@ -144,6 +144,8 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
+            services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
+            services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()

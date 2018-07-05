@@ -22,16 +22,16 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Host.Tests.Services
 {
-    public class CustomAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
+    public class SmsAuthenticateResourceOwnerService : IAuthenticateResourceOwnerService
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
 
-        public CustomAuthenticateResourceOwnerService(IResourceOwnerRepository resourceOwnerRepository)
+        public SmsAuthenticateResourceOwnerService(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public string Amr => "pwd";
+        public string Amr => "sms";
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {

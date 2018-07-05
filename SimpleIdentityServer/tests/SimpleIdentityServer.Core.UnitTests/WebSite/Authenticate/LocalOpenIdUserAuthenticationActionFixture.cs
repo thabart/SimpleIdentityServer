@@ -2,11 +2,13 @@
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,8 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public sealed class LocalOpenIdUserAuthenticationActionFixture
     {
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
-        private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryFake;
+        private Mock<IResourceOwnerAuthenticateHelper> _resourceOwnerAuthenticateHelperStub;
         private Mock<IAuthenticateHelper> _authenticateHelperFake;
         private ILocalOpenIdUserAuthenticationAction _localUserAuthenticationAction;
 
@@ -40,8 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
             var localAuthenticationParameter = new LocalAuthenticationParameter();
             var authorizationParameter = new AuthorizationParameter();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(),
-                It.IsAny<string>())).Returns(Task.FromResult((ResourceOwner)null));
+            _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(localAuthenticationParameter, authorizationParameter, null));
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 Id = subject
             };
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(resourceOwner));
+            _resourceOwnerAuthenticateHelperStub.Setup(r => r.Authenticate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).Returns(Task.FromResult(resourceOwner));
 
             // ACT
             var result = await _localUserAuthenticationAction.Execute(localAuthenticationParameter,
@@ -75,12 +75,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private void InitializeFakeObjects()
         {
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
-            _resourceOwnerRepositoryFake = new Mock<IResourceOwnerRepository>();
+            _resourceOwnerAuthenticateHelperStub = new Mock<IResourceOwnerAuthenticateHelper>();
             _authenticateHelperFake = new Mock<IAuthenticateHelper>();
             _localUserAuthenticationAction = new LocalOpenIdUserAuthenticationAction(
-                _authenticateResourceOwnerServiceStub.Object,
-                _resourceOwnerRepositoryFake.Object,
+                _resourceOwnerAuthenticateHelperStub.Object,
                 _authenticateHelperFake.Object);
         }
     }

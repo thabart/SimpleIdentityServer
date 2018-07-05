@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
+using SimpleIdentityServer.Authenticate.SMS.Services;
+using SimpleIdentityServer.Core.Services;
 using System;
 
 namespace SimpleIdentityServer.Authenticate.SMS
@@ -42,6 +44,7 @@ namespace SimpleIdentityServer.Authenticate.SMS
             services.AddSingleton(smsAuthenticationOptions);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
+            services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             mvcBuilder.AddApplicationPart(assembly);
             return services;
         }

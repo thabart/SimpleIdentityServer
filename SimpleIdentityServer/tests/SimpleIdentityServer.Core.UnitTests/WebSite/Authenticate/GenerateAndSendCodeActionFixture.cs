@@ -37,7 +37,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private Mock<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlerStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IGenerateAndSendCodeAction _generateAndSendCodeAction;
 
         [Fact]
@@ -55,7 +54,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
@@ -70,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = string.Empty
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
@@ -114,7 +113,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
@@ -145,7 +144,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
                     TwoFactorAuthentication = "email",
@@ -174,12 +173,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
             _twoFactorAuthenticationHandlerStub = new Mock<ITwoFactorAuthenticationHandler>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _generateAndSendCodeAction = new GenerateAndSendCodeAction(
                 _resourceOwnerRepositoryStub.Object,
                 _confirmationCodeStoreStub.Object,
-                _twoFactorAuthenticationHandlerStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _twoFactorAuthenticationHandlerStub.Object);
         }
     }
 }

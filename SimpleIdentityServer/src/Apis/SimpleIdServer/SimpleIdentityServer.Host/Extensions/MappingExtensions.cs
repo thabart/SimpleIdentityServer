@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 UiLocales = request.UiLocales,
                 OriginUrl = request.OriginUrl,
                 SessionId = request.SessionId,
-                AmrValues = request.AmrValues
+                AmrValues = string.IsNullOrWhiteSpace(request.AmrValues) ? new string[0] : request.AmrValues.Split(' ')
             };
 
             if (!string.IsNullOrWhiteSpace(request.ProcessId))
@@ -126,7 +126,8 @@ namespace SimpleIdentityServer.Host.Extensions
                 ClientId = request.ClientId,
                 ClientAssertion = request.ClientAssertion,
                 ClientAssertionType = request.ClientAssertionType,
-                ClientSecret = request.ClientSecret
+                ClientSecret = request.ClientSecret,
+                AmrValues = string.IsNullOrWhiteSpace(request.AmrValues) ? new string[0] : request.AmrValues.Split(' ') 
             };
         }
 

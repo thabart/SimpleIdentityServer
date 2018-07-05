@@ -15,10 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication.Cookies;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Services;
 using System;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Host
 {
@@ -32,12 +29,6 @@ namespace SimpleIdentityServer.Host
     {
         public string EndPoint { get; set; }
         public bool IsEnabled { get; set; }
-    }
-
-    public class EventOptions
-    {
-        public Type Publisher { get; set; }
-        public IEnumerable<Type> Handlers { get; set; }
     }
 
     public class IdentityServerOptions
@@ -56,14 +47,6 @@ namespace SimpleIdentityServer.Host
         /// Scim options.
         /// </summary>
         public ScimOptions Scim { get; set; }
-        /// <summary>
-        /// Configure the event publisher &|or handlers.
-        /// </summary>
-        public EventOptions Event { get; set; }
-        /// <summary>
-        /// Service used to authenticate the resource owner.
-        /// </summary>
-        public Type AuthenticateResourceOwner { get; set; }
         /// <summary>
         /// Service used to retrieve configurations (expiration date time etc ...)
         /// </summary>

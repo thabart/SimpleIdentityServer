@@ -165,6 +165,7 @@ namespace SimpleIdentityServer.Core.Common
         public const string RedirectUri = "redirect_uri";
         public const string RefreshToken = "refresh_token";
         public const string CodeVerifier = "code_verifier";
+        public const string AmrValues = "amr_values";
     }
 
     // https://docs.kantarainitiative.org/uma/wg/oauth-uma-grant-2.0-05.html#seek-authorization

@@ -131,5 +131,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
         public const string TheScimConfigurationMustBeSpecified = "the scim configuration is not correct";
         public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
+        public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
+        public const string NoActiveAmr = "no active AMR";
     }
 }

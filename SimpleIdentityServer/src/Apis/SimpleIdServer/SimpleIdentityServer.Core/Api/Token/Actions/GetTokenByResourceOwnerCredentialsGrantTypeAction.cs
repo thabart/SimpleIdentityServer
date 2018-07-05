@@ -22,7 +22,6 @@ using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
@@ -43,7 +42,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
     {
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IScopeValidator _scopeValidator;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
+        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IJwtGenerator _jwtGenerator;
@@ -56,7 +55,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         public GetTokenByResourceOwnerCredentialsGrantTypeAction(
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
             IJwtGenerator jwtGenerator,
@@ -68,7 +67,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = scopeValidator;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
+            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
             _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _jwtGenerator = jwtGenerator;
@@ -101,7 +100,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Try to authenticate a resource owner
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(resourceOwnerGrantTypeParameter.UserName, resourceOwnerGrantTypeParameter.Password);
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName, 
+                resourceOwnerGrantTypeParameter.Password,
+                resourceOwnerGrantTypeParameter.AmrValues);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);

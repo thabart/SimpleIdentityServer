@@ -7,5 +7,6 @@ namespace SimpleIdentityServer.TwoFactorAuthentication
     {
         Task SendAsync(string code, ResourceOwner user);
         string RequiredClaim { get; }
+        string Name { get; }
     }
 }

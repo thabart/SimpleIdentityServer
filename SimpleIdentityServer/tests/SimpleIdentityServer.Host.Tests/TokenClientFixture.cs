@@ -27,6 +27,7 @@ using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Xunit;
@@ -78,6 +79,24 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.AccessToken);
+        }
+
+        [Fact]
+        public async Task When_Using_Password_Grant_Type_And_Sms_Amr_Then_Access_Token_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                .UsePassword("administrator", "password", new List<string> { "sms" }, new List<string> { "scim" })
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 

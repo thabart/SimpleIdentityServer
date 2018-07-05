@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 {
-    public class EmailServiceOptions
+    public class TwoFactorEmailOptions
     {
         public string EmailFromName { get; set; }
         public string EmailFromAddress { get; set; }
@@ -38,9 +38,9 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
 
     public class DefaultEmailService : ITwoFactorAuthenticationService
     {
-        private readonly EmailServiceOptions _options;
+        private readonly TwoFactorEmailOptions _options;
 
-        public DefaultEmailService(EmailServiceOptions options)
+        public DefaultEmailService(TwoFactorEmailOptions options)
         {
             if (options == null)
             {
@@ -51,6 +51,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
         }
 
         public string RequiredClaim { get { return SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Email; } }
+        public string Name => "EMAIL";
 
         public async Task SendAsync(string code, ResourceOwner user)
         {

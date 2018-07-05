@@ -108,14 +108,13 @@ namespace SimpleIdentityServer.Startup
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
-            var twoFactor = new DefaultTwilioSmsService(new TwilioOptions
+            services.AddTwoFactorSmsAuthentication(new TwoFactorTwilioOptions
             {
                 TwilioAccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
                 TwilioAuthToken = "0c006b20fa2459200274229b2b655746",
                 TwilioFromNumber = "+19103562002",
                 TwilioMessage = "The activation code is {0}"
-            });
-            TwoFactorServiceStore.Instance().Add("SMS", twoFactor);
+            }); // SMS TWO FACTOR AUTHENTICATION.
             services.AddOpenIdApi(_options); // API
             services.AddBasicShell(mvcBuilder, _env);  // SHELL
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions

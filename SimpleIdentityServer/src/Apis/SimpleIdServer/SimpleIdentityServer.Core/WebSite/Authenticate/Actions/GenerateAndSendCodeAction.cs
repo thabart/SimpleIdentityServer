@@ -35,18 +35,15 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public GenerateAndSendCodeAction(
             IResourceOwnerRepository resourceOwnerRepository,
             IConfirmationCodeStore confirmationCodeStore,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _confirmationCodeStore = confirmationCodeStore;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
 
@@ -57,7 +54,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
             
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheRoDoesntExist);
