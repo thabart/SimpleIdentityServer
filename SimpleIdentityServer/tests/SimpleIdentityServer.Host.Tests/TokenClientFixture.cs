@@ -16,6 +16,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using SimpleIdentityServer.Authenticate.SMS.Client;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Factories;
@@ -26,6 +27,7 @@ using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Store;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -39,8 +41,10 @@ namespace SimpleIdentityServer.Host.Tests
         private const string baseUrl = "http://localhost:5000";
         private readonly TestScimServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
+        private Mock<Authenticate.SMS.Client.Factories.IHttpClientFactory> _smsHttpClientFactoryStub;
         private IClientAuthSelector _clientAuthSelector;
         private IUserInfoClient _userInfoClient;
+        private ISidSmsAuthenticateClient _sidSmsAuthenticateClient;
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;
 
@@ -88,17 +92,34 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         [Fact]
-        public async Task When_Using_Password_Grant_Type_And_Sms_Amr_Then_Access_Token_Is_Returned()
+        public async Task When_Using_Password_Grant_Type_With_SMS_Then_Access_Token_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            _smsHttpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
+            ConfirmationCode confirmationCode = new ConfirmationCode();
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
+            {
+                return Task.FromResult((ConfirmationCode)null);
+            });
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>())).Callback<ConfirmationCode>(r =>
+            {
+                confirmationCode = r;
+            }).Returns(() =>
+            {
+                return Task.FromResult(true);
+            });
+            await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            {
+                PhoneNumber = "phone"
+            });
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(Task.FromResult(confirmationCode));
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", new List<string> { "sms" }, new List<string> { "scim" })
+                .UsePassword("phone", confirmationCode.Value, new List<string> { "sms" }, new List<string> { "scim" })
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -266,16 +287,19 @@ namespace SimpleIdentityServer.Host.Tests
             _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
             _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
+            _smsHttpClientFactoryStub = new Mock<Authenticate.SMS.Client.Factories.IHttpClientFactory>();
             var requestBuilder = new RequestBuilder();
             var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
             var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
             var revokeTokenOperation = new RevokeTokenOperation(_httpClientFactoryStub.Object);
+            var sendSmsOperation = new SendSmsOperation(_smsHttpClientFactoryStub.Object);
             _clientAuthSelector = new ClientAuthSelector(
                 new TokenClientFactory(postTokenOperation, getDiscoveryOperation), 
                 new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
                 new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
             var getUserInfoOperation = new GetUserInfoOperation(_httpClientFactoryStub.Object);
+            _sidSmsAuthenticateClient = new SidSmsAuthenticateClient(sendSmsOperation);
             _userInfoClient = new UserInfoClient(getUserInfoOperation, getDiscoveryOperation);
         }
     }

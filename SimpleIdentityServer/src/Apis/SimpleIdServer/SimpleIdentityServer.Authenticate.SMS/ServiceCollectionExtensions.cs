@@ -6,6 +6,7 @@ using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Twilio.Client;
 using System;
 
 namespace SimpleIdentityServer.Authenticate.SMS
@@ -25,11 +26,6 @@ namespace SimpleIdentityServer.Authenticate.SMS
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            if (hosting == null)
-            {
-                throw new ArgumentNullException(nameof(hosting));
-            }
-
             if (smsAuthenticationOptions == null)
             {
                 throw new ArgumentNullException(nameof(smsAuthenticationOptions));
@@ -42,6 +38,7 @@ namespace SimpleIdentityServer.Authenticate.SMS
                 opts.FileProviders.Add(embeddedFileProvider);
             });
             services.AddSingleton(smsAuthenticationOptions);
+            services.AddTransient<ITwilioClient, TwilioClient>();
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();

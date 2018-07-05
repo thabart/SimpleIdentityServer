@@ -152,7 +152,7 @@ namespace SimpleIdentityServer.Client.Selectors
             _requestBuilder.Content.Add(RequestTokenNames.Password, password);
             _requestBuilder.Content.Add(RequestTokenNames.Scope, ConcatScopes(scopes));
             _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.Password);
-            if (amrValues != null && !amrValues.Any())
+            if (amrValues != null && amrValues.Any())
             {
                 _requestBuilder.Content.Add(RequestTokenNames.AmrValues, string.Join(" ", amrValues));
             }

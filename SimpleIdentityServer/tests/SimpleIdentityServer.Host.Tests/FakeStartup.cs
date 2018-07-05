@@ -21,6 +21,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.Authenticate.LoginPassword;
+using SimpleIdentityServer.Authenticate.SMS;
+using SimpleIdentityServer.Authenticate.SMS.Actions;
+using SimpleIdentityServer.Authenticate.SMS.Controllers;
+using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common;
@@ -31,12 +36,15 @@ using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Host.Tests.Extensions;
+using SimpleIdentityServer.Host.Tests.Fakes;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.OpenId.Logging;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Store.InMemory;
+using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,6 +105,7 @@ namespace SimpleIdentityServer.Host.Tests
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -144,8 +153,15 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
+            services.AddSingleton(new SmsAuthenticationOptions());
+            services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
+            services.AddTransient<ITwilioClient, FakeTwilioClient>();
+            services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
+            services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
+            services.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
+            services.AddSingleton<ITokenStore>(new InMemoryTokenStore());
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()
@@ -154,9 +170,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 .AddOAuthInMemoryEF()
-                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions())
-                .AddInMemoryStorage();
-                // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
+                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

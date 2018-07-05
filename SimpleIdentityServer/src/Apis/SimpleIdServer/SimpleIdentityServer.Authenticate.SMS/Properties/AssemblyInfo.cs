@@ -14,19 +14,8 @@
 // limitations under the License.
 #endregion
 
-using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace SimpleIdentityServer.Uma.Host.Configurations
-{
-    public class UmaHostConfiguration
-    {
-        /// <summary>
-        /// Service used to retrieve configurations (expiration date time etc ...)
-        /// </summary>
-        public Type ConfigurationService { get; set; }
-        /// <summary>
-        /// Service used to encrypt the password
-        /// </summary>
-        public Type PasswordService { get; set; }
-    }
-}
+[assembly: InternalsVisibleTo("SimpleIdentityServer.Host.Tests")]

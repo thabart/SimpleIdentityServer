@@ -147,8 +147,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 TwoFactorAuthentication = string.Empty,
                 IsLocalAccount = true,
                 Password = PasswordHelper.ComputeHash(addUserParameter.Password)
-            };
-                        
+            };                        
             await _resourceOwnerRepository.InsertAsync(newResourceOwner);
             if (!string.IsNullOrWhiteSpace(issuer))
             {

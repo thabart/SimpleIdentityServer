@@ -25,11 +25,6 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword
                 throw new ArgumentNullException(nameof(mvcBuilder));
             }
 
-            if (hosting == null)
-            {
-                throw new ArgumentNullException(nameof(hosting));
-            }
-
             if (basicAuthenticateOptions == null)
             {
                 throw new ArgumentNullException(nameof(basicAuthenticateOptions));

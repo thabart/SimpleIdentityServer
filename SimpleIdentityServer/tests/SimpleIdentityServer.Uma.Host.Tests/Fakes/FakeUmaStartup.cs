@@ -170,7 +170,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddUmaLogging();
             // 4. Register the services.
             services.AddTransient<SimpleIdentityServer.Core.Services.IConfigurationService, DefaultConfigurationService>();
-            services.AddTransient<SimpleIdentityServer.Core.Services.IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwnerService>();
             // 5. Register other classes.
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

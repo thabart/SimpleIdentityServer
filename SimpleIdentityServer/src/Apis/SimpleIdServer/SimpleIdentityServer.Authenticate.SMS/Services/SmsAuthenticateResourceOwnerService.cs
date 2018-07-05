@@ -44,6 +44,11 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
                 return null;
             }
 
+            if (confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn) <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
             return await _resourceOwnerRepository.GetAsync(login);
         }
     }

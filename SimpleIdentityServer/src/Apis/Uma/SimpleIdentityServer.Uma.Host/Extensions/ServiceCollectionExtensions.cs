@@ -95,15 +95,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            if (configuration.AuthenticateResourceOwner == null)
-            {
-                services.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IAuthenticateResourceOwnerService), configuration.AuthenticateResourceOwner);
-            }
-
             if (configuration.ConfigurationService == null)
             {
                 services.AddTransient<IConfigurationService, DefaultConfigurationService>();

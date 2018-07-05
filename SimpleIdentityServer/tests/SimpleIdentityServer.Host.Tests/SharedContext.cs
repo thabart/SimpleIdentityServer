@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
+using Moq;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Store;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests
@@ -75,6 +77,7 @@ namespace SimpleIdentityServer.Host.Tests
                 SerializedKey = serializedRsa,
             };
             HttpClientFactory = new FakeHttpClientFactory();
+            ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
         }
 
         public JsonWebKey EncryptionKey { get; }
@@ -82,5 +85,6 @@ namespace SimpleIdentityServer.Host.Tests
         public JsonWebKey SignatureKey { get; }
         public EF.Models.JsonWebKey ModelSignatureKey { get; }
         public FakeHttpClientFactory HttpClientFactory { get; }
+        public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
     }
 }
