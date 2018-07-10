@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     await SetPasswordLessCookie(claims);
                     try
                     {
-                        var code = await _generateAndSendSmsCodeOperation.Execute(localAuthenticationViewModel.PhoneNumber, claims.GetSubject());
+                        var code = await _generateAndSendSmsCodeOperation.Execute(localAuthenticationViewModel.PhoneNumber);
                         _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode");
                     }
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             var phoneNumber = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
-                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, subject);
+                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
                 _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 await TranslateView(DefaultLanguage);
                 return View("ConfirmCode", confirmCodeViewModel);
@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUser.Claims);
-                    var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, subject);
+                    var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
                     _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
@@ -287,7 +287,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     await SetPasswordLessCookie(claims);
                     try
                     {
-                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber, claims.GetSubject());
+                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
                         _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }

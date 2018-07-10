@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SimpleBus.InMemory;
+using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
@@ -170,7 +171,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 .AddOAuthInMemoryEF()
-                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
+                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions())
+                .AddInMemoryAccessTokenStore();
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

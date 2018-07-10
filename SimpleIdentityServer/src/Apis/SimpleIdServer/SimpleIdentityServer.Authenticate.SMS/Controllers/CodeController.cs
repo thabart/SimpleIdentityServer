@@ -2,14 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
 using SimpleIdentityServer.Authenticate.SMS.Common.Responses;
-using SimpleIdentityServer.Core.Common.Models;
-using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Controllers
@@ -18,12 +13,12 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
     public class CodeController : Controller
     {
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
 
-        public CodeController(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, IResourceOwnerRepository resourceOwnerRepository)
+        public CodeController(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, ISmsAuthenticationOperation smsAuthenticationOperation)
         {
             _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
-            _resourceOwnerRepository = resourceOwnerRepository;
+            _smsAuthenticationOperation = smsAuthenticationOperation;
         }
 
         [HttpPost]
@@ -32,30 +27,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             Check(confirmationCodeRequest);
             try
             {
-                var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, confirmationCodeRequest.PhoneNumber);
-                var subject = resourceOwner == null ? confirmationCodeRequest.PhoneNumber : resourceOwner.Id;
-                await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber, subject);
-                if (resourceOwner == null)
-                {
-                    var newResourceOwner = new ResourceOwner
-                    {
-                        Id = confirmationCodeRequest.PhoneNumber,
-                        CreateDateTime = DateTime.UtcNow,
-                        UpdateDateTime = DateTime.UtcNow,
-                        IsLocalAccount = true,
-                        Password = PasswordHelper.ComputeHash(Guid.NewGuid().ToString()),
-                        TwoFactorAuthentication = null,
-                        Claims = new List<Claim>
-                        {
-                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, confirmationCodeRequest.PhoneNumber),
-                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, confirmationCodeRequest.PhoneNumber),
-                            new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()),
-                        }
-                    };
-
-                    await _resourceOwnerRepository.InsertAsync(newResourceOwner);
-                }
-
+                var resourceOwner = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber);
+                await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber);
                 return new OkResult();
             }
             catch(IdentityServerException ex)
