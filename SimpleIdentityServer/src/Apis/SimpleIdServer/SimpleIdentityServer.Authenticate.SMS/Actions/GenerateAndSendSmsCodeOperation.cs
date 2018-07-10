@@ -9,7 +9,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
     public interface IGenerateAndSendSmsCodeOperation
     {
-        Task<string> Execute(string phoneNumber);
+        Task<string> Execute(string phoneNumber, string subject);
     }
 
     internal sealed class GenerateAndSendSmsCodeOperation : IGenerateAndSendSmsCodeOperation
@@ -25,11 +25,16 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             _twilioClient = twilioClient;
         }
 
-        public async Task<string> Execute(string phoneNumber)
+        public async Task<string> Execute(string phoneNumber, string subject)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
             {
                 throw new ArgumentNullException(nameof(phoneNumber));
+            }
+
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                throw new ArgumentNullException(nameof(subject));
             }
 
             var confirmationCode = new ConfirmationCode
@@ -37,7 +42,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
                 Value = await GetCode(),
                 IssueAt = DateTime.UtcNow,
                 ExpiresIn = 300,
-                Subject = phoneNumber
+                Subject = subject
             };
 
             var message = string.Format(_smsAuthenticationOptions.Message, confirmationCode.Value);

@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     await SetPasswordLessCookie(claims);
                     try
                     {
-                        var code = await _generateAndSendSmsCodeOperation.Execute(localAuthenticationViewModel.PhoneNumber);
+                        var code = await _generateAndSendSmsCodeOperation.Execute(localAuthenticationViewModel.PhoneNumber, claims.GetSubject());
                         _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode");
                     }
@@ -188,10 +188,11 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
             }
 
+            var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
             var phoneNumber = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber);
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
-                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
+                var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, subject);
                 _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 await TranslateView(DefaultLanguage);
                 return View("ConfirmCode", confirmCodeViewModel);
@@ -204,7 +205,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
             await _authenticationService.SignOutAsync(HttpContext, _passwordLessCookieName, new AuthenticationProperties());
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 try
                 {
                     await SetTwoFactorCookie(authenticatedUser.Claims);
-                    var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
+                    var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value, subject);
                     _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
@@ -287,7 +287,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     await SetPasswordLessCookie(claims);
                     try
                     {
-                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
+                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber, claims.GetSubject());
                         _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }

@@ -32,8 +32,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             Check(confirmationCodeRequest);
             try
             {
-                await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber);
-                var resourceOwner = await _resourceOwnerRepository.GetAsync(confirmationCodeRequest.PhoneNumber);
+                var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, confirmationCodeRequest.PhoneNumber);
+                var subject = resourceOwner == null ? confirmationCodeRequest.PhoneNumber : resourceOwner.Id;
+                await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber, subject);
                 if (resourceOwner == null)
                 {
                     var newResourceOwner = new ResourceOwner
