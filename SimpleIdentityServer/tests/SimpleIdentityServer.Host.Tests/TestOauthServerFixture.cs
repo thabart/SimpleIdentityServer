@@ -22,13 +22,13 @@ using System.Net.Http;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class TestScimServerFixture : IDisposable
+    public class TestOauthServerFixture : IDisposable
     {
         public TestServer Server { get; }
         public HttpClient Client { get; }
         public SharedContext SharedCtx { get; }
 
-        public TestScimServerFixture()
+        public TestOauthServerFixture()
         {
             SharedCtx = new SharedContext();
             var startup = new FakeStartup(SharedCtx);

@@ -23,13 +23,13 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class DiscoveryClientFixture : IClassFixture<TestScimServerFixture>
+    public class DiscoveryClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private readonly TestScimServerFixture _server;
+        private readonly TestOauthServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IDiscoveryClient _discoveryClient;
 
-        public DiscoveryClientFixture(TestScimServerFixture server)
+        public DiscoveryClientFixture(TestOauthServerFixture server)
         {
             _server = server;
         }

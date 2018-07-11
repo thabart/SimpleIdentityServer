@@ -23,44 +23,38 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class RegisterClientFixture : IClassFixture<TestScimServerFixture>
+    public class JwksClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private readonly TestScimServerFixture _server;
+        private const string baseUrl = "http://localhost:5000";
+        private readonly TestOauthServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
-        private IRegistrationClient _registrationClient;
+        private IJwksClient _jwksClient;
 
-        public RegisterClientFixture(TestScimServerFixture server)
+        public JwksClientFixture(TestOauthServerFixture server)
         {
             _server = server;
         }
 
         [Fact]
-        public async Task When_Registering_A_Client_Then_No_Exception_Is_Thrown()
+        public async Task When_Requesting_JWKS_Then_List_Is_Returned()
         {
-            const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
-            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Client
-            {
-                RedirectUris = new []
-                {
-                    "https://localhost"
-                },
-                ScimProfile = true
-            }, baseUrl + "/.well-known/openid-configuration");
+            // ACT 
+           var jwks = await  _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
-            Assert.NotNull(client);
-            Assert.True(client.ScimProfile);
+            Assert.NotNull(jwks);
         }
 
         private void InitializeFakeObjects()
         {
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _registrationClient = new RegistrationClient(new RegisterClientOperation(_httpClientFactoryStub.Object), new GetDiscoveryOperation(_httpClientFactoryStub.Object));
+            var getJsonWebKeysOperation = new GetJsonWebKeysOperation(_httpClientFactoryStub.Object);
+            var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
+            _jwksClient = new JwksClient(getJsonWebKeysOperation, getDiscoveryOperation);
         }
     }
 }

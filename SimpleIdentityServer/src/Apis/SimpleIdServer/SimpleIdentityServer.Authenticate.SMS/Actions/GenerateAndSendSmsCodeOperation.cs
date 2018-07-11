@@ -1,5 +1,6 @@
 ﻿using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
+using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
 using System;
@@ -17,12 +18,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
         private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly SmsAuthenticationOptions _smsAuthenticationOptions;
         private readonly ITwilioClient _twilioClient;
+        private readonly IOpenIdEventSource _eventSource;
 
-        public GenerateAndSendSmsCodeOperation(IConfirmationCodeStore confirmationCodeStore, SmsAuthenticationOptions smsAuthenticationOptions, ITwilioClient twilioClient)
+        public GenerateAndSendSmsCodeOperation(IConfirmationCodeStore confirmationCodeStore, SmsAuthenticationOptions smsAuthenticationOptions,
+            ITwilioClient twilioClient, IOpenIdEventSource eventSource)
         {
             _confirmationCodeStore = confirmationCodeStore;
             _smsAuthenticationOptions = smsAuthenticationOptions;
             _twilioClient = twilioClient;
+            _eventSource = eventSource;
         }
 
         public async Task<string> Execute(string phoneNumber)
@@ -45,8 +49,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             {
                 await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message);
             }
-            catch(Exception)
+            catch(Exception ex)
             {
+                _eventSource.Failure(ex);
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, "the twilio account is not properly configured");
             }
 
@@ -55,6 +60,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
+            _eventSource.GetConfirmationCode(confirmationCode.Value);
             return confirmationCode.Value;
         }
 

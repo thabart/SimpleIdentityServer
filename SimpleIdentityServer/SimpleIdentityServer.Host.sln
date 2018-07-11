@@ -147,6 +147,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Client", "src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj", "{D6575015-95E4-41F9-9498-79C8F0102E4D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Tests", "tests\SimpleIdentityServer.Authenticate.SMS.Tests\SimpleIdentityServer.Authenticate.SMS.Tests.csproj", "{ABE7C90B-9016-4188-86E9-9A0041949CEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -454,6 +456,12 @@ Global
 		{D6575015-95E4-41F9-9498-79C8F0102E4D}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{D6575015-95E4-41F9-9498-79C8F0102E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6575015-95E4-41F9-9498-79C8F0102E4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -526,6 +534,7 @@ Global
 		{DDF3FD68-C49A-4BB4-9F1E-9B6D5E4294EA} = {C44A7E70-B4A1-454D-9CBA-0F0FED3E75AF}
 		{5D826B9E-BDC2-4BAE-A7FC-5D1A0BBF08E8} = {DDF3FD68-C49A-4BB4-9F1E-9B6D5E4294EA}
 		{D6575015-95E4-41F9-9498-79C8F0102E4D} = {DDF3FD68-C49A-4BB4-9F1E-9B6D5E4294EA}
+		{ABE7C90B-9016-4188-86E9-9A0041949CEE} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

@@ -36,10 +36,10 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class TokenClientFixture : IClassFixture<TestScimServerFixture>
+    public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
-        private readonly TestScimServerFixture _server;
+        private readonly TestOauthServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private Mock<Authenticate.SMS.Client.Factories.IHttpClientFactory> _smsHttpClientFactoryStub;
         private IClientAuthSelector _clientAuthSelector;
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Host.Tests
         private IJwsGenerator _jwsGenerator;
         private IJweGenerator _jweGenerator;
 
-        public TokenClientFixture(TestScimServerFixture server)
+        public TokenClientFixture(TestOauthServerFixture server)
         {
             _server = server;
         }
@@ -174,7 +174,6 @@ namespace SimpleIdentityServer.Host.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
 
             // ACT
             var token = await _clientAuthSelector.UseClientSecretBasicAuth("basic_client", "basic_client")

@@ -45,7 +45,16 @@ namespace SimpleIdentityServer.Twilio.Client
             httpRequest.Headers.Add("Accept-Encoding", "utf-8");
             httpRequest.Headers.Add("Authorization", "Basic " + CreateBasicAuthenticationHeader(credentials.AccountSid, credentials.AuthToken));
             var response = await client.SendAsync(httpRequest).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                throw new TwilioException(json);
+            }
+
             return true;
         }
         private string CreateBasicAuthenticationHeader(string username, string password)

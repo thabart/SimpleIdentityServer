@@ -28,14 +28,14 @@ using SimpleIdentityServer.Client.Builders;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class AuthorizationClientFixture : IClassFixture<TestScimServerFixture>
+    public class AuthorizationClientFixture : IClassFixture<TestOauthServerFixture>
     {
-        private readonly TestScimServerFixture _server;
+        private readonly TestOauthServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IAuthorizationClient _authorizationClient;
         private IClientAuthSelector _clientAuthSelector;
 
-        public AuthorizationClientFixture(TestScimServerFixture server)
+        public AuthorizationClientFixture(TestOauthServerFixture server)
         {
             _server = server;
         }

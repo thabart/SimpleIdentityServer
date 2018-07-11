@@ -46,6 +46,13 @@ namespace SimpleIdentityServer.Client
             _serviceProvider = services.BuildServiceProvider();
         }
 
+        public IdentityServerClientFactory(IHttpClientFactory httpClientFactory)
+        {
+            var services = new ServiceCollection();
+            RegisterDependencies(services, httpClientFactory);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
         #endregion
 
         public IIntrospectClient CreateIntrospectionClient()
@@ -116,9 +123,16 @@ namespace SimpleIdentityServer.Client
 
         #region Private static methods
 
-        private static void RegisterDependencies(IServiceCollection serviceCollection)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, IHttpClientFactory httpClientFactory = null)
         {
-            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            if (httpClientFactory != null)
+            {
+                serviceCollection.AddSingleton(httpClientFactory);
+            }
+            else
+            {
+                serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            }
 
             // Register clients
             serviceCollection.AddTransient<ITokenClient, TokenClient>();

@@ -4,5 +4,6 @@
     {
         public const string AMR = "sms";
         public const string CodeController = "code";
+        public const string COOKIE_NAME = "SimpleIdentityServer-PasswordLess";
     }
 }
