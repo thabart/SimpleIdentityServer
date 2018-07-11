@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Host.Tests
         {
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
-            services.AddTransient<ITwilioClient, FakeTwilioClient>();
+            services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();

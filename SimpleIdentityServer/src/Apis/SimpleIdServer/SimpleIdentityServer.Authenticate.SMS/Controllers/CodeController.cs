@@ -25,11 +25,12 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         public async Task<IActionResult> Send([FromBody] ConfirmationCodeRequest confirmationCodeRequest)
         {
             Check(confirmationCodeRequest);
+            IActionResult result = null;
             try
             {
                 var resourceOwner = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber);
                 await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber);
-                return new OkResult();
+                result = new OkResult();
             }
             catch(IdentityServerException ex)
             {
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     Code = ex.Code,
                     Message = ex.Message
                 };
-                var result = new JsonResult(error)
+                result = new JsonResult(error)
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
@@ -50,13 +51,13 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     Code = Core.Errors.ErrorCodes.UnhandledExceptionCode,
                     Message = "internal error"
                 };
-                var result = new JsonResult(error)
+                result = new JsonResult(error)
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
 
-            return null;
+            return result;
         }
 
         private void Check(ConfirmationCodeRequest confirmationCodeRequest)
