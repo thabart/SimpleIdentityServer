@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System;
 using System.Threading.Tasks;
@@ -24,9 +25,9 @@ namespace SimpleIdentityServer.Client
 {
     public interface IAuthorizationClient
     {
-        Task<ApiResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request);
-        Task<ApiResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request);
-        Task<ApiResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request);
+        Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request);
+        Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request);
+        Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request);
     }
 
     internal class AuthorizationClient : IAuthorizationClient
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<ApiResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request)
+        public async Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request)
         {
             if (authorizationUri == null)
             {
@@ -55,7 +56,7 @@ namespace SimpleIdentityServer.Client
             return await _getAuthorizationOperation.ExecuteAsync(authorizationUri, request);
         }
 
-        public async Task<ApiResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
+        public async Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
         {
             if (string.IsNullOrWhiteSpace(authorizationUrl))
             {
@@ -71,7 +72,7 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(uri, request);
         }
 
-        public async Task<ApiResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
+        public async Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {

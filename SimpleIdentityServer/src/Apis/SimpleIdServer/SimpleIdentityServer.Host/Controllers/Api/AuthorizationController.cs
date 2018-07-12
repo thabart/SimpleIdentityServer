@@ -17,13 +17,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Protector;
@@ -32,7 +31,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -69,14 +68,12 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Get()
+        public async Task<IActionResult> Get()
         {
             var query = Request.Query;
             if (query == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.RequestIsNotValid);
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var originUrl = this.GetOriginUrl();
@@ -224,6 +221,27 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             return authorizationRequest;
+        }
+
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

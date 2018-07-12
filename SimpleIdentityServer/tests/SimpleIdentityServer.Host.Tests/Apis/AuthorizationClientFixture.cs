@@ -15,6 +15,7 @@
 #endregion
 
 using Moq;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Operations;
@@ -22,6 +23,7 @@ using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,6 +32,7 @@ namespace SimpleIdentityServer.Host.Tests
 {
     public class AuthorizationClientFixture : IClassFixture<TestOauthServerFixture>
     {
+        const string baseUrl = "http://localhost:5000";
         private readonly TestOauthServerFixture _server;
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IAuthorizationClient _authorizationClient;
@@ -40,10 +43,174 @@ namespace SimpleIdentityServer.Host.Tests
             _server = server;
         }
 
+        #region Errors
+
+        [Fact]
+        public async Task When_Scope_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization" ));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter scope is missing", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_ClientId_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter client_id is missing", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_RedirectUri_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&client_id=client"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter redirect_uri is missing", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_ResponseType_IsNot_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&client_id=client&redirect_uri=redirect_uri"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter response_type is missing", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_Unsupported_ResponseType_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=client&redirect_uri=redirect_uri&response_type=invalid"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("at least one response_type parameter is not supported", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_UnsupportedPrompt_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=client&redirect_uri=redirect_uri&response_type=token&prompt=invalid"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("at least one prompt parameter is not supported", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+
+        }
+
+        [Fact]
+        public async Task When_Not_Correct_Redirect_Uri_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=client&redirect_uri=redirect_uri&response_type=token&prompt=none"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("Based on the RFC-3986 the redirection-uri is not well formed", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Not_Correct_ClientId_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=bad_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client id parameter bad_client doesn't exist or is not valid", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Not_Support_Redirect_Uri_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000&response_type=token&prompt=none"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the redirect url http://localhost:5000 doesn't exist or is not valid", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        #endregion
+
         [Fact]
         public async Task When_Requesting_Token_And_CodeVerifier_Is_Passed_Then_Token_Is_Returned()
         {
-            const string baseUrl = "http://localhost:5000";
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
@@ -85,8 +252,8 @@ namespace SimpleIdentityServer.Host.Tests
             
             // ASSERTS
             Assert.NotNull(result);
-            Assert.NotNull(result.Content);
-            Assert.True(result.Content["error"].ToString() == "invalid_request");
+            Assert.True(result.ContainsError);
+            Assert.True(result.Error.Error == "invalid_request");
         }
 
         [Fact]

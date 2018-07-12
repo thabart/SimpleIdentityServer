@@ -145,6 +145,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
+                _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 

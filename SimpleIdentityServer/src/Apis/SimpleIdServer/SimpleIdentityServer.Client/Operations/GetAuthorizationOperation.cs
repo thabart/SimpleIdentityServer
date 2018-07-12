@@ -14,21 +14,20 @@
 // limitations under the License.
 #endregion
 
-using HtmlAgilityPack;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Serializers;
 using System;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.Operations
 {
     public interface IGetAuthorizationOperation
     {
-        Task<ApiResult> ExecuteAsync(Uri uri, AuthorizationRequest request);
+        Task<GetAuthorizationResult> ExecuteAsync(Uri uri, AuthorizationRequest request);
     }
 
     internal class GetAuthorizationOperation : IGetAuthorizationOperation
@@ -40,7 +39,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ApiResult> ExecuteAsync(Uri uri, AuthorizationRequest request)
+        public async Task<GetAuthorizationResult> ExecuteAsync(Uri uri, AuthorizationRequest request)
         {
             if (uri == null)
             {
@@ -58,53 +57,21 @@ namespace SimpleIdentityServer.Client.Operations
             uriBuilder.Query = pSerializer.Serialize(request);
             var response = await httpClient.GetAsync(uriBuilder.Uri);
             var content = await response.Content.ReadAsStringAsync();
-            var result = new ApiResult
+            if (response.StatusCode >= System.Net.HttpStatusCode.BadRequest)
             {
-                StatusCode = response.StatusCode
+                return new GetAuthorizationResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = response.StatusCode
+                };
+            }
+
+            return new GetAuthorizationResult
+            {
+                ContainsError = false,
+                Location = response.Headers.Location
             };
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                try
-                {
-                    if (request.ResponseMode != null && request.ResponseMode == ResponseModes.FormPost)
-                    {
-                        var source = WebUtility.HtmlDecode(content);
-                        var doc  = new HtmlDocument();
-                        doc.LoadHtml(source);
-                        var jsonObj = new JObject();
-                        var inputs = doc.DocumentNode.Descendants().Where(d => d.Name == "input" && d.Attributes != null && d.Attributes.Any(a => a.Name == "type" && a.Value == "hidden"));
-                        foreach(var input in inputs)
-                        {
-                            var nameAttr = input.Attributes.FirstOrDefault(a => a.Name == "name");
-                            var valueAttr = input.Attributes.FirstOrDefault(a => a.Name == "value");
-                            if (nameAttr == null || valueAttr == null)
-                            {
-                                continue;
-                            }
-
-                            jsonObj.Add(new JProperty(nameAttr.Value, valueAttr.Value));
-                        }
-
-                        result.Content = jsonObj;
-                    }
-                    else
-                    {
-                        result.Content = JObject.Parse(content);
-                    }
-                }
-                catch
-                {
-                    // Trace.WriteLine("the content is not a JSON object");
-                }
-            }
-
-            if (response.Headers.Location != null)
-            {
-                result.Location = response.Headers.Location;
-            }
-
-            return result;
         }
     }
 }

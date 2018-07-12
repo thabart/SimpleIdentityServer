@@ -605,6 +605,101 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         [Fact]
+        public async Task When_Use_AuthCode_Grant_Type_And_ClientId_Is_Not_Correct_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var request = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>("code", "code"),
+                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
+                new KeyValuePair<string, string>("client_id", "invalid_client_id")
+            };
+            var body = new FormUrlEncodedContent(request);
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{baseUrl}/token")
+            };
+
+            // ACT
+            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+            Assert.Equal("invalid_client", error.Error);
+            Assert.Equal("the client doesn't exist", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_Use_AuthCode_GrantType_And_Client_DoesntSupport_AuthCode_GrantType_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var request = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>("code", "code"),
+                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
+                new KeyValuePair<string, string>("client_id", "client"),
+                new KeyValuePair<string, string>("client_secret", "client")
+            };
+            var body = new FormUrlEncodedContent(request);
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{baseUrl}/token")
+            };
+
+            // ACT
+            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+            Assert.Equal("invalid_client", error.Error);
+            Assert.Equal("the client client doesn't support the grant type authorization_code", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_Use_AuthCode_GrantType_And_Client_DoesntSupport_Code_ResponseType_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var request = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>("code", "code"),
+                new KeyValuePair<string, string>("redirect_uri", "http://localhost:5000/callback"),
+                new KeyValuePair<string, string>("client_id", "incomplete_authcode_client"),
+                new KeyValuePair<string, string>("client_secret", "incomplete_authcode_client")
+            };
+            var body = new FormUrlEncodedContent(request);
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{baseUrl}/token")
+            };
+
+            // ACT
+            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+            Assert.Equal("invalid_client", error.Error);
+            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'code'", error.ErrorDescription);
+        }
+
+        [Fact]
         public async Task When_Use_AuthCode_Grant_Type_And_Code_Doesnt_Exist_Then_Json_Is_Returned()
         {
             // ARRANGE
