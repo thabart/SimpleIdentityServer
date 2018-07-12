@@ -17,7 +17,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Host.Extensions;
 using System;
@@ -40,7 +41,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<Introspection> Post()
+        public async Task<IntrospectionResponse> Post()
         {
             if (Request.Form == null)
             {

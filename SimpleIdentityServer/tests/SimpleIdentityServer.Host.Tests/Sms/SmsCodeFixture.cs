@@ -116,25 +116,25 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotNull(noPhoneNumberResult);
             Assert.True(noPhoneNumberResult.ContainsError);
             Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
-            Assert.Equal("invalid_request", noPhoneNumberResult.Error.Code);
-            Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.Message);
+            Assert.Equal("invalid_request", noPhoneNumberResult.Error.Error);
+            Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.ErrorDescription);
             // ASSERT : TWILIO NOT CONFIGURED
             Assert.NotNull(twilioNotConfigured);
             Assert.True(twilioNotConfigured.ContainsError);
-            Assert.Equal("unhandled_exception", twilioNotConfigured.Error.Code);
-            Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.Message);
+            Assert.Equal("unhandled_exception", twilioNotConfigured.Error.Error);
+            Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);            
             // ASSERT : CANNOT INSERT CONFIRMATION CODE
             Assert.NotNull(cannotInsertConfirmationCode);
             Assert.True(cannotInsertConfirmationCode.ContainsError);
-            Assert.Equal("unhandled_exception", cannotInsertConfirmationCode.Error.Code);
-            Assert.Equal("the confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Message);
+            Assert.Equal("unhandled_exception", cannotInsertConfirmationCode.Error.Error);
+            Assert.Equal("the confirmation code cannot be saved", cannotInsertConfirmationCode.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.HttpStatus);
             // ASSERT : UNHANDLED EXCEPTION
             Assert.NotNull(unhandledException);
             Assert.True(unhandledException.ContainsError);
-            Assert.Equal("unhandled_exception", unhandledException.Error.Code);
-            Assert.Equal("unhandled exception occured please contact the administrator", unhandledException.Error.Message);
+            Assert.Equal("unhandled_exception", unhandledException.Error.Error);
+            Assert.Equal("unhandled exception occured please contact the administrator", unhandledException.Error.ErrorDescription);
             Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.HttpStatus);
             // ASSERT : HAPPY PATH
             Assert.True(true);

@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             if (client == null)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheClientCannotBeAuthenticated);
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientDoesntExist);
             }
 
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;

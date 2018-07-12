@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 

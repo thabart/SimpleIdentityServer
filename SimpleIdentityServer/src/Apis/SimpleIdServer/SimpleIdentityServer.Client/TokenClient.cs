@@ -15,9 +15,9 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.DTOs.Response;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -25,9 +25,9 @@ namespace SimpleIdentityServer.Client
 {
     public interface ITokenClient
     {
-        Task<GrantedToken> ExecuteAsync(string tokenUrl);
-        Task<GrantedToken> ExecuteAsync(Uri tokenUri);
-        Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl);
+        Task<GetTokenResult> ExecuteAsync(string tokenUrl);
+        Task<GetTokenResult> ExecuteAsync(Uri tokenUri);
+        Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class TokenClient : ITokenClient
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
         
-        public async Task<GrantedToken> ExecuteAsync(string tokenUrl)
+        public async Task<GetTokenResult> ExecuteAsync(string tokenUrl)
         {
             if (string.IsNullOrWhiteSpace(tokenUrl))
             {
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(uri);
         }
 
-        public async Task<GrantedToken> ExecuteAsync(Uri tokenUri)
+        public async Task<GetTokenResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Client
                 _requestBuilder.AuthorizationHeaderValue);
         }
 
-        public async Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl)
+        public async Task<GetTokenResult> ResolveAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {

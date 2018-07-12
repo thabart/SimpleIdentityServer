@@ -17,9 +17,9 @@
 using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client.Factories;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.IdToken, TokenType.AccessToken)
+                .Introspect(result.Content.IdToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT

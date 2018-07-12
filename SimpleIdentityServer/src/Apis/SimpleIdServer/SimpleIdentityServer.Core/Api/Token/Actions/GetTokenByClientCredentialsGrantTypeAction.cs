@@ -26,15 +26,14 @@ using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByClientCredentialsGrantTypeAction
     {
-        Task<GrantedToken> Execute(
-               ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-               AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
     }
 
     internal class GetTokenByClientCredentialsGrantTypeAction : IGetTokenByClientCredentialsGrantTypeAction
@@ -83,9 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<GrantedToken> Execute(
-            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
         {
             if (clientCredentialsGrantTypeParameter == null)
             {
@@ -95,8 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // 1. Authenticate the client
-            var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
-                authenticationHeaderValue);
+            var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
@@ -105,15 +101,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Check client
-            if (client.GrantTypes == null ||
-                !client.GrantTypes.Contains(GrantType.client_credentials))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.client_credentials))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.client_credentials));
             }
 
-            if (client.ResponseTypes == null ||
-                !client.ResponseTypes.Contains(ResponseType.token))
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token))
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
@@ -152,13 +146,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = clientCredentialsGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = clientCredentialsGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 

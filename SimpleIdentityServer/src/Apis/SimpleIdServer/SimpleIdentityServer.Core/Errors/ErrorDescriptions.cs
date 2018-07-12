@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientDoesntSupportTheResponseType = "the client '{0}' doesn't support the response type: '{1}'";
         public const string TheClientDoesntSupportTheGrantType = "the client {0} doesn't support the grant type {1}";
         public const string TheIdTokenCannotBeSigned = "the id token cannot be signed";
+        public const string TheClientDoesntExist = "the client doesn't exist";
         public const string TheClientCannotBeAuthenticated = "the client cannot be authenticated";
         public const string TheClientCannotBeAuthenticatedWithSecretBasic = "the client cannot be authenticated with secret basic";
         public const string TheClientCannotBeAuthenticatedWithSecretPost = "the client cannot be authenticated with secret post";
@@ -122,7 +123,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheExternalResourceOwnerIsNotAuthenticated = "the 'external' resource owner is not authenticated";
         public const string TheResourceOwnerIsNotALocalAccount = "the resource owner is not a local account";
         public const string TheClientIdDoesntExist = "the client id {0} doesn't exist";
-        public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't contains a shared secret";
+        public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't have a shared secret";
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheBulkPublicClaimsIsNotWorking = "the bulk operation is not working ...";
@@ -134,5 +135,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
         public const string TheResourceOwnerCannotBeAdded = "An error occured while trying to insert the resource owner";
+        public const string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer = "the refresh token can be used only by the same issuer";
     }
 }

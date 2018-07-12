@@ -15,7 +15,8 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -62,7 +63,7 @@ namespace SimpleIdentityServer.Client.Operations
                 request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     {
-                        Constants.GrantedTokenNames.AccessToken, accessToken
+                        GrantedTokenNames.AccessToken, accessToken
                     }
                 });
             }

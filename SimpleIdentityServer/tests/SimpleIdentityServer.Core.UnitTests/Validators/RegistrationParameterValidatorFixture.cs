@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using Moq;
+﻿using Moq;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.UnitTests.Fake;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Common.Models;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using Xunit;
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {

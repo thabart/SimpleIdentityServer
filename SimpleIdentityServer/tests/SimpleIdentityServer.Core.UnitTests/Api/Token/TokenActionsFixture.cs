@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
             _getTokenByAuthorizationCodeGrantTypeActionFake.Setup(
-                g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
+                g => g.Execute(It.IsAny<AuthorizationCodeGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null));
         }
 
         [Fact]
@@ -144,11 +144,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 IdToken = identityToken
             };
             _getTokenByRefreshTokenGrantTypeActionFake.Setup(
-                g => g.Execute(It.IsAny<RefreshTokenGrantTypeParameter>()))
+                g => g.Execute(It.IsAny<RefreshTokenGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter);
+            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
@@ -180,7 +180,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = clientId
             };
-            _getTokenByClientCredentialsGrantTypeActionStub.Setup(g => g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>()))
+            _getTokenByClientCredentialsGrantTypeActionStub.Setup(g => g.Execute(It.IsAny<ClientCredentialsGrantTypeParameter>(), It.IsAny<AuthenticationHeaderValue>(), It.IsAny<X509Certificate2>()))
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT

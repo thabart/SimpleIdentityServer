@@ -17,9 +17,9 @@
 using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client.Factories;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -50,11 +50,11 @@ namespace SimpleIdentityServer.Host.Tests
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken(result.AccessToken, TokenType.AccessToken)
+                .RevokeToken(result.Content.AccessToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.AccessToken, TokenType.AccessToken)
+                .Introspect(result.Content.AccessToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
 
             // ASSERT
@@ -74,10 +74,10 @@ namespace SimpleIdentityServer.Host.Tests
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .RevokeToken(result.RefreshToken, TokenType.RefreshToken)
+                .RevokeToken(result.Content.RefreshToken, TokenType.RefreshToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.RefreshToken, TokenType.RefreshToken)
+                .Introspect(result.Content.RefreshToken, TokenType.RefreshToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
 
             // ASSERT

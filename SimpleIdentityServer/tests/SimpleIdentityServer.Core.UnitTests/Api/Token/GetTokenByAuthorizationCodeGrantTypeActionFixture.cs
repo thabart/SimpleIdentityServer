@@ -26,7 +26,6 @@ using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.Store;
 using System;
@@ -88,6 +87,66 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
+        public async Task When_Client_Doesnt_Support_Grant_Type_Code_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
+            {
+                ClientAssertion = "clientAssertion",
+                ClientAssertionType = "clientAssertionType",
+                ClientId = "clientId",
+                ClientSecret = "clientSecret"
+            };
+
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                {
+                    ClientId = "id"
+                }, null)));
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.authorization_code));
+        }
+
+        [Fact]
+        public async Task When_Client_Doesnt_Support_ResponseType_Code_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var authorizationCodeGrantTypeParameter = new AuthorizationCodeGrantTypeParameter
+            {
+                ClientAssertion = "clientAssertion",
+                ClientAssertionType = "clientAssertionType",
+                ClientId = "clientId",
+                ClientSecret = "clientSecret"
+            };
+
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                {
+                    ClientId = "id",
+                    GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    }
+                }, null)));
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", ResponseType.code));
+        }
+
+        [Fact]
         public async Task When_Authorization_Code_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
             // ARRANGE
@@ -99,7 +158,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = "clientId",
                 ClientSecret = "clientSecret"
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
+            var client = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "id",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
 
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -131,7 +201,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             {
                 ClientId = "clientId"
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
+            var client = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "id",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
 
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
@@ -162,7 +243,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = "clientSecret"
             };
 
-            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "notCorrectClientId" } , null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "notCorrectClientId",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                {
+                    GrantType.authorization_code
+                },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId"
@@ -200,7 +292,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "notCorrectRedirectUri"
             };
 
-            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "clientId",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -236,7 +339,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "clientId",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -275,7 +389,18 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 RedirectUri = "redirectUri",
                 ClientId = "clientId",
             };
-            var result = new AuthenticationResult(new Core.Common.Models.Client { ClientId = "clientId" }, null);
+            var result = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "clientId",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
+            }, null);
             var authorizationCode = new AuthorizationCode
             {
                 ClientId = "clientId",
@@ -327,6 +452,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             var result = new AuthenticationResult(new Core.Common.Models.Client {
                 ClientId = "clientId",
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                {
+                    GrantType.authorization_code
+                },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                },
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,
                 IdTokenEncryptedResponseEnc = Jwt.Constants.JweEncNames.A128CBC_HS256
@@ -388,7 +521,15 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             var authResult = new AuthenticationResult(new Core.Common.Models.Client
             {
-                ClientId = clientId
+                ClientId = clientId,
+                GrantTypes = new System.Collections.Generic.List<GrantType>
+                {
+                    GrantType.authorization_code
+                },
+                ResponseTypes = new System.Collections.Generic.List<ResponseType>
+                {
+                    ResponseType.code
+                }
             }, null);
             var authorizationCode = new AuthorizationCode
             {

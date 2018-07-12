@@ -14,10 +14,9 @@
 // limitations under the License.
 #endregion
 
-using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System;
 using System.Threading.Tasks;
 

@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public async Task When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Cannot_Be_Authenticated_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -83,17 +83,89 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
-                .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
+                .Returns(() => Task.FromResult(new AuthenticationResult(null, "error")));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
-            _oauthEventSource.Verify(s => s.Info(ErrorDescriptions.TheClientCannotBeAuthenticated));
-            Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+            _oauthEventSource.Verify(s => s.Info("error"));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Message == "error");
         }
-        
+
+        [Fact]
+        public async Task When_Client_GrantType_Is_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientAssertion = "clientAssertion";
+            const string clientAssertionType = "clientAssertionType";
+            const string clientId = "clientId";
+            const string clientSecret = "clientSecret";
+            var resourceOwnerGrantTypeParameter = new ResourceOwnerGrantTypeParameter
+            {
+                ClientAssertion = clientAssertion,
+                ClientAssertionType = clientAssertionType,
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.authorization_code
+                    }
+                }, null)));
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, "id", GrantType.password));
+        }
+
+        [Fact]
+        public async Task When_Client_ResponseTypes_Are_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientAssertion = "clientAssertion";
+            const string clientAssertionType = "clientAssertionType";
+            const string clientId = "clientId";
+            const string clientSecret = "clientSecret";
+            var resourceOwnerGrantTypeParameter = new ResourceOwnerGrantTypeParameter
+            {
+                ClientAssertion = clientAssertion,
+                ClientAssertionType = clientAssertionType,
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+            _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
+                .Returns(new AuthenticateInstruction());
+            _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+                .Returns(() => Task.FromResult(new AuthenticationResult(new Core.Common.Models.Client
+                {
+                    ClientId = "id",
+                    GrantTypes = new List<GrantType>
+                    {
+                        GrantType.password
+                    }
+                }, null)));
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByResourceOwnerCredentialsGrantTypeAction.Execute(resourceOwnerGrantTypeParameter, null));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, "id", "token id_token"));
+        }
+
         [Fact]
         public async Task When_The_Resource_Owner_Is_Not_Valid_Then_Exception_Is_Thrown()
         {
@@ -110,7 +182,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientId = clientId,
                 ClientSecret = clientSecret
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);            
+            var client = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "id",
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.password
+                },
+                ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.id_token,
+                    ResponseType.token
+                }
+            }, null);            
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
                 .Returns(new AuthenticateInstruction());
             _authenticateClientFake.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
@@ -143,7 +227,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 ClientSecret = clientSecret,
                 Scope = invalidScope
             };
-            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
+            var client = new AuthenticationResult(new Core.Common.Models.Client
+            {
+                ClientId = "id",
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.password
+                },
+                ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.id_token,
+                    ResponseType.token
+                }
+            }, null);
             var resourceOwner = new ResourceOwner();
             
             _authenticateInstructionGeneratorStub.Setup(a => a.GetAuthenticateInstruction(It.IsAny<AuthenticationHeaderValue>()))
@@ -186,7 +282,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             };
             var client = new AuthenticationResult(new Core.Common.Models.Client
             {
-                ClientId = clientId
+                ClientId = clientId,
+                GrantTypes = new List<GrantType>
+                {
+                    GrantType.password
+                },
+                ResponseTypes = new List<ResponseType>
+                {
+                    ResponseType.id_token,
+                    ResponseType.token
+                }
             }, null);
             var resourceOwner = new ResourceOwner();
             var userInformationJwsPayload = new JwsPayload();

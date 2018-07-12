@@ -16,8 +16,8 @@
 
 using Moq;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Common.Client.Factories;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Client
+            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Requests.ClientRequest
             {
                 RedirectUris = new []
                 {

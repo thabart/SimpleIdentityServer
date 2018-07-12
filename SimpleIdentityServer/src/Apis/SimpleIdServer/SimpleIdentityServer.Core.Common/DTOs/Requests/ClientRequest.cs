@@ -17,10 +17,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Requests
 {
     [DataContract]
-    public class Client
+    public class ClientRequest
     {
         [DataMember(Name = ClientNames.RedirectUris)]
         public IEnumerable<string> RedirectUris { get; set; }

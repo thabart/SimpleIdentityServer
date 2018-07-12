@@ -16,11 +16,10 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Requests
 {
     public enum GrantTypes
     {
-        None,
         password,
         client_credentials,
         authorization_code,
@@ -33,7 +32,7 @@ namespace SimpleIdentityServer.Core.Common.DTOs
     public class TokenRequest
     {
         [DataMember(Name = RequestTokenNames.GrantType)]
-        public GrantTypes GrantType { get; set; }
+        public GrantTypes? GrantType { get; set; }
         [DataMember(Name = RequestTokenNames.Username)]
         public string Username { get; set; }
         [DataMember(Name = RequestTokenNames.Password)]

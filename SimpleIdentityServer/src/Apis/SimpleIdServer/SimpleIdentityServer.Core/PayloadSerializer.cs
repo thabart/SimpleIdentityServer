@@ -17,7 +17,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;

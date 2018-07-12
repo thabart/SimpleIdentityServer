@@ -16,14 +16,13 @@
 
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client.Factories;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.Serializers;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace SimpleIdentityServer.Client.Operations
 {
@@ -55,7 +54,8 @@ namespace SimpleIdentityServer.Client.Operations
 
             var httpClient = _httpClientFactory.GetHttpClient();
             var uriBuilder = new UriBuilder(uri);
-            uriBuilder.Query = request.GetQueryString();
+            var pSerializer = new ParamSerializer();            
+            uriBuilder.Query = pSerializer.Serialize(request);
             var response = await httpClient.GetAsync(uriBuilder.Uri);
             var content = await response.Content.ReadAsStringAsync();
             var result = new ApiResult

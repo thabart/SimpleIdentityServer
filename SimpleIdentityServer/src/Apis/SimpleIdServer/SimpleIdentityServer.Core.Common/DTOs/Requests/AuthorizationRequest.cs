@@ -16,12 +16,11 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using SimpleIdentityServer.Core.Common.Serializers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Requests
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ResponseModes
@@ -171,11 +170,5 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string SessionId { get; set; }
         [DataMember(Name = "amr_values")]
         public string AmrValues { get; set; }
-
-        public string GetQueryString()
-        {
-            var serializer = new ParamSerializer();
-            return serializer.Serialize(this);
-        }
     }
 }

@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

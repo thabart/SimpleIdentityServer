@@ -61,6 +61,24 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.PasswordName));
         }
 
+        [Fact]
+        public void When_Passing_Empty_Scope_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObject();
+            var parameter = new ResourceOwnerGrantTypeParameter
+            {
+                ClientId = "clientId",
+                UserName = "userName",
+                Password = "password"
+            };
+
+            // ACT & ASSERT
+            var exception = Assert.Throws<IdentityServerException>(() => _resourceOwnerGrantTypeParameterValidator.Validate(parameter));
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+        }
+
         private void InitializeFakeObject()
         {
             _resourceOwnerGrantTypeParameterValidator = new ResourceOwnerGrantTypeParameterValidator();

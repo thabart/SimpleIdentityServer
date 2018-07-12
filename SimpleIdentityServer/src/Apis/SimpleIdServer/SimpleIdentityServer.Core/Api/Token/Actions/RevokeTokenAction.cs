@@ -23,13 +23,14 @@ using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IRevokeTokenAction
     {
-        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
     }
 
     internal class RevokeTokenAction : IRevokeTokenAction
@@ -57,7 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
         {
             if (revokeTokenParameter == null)
             {
@@ -71,8 +72,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             
             // 1. Check the client credentials
             var errorMessage = string.Empty;
-            var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
-                authenticationHeaderValue);
+            var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
@@ -120,13 +120,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = revokeTokenParameter.ClientAssertion;
             result.ClientAssertionType = revokeTokenParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = revokeTokenParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = revokeTokenParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
         

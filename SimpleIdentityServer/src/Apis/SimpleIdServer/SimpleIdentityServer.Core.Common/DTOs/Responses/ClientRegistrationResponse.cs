@@ -14,10 +14,11 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Responses
 {
     [DataContract]
     public class ClientRegistrationResponse
@@ -28,10 +29,10 @@ namespace SimpleIdentityServer.Core.Common.DTOs
         public string ClientSecret { get; set; }
 
         //// TODO : RETURNS REGISTRATIONA ACCESS TOKEN & REGISTRATION CLIENT URI.
-        // [DataMember(Name = Constants.StandardRegistrationResponseNames.RegistrationAccessToken)]
+        // [DataMember(Name = StandardRegistrationResponseNames.RegistrationAccessToken)]
         // public string RegistrationAccessToken { get; set; }
 
-        // [DataMember(Name = Constants.StandardRegistrationResponseNames.RegistrationClientUri)]
+        // [DataMember(Name = StandardRegistrationResponseNames.RegistrationClientUri)]
         // public string RegistrationClientUri { get; set; }
 
         [DataMember(Name = RegistrationResponseNames.ClientIdIssuedAt)]

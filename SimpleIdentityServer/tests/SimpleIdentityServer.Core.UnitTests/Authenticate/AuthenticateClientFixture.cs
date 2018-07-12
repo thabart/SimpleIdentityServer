@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
             // ASSERTS
             Assert.Null(result.Client);
-            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientDoesntExist);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
 
             // ASSERTS
             Assert.Null(result.Client);
-            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientDoesntExist);
         }
 
         [Fact]

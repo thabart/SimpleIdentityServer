@@ -61,6 +61,6 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
             return true;
         }
 
-#endregion
+        #endregion
     }
 }

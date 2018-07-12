@@ -82,8 +82,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
         {
             var error = new ErrorResponse
             {
-                Code = code,
-                Message = message
+                Error = code,
+                ErrorDescription = message
             };
             return new JsonResult(error)
             {

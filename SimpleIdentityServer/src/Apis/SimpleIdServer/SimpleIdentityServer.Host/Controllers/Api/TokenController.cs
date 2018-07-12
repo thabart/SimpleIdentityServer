@@ -16,17 +16,20 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Serializers;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -44,18 +47,22 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _tokenActions = tokenActions;
         }
 
-        // [SimpleTypeFilterAttribute(typeof(RateLimitationFilterAttribute), Arguments = new object[] { "PostToken" })]
         [HttpPost]
-        public async Task<TokenResponse> PostToken()
+        public async Task<IActionResult> PostToken()
         {
             var certificate = GetCertificate();
             if (Request.Form == null)
             {
-                throw new ArgumentNullException(nameof(Request.Form));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var serializer = new ParamSerializer();
             var tokenRequest = serializer.Deserialize<TokenRequest>(Request.Form);
+            if (tokenRequest.GrantType == null)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.MissingParameter, RequestTokenNames.GrantType), HttpStatusCode.BadRequest);
+            }
+
             GrantedToken result = null;
             StringValues authorizationHeader;
             AuthenticationHeaderValue authenticationHeaderValue = null;
@@ -73,27 +80,25 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             
             switch (tokenRequest.GrantType)
             {
-                case GrantTypes.password:
+                case Core.Common.DTOs.Requests.GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
                     result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate);
                     break;
-                case GrantTypes.authorization_code:
+                case Core.Common.DTOs.Requests.GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
-                        authCodeParameter,
-                        authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter,authenticationHeaderValue, certificate);
                     break;
-                case GrantTypes.refresh_token:
+                case Core.Common.DTOs.Requests.GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate);
                     break;
-                case GrantTypes.client_credentials:
+                case Core.Common.DTOs.Requests.GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate);
                     break;
             }
 
-            return result.ToDto();
+            return new OkObjectResult(result.ToDto());
         }
 
         [HttpPost("revoke")]
@@ -150,6 +155,26 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

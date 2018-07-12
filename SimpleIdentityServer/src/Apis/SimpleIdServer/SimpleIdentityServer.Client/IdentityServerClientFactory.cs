@@ -15,9 +15,10 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
 
 namespace SimpleIdentityServer.Client
@@ -131,7 +132,7 @@ namespace SimpleIdentityServer.Client
             }
             else
             {
-                serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+                serviceCollection.AddCommonClient();
             }
 
             // Register clients

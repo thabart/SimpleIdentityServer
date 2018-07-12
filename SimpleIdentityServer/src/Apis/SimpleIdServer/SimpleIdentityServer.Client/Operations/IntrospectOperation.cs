@@ -15,8 +15,8 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Client.Factories;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IIntrospectOperation
     {
-        Task<Introspection> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue);
+        Task<IntrospectionResponse> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue);
     }
 
     internal class IntrospectOperation : IIntrospectOperation
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
         
-        public async Task<Introspection> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
+        public async Task<IntrospectionResponse> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
         {
             if (introspectionParameter == null)
             {
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Client.Operations
             var result = await httpClient.SendAsync(request);
             result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Introspection>(content);
+            return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
         }
     }
 }

@@ -16,7 +16,7 @@
 
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Requests
 {
     [DataContract]
     public class JwsProtectedHeader

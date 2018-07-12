@@ -25,6 +25,7 @@ using SimpleIdentityServer.Authenticate.Basic.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;

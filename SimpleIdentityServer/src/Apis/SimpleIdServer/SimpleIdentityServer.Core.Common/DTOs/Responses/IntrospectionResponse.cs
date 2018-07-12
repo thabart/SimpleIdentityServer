@@ -17,10 +17,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace SimpleIdentityServer.Core.Common.DTOs
+namespace SimpleIdentityServer.Core.Common.DTOs.Responses
 {
     [DataContract]
-    public class Introspection
+    public class IntrospectionResponse
     {
         /// <summary>
         /// Gets or sets a boolean indicator of whether or not the presented token is currently active

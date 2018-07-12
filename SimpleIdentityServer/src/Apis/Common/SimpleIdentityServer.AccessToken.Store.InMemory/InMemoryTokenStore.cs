@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.DTOs.Response;
 
 namespace SimpleIdentityServer.AccessToken.Store.InMemory
 {
@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.AccessToken.Store.InMemory
 
             public string Url { get; set; }
             public IEnumerable<string> Scopes { get; set; }
-            public GrantedToken GrantedToken { get; set; }
+            public GrantedTokenResponse GrantedToken { get; set; }
             public DateTime ExpirationDateTime { get; set; }
         }
 
@@ -31,7 +31,7 @@ namespace SimpleIdentityServer.AccessToken.Store.InMemory
             _identityServerClientFactory = identityServerClientFactory;
         }
 
-        public async Task<GrantedToken> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
+        public async Task<GrantedTokenResponse> GetToken(string url, string clientId, string clientSecret, IEnumerable<string> scopes)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -71,13 +71,13 @@ namespace SimpleIdentityServer.AccessToken.Store.InMemory
                 .ConfigureAwait(false);
             _tokens.Add(new StoredToken
             {
-                GrantedToken = grantedToken,
-                ExpirationDateTime = DateTime.UtcNow.AddSeconds(grantedToken.ExpiresIn),
+                GrantedToken = grantedToken.Content,
+                ExpirationDateTime = DateTime.UtcNow.AddSeconds(grantedToken.Content.ExpiresIn),
                 Scopes = scopes,
                 Url = url
             });
 
-            return grantedToken;
+            return grantedToken.Content;
         }
     }
 }

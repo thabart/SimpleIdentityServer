@@ -16,15 +16,15 @@
 
 using Moq;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using System;
 using System.Threading.Tasks;
 using Xunit;
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Client.Selectors;
-using System;
-using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Client.Builders;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(token);
-            Assert.NotEmpty(token.AccessToken);
+            Assert.NotEmpty(token.Content.AccessToken);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.NotNull(result);
             Assert.NotNull(result.Location);
             Assert.NotNull(token);
-            Assert.NotEmpty(token.AccessToken);
+            Assert.NotEmpty(token.Content.AccessToken);
             Assert.True(queries["state"] == "state");
         }
 

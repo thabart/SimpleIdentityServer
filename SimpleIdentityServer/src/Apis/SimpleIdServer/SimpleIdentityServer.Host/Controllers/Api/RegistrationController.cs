@@ -16,9 +16,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<ClientRegistrationResponse> Post([FromBody] ClientResponse client)
+        public async Task<ClientRegistrationResponse> Post([FromBody] ClientRequest client)
         {
             if (client == null)
             {
