@@ -49,7 +49,13 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
                 return null;
             }
 
-            return await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login);
+            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login);
+            if (resourceOwner != null)
+            {
+                await _confirmationCodeStore.Remove(password);
+            }
+
+            return resourceOwner;
         }
     }
 }

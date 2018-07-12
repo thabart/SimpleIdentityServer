@@ -133,5 +133,6 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
         public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
         public const string NoActiveAmr = "no active AMR";
+        public const string TheResourceOwnerCannotBeAdded = "An error occured while trying to insert the resource owner";
     }
 }

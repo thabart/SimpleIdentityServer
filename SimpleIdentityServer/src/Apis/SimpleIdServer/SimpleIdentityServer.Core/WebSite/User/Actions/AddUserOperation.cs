@@ -15,12 +15,13 @@
 #endregion
 
 using SimpleIdentityServer.AccessToken.Store;
+using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Scim.Client;
 using System;
 using System.Collections.Generic;
@@ -50,23 +51,27 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         }
 
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IProfileRepository _profileRepository;
         private readonly IClaimRepository _claimRepository;
         private readonly IAccessTokenStore _tokenStore;
         private readonly IScimClientFactory _scimClientFactory;
+        private readonly ILinkProfileAction _linkProfileAction;
+        private readonly IOpenIdEventSource _openidEventSource;
 
         public AddUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
-            IProfileRepository profileRepository,
             IClaimRepository claimRepository,
             IAccessTokenStore tokenStore,
-            IScimClientFactory scimClientFactory)
+            ILinkProfileAction linkProfileAction,
+            IScimClientFactory scimClientFactory,
+
+            IOpenIdEventSource openIdEventSource)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _profileRepository = profileRepository;
             _claimRepository = claimRepository;
             _tokenStore = tokenStore;
             _scimClientFactory = scimClientFactory;
+            _linkProfileAction = linkProfileAction;
+            _openidEventSource = openIdEventSource;
         }
 
         public async Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
@@ -96,6 +101,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(scimBaseUrl));
             }
 
+            // 1. Check the resource owner already exists.
             if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login) != null)
             {
                 throw new IdentityServerException(
@@ -109,6 +115,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, addUserParameter.Login)
             };
 
+            // 2. Populate the claims.
             var existedClaims = await _claimRepository.GetAllAsync();
             if (addUserParameter.Claims != null)
             {
@@ -121,6 +128,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 }
             }
 
+            // 3. Add the scim resource.
             if (addScimResource)
             {
                 var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login);
@@ -140,6 +148,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 newClaims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation, scimResource.Url));
             }
 
+            // 4. Add the resource owner.
             var newResourceOwner = new ResourceOwner
             {
                 Id = addUserParameter.Login,
@@ -148,22 +157,19 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 IsLocalAccount = true,
                 Password = PasswordHelper.ComputeHash(addUserParameter.Password)
             };                        
-            await _resourceOwnerRepository.InsertAsync(newResourceOwner);
-            if (!string.IsNullOrWhiteSpace(issuer))
+            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner))
             {
-                await _profileRepository.Add(new[]
-                {
-                    new ResourceOwnerProfile
-                    {
-                        CreateDateTime = DateTime.UtcNow,
-                        UpdateTime = DateTime.UtcNow,
-                        ResourceOwnerId = addUserParameter.Login,
-                        Subject = addUserParameter.Login,
-                        Issuer = issuer
-                    }
-                });
+                throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
+                    Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
             }
 
+            // 5. Link to a profile.
+            if (!string.IsNullOrWhiteSpace(issuer))
+            {
+                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.Login, issuer);
+            }
+
+            _openidEventSource.AddResourceOwner(newResourceOwner.Id);
             return true;
         }
 

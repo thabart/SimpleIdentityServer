@@ -12,6 +12,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
 {
     public class SmsAuthenticationOperationFixture
     {
+        private Mock<IGenerateAndSendSmsCodeOperation> _generateAndSendSmsCodeOperationStub;
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
         private Mock<IUserActions> _userActionsStub;
         private SmsAuthenticationOptions _smsAuthenticationOptions;
@@ -44,6 +45,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             var result = await _smsAuthenticationOperation.Execute(phone);
 
             // ASSERT
+            _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
             Assert.NotNull(result);
             Assert.Equal(resourceOwner.Id, result.Id);
         }
@@ -72,6 +74,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             await _smsAuthenticationOperation.Execute(phone);
 
             // ASSERT
+            _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
             _userActionsStub.Verify(u => u.AddUser(It.IsAny<AddUserParameter>(), It.IsAny<AuthenticationParameter>(), It.IsAny<string>(), true, null));
         }
 
@@ -93,15 +96,19 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             await _smsAuthenticationOperation.Execute(phone);
 
             // ASSERT
+            _generateAndSendSmsCodeOperationStub.Verify(s => s.Execute(phone));
             _userActionsStub.Verify(u => u.AddUser(It.IsAny<AddUserParameter>(), null, null, false, null));
         }
 
         private void InitializeFakeObjects()
         {
+            _generateAndSendSmsCodeOperationStub = new Mock<IGenerateAndSendSmsCodeOperation>();
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
             _userActionsStub = new Mock<IUserActions>();
             _smsAuthenticationOptions = new SmsAuthenticationOptions();
-            _smsAuthenticationOperation = new SmsAuthenticationOperation(_resourceOwnerRepositoryStub.Object, _userActionsStub.Object, _smsAuthenticationOptions);
+            _smsAuthenticationOperation = new SmsAuthenticationOperation(
+                _generateAndSendSmsCodeOperationStub.Object,
+                _resourceOwnerRepositoryStub.Object, _userActionsStub.Object, _smsAuthenticationOptions);
         }
     }
 }

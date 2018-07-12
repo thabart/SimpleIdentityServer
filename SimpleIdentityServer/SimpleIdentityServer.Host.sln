@@ -149,6 +149,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Authenticate.SMS.Tests", "tests\SimpleIdentityServer.Authenticate.SMS.Tests\SimpleIdentityServer.Authenticate.SMS.Tests.csproj", "{ABE7C90B-9016-4188-86E9-9A0041949CEE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Common.Dtos", "src\Apis\Common\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj", "{5681361A-2B17-41C8-88A6-7F94AA86CF70}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "14. Common", "14. Common", "{A65C64E3-21B1-4B91-9974-DD09A048ADE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Common.Client", "src\Apis\Common\SimpleIdentityServer.Common.Client\SimpleIdentityServer.Common.Client.csproj", "{61E98D63-E66D-4E16-9BDD-5D245CC23540}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -462,6 +468,18 @@ Global
 		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABE7C90B-9016-4188-86E9-9A0041949CEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -535,6 +553,9 @@ Global
 		{5D826B9E-BDC2-4BAE-A7FC-5D1A0BBF08E8} = {DDF3FD68-C49A-4BB4-9F1E-9B6D5E4294EA}
 		{D6575015-95E4-41F9-9498-79C8F0102E4D} = {DDF3FD68-C49A-4BB4-9F1E-9B6D5E4294EA}
 		{ABE7C90B-9016-4188-86E9-9A0041949CEE} = {CAE43B3B-7250-43E3-B4FE-DC28D81805D0}
+		{5681361A-2B17-41C8-88A6-7F94AA86CF70} = {A65C64E3-21B1-4B91-9974-DD09A048ADE3}
+		{A65C64E3-21B1-4B91-9974-DD09A048ADE3} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{61E98D63-E66D-4E16-9BDD-5D245CC23540} = {A65C64E3-21B1-4B91-9974-DD09A048ADE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

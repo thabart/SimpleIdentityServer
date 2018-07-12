@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Authenticate.SMS.Client.Factories;
 using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using SimpleIdentityServer.Authenticate.SMS.Common.Responses;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,7 +12,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
 {
     public interface ISendSmsOperation
     {
-        Task<ErrorResponse> Execute(Uri requestUri, ConfirmationCodeRequest request, string authorizationValue = null);
+        Task<BaseResponse> Execute(Uri requestUri, ConfirmationCodeRequest request, string authorizationValue = null);
     }
 
     internal sealed class SendSmsOperation : ISendSmsOperation
@@ -23,7 +24,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ErrorResponse> Execute(Uri requestUri, ConfirmationCodeRequest request, string authorizationValue = null)
+        public async Task<BaseResponse> Execute(Uri requestUri, ConfirmationCodeRequest request, string authorizationValue = null)
         {
             if (requestUri == null)
             {
@@ -57,10 +58,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
             }
             catch
             {
-                return JsonConvert.DeserializeObject<ErrorResponse>(content);
+                return new BaseResponse
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = result.StatusCode
+                };
             }
 
-            return null;
+            return new BaseResponse();
         }
     }
 }

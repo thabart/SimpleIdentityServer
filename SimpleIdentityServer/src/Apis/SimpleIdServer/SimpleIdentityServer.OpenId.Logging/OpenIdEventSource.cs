@@ -15,6 +15,12 @@ namespace SimpleIdentityServer.OpenId.Logging
 
         #endregion
 
+        #region UserManagement
+
+        void AddResourceOwner(string subject);
+
+        #endregion
+
         void OpenIdFailure(string code,
             string description,
             string state);
@@ -25,6 +31,7 @@ namespace SimpleIdentityServer.OpenId.Logging
         private static class Tasks
         {
             public const string UserInteraction = "UserInteraction";
+            public const string UserManagement = "UserManagement";
         }
 
         public OpenIdEventSource(ILoggerFactory loggerFactory) : base(loggerFactory.CreateLogger<OpenIdEventSource>())
@@ -32,6 +39,17 @@ namespace SimpleIdentityServer.OpenId.Logging
         }
 
         #region User interaction
+        
+        public void AuthenticateResourceOwner(string subject)
+        {
+            var evt = new Event
+            {
+                Id = 201,
+                Task = Tasks.UserInteraction,
+                Message = $"The resource owner is authenticated {subject}"
+            };
+            LogInformation(evt);
+        }
 
         public void GiveConsent(string subject,
             string clientId,
@@ -42,17 +60,6 @@ namespace SimpleIdentityServer.OpenId.Logging
                 Id = 200,
                 Task = Tasks.UserInteraction,
                 Message = $"The consent has been given by the resource owner, subject : {subject}, client id : {clientId}, consent id : {consentId}"
-            };
-            LogInformation(evt);
-        }
-
-        public void AuthenticateResourceOwner(string subject)
-        {
-            var evt = new Event
-            {
-                Id = 201,
-                Task = Tasks.UserInteraction,
-                Message = $"The resource owner is authenticated {subject}"
             };
             LogInformation(evt);
         }
@@ -88,6 +95,21 @@ namespace SimpleIdentityServer.OpenId.Logging
                 Message = $"Confirmation code is not valid {code}"
             };
             LogError(evt);
+        }
+
+        #endregion
+
+        #region UserManagement
+
+        public void AddResourceOwner(string subject)
+        {
+            var evt = new Event
+            {
+                Id = 205,
+                Task = Tasks.UserManagement,
+                Message = $"The resource owner is created {subject}"
+            };
+            LogInformation(evt);
         }
 
         #endregion

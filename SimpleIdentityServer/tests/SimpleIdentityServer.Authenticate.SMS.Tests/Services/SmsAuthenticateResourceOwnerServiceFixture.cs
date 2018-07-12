@@ -1,5 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Authenticate.SMS.Services;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Store;
@@ -89,12 +90,14 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
                 IssueAt = DateTime.UtcNow,
                 ExpiresIn = 100
             }));
+            _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByClaim(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
             await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password");
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login));
+            _confirmationCodeStoreStub.Verify(c => c.Remove("password"));
         }
 
         private void InitializeFakeObjects()

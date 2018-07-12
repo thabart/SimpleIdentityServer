@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Common.Requests;
-using SimpleIdentityServer.Authenticate.SMS.Common.Responses;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Exceptions;
 using System;
 using System.Net;
@@ -12,65 +12,83 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
     [Route(Constants.CodeController)]
     public class CodeController : Controller
     {
-        private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
 
-        public CodeController(IGenerateAndSendSmsCodeOperation generateAndSendSmsCodeOperation, ISmsAuthenticationOperation smsAuthenticationOperation)
+        public CodeController(ISmsAuthenticationOperation smsAuthenticationOperation)
         {
-            _generateAndSendSmsCodeOperation = generateAndSendSmsCodeOperation;
             _smsAuthenticationOperation = smsAuthenticationOperation;
         }
 
+        /// <summary>
+        /// Send the confirmation code to the phone number.
+        /// </summary>
+        /// <param name="confirmationCodeRequest"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Send([FromBody] ConfirmationCodeRequest confirmationCodeRequest)
         {
-            Check(confirmationCodeRequest);
+            var checkResult = Check(confirmationCodeRequest);
+            if (checkResult != null)
+            {
+                return checkResult;
+            }
+
             IActionResult result = null;
             try
             {
-                var resourceOwner = await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber);
-                await _generateAndSendSmsCodeOperation.Execute(confirmationCodeRequest.PhoneNumber);
+                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber);
                 result = new OkResult();
             }
             catch(IdentityServerException ex)
             {
-                var error = new ErrorResponse
-                {
-                    Code = ex.Code,
-                    Message = ex.Message
-                };
-                result = new JsonResult(error)
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
+                result = BuildError(ex.Code, ex.Message, HttpStatusCode.InternalServerError);
             }
             catch(Exception)
             {
-                var error = new ErrorResponse
-                {
-                    Code = Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    Message = "internal error"
-                };
-                result = new JsonResult(error)
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
+                result = BuildError(Core.Errors.ErrorCodes.UnhandledExceptionCode, "unhandled exception occured please contact the administrator", HttpStatusCode.InternalServerError);
             }
 
             return result;
         }
 
-        private void Check(ConfirmationCodeRequest confirmationCodeRequest)
+        /// <summary>
+        /// Check the parameter.
+        /// </summary>
+        /// <param name="confirmationCodeRequest"></param>
+        /// <returns></returns>
+        private IActionResult Check(ConfirmationCodeRequest confirmationCodeRequest)
         {
             if (confirmationCodeRequest == null)
             {
-                throw new ArgumentNullException(nameof(confirmationCodeRequest));
+                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, "no request", HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(confirmationCodeRequest.PhoneNumber))
             {
-                throw new ArgumentNullException(nameof(confirmationCodeRequest.PhoneNumber));
+                return BuildError(Core.Errors.ErrorCodes.InvalidRequestCode, $"parameter {SMS.Common.Constants.ConfirmationCodeRequestNames.PhoneNumber} is missing", HttpStatusCode.BadRequest);
             }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Code = code,
+                Message = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

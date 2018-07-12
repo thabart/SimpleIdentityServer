@@ -5,6 +5,8 @@ using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,13 +25,18 @@ namespace SimpleIdentityServer.Host.Tests
         }
 
         [Fact]
-        public async Task When_Send_PhoneNumber_And_Twilio_Send_Exception_Then_Json_Is_Returned()
+        public async Task When_Send_ConfirmationCode_Then_Json_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-            // ACT
+            // ACT : NO PHONE NUMBER
+            var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            {
+                PhoneNumber = string.Empty
+            });
+            // ACT : TWILIO NO CONFIGURED
             ConfirmationCode confirmationCode = new ConfirmationCode();
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
             {
@@ -47,32 +54,45 @@ namespace SimpleIdentityServer.Host.Tests
                 {
                     throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, "the twilio account is not properly configured");
                 });
-            var error = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var twilioNotConfigured = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
             });
-
-            // ASSERT
-            Assert.NotNull(error);
-            Assert.Equal("the twilio account is not properly configured", error.Message);
-            Assert.Equal("unhandled_exception", error.Code);
-        }
-
-        [Fact]
-        public async Task When_Send_PhoneNumber_And_ConfirmationCode_CannotBeInserted_Then_Json_Is_Returned()
-        {
-
-        }
-
-        [Fact]
-        public async Task When_Send_PhoneNumber_And_User_Doesnt_Exist_Then_NewOneIsCreated_And_Confirmation_Code_Is_Sent()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
-            // ACT
-            ConfirmationCode confirmationCode = new ConfirmationCode();
+            // ACT : NO CONFIRMATION CODE
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
+            {
+                return Task.FromResult((ConfirmationCode)null);
+            });
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>())).Callback<ConfirmationCode>(r =>
+            {
+                confirmationCode = r;
+            }).Returns(() =>
+            {
+                return Task.FromResult(false);
+            });
+            _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback(() => { }).Returns(Task.FromResult(true));
+            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            {
+                PhoneNumber = "phone"
+            });
+            // ACT : UNHANDLED EXCEPTION
+            _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
+            {
+                return Task.FromResult((ConfirmationCode)null);
+            });
+            _server.SharedCtx.ConfirmationCodeStore.Setup(h => h.Add(It.IsAny<ConfirmationCode>())).Callback(() =>
+            {
+                throw new Exception();
+            }).Returns(() =>
+            {
+                return Task.FromResult(false);
+            });
+            var unhandledException = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            {
+                PhoneNumber = "phone"
+            });
+            // ACT : HAPPY PATH
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
             {
                 return Task.FromResult((ConfirmationCode)null);
@@ -84,15 +104,43 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 return Task.FromResult(true);
             });
-            await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback(() => { }).Returns(Task.FromResult(true));
+            var happyPath = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
             });
 
-            // ASSERTS
-            Assert.True(true);
-        }
 
+            // ASSERT : NO PHONE NUMBER
+            Assert.NotNull(noPhoneNumberResult);
+            Assert.True(noPhoneNumberResult.ContainsError);
+            Assert.Equal(HttpStatusCode.BadRequest, noPhoneNumberResult.HttpStatus);
+            Assert.Equal("invalid_request", noPhoneNumberResult.Error.Code);
+            Assert.Equal("parameter phone_number is missing", noPhoneNumberResult.Error.Message);
+            // ASSERT : TWILIO NOT CONFIGURED
+            Assert.NotNull(twilioNotConfigured);
+            Assert.True(twilioNotConfigured.ContainsError);
+            Assert.Equal("unhandled_exception", twilioNotConfigured.Error.Code);
+            Assert.Equal("the twilio account is not properly configured", twilioNotConfigured.Error.Message);
+            Assert.Equal(HttpStatusCode.InternalServerError, twilioNotConfigured.HttpStatus);            
+            // ASSERT : CANNOT INSERT CONFIRMATION CODE
+            Assert.NotNull(cannotInsertConfirmationCode);
+            Assert.True(cannotInsertConfirmationCode.ContainsError);
+            Assert.Equal("unhandled_exception", cannotInsertConfirmationCode.Error.Code);
+            Assert.Equal("the confirmation code cannot be saved", cannotInsertConfirmationCode.Error.Message);
+            Assert.Equal(HttpStatusCode.InternalServerError, cannotInsertConfirmationCode.HttpStatus);
+            // ASSERT : UNHANDLED EXCEPTION
+            Assert.NotNull(unhandledException);
+            Assert.True(unhandledException.ContainsError);
+            Assert.Equal("unhandled_exception", unhandledException.Error.Code);
+            Assert.Equal("unhandled exception occured please contact the administrator", unhandledException.Error.Message);
+            Assert.Equal(HttpStatusCode.InternalServerError, unhandledException.HttpStatus);
+            // ASSERT : HAPPY PATH
+            Assert.True(true);
+            Assert.NotNull(happyPath);
+            Assert.False(happyPath.ContainsError);
+        }
 
         private void InitializeFakeObjects()
         {
