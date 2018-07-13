@@ -14,10 +14,11 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
     public class UserStore
     {
         private static UserStore _instance;
+        private static string _defaultSubject = "administrator";
 
         private UserStore()
         {
-
+            Subject = _defaultSubject;
         }
 
         public static UserStore Instance()
@@ -31,6 +32,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
         }
 
         public bool IsInactive { get; set; }
+        public string Subject { get; set; }
         public DateTimeOffset? AuthenticationOffset { get; set; }
     }
 
@@ -48,7 +50,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
             }
 
             var claims = new List<Claim>();
-            claims.Add(new Claim("sub", "administrator"));
+            claims.Add(new Claim("sub", UserStore.Instance().Subject));
             if (UserStore.Instance().AuthenticationOffset != null)
             {
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant, UserStore.Instance().AuthenticationOffset.Value.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture)));

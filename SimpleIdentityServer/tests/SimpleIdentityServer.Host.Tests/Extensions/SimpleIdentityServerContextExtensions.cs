@@ -345,6 +345,21 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         },
                         Password = "password",
                         IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "user",
+                        Password = "password",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "user"
+                            }
+                        },
+                        IsLocalAccount = true
                     }
                 });
             }

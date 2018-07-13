@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
@@ -24,6 +25,9 @@ using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Jwt.Encrypt;
+using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using System;
 using System.Threading.Tasks;
@@ -38,6 +42,8 @@ namespace SimpleIdentityServer.Host.Tests
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
         private IAuthorizationClient _authorizationClient;
         private IClientAuthSelector _clientAuthSelector;
+        private IJwsGenerator _jwsGenerator;
+        private IJweGenerator _jweGenerator;
 
         public AuthorizationClientFixture(TestOauthServerFixture server)
         {
@@ -324,8 +330,34 @@ namespace SimpleIdentityServer.Host.Tests
         [Fact]
         public async Task When_User_Is_Authenticated__And_Pass_Prompt_And_No_Consent_Has_Been_Given_Then_Error_Is_Returned()
         {
-            // TODO : USE A USE WHO DOESNT GIVE HIS CONSENT
-            /*
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+            // ACT
+            UserStore.Instance().Subject = "user";
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None
+                });
+            UserStore.Instance().Subject = "administrator";
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("interaction_required", result.Error.Error);
+            Assert.Equal("the user needs to give his consent", result.Error.ErrorDescription);
+        }
+
+        #endregion
+
+        #region id_token_hint
+
+        [Fact]
+        public async Task When_Pass_Invalid_IdTokenHint_To_Authorization_Then_Error_Is_Returned()
+        {
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
@@ -335,24 +367,29 @@ namespace SimpleIdentityServer.Host.Tests
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                 new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
                 {
-                    Prompt = PromptNames.None
+                    IdTokenHint = "token",
+                    Prompt = "none"
                 });
 
             // ASSERT
             Assert.NotNull(result);
             Assert.True(result.ContainsError);
-            Assert.Equal("interaction_required", result.Error.Error);
-            Assert.Equal("the user needs to give his consent", result.Error.ErrorDescription);
-            */
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the id_token_hint parameter is not a valid token", result.Error.ErrorDescription);
         }
-
-        #endregion
-
-        #region id_token_hint
 
         [Fact]
         public async Task When_Pass_IdTokenHint_And_The_Subject_Doesnt_Match_The_Authenticated_User_Then_Token_Is_Returned()
         {
+            // GENERATE JWS
+            var payload = new JwsPayload
+            {
+                {
+                    "sub", "administrator"
+                }
+            };
+            var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
+            // GENERATE AN IDENTITY TOKEN.
             // TODO
         }
 
@@ -422,19 +459,63 @@ namespace SimpleIdentityServer.Host.Tests
         [Fact]
         public async Task When_Pass_Login_Prompt_Then_Redirect_To_Authenticate_Page()
         {
-            // TODO
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.Login
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.Equal("/pwd/Authenticate/OpenId", result.Location.LocalPath);
         }
 
         [Fact]
         public async Task When_Pass_Consent_Prompt_And_User_Is_Not_Authenticated_Then_Redirect_To_Authenticate_Page()
         {
-            // TODO
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+            // ACT
+            UserStore.Instance().IsInactive = true;
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.Consent
+                });
+            UserStore.Instance().IsInactive = false;
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.Equal("/pwd/Authenticate/OpenId", result.Location.LocalPath);
         }
 
         [Fact]
         public async Task When_Pass_Consent_Prompt_And_User_Is_Authenticated_Then_Redirect_To_Authenticate_Page()
         {
-            // TODO
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.Consent
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.Equal("/pwd/Consent", result.Location.LocalPath);
         }
 
         #endregion
@@ -539,6 +620,11 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void InitializeFakeObjects()
         {
+            var services = new ServiceCollection();
+            services.AddSimpleIdentityServerJwt();
+            var provider = services.BuildServiceProvider();
+            _jwsGenerator = (IJwsGenerator)provider.GetService(typeof(IJwsGenerator));
+            _jweGenerator = (IJweGenerator)provider.GetService(typeof(IJweGenerator));
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
             var getAuthorizationOperation = new GetAuthorizationOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);

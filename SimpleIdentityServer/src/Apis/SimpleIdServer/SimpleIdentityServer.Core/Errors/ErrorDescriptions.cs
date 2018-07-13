@@ -81,8 +81,8 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheRequestDownloadedFromRequestUriIsNotValid =
             "the request downloaded from request URI is not valid";
         public const string TheRequestParameterIsNotCorrect = "the request parameter is not correct";
-        public const string TheIdTokenHintParameterCannotBeDecrypted = "the id token hint parameter cannot be decrypted";
-        public const string TheIdTokenHintParameterIsNotAValidToken = "the id_token parameter is not a valid token";
+        public const string TheIdTokenHintParameterCannotBeDecrypted = "the id_token_hint parameter cannot be decrypted";
+        public const string TheIdTokenHintParameterIsNotAValidToken = "the id_token_hint parameter is not a valid token";
         public const string TheSignatureOfIdTokenHintParameterCannotBeChecked = "the signature of id token hint parameter cannot be checked";
         public const string TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience = "the identity token doesnt contain simple identity server in the audience";
         public const string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken = "the current authenticated user doesn't match with the identity token";
