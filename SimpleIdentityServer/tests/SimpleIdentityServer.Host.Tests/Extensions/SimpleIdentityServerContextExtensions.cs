@@ -779,7 +779,7 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             }
                         },
                         GrantTypes = "0",
-                        ResponseTypes = "",
+                        ResponseTypes = "2",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:5000/callback"

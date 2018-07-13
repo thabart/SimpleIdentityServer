@@ -24,6 +24,7 @@ using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Host.Tests.MiddleWares;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -206,6 +207,246 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("state", error.State);
         }
 
+        [Fact]
+        public async Task When_ClientRequiresPkce_And_No_CodeChallenge_Is_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=pkce_client&redirect_uri=http://localhost:5000/callback&response_type=token&prompt=none"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client pkce_client requires PKCE", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Use_Hybrid_And_Nonce_Parameter_Is_Not_Passed_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter nonce is missing", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Use_Hybrid_And_Pass_Invalid_Scope_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=scope&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_scope", error.Error);
+            Assert.Equal("the scopes scope are not allowed or invalid", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Use_Hybrid_And_Dont_Pass_Not_Supported_ResponseTypes_To_Authorization_Then_Json_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+
+            // ACT
+            var httpResult = await _server.Client.GetAsync(new Uri(baseUrl + "/authorization?scope=openid api1&state=state&client_id=incomplete_authcode_client&redirect_uri=http://localhost:5000/callback&response_type=id_token code token&prompt=none&nonce=nonce"));
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
+
+            // ASSERT
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the client 'incomplete_authcode_client' doesn't support the response type: 'id_token,code,token'", error.ErrorDescription);
+            Assert.Equal("state", error.State);
+        }
+
+        [Fact]
+        public async Task When_Requesting_AuthorizationCode_And_RedirectUri_IsNotValid_Then_Error_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.True(result.Error.Error == "invalid_request");
+        }
+
+        #region Prompts
+
+        [Fact]
+        public async Task When_User_Is_Not_Authenticated_And_Pass_None_Prompt_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            UserStore.Instance().IsInactive = true;
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None
+                });
+            UserStore.Instance().IsInactive = false;
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("login_required", result.Error.Error);
+            Assert.Equal("the user needs to be authenticated", result.Error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_User_Is_Authenticated__And_Pass_Prompt_And_No_Consent_Has_Been_Given_Then_Error_Is_Returned()
+        {
+            // TODO : USE A USE WHO DOESNT GIVE HIS CONSENT
+            /*
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("interaction_required", result.Error.Error);
+            Assert.Equal("the user needs to give his consent", result.Error.ErrorDescription);
+            */
+        }
+
+        #endregion
+
+        #region id_token_hint
+
+        [Fact]
+        public async Task When_Pass_IdTokenHint_And_The_Subject_Doesnt_Match_The_Authenticated_User_Then_Token_Is_Returned()
+        {
+            // TODO
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Happy paths
+
+        [Fact]
+        public async Task When_Requesting_AuthorizationCode_Then_Code_Is_Returned()
+        {
+            const string baseUrl = "http://localhost:5000";
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            // NOTE : The consent has already been given in the database.
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None
+                });
+            Uri location = result.Location;
+            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
+            var token = await _clientAuthSelector.UseClientSecretPostAuth("authcode_client", "authcode_client")
+                .UseAuthorizationCode(queries["code"], "http://localhost:5000/callback")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.NotNull(result.Location);
+            Assert.NotNull(token);
+            Assert.NotEmpty(token.Content.AccessToken);
+            Assert.True(queries["state"] == "state");
+        }
+
+        #region max_age
+
+        [Fact]
+        public async Task When_Pass_MaxAge_And_User_Session_Is_Inactive_Then_Redirect_To_Authenticate_Page()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            UserStore.Instance().AuthenticationOffset = DateTimeOffset.UtcNow.AddDays(-2);
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    Prompt = PromptNames.None,
+                    MaxAge = 300
+                });
+            Uri location = result.Location;
+            UserStore.Instance().AuthenticationOffset = null;
+
+            // ASSERT
+            Assert.Equal("/pwd/Authenticate/OpenId", location.LocalPath);
+        }
+
+        #endregion
+
+        #region prompts
+
+        [Fact]
+        public async Task When_Pass_Login_Prompt_Then_Redirect_To_Authenticate_Page()
+        {
+            // TODO
+        }
+
+        [Fact]
+        public async Task When_Pass_Consent_Prompt_And_User_Is_Not_Authenticated_Then_Redirect_To_Authenticate_Page()
+        {
+            // TODO
+        }
+
+        [Fact]
+        public async Task When_Pass_Consent_Prompt_And_User_Is_Authenticated_Then_Redirect_To_Authenticate_Page()
+        {
+            // TODO
+        }
+
+        #endregion
+
+        #region id_token_hint
+
+        [Fact]
+        public async Task When_Pass_IdTokenHint_And_The_Subject_Matches_The_Authenticated_User_Then_Token_Is_Returned()
+        {
+            // TODO
+        }
+
         #endregion
 
         [Fact]
@@ -237,52 +478,6 @@ namespace SimpleIdentityServer.Host.Tests
             // ASSERT
             Assert.NotNull(token);
             Assert.NotEmpty(token.Content.AccessToken);
-        }
-
-        [Fact]
-        public async Task When_Requesting_AuthorizationCode_And_RedirectUri_IsNotValid_Then_Error_Is_Returned()
-        {
-            const string baseUrl = "http://localhost:5000";
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
-            // ACT
-            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "implicit_client", "http://localhost:5000/invalid_callback", "state"));
-            
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.True(result.Error.Error == "invalid_request");
-        }
-
-        [Fact]
-        public async Task When_Requesting_AuthorizationCode_Then_Code_Is_Returned()
-        {
-            const string baseUrl = "http://localhost:5000";
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
-            // ACT
-            // NOTE : The consent has already been given in the database.
-            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration", 
-                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
-                {
-                    Prompt = PromptNames.None
-                });
-            Uri location = result.Location;
-            var queries = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(location.Query);
-            var token = await _clientAuthSelector.UseClientSecretPostAuth("authcode_client", "authcode_client")
-                .UseAuthorizationCode(queries["code"], "http://localhost:5000/callback")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-
-            // ASSERTS
-            Assert.NotNull(result);
-            Assert.NotNull(result.Location);
-            Assert.NotNull(token);
-            Assert.NotEmpty(token.Content.AccessToken);
-            Assert.True(queries["state"] == "state");
         }
 
         [Fact]
@@ -339,6 +534,8 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.True(queries.ContainsKey("state"));
             Assert.True(queries["state"] == "state");
         }
+
+        #endregion
 
         private void InitializeFakeObjects()
         {

@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             // ACT & ASSERT
-            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _authorizationActions.GetAuthorization(authorizationParameter, null));
+            var result = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationActions.GetAuthorization(authorizationParameter, null));
             Assert.True(result.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(result.Message == string.Format(ErrorDescriptions.TheClientRequiresPkce, clientId));
         }
