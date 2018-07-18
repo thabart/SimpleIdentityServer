@@ -101,32 +101,4 @@
             </div>
         </div>
     }
-    
-    @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <div class="panel panel-default">
-            <div class="panel-heading">@ViewBag.Translations["claims"]</div>
-            <div class="panel-body">
-                @foreach (var claim in Model.EditableClaims)
-                {
-                    <fieldset class="form-group">
-                        <label class="control-label">@claim.Key</label>
-                        <input type="text" name="@("[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
-                    </fieldset>
-                }
-                @foreach (var notEditableClaim in Model.NotEditableClaims)
-                {
-                    <fieldset class="form-group">
-                        <label class="control-label">@notEditableClaim.Key</label>
-                        <input type="text" value="@notEditableClaim.Value" class="form-control" readonly />
-                    </fieldset>
-                }
-                <!-- Submit -->
-                <fieldset class="form-group">
-                    <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
-                </fieldset>
-            </div>
-        </div>
-    }
 </div>

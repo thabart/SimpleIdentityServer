@@ -83,7 +83,6 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         }
 
         [HttpGet("User/Edit")]
-        [HttpGet("User/UpdateClaims")]
         [HttpGet("User/UpdateCredentials")]
         [HttpGet("User/UpdateTwoFactor")]
         public async Task<IActionResult> Edit()
@@ -118,33 +117,6 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             var subject = authenticatedUser.GetSubject();
             await _userActions.UpdateCredentials(subject, viewModel.Password);
-            ViewBag.IsUpdated = true;
-            return await GetEditView(authenticatedUser);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateClaims(Dictionary<string, string> dic)
-        {
-            if (dic == null)
-            {
-                throw new ArgumentNullException(nameof(dic));
-            }
-            
-            await TranslateUserEditView(DefaultLanguage);
-            var authenticatedUser = await SetUser();
-            ViewBag.IsUpdated = false;
-            ViewBag.IsCreated = false;
-            var claims = new List<ClaimAggregate>();
-            if (dic != null)
-            {
-                foreach(var kvp in dic)
-                {
-                    claims.Add(new ClaimAggregate(kvp.Key, kvp.Value));
-                }
-            }
-
-            await _userActions.UpdateClaims(authenticatedUser.GetSubject(), claims);
             ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser);
         }
