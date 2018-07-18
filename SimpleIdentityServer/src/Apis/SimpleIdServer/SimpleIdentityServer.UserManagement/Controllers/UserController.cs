@@ -7,14 +7,12 @@ using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Extensions;
-using SimpleIdentityServer.UserManagement.Extensions;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -110,7 +108,6 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             await TranslateUserEditView(DefaultLanguage);
             var authenticatedUser = await SetUser();
             ViewBag.IsUpdated = false;
-            ViewBag.IsCreated = false;
             viewModel.Validate(ModelState);
             if (!ModelState.IsValid)
             {
@@ -120,33 +117,8 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             // 2. Create a new user if he doesn't exist or update the credentials.
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             var subject = authenticatedUser.GetSubject();
-            if (resourceOwner == null)
-            {
-                var record = viewModel.ToAddUserParameter();
-                record.Login = authenticatedUser.GetSubject();
-                record.Claims = authenticatedUser.Claims;       
-                if (_userManagementOptions.CreateScimResourceWhenAccountIsAdded)
-                {
-                    await _userActions.AddUser(record, new AuthenticationParameter
-                    {
-                        ClientId = _userManagementOptions.AuthenticationOptions.ClientId,
-                        ClientSecret = _userManagementOptions.AuthenticationOptions.ClientSecret,
-                        WellKnownAuthorizationUrl = _userManagementOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                    }, _userManagementOptions.ScimBaseUrl, true, authenticatedUser.Identity.AuthenticationType);
-                }
-                else
-                {
-                    await _userActions.AddUser(record, null, null, false, authenticatedUser.Identity.AuthenticationType);
-                }
-
-                ViewBag.IsCreated = true;
-            }
-            else
-            {
-                await _userActions.UpdateCredentials(subject, viewModel.Password);
-                ViewBag.IsUpdated = true;
-            }
-
+            await _userActions.UpdateCredentials(subject, viewModel.Password);
+            ViewBag.IsUpdated = true;
             return await GetEditView(authenticatedUser);
         }
 

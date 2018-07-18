@@ -17,18 +17,9 @@
 @model SimpleIdentityServer.UserManagement.ViewModels.UpdateResourceOwnerViewModel
 
 <div class="tab-pane active" id="edit-ro">
-    @if (Model.IsLocalAccount)
-    {
-        <h1>
-            @ViewBag.Translations["edit_resource_owner"]
-        </h1>
-    }
-    else
-    {
-        <h1>
-            @ViewBag.Translations["create_resource_owner"]
-        </h1>
-    }
+    <h1>
+        @ViewBag.Translations["edit_resource_owner"]
+    </h1>
 
     @if (errors.Count > 0)
     {
@@ -45,11 +36,6 @@
     @if (ViewBag.IsUpdated)
     {
         <div class="alert alert-success">@ViewBag.Translations["user_is_updated"]</div>
-    }
-
-    @if (ViewBag.IsCreated)
-    {
-        <div class="alert alert-success">@ViewBag.Translations["user_is_created"]</div>
     }
 
     @using (Html.BeginForm("UpdateCredentials", "User", null, FormMethod.Post))
@@ -115,39 +101,10 @@
             </div>
         </div>
     }
-
-    @if (Model.IsLocalAccount)
+    
+    @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))
     {
-        @using (Html.BeginForm("UpdateClaims", "User", null, FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
-            <div class="panel panel-default">
-                <div class="panel-heading">@ViewBag.Translations["claims"]</div>
-                <div class="panel-body">
-                    @foreach (var claim in Model.EditableClaims)
-                    {
-                        <fieldset class="form-group">
-                            <label class="control-label">@claim.Key</label>
-                            <input type="text" name="@("[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
-                        </fieldset>
-                    }
-                    @foreach (var notEditableClaim in Model.NotEditableClaims)
-                    {
-                        <fieldset class="form-group">
-                            <label class="control-label">@notEditableClaim.Key</label>
-                            <input type="text" value="@notEditableClaim.Value" class="form-control" readonly />
-                        </fieldset>
-                    }
-                    <!-- Submit -->
-                    <fieldset class="form-group">
-                        <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
-                    </fieldset>
-                </div>
-            </div>
-        }
-    }
-    else
-    {
+        @Html.AntiForgeryToken()
         <div class="panel panel-default">
             <div class="panel-heading">@ViewBag.Translations["claims"]</div>
             <div class="panel-body">
@@ -155,7 +112,7 @@
                 {
                     <fieldset class="form-group">
                         <label class="control-label">@claim.Key</label>
-                        <input type="text" value="@claim.Value" class="form-control" readonly />
+                        <input type="text" name="@("[" + claim.Key + "]")" value="@claim.Value" class="form-control" />
                     </fieldset>
                 }
                 @foreach (var notEditableClaim in Model.NotEditableClaims)
@@ -165,6 +122,10 @@
                         <input type="text" value="@notEditableClaim.Value" class="form-control" readonly />
                     </fieldset>
                 }
+                <!-- Submit -->
+                <fieldset class="form-group">
+                    <button type="submit" class="btn btn-primary">@ViewBag.Translations["confirm"]</button>
+                </fieldset>
             </div>
         </div>
     }
