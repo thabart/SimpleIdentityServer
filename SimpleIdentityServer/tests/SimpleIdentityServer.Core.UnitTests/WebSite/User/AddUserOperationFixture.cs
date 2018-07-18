@@ -19,9 +19,9 @@ using SimpleIdentityServer.AccessToken.Store;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
+using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Scim.Client;
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private Mock<IClaimRepository> _claimsRepositoryStub;
         private Mock<IAccessTokenStore> _tokenStoreStub;
         private Mock<IScimClientFactory> _scimClientFactoryStub;
+        private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private IAddUserOperation _addResourceOwnerAction;
         
         [Fact]
@@ -97,12 +98,15 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
             _scimClientFactoryStub = new Mock<IScimClientFactory>();
+            _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
                 _profileRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
                 _tokenStoreStub.Object,
-                _scimClientFactoryStub.Object);
+                _scimClientFactoryStub.Object,
+                null,
+                _openidEventSourceStub.Object);
         }
     }
 }

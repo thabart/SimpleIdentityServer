@@ -34,6 +34,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.OpenId.Logging\SimpleIdentityServer.OpenId.Logging.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Store\SimpleIdentityServer.Store.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication\SimpleIdentityServer.TwoFactorAuthentication.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.UserFilter\SimpleIdentityServer.UserFilter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

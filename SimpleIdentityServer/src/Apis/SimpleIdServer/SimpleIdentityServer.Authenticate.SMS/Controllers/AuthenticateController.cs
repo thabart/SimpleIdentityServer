@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 {
                     resourceOwner = await _smsAuthenticationOperation.Execute(localAuthenticationViewModel.PhoneNumber);
                 }
-                catch (IdentityServerAuthenticationException ex)
+                catch (Exception ex)
                 {
                     _simpleIdentityServerEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);
@@ -272,7 +272,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 {
                     resourceOwner = await _smsAuthenticationOperation.Execute(viewModel.PhoneNumber);
                 }
-                catch (IdentityServerAuthenticationException ex)
+                catch (Exception ex)
                 {
                     _simpleIdentityServerEventSource.Failure(ex.Message);
                     ModelState.AddModelError("message_error", ex.Message);

@@ -34,8 +34,10 @@ using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.TwoFactorAuthentication;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
+using SimpleIdentityServer.UserFilter.Basic;
 using SimpleIdentityServer.UserManagement;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -80,6 +82,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
+            ConfigureUserFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
@@ -165,6 +168,29 @@ namespace SimpleIdentityServer.Startup
                 },
                 ScimBaseUrl = "http://localhost:60001"
             });  // USER MANAGEMENT
+        }
+
+        private void ConfigureUserFilters(IServiceCollection services)
+        {
+            services.AddUserFilter(new UserFilterBasicOptions
+            {
+                Rules = new List<FilterRule>
+                {
+                    new FilterRule
+                    {
+                        Name = "invalid_rule",
+                        Comparisons = new List<FilterComparison>
+                        {
+                            new FilterComparison
+                            {
+                                ClaimKey = "key",
+                                ClaimValue = "key",
+                                Operation = ComparisonOperations.Equal
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         private void ConfigureBus(IServiceCollection services)

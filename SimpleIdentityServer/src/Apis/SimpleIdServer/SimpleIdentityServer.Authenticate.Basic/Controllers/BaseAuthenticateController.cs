@@ -26,6 +26,7 @@ using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt.Extensions;
@@ -137,8 +138,7 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             if (!string.IsNullOrWhiteSpace(error))
             {
                 throw new IdentityServerException(
-                    Core.Errors.ErrorCodes.UnhandledExceptionCode,
-                    string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
+                    Core.Errors.ErrorCodes.UnhandledExceptionCode, string.Format(Core.Errors.ErrorDescriptions.AnErrorHasBeenRaisedWhenTryingToAuthenticate, error));
             }
 
             // 1. Get the authenticated user.
@@ -148,7 +148,18 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             // 2. Automatically create the resource owner.
             if (resourceOwner == null)
             {
-                await AddExternalUser(authenticatedUser);
+                try
+                {
+                    await AddExternalUser(authenticatedUser);
+                }
+                catch(IdentityServerException ex)
+                {
+                    return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message, area = "Shell" });
+                }
+                catch(Exception ex)
+                {
+                    return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message, area = "Shell" });
+                }
             }
 
             IEnumerable<Claim> claims = authenticatedUser.Claims;
@@ -398,7 +409,18 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             var resourceOwner = await _profileActions.GetResourceOwner(authenticatedUser.GetSubject());
             if (resourceOwner == null)
             {
-                await AddExternalUser(authenticatedUser);
+                try
+                {
+                    await AddExternalUser(authenticatedUser);
+                }
+                catch (IdentityServerException ex)
+                {
+                    return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message, area = "Shell" });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message, area = "Shell" });
+                }
             }
 
             if (resourceOwner != null)

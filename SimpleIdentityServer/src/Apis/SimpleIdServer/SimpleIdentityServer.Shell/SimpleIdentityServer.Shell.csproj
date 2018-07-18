@@ -21,4 +21,7 @@
     <EmbeddedResource Include="wwwroot\lib\**\*.css" />
     <EmbeddedResource Include="wwwroot\lib\**\*.js" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Areas\Shell\Views\Error\Index.cshtml" />
+  </ItemGroup>
 </Project>

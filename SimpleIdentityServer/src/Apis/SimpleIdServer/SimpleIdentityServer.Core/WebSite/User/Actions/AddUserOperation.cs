@@ -20,8 +20,9 @@ using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Scim.Client;
+using SimpleIdentityServer.UserFilter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,19 +55,25 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
         private readonly IClaimRepository _claimRepository;
         private readonly IAccessTokenStore _tokenStore;
         private readonly IScimClientFactory _scimClientFactory;
+        private readonly IEnumerable<IResourceOwnerFilter> _resourceOwnerFilters;
+        private readonly IOpenIdEventSource _openidEventSource;
 
         public AddUserOperation(
             IResourceOwnerRepository resourceOwnerRepository,
             IProfileRepository profileRepository,
             IClaimRepository claimRepository,
             IAccessTokenStore tokenStore,
-            IScimClientFactory scimClientFactory)
+            IScimClientFactory scimClientFactory,
+            IEnumerable<IResourceOwnerFilter> resourceOwnerFilters,
+            IOpenIdEventSource openIdEventSource)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
             _profileRepository = profileRepository;
             _claimRepository = claimRepository;
             _tokenStore = tokenStore;
             _scimClientFactory = scimClientFactory;
+            _resourceOwnerFilters = resourceOwnerFilters;
+            _openidEventSource = openIdEventSource;
         }
 
         public async Task<bool> Execute(AddUserParameter addUserParameter, AuthenticationParameter authenticationParameter, string scimBaseUrl = null, bool addScimResource = false, string issuer = null)
@@ -120,6 +127,38 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     }
                 }
             }
+
+            if (_resourceOwnerFilters != null)
+            {
+                var isFilterValid = true;
+                foreach(var resourceOwnerFilter in _resourceOwnerFilters)
+                {
+                    var userFilterResult = resourceOwnerFilter.Check(newClaims);
+                    if (!userFilterResult.IsValid)
+                    {
+                        isFilterValid = false;
+                        foreach(var ruleResult in userFilterResult.UserFilterRules)
+                        {
+                            if (!ruleResult.IsValid)
+                            {
+                                _openidEventSource.Failure($"the filter rule '{ruleResult.RuleName}' failed");
+                                foreach (var errorMessage in ruleResult.ErrorMessages)
+                                {
+                                    _openidEventSource.Failure(errorMessage);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!isFilterValid)
+                {
+                    throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheUserIsNotAuthorized);
+                }
+            }
+
+            // CLAIMS + REQUEST
+            // CHECK THE USER CAN BE CREATED.
 
             if (addScimResource)
             {
