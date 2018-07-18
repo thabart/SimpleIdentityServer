@@ -362,7 +362,6 @@ namespace SimpleIdentityServer.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
-
             // ACT
             var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
                 new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
@@ -377,11 +376,13 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("invalid_request", result.Error.Error);
             Assert.Equal("the id_token_hint parameter is not a valid token", result.Error.ErrorDescription);
         }
-
+        
         [Fact]
-        public async Task When_Pass_IdTokenHint_And_The_Subject_Doesnt_Match_The_Authenticated_User_Then_Token_Is_Returned()
+        public async Task When_Pass_IdTokenHint_And_The_Audience_Is_Not_Correct_Then_Error_Is_Returned()
         {
             // GENERATE JWS
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var payload = new JwsPayload
             {
                 {
@@ -389,10 +390,52 @@ namespace SimpleIdentityServer.Host.Tests
                 }
             };
             var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
-            // GENERATE AN IDENTITY TOKEN.
-            // TODO
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    IdTokenHint = jws,
+                    Prompt = "none"
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the identity token doesnt contain simple identity server in the audience", result.Error.ErrorDescription);
         }
 
+        [Fact]
+        public async Task When_Pass_IdTokenHint_And_The_Subject_Doesnt_Match_Then_Error_Is_Returned()
+        {
+            // GENERATE JWS
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var payload = new JwsPayload
+            {
+                {
+                    "sub", "adm"
+                }
+            };
+            payload.Add("aud", new[] { "http://localhost:5000" });
+            var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    IdTokenHint = jws,
+                    Prompt = "none"
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the current authenticated user doesn't match with the identity token", result.Error.ErrorDescription);
+        }
+        
         #endregion
 
         #endregion
@@ -525,7 +568,30 @@ namespace SimpleIdentityServer.Host.Tests
         [Fact]
         public async Task When_Pass_IdTokenHint_And_The_Subject_Matches_The_Authenticated_User_Then_Token_Is_Returned()
         {
-            // TODO
+            // GENERATE JWS
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+            var payload = new JwsPayload
+            {
+                {
+                    "sub", "administrator"
+                }
+            };
+            payload.Add("aud", new[] { "http://localhost:5000" });
+            var jws = _jwsGenerator.Generate(payload, JwsAlg.RS256, _server.SharedCtx.SignatureKey);
+            var jwe = _jweGenerator.GenerateJwe(jws, JweAlg.RSA1_5, JweEnc.A128CBC_HS256, _server.SharedCtx.EncryptionKey);
+
+            // ACT
+            var result = await _authorizationClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration",
+                new AuthorizationRequest(new[] { "openid", "api1" }, new[] { ResponseTypes.Code }, "authcode_client", "http://localhost:5000/callback", "state")
+                {
+                    IdTokenHint = jwe,
+                    Prompt = "none"
+                });
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.False(result.ContainsError);
         }
 
         #endregion
