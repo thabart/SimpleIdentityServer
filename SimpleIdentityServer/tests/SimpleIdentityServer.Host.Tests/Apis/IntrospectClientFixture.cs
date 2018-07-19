@@ -37,8 +37,7 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _server = server;
         }
-
-		/*
+        
         [Fact]
         public async Task When_Introspecting_AccessToken_Then_Information_Are_Returned()
         {
@@ -51,29 +50,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .UsePassword("administrator", "password", "scim")
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-
-            // ASSERT
-            Assert.NotNull(introspection);
-            Assert.NotNull(introspection.Scope);
-            Assert.True(introspection.Scope.Count() == 1 && introspection.Scope.First() == "scim");
-        }
-		*/
-
-        [Fact]
-        public async Task When_Introspecting_IdToken_Then_Information_Are_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-
-            // ACT
-            var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
-                .Introspect(result.Content.IdToken, TokenType.AccessToken)
+                .Introspect(result.Content.AccessToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT

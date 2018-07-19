@@ -166,11 +166,29 @@ namespace SimpleIdentityServer.Core
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var result = new Payload
+            var contentResult = parameter.Content as ContentResult;
+            var objResult = parameter.Content as ObjectResult;
+            if (contentResult != null)
             {
-                Content = ((ObjectResult)parameter.Content).Value
-            };
-            return JsonConvert.SerializeObject(result);
+                var result = new Payload
+                {
+                    Content = contentResult.Content
+                };
+                return JsonConvert.SerializeObject(result);
+            }
+
+            if (objResult != null)
+            {
+                var result = new Payload
+                {
+                    Content = objResult.Value
+                };
+
+                return JsonConvert.SerializeObject(result);
+            }
+
+            return null;
+
         }
 
         public string GetPayload(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue)

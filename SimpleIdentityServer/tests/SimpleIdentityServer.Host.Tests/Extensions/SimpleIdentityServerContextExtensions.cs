@@ -535,6 +535,94 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     },
                     new EF.Models.Client
                     {
+                        ClientId = "client_userinfo_sig_rs256",
+                        ClientName = "client_userinfo_sig_rs256",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client_userinfo_sig_rs256"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
+                            }
+                        },
+                        GrantTypes = "2,4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
+                        ClientId = "client_userinfo_enc_rsa15",
+                        ClientName = "client_userinfo_enc_rsa15",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client_userinfo_enc_rsa15"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
+                            }
+                        },
+                        GrantTypes = "2,4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        UserInfoEncryptedResponseAlg = "RSA1_5",
+                        UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
                         ClientId = "clientWithWrongResponseType",
                         ClientName = "clientWithWrongResponseType",
                         ClientSecrets = new List<ClientSecret>

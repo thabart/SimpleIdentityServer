@@ -17,6 +17,7 @@
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -24,11 +25,11 @@ namespace SimpleIdentityServer.Client
 {
     public interface IUserInfoClient
     {
-        JObject GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false);
-        JObject GetUserInfo(Uri userInfoUri, string accessToken, bool inBody = false);
-        Task<JObject> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false);
-        Task<JObject> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false);
-        Task<JObject> Resolve(string configurationUrl, string accessToken, bool inBody = false);
+        GetUserInfoResult GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false);
+        GetUserInfoResult GetUserInfo(Uri userInfoUri, string accessToken, bool inBody = false);
+        Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false);
+        Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false);
+        Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false);
     }
 
     internal class UserInfoClient : IUserInfoClient
@@ -53,17 +54,17 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public JObject GetUserInfo(Uri userInfoUri, string authorizationHeader, bool inBody = false)
+        public GetUserInfoResult GetUserInfo(Uri userInfoUri, string authorizationHeader, bool inBody = false)
         {
             return GetUserInfoAsync(userInfoUri, authorizationHeader).Result;
         }
 
-        public JObject GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false)
+        public GetUserInfoResult GetUserInfo(string userInfoUrl, string accessToken, bool inBody = false)
         {
             return GetUserInfoAsync(userInfoUrl, accessToken).Result;
         }
 
-        public async Task<JObject> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false)
+        public async Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(userInfoUrl))
             {
@@ -84,7 +85,7 @@ namespace SimpleIdentityServer.Client
             return await GetUserInfoAsync(uri, accessToken);
         }
 
-        public async Task<JObject> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
+        public async Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
         {
             if (userInfoUri == null)
             {
@@ -99,7 +100,7 @@ namespace SimpleIdentityServer.Client
             return await _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody);
         }
 
-        public async Task<JObject> Resolve(string configurationUrl, string accessToken, bool inBody = false)
+        public async Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
