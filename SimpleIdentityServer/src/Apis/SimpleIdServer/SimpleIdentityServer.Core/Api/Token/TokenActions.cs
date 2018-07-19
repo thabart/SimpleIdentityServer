@@ -48,6 +48,7 @@ namespace SimpleIdentityServer.Core.Api.Token
         private readonly IGetTokenByRefreshTokenGrantTypeAction _getTokenByRefreshTokenGrantTypeAction;
         private readonly IGetTokenByClientCredentialsGrantTypeAction _getTokenByClientCredentialsGrantTypeAction;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
+        private readonly IRevokeTokenParameterValidator _revokeTokenParameterValidator;
         private readonly IRevokeTokenAction _revokeTokenAction;
         private readonly IOAuthEventSource _oauthEventSource;
         private readonly IEventPublisher _eventPublisher;
@@ -62,6 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             IGetTokenByRefreshTokenGrantTypeAction getTokenByRefreshTokenGrantTypeAction,
             IGetTokenByClientCredentialsGrantTypeAction getTokenByClientCredentialsGrantTypeAction,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
+            IRevokeTokenParameterValidator revokeTokenParameterValidator,
             IOAuthEventSource oauthEventSource,
             IRevokeTokenAction revokeTokenAction,
             IEventPublisher eventPublisher,
@@ -76,6 +78,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             _oauthEventSource = oauthEventSource;
             _getTokenByClientCredentialsGrantTypeAction = getTokenByClientCredentialsGrantTypeAction;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
+            _revokeTokenParameterValidator = revokeTokenParameterValidator;
             _revokeTokenAction = revokeTokenAction;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
@@ -212,6 +215,7 @@ namespace SimpleIdentityServer.Core.Api.Token
             {
                 _eventPublisher.Publish(new RevokeTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(revokeTokenParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartRevokeToken(revokeTokenParameter.Token);
+                _revokeTokenParameterValidator.Validate(revokeTokenParameter);
                 var result = _revokeTokenAction.Execute(revokeTokenParameter, authenticationHeaderValue, certificate);
                 _oauthEventSource.EndRevokeToken(revokeTokenParameter.Token);
                 _eventPublisher.Publish(new TokenRevoked(Guid.NewGuid().ToString(), processId, 1));

@@ -155,6 +155,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
             serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
             serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
+            serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
             return serviceCollection;
         }
     }

@@ -19,6 +19,7 @@ using SimpleBus.Core;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.Core.Validators;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
     {
         private Mock<IPostIntrospectionAction> _postIntrospectionActionStub;
         private Mock<IPayloadSerializer> _payloadSerializerStub;
+        private Mock<IIntrospectionParameterValidator> _validatorStub;
         private IIntrospectionActions _introspectionActions;
 
         #region Exceptions
@@ -70,7 +72,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             _postIntrospectionActionStub = new Mock<IPostIntrospectionAction>();
             var eventPublisherStub = new Mock<IEventPublisher>();
             _payloadSerializerStub = new Mock<IPayloadSerializer>();
-            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object, _payloadSerializerStub.Object);
+            _validatorStub = new Mock<IIntrospectionParameterValidator>();
+            _introspectionActions = new IntrospectionActions(_postIntrospectionActionStub.Object, eventPublisherStub.Object,
+                _payloadSerializerStub.Object, _validatorStub.Object);
         }
     }
 }

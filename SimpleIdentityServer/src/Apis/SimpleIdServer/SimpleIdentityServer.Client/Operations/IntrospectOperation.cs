@@ -15,6 +15,7 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
@@ -26,7 +27,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IIntrospectOperation
     {
-        Task<IntrospectionResponse> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue);
+        Task<GetIntrospectionResult> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue);
     }
 
     internal class IntrospectOperation : IIntrospectOperation
@@ -38,7 +39,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
         
-        public async Task<IntrospectionResponse> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
+        public async Task<GetIntrospectionResult> ExecuteAsync(Dictionary<string, string> introspectionParameter, Uri requestUri, string authorizationValue)
         {
             if (introspectionParameter == null)
             {
@@ -64,9 +65,26 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var result = await httpClient.SendAsync(request);
-            result.EnsureSuccessStatusCode();
-            var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IntrospectionResponse>(content);
+            var json = await result.Content.ReadAsStringAsync();
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new GetIntrospectionResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetIntrospectionResult
+            {
+                ContainsError = false,
+                Content = JsonConvert.DeserializeObject<IntrospectionResponse>(json)
+            };
         }
     }
 }

@@ -19,6 +19,7 @@ using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
+using SimpleIdentityServer.Core.Validators;
 using SimpleIdentityServer.OAuth.Events;
 using System;
 using System.Net.Http.Headers;
@@ -38,12 +39,15 @@ namespace SimpleIdentityServer.Core.Api.Introspection
         private readonly IPostIntrospectionAction _postIntrospectionAction;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
 
-        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction, IEventPublisher eventPublisher, IPayloadSerializer payloadSerializer)
+        public IntrospectionActions(IPostIntrospectionAction postIntrospectionAction, IEventPublisher eventPublisher, 
+            IPayloadSerializer payloadSerializer, IIntrospectionParameterValidator introspectionParameterValidator)
         {
             _postIntrospectionAction = postIntrospectionAction;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
+            _introspectionParameterValidator = introspectionParameterValidator;
         }
 
         public async Task<IntrospectionResult> PostIntrospection(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue)
@@ -57,6 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             try
             {
                 _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
+                _introspectionParameterValidator.Validate(introspectionParameter);
                 var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
                 _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;

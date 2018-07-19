@@ -16,14 +16,17 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Serializers;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Host.Extensions;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,11 +44,19 @@ namespace SimpleIdentityServer.Host.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IntrospectionResponse> Post()
+        public async Task<IActionResult> Post()
         {
-            if (Request.Form == null)
+            try
             {
-                throw new ArgumentNullException(nameof(Request.Form));
+
+                if (Request.Form == null)
+                {
+                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                }
+            }
+            catch(Exception)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
             
             var nameValueCollection = new NameValueCollection();
@@ -72,7 +83,27 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
 
             var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
-            return result.ToDto();
+            return new OkObjectResult(result.ToDto());
+        }
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

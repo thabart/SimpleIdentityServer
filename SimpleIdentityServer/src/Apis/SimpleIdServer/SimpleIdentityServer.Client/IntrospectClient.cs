@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
@@ -25,9 +26,9 @@ namespace SimpleIdentityServer.Client
 {
     public interface IIntrospectClient
     {
-        Task<IntrospectionResponse> ExecuteAsync(string tokenUrl);
-        Task<IntrospectionResponse> ExecuteAsync(Uri tokenUri);
-        Task<IntrospectionResponse> ResolveAsync(string discoveryDocumentationUrl);
+        Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl);
+        Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri);
+        Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     public enum TokenType
@@ -52,7 +53,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<IntrospectionResponse> ExecuteAsync(string tokenUrl)
+        public async Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl)
         {
             if (string.IsNullOrWhiteSpace(tokenUrl))
             {
@@ -68,7 +69,7 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(uri);
         }
 
-        public async Task<IntrospectionResponse> ExecuteAsync(Uri tokenUri)
+        public async Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
@@ -80,7 +81,7 @@ namespace SimpleIdentityServer.Client
                 _requestBuilder.AuthorizationHeaderValue);
         }
 
-        public async Task<IntrospectionResponse> ResolveAsync(string discoveryDocumentationUrl)
+        public async Task<GetIntrospectionResult> ResolveAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {

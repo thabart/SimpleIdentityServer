@@ -51,7 +51,14 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         public async Task<IActionResult> PostToken()
         {
             var certificate = GetCertificate();
-            if (Request.Form == null)
+            try
+            {
+                if (Request.Form == null)
+                {
+                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                }
+            }
+            catch(Exception)
             {
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
@@ -104,9 +111,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         [HttpPost("revoke")]
         public async Task<ActionResult> PostRevoke()
         {
-            if (Request.Form == null)
+            try
             {
-                throw new ArgumentNullException(nameof(Request.Form));
+                if (Request.Form == null)
+                {
+                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var nameValueCollection = new NameValueCollection();

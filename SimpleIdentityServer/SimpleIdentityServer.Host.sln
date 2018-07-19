@@ -155,6 +155,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "14. Common", "14. Common", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Common.Client", "src\Apis\Common\SimpleIdentityServer.Common.Client\SimpleIdentityServer.Common.Client.csproj", "{61E98D63-E66D-4E16-9BDD-5D245CC23540}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "15. Introspect", "15. Introspect", "{DD90AE07-D0A6-4C75-A0A8-3B0687980C4B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.UserInfoIntrospection", "src\Apis\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj", "{7E02195C-5656-43F4-AFC0-DADD6AFC9214}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.OAuth2Introspection", "src\Apis\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj", "{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -480,6 +486,18 @@ Global
 		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Fake|Any CPU.Build.0 = Debug|Any CPU
 		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61E98D63-E66D-4E16-9BDD-5D245CC23540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Fake|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Fake|Any CPU.Build.0 = Debug|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -556,6 +574,9 @@ Global
 		{5681361A-2B17-41C8-88A6-7F94AA86CF70} = {A65C64E3-21B1-4B91-9974-DD09A048ADE3}
 		{A65C64E3-21B1-4B91-9974-DD09A048ADE3} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
 		{61E98D63-E66D-4E16-9BDD-5D245CC23540} = {A65C64E3-21B1-4B91-9974-DD09A048ADE3}
+		{DD90AE07-D0A6-4C75-A0A8-3B0687980C4B} = {4E750A65-E3DF-4030-ACC0-C47FBDAA615C}
+		{7E02195C-5656-43F4-AFC0-DADD6AFC9214} = {DD90AE07-D0A6-4C75-A0A8-3B0687980C4B}
+		{ED4C6A19-21F0-449B-8E43-5654EB54EC9A} = {DD90AE07-D0A6-4C75-A0A8-3B0687980C4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BEEBF69-C26F-4148-BDA9-941BFEC401A7}

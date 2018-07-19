@@ -15,11 +15,16 @@
 #endregion
 
 using Moq;
+using Newtonsoft.Json;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
 using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -37,7 +42,62 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _server = server;
         }
-        
+
+        #region Errors
+
+        [Fact]
+        public async Task When_No_Parameters_Is_Passed_To_TokenRevoke_Edp_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{baseUrl}/token/revoke")
+            };
+
+            // ACT
+            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            // ASSERT
+            Assert.Equal(HttpStatusCode.BadRequest, httpResult.StatusCode);
+            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("no parameter in body request", error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_No_Valid_Parameters_Is_Passed_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            var request = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("invalid", "invalid")
+            };
+            var body = new FormUrlEncodedContent(request);
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = body,
+                RequestUri = new Uri($"{baseUrl}/token/revoke")
+            };
+
+            // ACT
+            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            // ASSERT
+            var error = JsonConvert.DeserializeObject<ErrorResponse>(json);
+            Assert.NotNull(error);
+            Assert.Equal("invalid_request", error.Error);
+            Assert.Equal("the parameter token is missing", error.ErrorDescription);
+        }
+
+        #endregion
+
         [Fact]
         public async Task When_Revoking_AccessToken_Then_True_Is_Returned()
         {
@@ -52,14 +112,13 @@ namespace SimpleIdentityServer.Host.Tests
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .RevokeToken(result.Content.AccessToken, TokenType.AccessToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-
-            var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
             Assert.True(revoke);
-            Assert.NotNull(ex);
+            Assert.True(ex.ContainsError);
         }
 
         [Fact]
@@ -76,13 +135,13 @@ namespace SimpleIdentityServer.Host.Tests
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .RevokeToken(result.Content.RefreshToken, TokenType.RefreshToken)
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.Content.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
             Assert.True(revoke);
-            Assert.NotNull(ex);
+            Assert.True(ex.ContainsError);
         }
 
         private void InitializeFakeObjects()
