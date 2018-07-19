@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -24,9 +25,9 @@ namespace SimpleIdentityServer.Client
 {
     public interface IRevokeTokenClient
     {
-        Task<bool> ExecuteAsync(string tokenUrl);
-        Task<bool> ExecuteAsync(Uri tokenUri);
-        Task<bool> ResolveAsync(string discoveryDocumentationUrl);
+        Task<GetRevokeTokenResult> ExecuteAsync(string tokenUrl);
+        Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri);
+        Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class RevokeTokenClient : IRevokeTokenClient
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<bool> ExecuteAsync(Uri tokenUri)
+        public async Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
@@ -55,7 +56,7 @@ namespace SimpleIdentityServer.Client
             return await _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
         }
 
-        public async Task<bool> ExecuteAsync(string revokeUrl)
+        public async Task<GetRevokeTokenResult> ExecuteAsync(string revokeUrl)
         {
             if (string.IsNullOrWhiteSpace(revokeUrl))
             {
@@ -71,7 +72,7 @@ namespace SimpleIdentityServer.Client
             return await ExecuteAsync(uri);
         }
 
-        public async Task<bool> ResolveAsync(string discoveryDocumentationUrl)
+        public async Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {

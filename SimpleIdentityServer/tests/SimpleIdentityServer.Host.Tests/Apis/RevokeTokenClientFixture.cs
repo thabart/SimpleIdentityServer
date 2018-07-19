@@ -96,6 +96,63 @@ namespace SimpleIdentityServer.Host.Tests
             Assert.Equal("the parameter token is missing", error.ErrorDescription);
         }
 
+        [Fact]
+        public async Task When_Revoke_Token_And_Client_Cannot_Be_Authenticated_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var ex = await _clientAuthSelector.UseClientSecretPostAuth("invalid_client", "invalid_client")
+                .RevokeToken("access_token", TokenType.AccessToken)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERT
+            Assert.True(ex.ContainsError);
+            Assert.Equal("invalid_client", ex.Error.Error);
+            Assert.Equal("the client doesn't exist", ex.Error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_Token_Doesnt_Exist_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                .RevokeToken("access_token", TokenType.AccessToken)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERT
+            Assert.True(ex.ContainsError);
+            Assert.Equal("invalid_token", ex.Error.Error);
+            Assert.Equal("the token doesn't exist", ex.Error.ErrorDescription);
+        }
+
+        [Fact]
+        public async Task When_Revoke_Token_And_Client_Is_Different_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
+
+            // ACT
+            var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15")
+                .UsePassword("administrator", "password", "scim")
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+            var ex = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
+                .RevokeToken(result.Content.AccessToken, TokenType.AccessToken)
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+
+            // ASSERT
+            Assert.True(ex.ContainsError);
+            Assert.Equal("invalid_token", ex.Error.Error);
+            Assert.Equal("the token has not been issued for the given client id 'client'", ex.Error.ErrorDescription);
+        }
+
         #endregion
 
         [Fact]
@@ -117,7 +174,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
-            Assert.True(revoke);
+            Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
         }
 
@@ -140,7 +197,7 @@ namespace SimpleIdentityServer.Host.Tests
                 .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
 
             // ASSERT
-            Assert.True(revoke);
+            Assert.False(revoke.ContainsError);
             Assert.True(ex.ContainsError);
         }
 

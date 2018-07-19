@@ -14,7 +14,11 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -24,7 +28,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IRevokeTokenOperation
     {
-        Task<bool> ExecuteAsync(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue);
+        Task<GetRevokeTokenResult> ExecuteAsync(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue);
     }
 
     internal class RevokeTokenOperation : IRevokeTokenOperation
@@ -36,7 +40,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> ExecuteAsync(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue)
+        public async Task<GetRevokeTokenResult> ExecuteAsync(Dictionary<string, string> revokeParameter, Uri requestUri, string authorizationValue)
         {
             if (revokeParameter == null)
             {
@@ -62,8 +66,22 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var result = await httpClient.SendAsync(request);
-            result.EnsureSuccessStatusCode();
-            return true;
+            var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new GetRevokeTokenResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetRevokeTokenResult();
         }
     }
 }

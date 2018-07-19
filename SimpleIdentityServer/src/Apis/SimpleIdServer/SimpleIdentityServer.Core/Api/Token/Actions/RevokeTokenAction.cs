@@ -77,12 +77,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var client = authResult.Client;
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
-                if (client == null)
-                {
-                    throw new IdentityServerException(ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
-                }
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Retrieve the granted token & check if it exists
@@ -96,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             if (grantedToken == null)
             {
-                return false;
+                throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenDoesntExist);
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
