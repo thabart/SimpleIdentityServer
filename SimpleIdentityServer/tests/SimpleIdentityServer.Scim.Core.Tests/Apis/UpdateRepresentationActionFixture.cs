@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            var result = await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            var result = await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(new ErrorResponse());
 
             // ACT
-            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);
@@ -223,7 +223,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(new ErrorResponse());
 
             // ACT
-            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type");
+            await _updateRepresentationAction.Execute(identifier, new JObject(), "schema_id", "http://localhost/{id}", "resource_type").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(code == HttpStatusCode.BadRequest);

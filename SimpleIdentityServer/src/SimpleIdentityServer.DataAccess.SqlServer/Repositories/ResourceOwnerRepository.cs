@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                 }
 
                 _context.ResourceOwners.Remove(record);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync().ConfigureAwait(false);
                 return true;
             }
             catch (Exception ex)

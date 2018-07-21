@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _registerClientAction.Execute(null)).ConfigureAwait(false);
         }
 
         #endregion
@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _registerClientAction.Execute(registrationParameter);
+            var result = await _registerClientAction.Execute(registrationParameter).ConfigureAwait(false);
 
             // ASSERT
             _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));

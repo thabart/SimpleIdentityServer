@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
             }
 
 
-            var res = await _resourceOwnerRepository.DeleteAsync(subject);
+            var res = await _resourceOwnerRepository.DeleteAsync(subject).ConfigureAwait(false);
             if (res)
             {
                 _managerEventSource.FinishToRemoveResourceOwner(subject);

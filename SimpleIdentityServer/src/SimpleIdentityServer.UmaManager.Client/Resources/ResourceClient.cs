@@ -94,14 +94,14 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string url,
             string accessToken)
         {
-            return await GetResources(TryGetUri(url), accessToken);
+            return await GetResources(TryGetUri(url), accessToken).ConfigureAwait(false);
         }
 
         public async Task<List<ResourceResponse>> GetResources(
             Uri uri,
             string accessToken)
         {
-            return await _getResourcesOperation.ExecuteAsync(uri, accessToken);
+            return await _getResourcesOperation.ExecuteAsync(uri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> GetResource(
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string url,
             string accessToken)
         {
-            return await GetResource(resourceHash, TryGetUri(url), accessToken);
+            return await GetResource(resourceHash, TryGetUri(url), accessToken).ConfigureAwait(false);
         }
 
         public async Task<ResourceResponse> GetResource(
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             Uri uri,
             string accessToken)
         {
-            return await _getResourceOperation.ExecuteAsync(resourceHash, uri, accessToken);
+            return await _getResourceOperation.ExecuteAsync(resourceHash, uri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<List<ResourceResponse>> SearchResources(
@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             Uri uri,
             string accessToken)
         {
-            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, uri, accessToken);
+            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, uri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<List<ResourceResponse>> SearchResources(
@@ -133,17 +133,17 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             string url,
             string accessToken)
         {
-            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, TryGetUri(url), accessToken);
+            return await _searchResourceOperation.ExecuteAsync(searchResourceRequest, TryGetUri(url), accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> AddControllerAction(AddControllerActionRequest request, Uri uri, string accessToken)
         {
-            return await _addControllerActionOperation.ExecuteAsync(request, uri, accessToken);
+            return await _addControllerActionOperation.ExecuteAsync(request, uri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> AddControllerAction(AddControllerActionRequest request, string url, string accessToken)
         {
-            return await _addControllerActionOperation.ExecuteAsync(request, TryGetUri(url), accessToken);
+            return await _addControllerActionOperation.ExecuteAsync(request, TryGetUri(url), accessToken).ConfigureAwait(false);
         }
 
         #endregion

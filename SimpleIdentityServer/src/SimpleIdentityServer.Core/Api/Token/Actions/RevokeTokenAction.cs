@@ -73,11 +73,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
                 authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
+                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId).ConfigureAwait(false);
                 if (client == null)
                 {
                     throw new IdentityServerException(ErrorCodes.InternalError,
@@ -86,10 +86,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Retrieve the granted token & check if it exists
-            GrantedToken grantedToken = await _grantedTokenRepository.GetTokenAsync(revokeTokenParameter.Token);
+            GrantedToken grantedToken = await _grantedTokenRepository.GetTokenAsync(revokeTokenParameter.Token).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(revokeTokenParameter.Token);
+                grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(revokeTokenParameter.Token).ConfigureAwait(false);
             }
 
             if (grantedToken == null)
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Invalid the granted token
-            return await _grantedTokenRepository.DeleteAsync(grantedToken);
+            return await _grantedTokenRepository.DeleteAsync(grantedToken).ConfigureAwait(false);
         }
 
         #endregion

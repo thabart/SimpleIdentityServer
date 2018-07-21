@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _bulkUpdateSettingsOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _bulkUpdateSettingsOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
             InitializeFakeObjects();
 
             // ACT
-            await _bulkUpdateSettingsOperation.Execute(parameter);
+            await _bulkUpdateSettingsOperation.Execute(parameter).ConfigureAwait(false);
 
             // ASSERT
             _settingRepositoryStub.Verify(s => s.Update(It.IsAny<IEnumerable<Models.Setting>>()));

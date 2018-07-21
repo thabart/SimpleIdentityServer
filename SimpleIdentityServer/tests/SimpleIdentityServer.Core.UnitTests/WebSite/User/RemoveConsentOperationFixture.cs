@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACT && ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConsentOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(isRemoved));
 
             // ACT
-            var result = await _removeConsentOperation.Execute(consentId);
+            var result = await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result == isRemoved);

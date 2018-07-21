@@ -48,10 +48,10 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);

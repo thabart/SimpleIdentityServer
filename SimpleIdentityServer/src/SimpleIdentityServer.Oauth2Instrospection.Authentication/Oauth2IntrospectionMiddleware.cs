@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                         {
                             var introspectionResponse = await GetIntrospectionResponse(
                                 _options,
-                                accessToken);
+                                accessToken).ConfigureAwait(false);
 
                             if (introspectionResponse != null)
                             {
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
                 }
             }
 
-            await _nullAuthenticationNext(context);
+            await _nullAuthenticationNext(context).ConfigureAwait(false);
         }
 
         private string GetAccessToken(string authorizationValue)
@@ -164,13 +164,13 @@ namespace SimpleIdentityServer.Oauth2Instrospection.Authentication
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, oauth2IntrospectionOptions.InstrospectionEndPoint);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             requestMessage.Content = requestContent;
-            var response = await _httpClient.SendAsync(requestMessage);
+            var response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return ParseIntrospection(content);
         }
         

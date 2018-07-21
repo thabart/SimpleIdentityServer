@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             var result = new DiscoveryInformation();
 
             // Returns only the exposed scopes
-            var scopes = await _scopeRepository.GetAllAsync();
+            var scopes = await _scopeRepository.GetAllAsync().ConfigureAwait(false);
             var scopeSupportedNames = new string[0];
             if (scopes != null ||
                 scopes.Any())
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery.Actions
             result.RequestParameterSupported = true;
             result.RequestUriParameterSupported = true;
             result.RequireRequestUriRegistration = true;
-            result.ClaimsSupported = (await _claimRepository.GetAllAsync()).ToArray();
+            result.ClaimsSupported = (await _claimRepository.GetAllAsync().ConfigureAwait(false)).ToArray();
             result.ScopesSupported = scopeSupportedNames;
             result.ResponseTypesSupported = responseTypesSupported;
             result.ResponseModesSupported = Constants.Supported.SupportedResponseModes.ToArray();

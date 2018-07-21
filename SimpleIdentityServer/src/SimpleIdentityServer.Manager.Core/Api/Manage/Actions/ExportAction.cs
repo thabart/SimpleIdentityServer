@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _managerEventSource.StartToExport();
             var result = new ExportResult
             {
-                Clients = await _getClientsAction.Execute()
+                Clients = await _getClientsAction.Execute().ConfigureAwait(false)
             };
             _managerEventSource.FinishToExport();
             return result;

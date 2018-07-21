@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public async Task<bool> Insert(Rpt rpt)
         {
-            return await Insert(new[] { rpt });
+            return await Insert(new[] { rpt }).ConfigureAwait(false);
         }
 
         public async Task<Rpt> Get(string value)
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 throw new ArgumentNullException(nameof(rpts));
             }
 
-            return await _context.Rpts.Where(r => rpts.Contains(r.Value)).Select(r => r.ToDomain()).ToListAsync();
+            return await _context.Rpts.Where(r => rpts.Contains(r.Value)).Select(r => r.ToDomain()).ToListAsync().ConfigureAwait(false);
         }
     }
 }

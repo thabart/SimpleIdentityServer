@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _translationManager.GetTranslationsAsync(string.Empty, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _translationManager.GetTranslationsAsync(string.Empty, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 .Returns(Task.FromResult(translation)); ;
 
             // ACT
-            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes);
+            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Count == 1);
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Translation
                 .Returns(Task.FromResult((Models.Translation)null)); 
 
             // ACT
-            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes);
+            var result = await _translationManager.GetTranslationsAsync(string.Empty, translationCodes).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.Count == 1);

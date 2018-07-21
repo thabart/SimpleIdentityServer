@@ -58,19 +58,19 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 1. Validate parameters
-            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter);
+            var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter).ConfigureAwait(false);
             // 2. Generate a new access token & insert it
             var generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                 grantedToken.ClientId,
                 grantedToken.Scope,
                 grantedToken.UserInfoPayLoad,
-                grantedToken.IdTokenPayLoad);
+                grantedToken.IdTokenPayLoad).ConfigureAwait(false);
             generatedToken.ParentTokenId = grantedToken.Id;
-            await _grantedTokenRepository.InsertAsync(generatedToken);
+            await _grantedTokenRepository.InsertAsync(generatedToken).ConfigureAwait(false);
             // 3. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
-                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad);
+                generatedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(generatedToken.ClientId, generatedToken.IdTokenPayLoad).ConfigureAwait(false);
             }
 
             _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private async Task<GrantedToken> ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
             // 1. Check refresh token exists
-            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshTokenGrantTypeParameter.RefreshToken);
+            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshTokenGrantTypeParameter.RefreshToken).ConfigureAwait(false);
             if (grantedToken == null)
             {
                 throw new IdentityServerException(

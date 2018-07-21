@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false);
             if (result == null)
             {
                 throw new IdentityServerException(

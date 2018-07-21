@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _localUserAuthenticationAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerAuthenticationException>(() => _localUserAuthenticationAction.Execute(parameter)).ConfigureAwait(false);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);
         }
 
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(resourceOwner));
 
             // ACT
-            var res = await _localUserAuthenticationAction.Execute(parameter);
+            var res = await _localUserAuthenticationAction.Execute(parameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(res);

@@ -50,8 +50,8 @@ namespace SimpleIdentityServer.Client.Authorization
 
         public async Task<AuthorizationResponse> GetByResolution(PostAuthorization request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(request, configuration.RptEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(request, configuration.RptEndPoint, token).ConfigureAwait(false);
         }
 
         public Task<BulkAuthorizationResponse> Get(IEnumerable<PostAuthorization> parameters, string url, string token)
@@ -61,8 +61,8 @@ namespace SimpleIdentityServer.Client.Authorization
 
         public async Task<BulkAuthorizationResponse> GetByResolution(IEnumerable<PostAuthorization> parameters, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(parameters, configuration.RptEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(parameters, configuration.RptEndPoint, token).ConfigureAwait(false);
         }
     }
 }

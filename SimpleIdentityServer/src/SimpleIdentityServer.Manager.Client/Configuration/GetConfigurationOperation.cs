@@ -34,9 +34,9 @@ namespace SimpleIdentityServer.Manager.Client.Configuration
                 Method = HttpMethod.Get,
                 RequestUri = wellKnownConfigurationUri
             };
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync();
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var jObj = JObject.Parse(content);
             return new ConfigurationResponse
             {

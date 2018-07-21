@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(nameof(scheme));
             }
 
-            var user = await razorPage.Context.Authentication.AuthenticateAsync(scheme);
+            var user = await razorPage.Context.Authentication.AuthenticateAsync(scheme).ConfigureAwait(false);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(nameof(razorPage));
             }
 
-            var user = await razorPage.Context.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
+            var user = await razorPage.Context.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName).ConfigureAwait(false);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
     }

@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.Validators
                     parameter.State);
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(parameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(parameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(

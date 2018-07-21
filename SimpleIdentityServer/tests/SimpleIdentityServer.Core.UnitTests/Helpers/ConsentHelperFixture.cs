@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _consentHelper.GetConfirmedConsentsAsync("subject", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ACT
             var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter);
+                authorizationParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ACT
             var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter);
+                authorizationParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ACT
             var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter);
+                authorizationParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -195,7 +195,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
 
             // ACT
             var result = await _consentHelper.GetConfirmedConsentsAsync(subject,
-                authorizationParameter);
+                authorizationParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);

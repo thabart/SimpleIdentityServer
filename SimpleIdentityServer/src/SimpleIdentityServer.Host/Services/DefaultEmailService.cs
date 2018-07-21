@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Host.Services
             {
                 displayName = displayNameClaim.Value;
             }
-            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
+            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl).ConfigureAwait(false);
             if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
             {
                 throw new InvalidOperationException("there are one or more missing settings");
@@ -139,11 +139,11 @@ namespace SimpleIdentityServer.Host.Services
                 client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
                     return true;
                 };
-                await client.ConnectAsync(dic[EmailSmtpHost].Value, int.Parse(dic[EmailSmtpPort].Value), bool.Parse(dic[EmailSmtpUseSsl].Value));
+                await client.ConnectAsync(dic[EmailSmtpHost].Value, int.Parse(dic[EmailSmtpPort].Value), bool.Parse(dic[EmailSmtpUseSsl].Value)).ConfigureAwait(false);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(dic[EmailUserName].Value, dic[EmailPassword].Value);
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
+                await client.AuthenticateAsync(dic[EmailUserName].Value, dic[EmailPassword].Value).ConfigureAwait(false);
+                await client.SendAsync(message).ConfigureAwait(false);
+                await client.DisconnectAsync(true).ConfigureAwait(false);
             }
         }
     }

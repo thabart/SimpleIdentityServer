@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var result = await _scopeRepository.GetAsync(scopeName);
+            var result = await _scopeRepository.GetAsync(scopeName).ConfigureAwait(false);
             if (result == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,

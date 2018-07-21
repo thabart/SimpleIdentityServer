@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = await _scopeRepository.Get(updateScopeParameter.Id);
+                scope = await _scopeRepository.Get(updateScopeParameter.Id).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                await _scopeRepository.Update(scope);
+                await _scopeRepository.Update(scope).ConfigureAwait(false);
                 return true;
             }
             catch (Exception ex)

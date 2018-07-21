@@ -104,8 +104,8 @@ namespace SimpleIdentityServer.Core.Common
             _simpleIdentityServerEventSource.StartGeneratingAuthorizationResponseToClient(authorizationParameter.ClientId,
                 authorizationParameter.ResponseType);
             var responses = _parameterParserHelper.ParseResponseTypes(authorizationParameter.ResponseType);
-            var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter);
-            var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter);
+            var idTokenPayload = await GenerateIdTokenPayload(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
+            var userInformationPayload = await GenerateUserInformationPayload(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
             if (responses.Contains(ResponseType.token))
             {
                 if (!string.IsNullOrWhiteSpace(authorizationParameter.Scope))
@@ -120,14 +120,14 @@ namespace SimpleIdentityServer.Core.Common
                     allowedTokenScopes,
                     authorizationParameter.ClientId,
                     idTokenPayload,
-                    userInformationPayload);
+                    userInformationPayload).ConfigureAwait(false);
                 if (grantedToken == null)
                 {
                     grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                         authorizationParameter.ClientId,
                         allowedTokenScopes,
                         userInformationPayload,
-                        idTokenPayload);
+                        idTokenPayload).ConfigureAwait(false);
 
                     newAccessTokenGranted = true;
                 }
@@ -139,7 +139,7 @@ namespace SimpleIdentityServer.Core.Common
             if (responses.Contains(ResponseType.code))
             {
                 var subject = claimsPrincipal == null ? string.Empty : claimsPrincipal.GetSubject();
-                var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+                var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
                 if (assignedConsent != null)
                 {
                     // Insert a temporary authorization code 
@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (newAccessTokenGranted)
             {
-                await _grantedTokenRepository.InsertAsync(grantedToken);
+                await _grantedTokenRepository.InsertAsync(grantedToken).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.GrantAccessToClient(authorizationParameter.ClientId,
                     grantedToken.AccessToken,
                     allowedTokenScopes);
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Core.Common
                     authorizationCode.CodeChallengeMethod = authorizationParameter.CodeChallengeMethod;
                 }
 
-                await _authorizationCodeRepository.AddAsync(authorizationCode);
+                await _authorizationCodeRepository.AddAsync(authorizationCode).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.GrantAuthorizationCodeToClient(authorizationParameter.ClientId,
                     authorizationCode.Code,
                     authorizationParameter.Scope);
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Core.Common
 
             if (responses.Contains(ResponseType.id_token))
             {
-                var idToken = await GenerateIdToken(idTokenPayload, authorizationParameter);
+                var idToken = await GenerateIdToken(idTokenPayload, authorizationParameter).ConfigureAwait(false);
                 actionResult.RedirectInstruction.AddParameter(Constants.StandardAuthorizationResponseNames.IdTokenName, idToken);
             }
 
@@ -238,7 +238,7 @@ namespace SimpleIdentityServer.Core.Common
             AuthorizationParameter authorizationParameter)
         {
             return await _clientHelper.GenerateIdTokenAsync(authorizationParameter.ClientId,
-                jwsPayload);
+                jwsPayload).ConfigureAwait(false);
         }
 
         private async Task<JwsPayload> GenerateIdTokenPayload(
@@ -249,11 +249,11 @@ namespace SimpleIdentityServer.Core.Common
             if (authorizationParameter.Claims != null && 
                 authorizationParameter.Claims.IsAnyIdentityTokenClaimParameter())
             {
-                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken));
+                jwsPayload = await _jwtGenerator.GenerateFilteredIdTokenPayloadAsync(claimsPrincipal, authorizationParameter, Clone(authorizationParameter.Claims.IdToken)).ConfigureAwait(false);
             }
             else
             {
-                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter);
+                jwsPayload = await _jwtGenerator.GenerateIdTokenPayloadForScopesAsync(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
             }
 
             return jwsPayload;
@@ -280,7 +280,7 @@ namespace SimpleIdentityServer.Core.Common
             }
             else
             {
-                jwsPayload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter);
+                jwsPayload = await _jwtGenerator.GenerateUserInfoPayloadForScopeAsync(claimsPrincipal, authorizationParameter).ConfigureAwait(false);
             }
 
             return jwsPayload;

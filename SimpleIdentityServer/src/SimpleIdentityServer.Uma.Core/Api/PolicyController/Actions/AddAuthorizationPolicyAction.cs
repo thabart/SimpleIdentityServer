@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             {
                 var resourceSet = await _repositoryExceptionHelper.HandleException(
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                    () => _resourceSetRepository.Get(resourceSetId));
+                    () => _resourceSetRepository.Get(resourceSetId)).ConfigureAwait(false);
                 if (resourceSet == null)
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
@@ -128,7 +128,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeInserted,
-                () => _policyRepository.Add(policy));
+                () => _policyRepository.Add(policy)).ConfigureAwait(false);
             _umaServerEventSource.FinishToAddAuthorizationPolicy(JsonConvert.SerializeObject(policy));
             return policy.Id;
         }

@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = await _scopeRepository.Get(addScopeParameter.Id);
+                scope = await _scopeRepository.Get(addScopeParameter.Id).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             
             try
             {
-                await _scopeRepository.Insert(scope);
+                await _scopeRepository.Insert(scope).ConfigureAwait(false);
                 _umaServerEventSource.FinishToAddScope(json);
                 return true;
             }

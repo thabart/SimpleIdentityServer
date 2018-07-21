@@ -73,46 +73,46 @@ namespace SimpleIdentityServer.Configuration.Client.Setting
 
         public async Task<SettingResponse> GetSetting(string key, string settingUrl)
         {
-            return await _getSettingOperation.ExecuteAsync(key, settingUrl);
+            return await _getSettingOperation.ExecuteAsync(key, settingUrl).ConfigureAwait(false);
         }
 
         public async Task<SettingResponse> GetSettingByResolving(string key, string configurationUrl)
         {
-            var url = await GetSettingUrl(configurationUrl);
-            return await GetSetting(key, url);
+            var url = await GetSettingUrl(configurationUrl).ConfigureAwait(false);
+            return await GetSetting(key, url).ConfigureAwait(false);
         }
 
         public async Task<List<SettingResponse>> GetSettings(string settingUrl)
         {
-            return await _getSettingsOperation.ExecuteAsync(settingUrl);
+            return await _getSettingsOperation.ExecuteAsync(settingUrl).ConfigureAwait(false);
         }
 
         public async Task<List<SettingResponse>> GetSettingsByResolving(string configurationUrl)
         {
-            var url = await GetSettingUrl(configurationUrl);
-            return await GetSettings(url);
+            var url = await GetSettingUrl(configurationUrl).ConfigureAwait(false);
+            return await GetSettings(url).ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteSetting(string key, string settingUrl, string accessToken)
         {
-            return await _deleteSettingOperation.ExecuteAsync(key, settingUrl, accessToken);
+            return await _deleteSettingOperation.ExecuteAsync(key, settingUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteSettingByResolving(string key, string configurationUrl, string accessToken)
         {
-            var url = await GetSettingUrl(configurationUrl);
-            return await DeleteSetting(key, url, accessToken);
+            var url = await GetSettingUrl(configurationUrl).ConfigureAwait(false);
+            return await DeleteSetting(key, url, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> UpdateSetting(UpdateSettingParameter parameter, string settingUrl, string accessToken)
         {
-            return await _updateSettingOperation.ExecuteAsync(parameter, settingUrl, accessToken);
+            return await _updateSettingOperation.ExecuteAsync(parameter, settingUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> UpdateSettingByResolving(UpdateSettingParameter parameter, string configurationUrl, string accessToken)
         {
-            var url = await GetSettingUrl(configurationUrl);
-            return await UpdateSetting(parameter, url, accessToken);
+            var url = await GetSettingUrl(configurationUrl).ConfigureAwait(false);
+            return await UpdateSetting(parameter, url, accessToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Configuration.Client.Setting
         private async Task<string> GetSettingUrl(string configurationUrl)
         {
             var configurationUri = GetUri(configurationUrl);
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri).ConfigureAwait(false);
             return configuration.SettingEndPoint;
         }
 

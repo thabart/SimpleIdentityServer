@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(registrationUri));
             }
 
-            return await _registerClientOperation.ExecuteAsync(client, registrationUri, string.Empty);
+            return await _registerClientOperation.ExecuteAsync(client, registrationUri, string.Empty).ConfigureAwait(false);
         }
 
         public async Task<Core.Common.DTOs.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Client client, string registrationUrl)
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, registrationUrl));
             }
 
-            return await ExecuteAsync(client, uri);
+            return await ExecuteAsync(client, uri).ConfigureAwait(false);
         }
 
         public async Task<Core.Common.DTOs.ClientRegistrationResponse> ResolveAsync(Core.Common.DTOs.Client client, string configurationUrl)
@@ -100,8 +100,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(client, discoveryDocument.RegistrationEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(client, discoveryDocument.RegistrationEndPoint).ConfigureAwait(false);
         }
     }
 }

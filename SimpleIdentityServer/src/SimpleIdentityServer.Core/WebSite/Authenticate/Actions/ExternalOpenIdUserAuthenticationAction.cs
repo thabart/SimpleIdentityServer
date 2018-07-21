@@ -94,10 +94,10 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
             
             // 3. Create the resource owner if needed.
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
-                var standardClaims = await _claimRepository.GetAllAsync();
+                var standardClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
                 resourceOwner = new ResourceOwner
                 {
                     Id = subject,
@@ -110,14 +110,14 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                     resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
                 }
 
-                await _resourceOwnerRepository.InsertAsync(resourceOwner);
+                await _resourceOwnerRepository.InsertAsync(resourceOwner).ConfigureAwait(false);
             }
             return new ExternalOpenIdAuthenticationResult
             {
                 ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
-                                code,
-                                "subject",
-                                claims),
+                    code,
+                    "subject",
+                    claims).ConfigureAwait(false),
                 Claims = resourceOwner.Claims
             };
         }

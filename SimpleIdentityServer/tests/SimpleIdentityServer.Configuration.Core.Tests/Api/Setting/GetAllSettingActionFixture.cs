@@ -34,7 +34,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.Setting
             InitializeFakeObjects();
 
             // ACT
-            await _getAllSettingAction.Execute();
+            await _getAllSettingAction.Execute().ConfigureAwait(false);
 
             // ASSERT
             _settingRepositoryStub.Verify(c => c.GetAll());

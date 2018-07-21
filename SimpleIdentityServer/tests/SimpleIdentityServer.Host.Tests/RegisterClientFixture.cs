@@ -23,6 +23,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Core.Common.DTOs;
+
     public class RegisterClientFixture : IClassFixture<TestScimServerFixture>
     {
         private readonly TestScimServerFixture _server;
@@ -43,14 +45,14 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Client
-            {
-                RedirectUris = new []
+            var client = await _registrationClient.ResolveAsync(new Client
                 {
-                    "https://localhost"
-                },
-                ScimProfile = true
-            }, baseUrl + "/.well-known/openid-configuration");
+                    RedirectUris = new []
+                    {
+                        "https://localhost"
+                    },
+                    ScimProfile = true
+                }, baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(client);

@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var result = await _settingRepository.Remove(key);
+            var result = await _settingRepository.Remove(key).ConfigureAwait(false);
             if (result)
             {
                 _configurationEventSource.FinishToDropSetting(key);

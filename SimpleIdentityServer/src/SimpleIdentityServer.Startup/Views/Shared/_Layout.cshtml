@@ -4,7 +4,7 @@
 @using SimpleIdentityServer.Host.Extensions
 
 @{ 
-    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Startup.Constants.CookieName);
+    var user = await this.GetAuthenticatedUser(SimpleIdentityServer.Startup.Constants.CookieName).ConfigureAwait(false);
 }
 
 <!DOCTYPE html>

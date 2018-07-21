@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 throw new ArgumentNullException(nameof(authenticationProvider.CallbackPath));
             }
 
-            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(authenticationProvider.Name);
+            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(authenticationProvider.Name).ConfigureAwait(false);
             if (authProvider != null)
             {
                 throw new IdentityConfigurationException(
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                     string.Format(ErrorDescriptions.TheAuthenticationProviderAlreadyExists, authenticationProvider.Name));
             }
 
-            if (!await _authenticationProviderRepository.AddAuthenticationProvider(authenticationProvider))
+            if (!await _authenticationProviderRepository.AddAuthenticationProvider(authenticationProvider).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }

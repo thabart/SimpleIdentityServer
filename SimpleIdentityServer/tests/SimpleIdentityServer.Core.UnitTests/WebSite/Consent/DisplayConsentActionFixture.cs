@@ -38,10 +38,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
                 null, 
-                null));
+                null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(() => _displayConsentAction.Execute(
                 authorizationParameter,
-                null));
+                null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(actionResult);
 
             // ACT
-            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            var result = await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
@@ -103,7 +103,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal));
+                claimsPrincipal)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
             Assert.True(exception.State == state);
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal));
+                claimsPrincipal)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             Assert.True(exception.State == state);
@@ -171,7 +171,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ACT
             await _displayConsentAction.Execute(authorizationParameter,
-               claimsPrincipal);
+                claimsPrincipal).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(scopes.Any(s => s.Name == scopeName));

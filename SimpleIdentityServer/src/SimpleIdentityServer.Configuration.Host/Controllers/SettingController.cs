@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var settings = await _settingActions.GetSettings();
+            var settings = await _settingActions.GetSettings().ConfigureAwait(false);
             return new OkObjectResult(settings.ToDtos());
         }
 
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var setting = await _settingActions.GetSetting(id);
+            var setting = await _settingActions.GetSetting(id).ConfigureAwait(false);
             if (setting == null)
             {
                 return new NotFoundResult();
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var settings = await _settingActions.BulkGetSettings(request.ToParameter());
+            var settings = await _settingActions.BulkGetSettings(request.ToParameter()).ConfigureAwait(false);
             return new OkObjectResult(settings.Select(s => s.ToDto()));
         }
 
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!await _settingActions.DeleteSetting(id))
+            if (!await _settingActions.DeleteSetting(id).ConfigureAwait(false))
             {
                 return new NotFoundResult();
             }
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(updateSettingRequest));
             }
 
-            if (!await _settingActions.UpdateSetting(updateSettingRequest.ToParameter()))
+            if (!await _settingActions.UpdateSetting(updateSettingRequest.ToParameter()).ConfigureAwait(false))
             {
                 return new NotFoundResult();
             }
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
             }
 
             ;
-            if (!await _settingActions.BulkUpdateSettings(updateSettingRequests.Select(s => s.ToParameter())))
+            if (!await _settingActions.BulkUpdateSettings(updateSettingRequests.Select(s => s.ToParameter())).ConfigureAwait(false))
             {
                 throw new IdentityConfigurationException(ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.BulkUpdateSettingOperationFailed);

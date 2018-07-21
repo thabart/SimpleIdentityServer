@@ -67,8 +67,8 @@ namespace SimpleIdentityServer.Client.Scope
 
         public async Task<UpdateScopeResponse> UpdateByResolution(PutScope request, string url)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Update(request, configuration.ScopeEndPoint);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Update(request, configuration.ScopeEndPoint).ConfigureAwait(false);
         }
 
         public Task<AddScopeResponse> Add(PostScope request, string url)
@@ -78,8 +78,8 @@ namespace SimpleIdentityServer.Client.Scope
 
         public async Task<AddScopeResponse> AddByResolution(PostScope request, string url)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.ScopeEndPoint);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Add(request, configuration.ScopeEndPoint).ConfigureAwait(false);
         }
 
         public Task<bool> Delete(string id, string url)
@@ -89,8 +89,8 @@ namespace SimpleIdentityServer.Client.Scope
 
         public async Task<bool> DeleteByResolution(string id, string url)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Delete(id, configuration.ScopeEndPoint);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Delete(id, configuration.ScopeEndPoint).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<string>> GetAll(string url)
@@ -100,8 +100,8 @@ namespace SimpleIdentityServer.Client.Scope
 
         public async Task<IEnumerable<string>> GetAllByResolution(string url)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await GetAll(configuration.ScopeEndPoint);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await GetAll(configuration.ScopeEndPoint).ConfigureAwait(false);
         }
 
         public Task<ScopeResponse> Get(string id, string url)
@@ -111,8 +111,8 @@ namespace SimpleIdentityServer.Client.Scope
 
         public async Task<ScopeResponse> GetByResolution(string id, string url)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(id, configuration.ScopeEndPoint);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(id, configuration.ScopeEndPoint).ConfigureAwait(false);
         }
     }
 }

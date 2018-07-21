@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.Api.Registration
             try
             {
                 _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, registrationParameter, 0));
-                var result = await _registerClientAction.Execute(registrationParameter);
+                var result = await _registerClientAction.Execute(registrationParameter).ConfigureAwait(false);
                 _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }

@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 .Returns(Task.FromResult<ICollection<AuthenticationProvider>>(null));
 
             // ACT
-            var result = await _getAuthenticationProviders.ExecuteAsync();
+            var result = await _getAuthenticationProviders.ExecuteAsync().ConfigureAwait(false);
 
             // ARRANGE
             Assert.NotNull(result);
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 .Returns(Task.FromResult(providers));
 
             // ACT
-            var result = await _getAuthenticationProviders.ExecuteAsync();
+            var result = await _getAuthenticationProviders.ExecuteAsync().ConfigureAwait(false);
 
             // ARRANGE
             Assert.NotNull(result);

@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, userInfoUrl));
             }
 
-            return await GetUserInfoAsync(uri, accessToken);
+            return await GetUserInfoAsync(uri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<JObject> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(accessToken));
             }
             
-            return await _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody);
+            return await _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody).ConfigureAwait(false);
         }
 
         public async Task<JObject> Resolve(string configurationUrl, string accessToken, bool inBody = false)
@@ -117,8 +117,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken).ConfigureAwait(false);
         }
     }
 }

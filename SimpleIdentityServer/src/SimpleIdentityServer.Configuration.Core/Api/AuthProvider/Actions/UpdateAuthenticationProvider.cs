@@ -44,13 +44,13 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 throw new ArgumentNullException(nameof(authenticationProvider));
             }
 
-            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(authenticationProvider.Name);
+            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(authenticationProvider.Name).ConfigureAwait(false);
             if (authProvider == null)
             {
                 return new NotFoundResult();
             }
             
-            var isUpdated = await _authenticationProviderRepository.UpdateAuthenticationProvider(authenticationProvider);
+            var isUpdated = await _authenticationProviderRepository.UpdateAuthenticationProvider(authenticationProvider).ConfigureAwait(false);
             if (isUpdated)
             {
                 return new NoContentResult();

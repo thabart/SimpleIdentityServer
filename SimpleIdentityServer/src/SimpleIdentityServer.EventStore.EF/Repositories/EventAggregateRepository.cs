@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.EventStore.EF.Repositories
 
         public async Task<EventAggregate> Get(string id)
         {
-            var record = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
+            var record = await _context.Events.FirstOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
             if (record == null)
             {
                 return null;

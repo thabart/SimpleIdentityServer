@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.UmaManager.Client.Resources
             };
             request.Headers.Add("Authorization", "Bearer " + accessToken);
             var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<List<ResourceResponse>>(content);

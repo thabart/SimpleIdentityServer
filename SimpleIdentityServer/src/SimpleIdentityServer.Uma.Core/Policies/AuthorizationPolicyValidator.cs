@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var resourceSet = await _resourceSetRepository.Get(validTicket.ResourceSetId);
+            var resourceSet = await _resourceSetRepository.Get(validTicket.ResourceSetId).ConfigureAwait(false);
             if (resourceSet == null)
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
             foreach(var authorizationPolicy in resourceSet.Policies)
             {
-                var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters);
+                var result = await _basicAuthorizationPolicy.Execute(validTicket, authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;

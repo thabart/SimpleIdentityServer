@@ -82,7 +82,7 @@ namespace WebApiContrib.Core.Storage.Redis
             var keys = _connection.GetServer(_options.Configuration, _port).Keys();
             foreach (RedisKey key in keys)
             {
-                await _cache.KeyDeleteAsync(key);
+                await _cache.KeyDeleteAsync(key).ConfigureAwait(false);
             }
         }
 

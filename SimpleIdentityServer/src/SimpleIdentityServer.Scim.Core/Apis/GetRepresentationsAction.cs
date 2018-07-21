@@ -67,14 +67,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Get representations & add the common attributes.
-            var representations = await _representationStore.GetRepresentations(resourceType);
+            var representations = await _representationStore.GetRepresentations(resourceType).ConfigureAwait(false);
             foreach(var representation in representations)
             {
                 var location = locationPattern.Replace("{id}", representation.Id);
                 representation.Attributes = representation.Attributes.Concat(new[] 
                 {
-                    await _commonAttributesFactory.CreateMetaDataAttribute(representation, location),
-                    await _commonAttributesFactory.CreateId(representation)
+                    await _commonAttributesFactory.CreateMetaDataAttribute(representation, location).ConfigureAwait(false),
+                    await _commonAttributesFactory.CreateId(representation).ConfigureAwait(false)
                 });
             }
 

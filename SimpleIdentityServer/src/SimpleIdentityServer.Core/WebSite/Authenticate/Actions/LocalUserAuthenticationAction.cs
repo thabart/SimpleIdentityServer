@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
 
             var record = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(localAuthenticationParameter.UserName,
-                localAuthenticationParameter.Password);
+                localAuthenticationParameter.Password).ConfigureAwait(false);
             if (record == null)
             {
                 throw new IdentityServerAuthenticationException(ErrorDescriptions.TheResourceOwnerCredentialsAreNotCorrect);

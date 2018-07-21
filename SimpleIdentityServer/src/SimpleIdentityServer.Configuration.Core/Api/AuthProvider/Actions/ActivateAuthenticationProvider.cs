@@ -49,14 +49,14 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(name);
+            var authProvider = await _authenticationProviderRepository.GetAuthenticationProvider(name).ConfigureAwait(false);
             if (authProvider == null)
             {
                 return new NotFoundResult();
             }
 
             authProvider.IsEnabled = isEnabled;
-            var isUpdated = await _authenticationProviderRepository.UpdateAuthenticationProvider(authProvider);
+            var isUpdated = await _authenticationProviderRepository.UpdateAuthenticationProvider(authProvider).ConfigureAwait(false);
             if (isUpdated)
             {
                 _configurationEventSource.FinishToEnableAuthenticationProvider(name, isEnabled);

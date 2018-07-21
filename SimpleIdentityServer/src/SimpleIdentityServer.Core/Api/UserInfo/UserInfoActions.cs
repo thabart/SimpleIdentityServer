@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo
             try
             {
                 _eventPublisher.Publish(new GetUserInformationReceived(Guid.NewGuid().ToString(), processId, accessToken, 0));
-                var result = await _getJwsPayload.Execute(accessToken);
+                var result = await _getJwsPayload.Execute(accessToken).ConfigureAwait(false);
                 _eventPublisher.Publish(new UserInformationReturned(Guid.NewGuid().ToString(), processId, result, 1));
                 return result;
             }

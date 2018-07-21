@@ -44,14 +44,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            if (await _scopeRepository.GetAsync(scope.Name) != null)
+            if (await _scopeRepository.GetAsync(scope.Name).ConfigureAwait(false) != null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
                     string.Format(ErrorDescriptions.TheScopeAlreadyExists, scope.Name));
             }
 
-            return await _scopeRepository.InsertAsync(scope);
+            return await _scopeRepository.InsertAsync(scope).ConfigureAwait(false);
         }
     }
 }

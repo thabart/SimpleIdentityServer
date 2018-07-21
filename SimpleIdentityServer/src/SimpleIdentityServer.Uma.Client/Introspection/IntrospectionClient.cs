@@ -54,8 +54,8 @@ namespace SimpleIdentityServer.Client.Introspection
 
         public async Task<IntrospectionResponse> GetByResolution(string rpt, string url)
         {
-            var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url));
-            return await Get(rpt, introspectionEndPoint);
+            var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(rpt, introspectionEndPoint).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<IntrospectionResponse>> Get(PostIntrospection parameter, string url)
@@ -65,8 +65,8 @@ namespace SimpleIdentityServer.Client.Introspection
 
         public async Task<IEnumerable<IntrospectionResponse>> GetByResolution(PostIntrospection parameter, string url)
         {
-            var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url));
-            return await Get(parameter, introspectionEndPoint);
+            var introspectionEndPoint = await GetIntrospectionEndpoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(parameter, introspectionEndPoint).ConfigureAwait(false);
         }
 
         private async Task<string> GetIntrospectionEndpoint(Uri configurationUri)
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Client.Introspection
                 throw new ArgumentNullException(nameof(configurationUri));
             }
 
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri).ConfigureAwait(false);
             return configuration.IntrospectionEndPoint;
         }
     }

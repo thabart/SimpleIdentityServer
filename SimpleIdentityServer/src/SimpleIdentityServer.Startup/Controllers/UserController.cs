@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var user = await GetCurrentUser();
+            var user = await GetCurrentUser().ConfigureAwait(false);
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             return View();
         }
@@ -64,18 +64,18 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Consent()
         {
-            var user = await GetCurrentUser();
+            var user = await GetCurrentUser().ConfigureAwait(false);
             ViewBag.IsLocalAccount = user.IsLocalAccount;
-            return await GetConsents();
+            return await GetConsents().ConfigureAwait(false);
         }
 
         [HttpPost]
         public async Task<ActionResult> Consent(string id)
         {
-            if (!await _userActions.DeleteConsent(id))
+            if (!await _userActions.DeleteConsent(id).ConfigureAwait(false))
             {
                 ViewBag.ErrorMessage = "the consent cannot be deleted";
-                return await GetConsents();
+                return await GetConsents().ConfigureAwait(false);
             }
 
             return RedirectToAction("Consent");
@@ -84,8 +84,8 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Edit()
         {
-            var user = await GetCurrentUser();
-            if (!await SetUserEditViewBag(user))
+            var user = await GetCurrentUser().ConfigureAwait(false);
+            if (!await SetUserEditViewBag(user).ConfigureAwait(false))
             {
                 return RedirectToAction("Index");
             }
@@ -143,9 +143,9 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 1. Set view bag
-            var subject = (await this.GetAuthenticatedUser(Constants.CookieName)).GetSubject();
-            var user = await GetCurrentUser();
-            if (!await SetUserEditViewBag(user))
+            var subject = (await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false)).GetSubject();
+            var user = await GetCurrentUser().ConfigureAwait(false);
+            if (!await SetUserEditViewBag(user).ConfigureAwait(false))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
@@ -167,7 +167,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             parameter.Login = subject;
-            await _userActions.UpdateUser(parameter);
+            await _userActions.UpdateUser(parameter).ConfigureAwait(false);
 
             // 4. Returns translated view
             ViewBag.IsUpdated = true;
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Simulator()
         {
-            var user = await GetCurrentUser();
+            var user = await GetCurrentUser().ConfigureAwait(false);
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             ViewBag.Url = string.Format("{0}://{1}", HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
             return View();
@@ -201,8 +201,8 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Confirm()
         {
-            var user = await this.GetAuthenticatedUser(Constants.CookieName);
-            await _userActions.ConfirmUser(user);
+            var user = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
+            await _userActions.ConfirmUser(user).ConfigureAwait(false);
             return RedirectToAction("Index");
         }
 
@@ -212,8 +212,8 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<ActionResult> GetConsents()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            var consents = await _userActions.GetConsents(authenticatedUser);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
+            var consents = await _userActions.GetConsents(authenticatedUser).ConfigureAwait(false);
             var result = new List<ConsentViewModel>();
             foreach (var consent in consents)
             {
@@ -241,8 +241,8 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<ResourceOwner> GetCurrentUser()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
-            return await _userActions.GetUser(authenticatedUser);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
+            return await _userActions.GetUser(authenticatedUser).ConfigureAwait(false);
         }
 
         private async Task<bool> SetUserEditViewBag(ResourceOwner user)
@@ -252,7 +252,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return false;
             }
 
-            await TranslateUserEditView(DefaultLanguage);
+            await TranslateUserEditView(DefaultLanguage).ConfigureAwait(false);
             ViewBag.IsLocalAccount = user.IsLocalAccount;
             return true;
         }
@@ -274,7 +274,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 Core.Constants.StandardTranslationCodes.UserIsUpdated,
                 Core.Constants.StandardTranslationCodes.Phone,
                 Core.Constants.StandardTranslationCodes.HashedPassword
-            });
+            }).ConfigureAwait(false);
 
             ViewBag.Translations = translations;
         }

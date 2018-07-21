@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public async Task<ActionResult> GetAll()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopesStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopesStoreName).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -54,8 +54,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = (await _scopeActions.GetScopes()).ToDtos();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName);
+            var result = (await _scopeActions.GetScopes().ConfigureAwait(false)).ToDtos();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public async Task<ActionResult> Get(string id)
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopeStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, ScopeStoreName + id).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -71,8 +71,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = (await _scopeActions.GetScope(id)).ToDto();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id);
+            var result = (await _scopeActions.GetScope(id).ConfigureAwait(false)).ToDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -85,9 +85,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            await _scopeActions.DeleteScope(id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
+            await _scopeActions.DeleteScope(id).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + id, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -100,12 +100,12 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!await _scopeActions.AddScope(request.ToParameter()))
+            if (!await _scopeActions.AddScope(request.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopesStoreName, false).ConfigureAwait(false);
             return new NoContentResult();
         }
         
@@ -118,12 +118,12 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (!await _scopeActions.UpdateScope(request.ToParameter()))
+            if (!await _scopeActions.UpdateScope(request.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + request.Name, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ScopeStoreName + request.Name, false).ConfigureAwait(false);
             return new NoContentResult();
         }
     }

@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             }
 
             client.ClientId = result.ClientId;
-            await _clientRepository.InsertAsync(client);
+            await _clientRepository.InsertAsync(client).ConfigureAwait(false);
 
             _simpleIdentityServerEventSource.EndRegistration(result.ClientId, 
                 client.ClientName);

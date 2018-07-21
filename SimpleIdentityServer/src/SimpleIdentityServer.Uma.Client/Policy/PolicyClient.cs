@@ -79,8 +79,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<AddPolicyResponse> AddByResolution(PostPolicy request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Add(request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Add(request, policyEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<PolicyResponse> Get(string id, string url, string token)
@@ -90,8 +90,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<PolicyResponse> GetByResolution(string id, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Get(id, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(id, policyEndpoint, token).ConfigureAwait(false);
         }
         
         public Task<IEnumerable<string>> GetAll(string url, string token)
@@ -101,8 +101,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await GetAll(policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await GetAll(policyEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<bool> Delete(string id, string url, string token)
@@ -112,8 +112,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<bool> DeleteByResolution(string id, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Delete(id, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Delete(id, policyEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<bool> Update(PutPolicy request, string url, string token)
@@ -123,8 +123,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<bool> UpdateByResolution(PutPolicy request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Update(request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Update(request, policyEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<bool> AddResource(string id, PostAddResourceSet request, string url, string token)
@@ -134,8 +134,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await AddResource(id, request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await AddResource(id, request, policyEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<bool> DeleteResource(string id, string resourceId, string url, string token)
@@ -145,8 +145,8 @@ namespace SimpleIdentityServer.Client.Policy
 
         public async Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await DeleteResource(id, resourceId, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await DeleteResource(id, resourceId, policyEndpoint, token).ConfigureAwait(false);
         }
         
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Client.Policy
                 throw new ArgumentNullException(nameof(configurationUri));
             }
 
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri).ConfigureAwait(false);
             return configuration.PolicyEndPoint;
         }
     }

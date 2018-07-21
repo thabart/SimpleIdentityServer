@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
         public async Task<ActionResult> Search()
         {
             var searchParameter = _searchParameterParser.ParseQuery(Request.Query);
-            var result = await _repository.Search(searchParameter);
+            var result = await _repository.Search(searchParameter).ConfigureAwait(false);
             var content = result.ToDto(searchParameter);
             return new OkObjectResult(content);
         }
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.EventStore.Host.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(string id)
         {
-            var result = await _repository.Get(id);
+            var result = await _repository.Get(id).ConfigureAwait(false);
             if (result == null)
             {
                 return new NotFoundResult();

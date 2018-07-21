@@ -88,14 +88,14 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
             _commonAttributesFactoryStub.Setup(c => c.CreateIdJson(It.IsAny<Representation>()))
                 .Returns(new JProperty(Common.Constants.IdentifiedScimResourceNames.Id, "id"));
             _commonAttributesFactoryStub.Setup(c => c.CreateMetaDataAttributeJson(It.IsAny<Representation>(), It.IsAny<string>()))
                 .Returns(new[] { new JProperty(Common.Constants.ScimResourceNames.Meta, "meta") });
 
             // ACT
-            var response = await _responseParser.Parse(result.Representation, "http://localhost/{id}", Common.Constants.SchemaUrns.Group, OperationTypes.Modification);
+            var response = await _responseParser.Parse(result.Representation, "http://localhost/{id}", Common.Constants.SchemaUrns.Group, OperationTypes.Modification).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(response);
@@ -147,9 +147,9 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                "'value': 'bulkId:ytrewq'" +
              "}" +
            "]}");
-            var firstGroup = await _requestParser.Parse(firstObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
-            var secondGroup = await _requestParser.Parse(secondObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
-            var thirdGroup = await _requestParser.Parse(thirdObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var firstGroup = await _requestParser.Parse(firstObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
+            var secondGroup = await _requestParser.Parse(secondObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
+            var thirdGroup = await _requestParser.Parse(thirdObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
             var groups = new[] { firstGroup.Representation, secondGroup.Representation, thirdGroup.Representation };
             var searchOrderAscending = new SearchParameter
             {

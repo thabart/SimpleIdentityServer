@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
             
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             };
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null)).ConfigureAwait(false);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
         }
 
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.form_post);
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);

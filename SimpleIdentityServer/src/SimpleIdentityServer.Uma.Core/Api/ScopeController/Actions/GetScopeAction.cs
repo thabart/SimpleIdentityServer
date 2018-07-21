@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                return await _scopeRepository.Get(scopeId);
+                return await _scopeRepository.Get(scopeId).ConfigureAwait(false);
             }
             catch(Exception ex)
             {

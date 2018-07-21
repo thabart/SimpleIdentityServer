@@ -42,12 +42,12 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization
             GetAuthorizationActionParameter getAuthorizationActionParameter,
             string clientId)
         {
-            return await _getAuthorizationAction.Execute(getAuthorizationActionParameter, clientId);
+            return await _getAuthorizationAction.Execute(getAuthorizationActionParameter, clientId).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<AuthorizationResponse>> GetAuthorization(IEnumerable<GetAuthorizationActionParameter> getAuthorizationActionParameters, string clientId)
         {
-            return await _getAuthorizationAction.Execute(getAuthorizationActionParameters, clientId);
+            return await _getAuthorizationAction.Execute(getAuthorizationActionParameters, clientId).ConfigureAwait(false);
         }
     }
 }

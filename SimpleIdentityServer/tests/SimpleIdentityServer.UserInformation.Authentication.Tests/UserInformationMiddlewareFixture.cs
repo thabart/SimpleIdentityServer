@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication.Tests
             httpRequestMessage.RequestUri = new Uri("http://localhost/protectedoperation");
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage)).ConfigureAwait(false);
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendAsync(httpRequestMessage).ConfigureAwait(false)).ConfigureAwait(false);
             Assert.True(exception.Message == ErrorDescriptions.TheUserInfoEndPointIsNotAWellFormedUrl);
         }
 

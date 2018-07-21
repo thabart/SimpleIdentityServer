@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request.
-            var representation = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong);
+            var representation = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong).ConfigureAwait(false);
             if (!representation.IsParsed)
             {
                 return _apiResponseFactory.CreateError(
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                     representation.ErrorMessage);
             }
 
-            var record = await _representationStore.GetRepresentation(id);
+            var record = await _representationStore.GetRepresentation(id).ConfigureAwait(false);
 
             // 3. If the representation doesn't exist then 404 is returned.
             if (record == null)
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 4. Update attributes.
-            var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType)).Where(r => r.Id != record.Id);
+            var allRepresentations = (await _representationStore.GetRepresentations(record.ResourceType).ConfigureAwait(false)).Where(r => r.Id != record.Id);
             ErrorResponse error;
             if (!UpdateRepresentation(record, representation.Representation, allRepresentations, out error))
             {
@@ -118,14 +118,14 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             // 5. Store the new representation.
             record.LastModified = DateTime.UtcNow;
             record.Version = Guid.NewGuid().ToString();
-            if (!await _representationStore.UpdateRepresentation(record))
+            if (!await _representationStore.UpdateRepresentation(record).ConfigureAwait(false))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                    ErrorMessages.TheRepresentationCannotBeUpdated);
             }
 
             // 6. Parse the new representation.
-            var response = await _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification);
+            var response = await _responseParser.Parse(record, locationPattern.Replace("{id}", id), schemaId, OperationTypes.Modification).ConfigureAwait(false);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK,
                 response.Object,
                 response.Location,

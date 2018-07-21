@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
 
         public async Task<IEnumerable<SimpleIdentityServer.Core.Models.Client>> Execute()
         {
-            return await _clientRepository.GetAllAsync();
+            return await _clientRepository.GetAllAsync().ConfigureAwait(false);
         }
     }
 }

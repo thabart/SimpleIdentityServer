@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
 
         public async Task<bool> Add(Policy policy)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
@@ -271,7 +271,7 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
                 .Include(p => p.PolicyResources)
                 .Where(p => p.PolicyResources.Any(r => r.ResourceSetId == resourceSetId))
                 .Select(p => p.ToDomain())
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
     }
 }

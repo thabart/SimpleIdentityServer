@@ -49,14 +49,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Scopes.Actions
                 throw new ArgumentNullException(nameof(scopeName));
             }
 
-            var scope = await _scopeRepository.GetAsync(scopeName);
+            var scope = await _scopeRepository.GetAsync(scopeName).ConfigureAwait(false);
             if (scope == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheScopeDoesntExist, scopeName));
             }
 
-            var res = await _scopeRepository.DeleteAsync(scope);
+            var res = await _scopeRepository.DeleteAsync(scope).ConfigureAwait(false);
             if (res)
             {
                 _managerEventSource.FinishToRemoveScope(scopeName);

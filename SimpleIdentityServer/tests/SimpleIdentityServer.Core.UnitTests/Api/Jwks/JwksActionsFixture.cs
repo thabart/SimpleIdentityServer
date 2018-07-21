@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
                 .Returns(Task.FromResult(privateKeys));
 
             // ACT
-            var result = await _jwksActions.GetJwks();
+            var result = await _jwksActions.GetJwks().ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks
                 .Returns(Task.FromResult(rotateSuccess));
 
             // ACT
-            var result = await _jwksActions.RotateJwks();
+            var result = await _jwksActions.RotateJwks().ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result == rotateSuccess);

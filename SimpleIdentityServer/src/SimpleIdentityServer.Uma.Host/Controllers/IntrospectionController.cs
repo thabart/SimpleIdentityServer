@@ -39,13 +39,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            return await Introspect();
+            return await Introspect().ConfigureAwait(false);
         }
 
         [HttpPost]
         public async Task<ActionResult> Post()
         {
-            return await Introspect();
+            return await Introspect().ConfigureAwait(false);
         }
 
         [HttpPost("bulk")]
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var result = await _introspectionActions.GetIntrospection(parameter.Rpts);
+            var result = await _introspectionActions.GetIntrospection(parameter.Rpts).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
 
-            var result = await _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter);
+            var result = await _introspectionActions.GetIntrospection(authenticationHeaderValue.Parameter).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
     }

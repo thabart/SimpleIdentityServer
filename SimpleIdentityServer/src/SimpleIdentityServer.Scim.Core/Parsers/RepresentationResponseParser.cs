@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = await _schemasStore.GetSchema(schemaId);
+            var schema = await _schemasStore.GetSchema(schemaId).ConfigureAwait(false);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));

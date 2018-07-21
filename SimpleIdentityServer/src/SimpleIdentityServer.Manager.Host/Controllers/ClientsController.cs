@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public async Task<ActionResult> GetAll()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientsStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientsStoreName).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result =  (await _clientActions.GetClients()).ToDtos();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName);
+            var result =  (await _clientActions.GetClients().ConfigureAwait(false)).ToDtos();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, GetClientStoreName + id).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -77,8 +77,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var result = (await _clientActions.GetClient(id)).ToClientResponseDto();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id);
+            var result = (await _clientActions.GetClient(id).ConfigureAwait(false)).ToClientResponseDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 
@@ -91,13 +91,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!await _clientActions.DeleteClient(id))
+            if (!await _clientActions.DeleteClient(id).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + id, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -110,13 +110,13 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(updateClientRequest));
             }
 
-            if (!await _clientActions.UpdateClient(updateClientRequest.ToParameter()))
+            if (!await _clientActions.UpdateClient(updateClientRequest.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientStoreName + updateClientRequest.ClientId, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -129,8 +129,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var result = await _clientActions.AddClient(client.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false);
+            var result = await _clientActions.AddClient(client.ToParameter()).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, GetClientsStoreName, false).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
     }

@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  parameter, 0));
             try
             {
-                var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
+                var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter).ConfigureAwait(false);
                 ActionResult actionResult = null;
                 _simpleIdentityServerEventSource.StartAuthorization(parameter.ClientId,
                     parameter.ResponseType,
@@ -91,13 +91,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 switch (authorizationFlow)
                 {
                     case AuthorizationFlow.AuthorizationCodeFlow:
-                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.ImplicitFlow:
-                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client).ConfigureAwait(false);
                         break;
                     case AuthorizationFlow.HybridFlow:
-                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client).ConfigureAwait(false);
                         break;
                 }
 

@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 
 
             // ACT
-            var result = await _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier");
+            var result = await _getRepresentationAction.Execute("identifier", "http://location/{id}", "schema_identifier").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 }));
 
             // ACT
-            await _getRepresentationAction.Execute("identifier", location, schemaId);
+            await _getRepresentationAction.Execute("identifier", location, schemaId).ConfigureAwait(false);
 
             // ASSERT
             _responseParserStub.Verify(r => r.Parse(representation, location.Replace("{id}", representation.Id), schemaId, OperationTypes.Query));

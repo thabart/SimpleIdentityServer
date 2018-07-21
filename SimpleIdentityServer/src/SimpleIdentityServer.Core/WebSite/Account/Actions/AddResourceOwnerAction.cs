@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
             }
             
             if (await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(addUserParameter.Login,
-                addUserParameter.Password) != null)
+                    addUserParameter.Password).ConfigureAwait(false) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account.Actions
                 IsLocalAccount = true,
                 Password = _authenticateResourceOwnerService.GetHashedPassword(addUserParameter.Password)
             };            
-            await _resourceOwnerRepository.InsertAsync(newResourceOwner);
+            await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false);
         }
     }
 }

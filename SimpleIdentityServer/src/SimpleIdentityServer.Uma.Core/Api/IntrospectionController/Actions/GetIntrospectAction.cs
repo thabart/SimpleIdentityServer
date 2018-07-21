@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
                 throw new ArgumentNullException(nameof(rpt));
             }
 
-            return (await Execute(new[] { rpt })).First();
+            return (await Execute(new[] { rpt }).ConfigureAwait(false)).First();
         }
 
         public async Task<IEnumerable<IntrospectionResponse>> Execute(IEnumerable<string> rpts)
@@ -69,14 +69,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.IntrospectionController.Actions
 
             var concatenatedRpts = string.Join(",", rpts);
             _umaServerEventSource.StartToIntrospect(concatenatedRpts);
-            var rptsInformation = await _rptRepository.Get(rpts);
+            var rptsInformation = await _rptRepository.Get(rpts).ConfigureAwait(false);
             if (rptsInformation == null || !rptsInformation.Any())
             {
                 throw new BaseUmaException(ErrorCodes.InvalidRpt,
                     string.Format(ErrorDescriptions.TheRptsDontExist, concatenatedRpts));
             }
 
-            var tickets = await _ticketRepository.Get(rptsInformation.Select(r => r.TicketId));
+            var tickets = await _ticketRepository.Get(rptsInformation.Select(r => r.TicketId)).ConfigureAwait(false);
             if (tickets == null || !tickets.Any() || tickets.Count() != rptsInformation.Count())
             {
                 throw new BaseUmaException(ErrorCodes.InternalError,

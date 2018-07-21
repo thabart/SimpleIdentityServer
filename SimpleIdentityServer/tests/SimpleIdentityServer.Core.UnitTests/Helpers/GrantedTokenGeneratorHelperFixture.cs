@@ -35,9 +35,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("clientid", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync(string.Empty, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenGeneratorHelper.GenerateTokenAsync("clientid", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult((double)3700));
 
             // ACT
-            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope");
+            var result = await _grantedTokenGeneratorHelper.GenerateTokenAsync("client_id", "scope").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

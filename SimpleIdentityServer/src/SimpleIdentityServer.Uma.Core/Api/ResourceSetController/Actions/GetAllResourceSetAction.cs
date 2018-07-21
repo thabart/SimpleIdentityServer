@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
 
         public async Task<IEnumerable<string>> Execute()
         {
-            var resourceSets = await _resourceSetRepository.GetAll();
+            var resourceSets = await _resourceSetRepository.GetAll().ConfigureAwait(false);
             if (resourceSets == null)
             {
                 throw new BaseUmaException(

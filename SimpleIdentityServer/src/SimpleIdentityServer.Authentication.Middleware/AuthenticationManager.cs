@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Authentication.Middleware
                     .UseClientSecretPostAuth(authenticationOptions.ConfigurationEdp.ClientId, authenticationOptions.ConfigurationEdp.ClientSecret)
                     .UseClientCredentials(authenticationOptions.ConfigurationEdp.Scopes.ToArray())
                     .ResolveAsync(url + "/.well-known/openid-configuration");
-            var datedRecord = await _storageHelper.GetAsync<GrantedToken>(StorageKey);
+            var datedRecord = await _storageHelper.GetAsync<GrantedToken>(StorageKey).ConfigureAwait(false);
             bool generateToken = datedRecord == null || datedRecord.Obj == null;
             if (!generateToken)
             {
@@ -127,8 +127,8 @@ namespace SimpleIdentityServer.Authentication.Middleware
             GrantedToken grantedToken = null;
             if (generateToken)
             {
-                grantedToken = await getAccessTokenCb();
-                await _storageHelper.SetAsync(StorageKey, grantedToken);
+                grantedToken = await getAccessTokenCb().ConfigureAwait(false);
+                await _storageHelper.SetAsync(StorageKey, grantedToken).ConfigureAwait(false);
             }
             else
             {
@@ -138,14 +138,14 @@ namespace SimpleIdentityServer.Authentication.Middleware
             var authProviders = new List<AuthenticationProviderResponse>();
             try
             {
-                authProviders = await getAuthProvidersCb(grantedToken);
+                authProviders = await getAuthProvidersCb(grantedToken).ConfigureAwait(false);
             }
             catch
             {
                 _logger.LogError("An error occured while trying to retrieve the authentication providers. Retry ...");
-                grantedToken = await getAccessTokenCb();
-                await _storageHelper.SetAsync(StorageKey, grantedToken);
-                authProviders = await getAuthProvidersCb(grantedToken);
+                grantedToken = await getAccessTokenCb().ConfigureAwait(false);
+                await _storageHelper.SetAsync(StorageKey, grantedToken).ConfigureAwait(false);
+                authProviders = await getAuthProvidersCb(grantedToken).ConfigureAwait(false);
             }
 
             foreach (var authProvider in authProviders)
@@ -159,13 +159,13 @@ namespace SimpleIdentityServer.Authentication.Middleware
                 switch (authProvider.Type)
                 {
                     case AuthenticationProviderResponseTypes.OAUTH2:
-                        result = await EnableOauth2IdentityProvider(authProvider, httpContext);
+                        result = await EnableOauth2IdentityProvider(authProvider, httpContext).ConfigureAwait(false);
                         break;
                     case AuthenticationProviderResponseTypes.OPENID:
-                        result = await EnableOpenIdIdentityProvider(authProvider, httpContext);
+                        result = await EnableOpenIdIdentityProvider(authProvider, httpContext).ConfigureAwait(false);
                         break;
                     case AuthenticationProviderResponseTypes.WSFED:
-                        result = await EnableWsFederationAuthentication(authProvider, httpContext, authenticationOptions.IdServer.ExternalLoginCallback);
+                        result = await EnableWsFederationAuthentication(authProvider, httpContext, authenticationOptions.IdServer.ExternalLoginCallback).ConfigureAwait(false);
                         break;
                 }
 
@@ -189,8 +189,8 @@ namespace SimpleIdentityServer.Authentication.Middleware
             }
 
             var handler = new OAuthHandler<OAuthOptions>(new HttpClient());
-            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
+            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default).ConfigureAwait(false);
+            return await handler.HandleRequestAsync().ConfigureAwait(false);
         }
 
         private async Task<bool> EnableOpenIdIdentityProvider(
@@ -205,8 +205,8 @@ namespace SimpleIdentityServer.Authentication.Middleware
             }
 
             var handler = new OpenIdConnectHandler(httpClient, _htmlEncoder);
-            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
+            await handler.InitializeAsync(option, context, _logger, UrlEncoder.Default).ConfigureAwait(false);
+            return await handler.HandleRequestAsync().ConfigureAwait(false);
         }
 
         private async Task<bool> EnableWsFederationAuthentication(
@@ -221,8 +221,8 @@ namespace SimpleIdentityServer.Authentication.Middleware
             }
 
             var handler = new WsFedAuthenticationHandler();
-            await handler.InitializeAsync(eidOptions, httpContext, _logger, UrlEncoder.Default);
-            return await handler.HandleRequestAsync();
+            await handler.InitializeAsync(eidOptions, httpContext, _logger, UrlEncoder.Default).ConfigureAwait(false);
+            return await handler.HandleRequestAsync().ConfigureAwait(false);
         }
         
         /// <summary>
@@ -278,9 +278,9 @@ namespace SimpleIdentityServer.Authentication.Middleware
                         var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
                         request.Headers.Add("User-Agent", "SimpleIdentityServer");
                         request.Headers.Add("Authorization", "Bearer " + context.AccessToken);
-                        var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
+                        var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted).ConfigureAwait(false);
                         response.EnsureSuccessStatusCode();
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                         var claims = _claimsParser.Parse(nameSpace, className, code, payload);
                         foreach (var claim in claims)
                         {

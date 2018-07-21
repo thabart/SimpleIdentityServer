@@ -34,13 +34,13 @@ namespace SimpleIdentityServer.Scim.Startup.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(string id)
         {
-            return new OkObjectResult(await _schemaStore.GetSchema(id));
+            return new OkObjectResult(await _schemaStore.GetSchema(id).ConfigureAwait(false));
         }
 
         [HttpGet]
         public async Task<ActionResult> All()
         {
-            return new OkObjectResult(await _schemaStore.GetSchemas());
+            return new OkObjectResult(await _schemaStore.GetSchemas().ConfigureAwait(false));
         }
     }
 }

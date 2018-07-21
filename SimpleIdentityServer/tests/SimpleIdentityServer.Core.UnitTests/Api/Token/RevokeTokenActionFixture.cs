@@ -46,8 +46,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _revokeTokenAction.Execute(new RevokeTokenParameter(), null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((Client)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _revokeTokenAction.Execute(parameter, null);
+            var result = await _revokeTokenAction.Execute(parameter, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null);
+            await _revokeTokenAction.Execute(parameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.DeleteAsync(parent));
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(true));
 
             // ACT
-            await _revokeTokenAction.Execute(parameter, null);
+            await _revokeTokenAction.Execute(parameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _grantedTokenRepositoryStub.Verify(g => g.DeleteAsync(grantedToken));

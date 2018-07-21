@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
                 RequestUri = uri
             };
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             return httpResult.IsSuccessStatusCode;
         }
 

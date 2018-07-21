@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await DeleteUser(baseUrl.ParseUri(), id);
+            return await DeleteUser(baseUrl.ParseUri(), id).ConfigureAwait(false);
         }
 
         public async Task<ScimResponse> DeleteUser(Uri baseUri, string id)
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Scim.Client
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri(url)
             };
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public async Task<ScimResponse> GetUser(string baseUrl, string id)
@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await GetUser(FormatUrl(baseUrl), id);
+            return await GetUser(FormatUrl(baseUrl), id).ConfigureAwait(false);
         }
 
         public async Task<ScimResponse> GetUser(Uri baseUri, string id)
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Scim.Client
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(url)
             };
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public async Task<ScimResponse> SearchUsers(string baseUrl, SearchParameter parameter)
@@ -200,7 +200,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await SearchUsers(baseUrl.ParseUri(), parameter);
+            return await SearchUsers(baseUrl.ParseUri(), parameter).ConfigureAwait(false);
         }
 
         public async Task<ScimResponse> SearchUsers(Uri baseUri, SearchParameter parameter)
@@ -224,7 +224,7 @@ namespace SimpleIdentityServer.Scim.Client
                 Content = new StringContent(parameter.ToJson())
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private static string FormatUrl(string baseUrl)
@@ -240,17 +240,17 @@ namespace SimpleIdentityServer.Scim.Client
 
         private async Task<ScimResponse> AddUser(JObject jObj, Uri uri)
         {
-            return await ExecuteRequest(jObj, uri, HttpMethod.Post);
+            return await ExecuteRequest(jObj, uri, HttpMethod.Post).ConfigureAwait(false);
         }
 
         private async Task<ScimResponse> PartialUpdateUser(JObject jObj, Uri uri)
         {
-            return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH"));
+            return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH")).ConfigureAwait(false);
         }
 
         private async Task<ScimResponse> UpdateUser(JObject jObj, Uri uri)
         {
-            return await ExecuteRequest(jObj, uri, HttpMethod.Put);
+            return await ExecuteRequest(jObj, uri, HttpMethod.Put).ConfigureAwait(false);
         }
 
         private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method)
@@ -263,7 +263,7 @@ namespace SimpleIdentityServer.Scim.Client
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var client = _httpClientFactory.GetHttpClient();
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private static async Task<ScimResponse> ParseHttpResponse(HttpResponseMessage response)

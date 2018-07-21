@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                     }
 
                     _context.Scopes.Remove(connectedScope);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
 
                 }

@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public async Task<ActionResult> Get()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwners))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwners).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -53,8 +53,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var content = (await _resourceOwnerActions.GetResourceOwners()).ToDtos();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners);
+            var content = (await _resourceOwnerActions.GetResourceOwners().ConfigureAwait(false)).ToDtos();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners).ConfigureAwait(false);
             return new OkObjectResult(content);
         }
 
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
             
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwner + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, StoreNames.GetResourceOwner + id).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -75,8 +75,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 };
             }
 
-            var content = (await _resourceOwnerActions.GetResourceOwner(id)).ToDto();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id);
+            var content = (await _resourceOwnerActions.GetResourceOwner(id).ConfigureAwait(false)).ToDto();
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id).ConfigureAwait(false);
             return new OkObjectResult(content);
         }
 
@@ -89,9 +89,9 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            await _resourceOwnerActions.Delete(id);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
+            await _resourceOwnerActions.Delete(id).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + id, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -104,8 +104,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(resourceOwnerResponse));
             }
 
-            await _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Login, false);
+            await _resourceOwnerActions.UpdateResourceOwner(resourceOwnerResponse.ToParameter()).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwner + resourceOwnerResponse.Login, false).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -118,8 +118,8 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(addResourceOwnerRequest));
             }
 
-            await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter());
-            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false);
+            await _resourceOwnerActions.Add(addResourceOwnerRequest.ToParameter()).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, StoreNames.GetResourceOwners, false).ConfigureAwait(false);
             return new NoContentResult();
         }
     }

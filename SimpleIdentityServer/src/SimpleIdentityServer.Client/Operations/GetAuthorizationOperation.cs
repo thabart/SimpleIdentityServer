@@ -56,8 +56,8 @@ namespace SimpleIdentityServer.Client.Operations
             var httpClient = _httpClientFactory.GetHttpClient();
             var uriBuilder = new UriBuilder(uri);
             uriBuilder.Query = request.GetQueryString();
-            var response = await httpClient.GetAsync(uriBuilder.Uri);
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await httpClient.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var result = new ApiResult
             {
                 StatusCode = response.StatusCode

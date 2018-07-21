@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 return await _authenticateHelper.ProcessRedirection(authorizationParameter,
                     code,
                     subject,
-                    claims);
+                    claims).ConfigureAwait(false);
             }
 
             // 2).

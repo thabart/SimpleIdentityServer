@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
                 .Returns(() => Task.FromResult((ICollection<JsonWebKey>)null));
 
             // ACT
-            var result = await _rotateJsonWebKeysOperation.Execute();
+            var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
                 .Returns(() => Task.FromResult(jsonWebKeys));
 
             // ACT
-            var result = await _rotateJsonWebKeysOperation.Execute();
+            var result = await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
 
             // ASSERT
             _jsonWebKeyRepositoryStub.Verify(j => j.UpdateAsync(It.IsAny<JsonWebKey>()));

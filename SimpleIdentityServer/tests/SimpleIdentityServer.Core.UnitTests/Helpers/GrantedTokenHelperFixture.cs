@@ -39,8 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync(null, null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 });
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 });
 
             // ACT
-            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null);
+            var result = await _grantedTokenHelper.GetValidGrantedTokenAsync("scopes", "client_id", null, null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

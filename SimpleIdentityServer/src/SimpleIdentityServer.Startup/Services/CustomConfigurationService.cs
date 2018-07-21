@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Startup.Configuration
             try
             {
                 var setting = await _simpleIdServerConfigurationClientFactory.GetSettingClient()
-                    .GetSettingByResolving(key, /*_configurationParameters.ConfigurationUrl*/ null);
+                    .GetSettingByResolving(key, /*_configurationParameters.ConfigurationUrl*/ null).ConfigureAwait(false);
                 if (setting == null || !double.TryParse(setting.Value, out result))
                 {
                     return defaultValue;

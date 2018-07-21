@@ -74,14 +74,14 @@ namespace SimpleIdentityServer.Authentication.Middleware
                     context.User.Identity == null ||
                     context.User.Identity.AuthenticationType != CookieAuthenticationDefaults.AuthenticationScheme))
             {
-                if (!await _authenticationManager.Initialize(context, _options))
+                if (!await _authenticationManager.Initialize(context, _options).ConfigureAwait(false))
                 {
-                    await _next(context);
+                    await _next(context).ConfigureAwait(false);
                 }
             }
             else
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
         }
     }

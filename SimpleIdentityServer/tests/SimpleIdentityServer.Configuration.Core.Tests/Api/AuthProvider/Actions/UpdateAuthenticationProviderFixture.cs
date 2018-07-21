@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             var result = await _updateAuthenticationProvider.ExecuteAsync(new AuthenticationProvider
             {
                 Name = "name"
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             var result = await _updateAuthenticationProvider.ExecuteAsync(new AuthenticationProvider
             {
                 Name = "name"
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             var result = await _updateAuthenticationProvider.ExecuteAsync(new AuthenticationProvider
             {
                 Name = "name"
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

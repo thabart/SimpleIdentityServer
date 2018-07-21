@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(udpateResourceSetParameter));
             }
 
-            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id) == null)
+            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id).ConfigureAwait(false) == null)
             {
                 return false;
             }
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             };
 
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            if (!await _resourceSetRepository.Update(resourceSet))
+            if (!await _resourceSetRepository.Update(resourceSet).ConfigureAwait(false))
             {
                 throw new BaseUmaException(
                     ErrorCodes.InternalError,

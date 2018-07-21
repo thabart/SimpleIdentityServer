@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Get(updatePolicyParameter.PolicyId));
+                () => _policyRepository.Get(updatePolicyParameter.PolicyId)).ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             return await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Update(policy));
+                () => _policyRepository.Update(policy)).ConfigureAwait(false);
         }
     }
 }

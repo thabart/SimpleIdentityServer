@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 throw new ArgumentNullException(nameof(parameter.Id));
             }
 
-            if (await _resourceOwnerRepository.GetAsync(parameter.Id) == null)
+            if (await _resourceOwnerRepository.GetAsync(parameter.Id).ConfigureAwait(false) == null)
             {
                 throw new IdentityServerManagerException(
                     ErrorCodes.InvalidParameterCode,
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.ResourceOwners.Actions
                 parameter.Claims.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            return await _resourceOwnerRepository.UpdateAsync(parameter);
+            return await _resourceOwnerRepository.UpdateAsync(parameter).ConfigureAwait(false);
         }
     }
 }

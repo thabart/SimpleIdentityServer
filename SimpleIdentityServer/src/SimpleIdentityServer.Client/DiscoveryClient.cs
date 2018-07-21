@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            return await GetDiscoveryInformationAsync(uri);
+            return await GetDiscoveryInformationAsync(uri).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
             
-            return await _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUri);
+            return await _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUri).ConfigureAwait(false);
         }
 
         #endregion

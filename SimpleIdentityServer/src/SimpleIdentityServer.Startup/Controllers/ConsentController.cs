@@ -60,9 +60,9 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Models.Client();
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser);
+                authenticatedUser).ConfigureAwait(false);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return result;
             }
 
-            await TranslateConsentScreen(request.UiLocales);
+            await TranslateConsentScreen(request.UiLocales).ConfigureAwait(false);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
@@ -88,10 +88,10 @@ namespace SimpleIdentityServer.Startup.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
-                authenticatedUser);
-            await LogConsentAccepted(actionResult, parameter.ProcessId);
+                authenticatedUser).ConfigureAwait(false);
+            await LogConsentAccepted(actionResult, parameter.ProcessId).ConfigureAwait(false);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
         }
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            await LogConsentRejected(request.ProcessId);
+            await LogConsentRejected(request.ProcessId).ConfigureAwait(false);
             return Redirect(request.RedirectUri);
         }
 
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
                 Core.Constants.StandardTranslationCodes.LinkToThePolicy,
                 Core.Constants.StandardTranslationCodes.Tos
-            });
+            }).ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
+            var evtAggregate = await GetLastEventAggregate(processId).ConfigureAwait(false);
             if (evtAggregate == null)
             {
                 return;
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
+            var evtAggregate = await GetLastEventAggregate(processId).ConfigureAwait(false);
             if (evtAggregate == null)
             {
                 return;
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
         {
-            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
+            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId).ConfigureAwait(false)).OrderByDescending(e => e.Order);
             if (events == null || !events.Any())
             {
                 return null;

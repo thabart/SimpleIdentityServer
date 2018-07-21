@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(scheme);
             }
 
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(scheme);
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(scheme).ConfigureAwait(false);
             if (user == null)
             {
                 user = controller.User;
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Host.Extensions
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            var user  = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName);
+            var user  = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.TwoFactorCookieName).ConfigureAwait(false);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
 

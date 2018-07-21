@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format("the client id {0} doesn't exist",
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     assignedConsent = new Models.Consent
                     {
                         Client = client,
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
@@ -132,13 +132,13 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     assignedConsent = new Models.Consent
                     {
                         Client = client,
-                        GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        GrantedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false)).ToList(),
+                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false),
                     };
                 }
 
                 // A consent can be given to a set of claims
-                await _consentRepository.InsertAsync(assignedConsent);
+                await _consentRepository.InsertAsync(assignedConsent).ConfigureAwait(false);
 
                 _simpleIdentityServerEventSource.GiveConsent(subject,
                     authorizationParameter.ClientId,
@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
@@ -174,7 +174,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = _parameterParserHelper.ParseScopes(concatenateListOfScopes);
-            return await _scopeRepository.SearchByNamesAsync(scopeNames);
+            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
         }
 
         private static AuthorizationFlow GetAuthorizationFlow(ICollection<ResponseType> responseTypes, string state)

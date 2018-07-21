@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
 
         public async Task<bool> UpdateAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
 
                 try
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
 
         public async Task<bool> AddAuthenticationProvider(AuthenticationProvider authenticationProvider)
         {
-            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {
@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Configuration.EF.Repositories
 
         public async Task<bool> RemoveAuthenticationProvider(string name)
         {
-            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync())
+            using (var transaction = await _simpleIdentityServerConfigurationContext.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 try
                 {

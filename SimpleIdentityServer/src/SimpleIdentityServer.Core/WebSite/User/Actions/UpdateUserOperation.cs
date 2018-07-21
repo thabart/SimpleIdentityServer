@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(updateUserParameter.Login));
             }
 
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(updateUserParameter.Login);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(updateUserParameter.Login).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            return await _resourceOwnerRepository.UpdateAsync(resourceOwner);
+            return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
         }
     }
 }

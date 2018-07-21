@@ -59,9 +59,9 @@ namespace SimpleIdentityServer.Client.Scope
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(url)
             };
-            var httpResult = await httpClient.SendAsync(httpRequest);
+            var httpResult = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync();
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<AddScopeResponse>(content);
         }
     }

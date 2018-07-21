@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
                     {
                         var userInformationResponse = await GetUserInformationResponse(
                             _options,
-                            accessToken);
+                            accessToken).ConfigureAwait(false);
 
                         if (userInformationResponse != null)
                         {
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.UserInformation.Authentication
                 }
             }
 
-            await _nullAuthenticationNext(context);
+            await _nullAuthenticationNext(context).ConfigureAwait(false);
         }
 
         private string GetAccessToken(string authorizationValue)
@@ -126,20 +126,20 @@ namespace SimpleIdentityServer.UserInformation.Authentication
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             requestMessage.Headers.Add(AuthorizationName, string.Format("Bearer {0}", token));
-            var response = await _httpClient.SendAsync(requestMessage);
+            var response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
 #else
             var argument = string.Format("-H \"Accept: application/json\" -H \"Authorization: Bearer {0}\" -X GET {1}",
                 token, url);
             try
             {
-                var content = await CurlClient.Curl(argument);
+                var content = await CurlClient.Curl(argument).ConfigureAwait(false);
                 return JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
             }
             catch (Exception)

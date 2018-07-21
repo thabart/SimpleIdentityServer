@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            return await _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
+            return await _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue).ConfigureAwait(false);
         }
 
         public async Task<bool> ExecuteAsync(string revokeUrl)
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, revokeUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return await ExecuteAsync(uri).ConfigureAwait(false);
         }
 
         public async Task<bool> ResolveAsync(string discoveryDocumentationUrl)
@@ -84,8 +84,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.RevocationEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.RevocationEndPoint).ConfigureAwait(false);
         }
     }
 }

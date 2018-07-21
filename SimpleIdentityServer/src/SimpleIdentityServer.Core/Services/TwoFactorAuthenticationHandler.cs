@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.Services
             }
 
 
-            await _twoFactorServiceStore.Get(twoFactorAuthType).SendAsync(code, user);
+            await _twoFactorServiceStore.Get(twoFactorAuthType).SendAsync(code, user).ConfigureAwait(false);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(Task.FromResult(new Representation()));
 
             // ACT
-            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
+            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id).ConfigureAwait(false);
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.InternalServerError, string.Format(ErrorMessages.TheResourceAlreadyExist, id)));
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(Task.FromResult((ParseRepresentationResult)null));
 
             // ACT
-            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id);
+            await _addRepresentationAction.Execute(new JObject(), string.Empty, "schema_id", "resource_type", id).ConfigureAwait(false);
 
             // ASSERT
             _apiResponseFactoryStub.Verify(a => a.CreateError(HttpStatusCode.InternalServerError, It.IsAny<string>()));

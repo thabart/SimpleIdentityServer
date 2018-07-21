@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task Handle(RegistrationResultReceived message)
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

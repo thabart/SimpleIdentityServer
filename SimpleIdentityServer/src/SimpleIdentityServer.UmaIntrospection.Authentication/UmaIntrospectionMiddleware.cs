@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             if (string.IsNullOrWhiteSpace(rpt))
             {
                 // FAKE USER
-                await _nullAuthenticationNext(context);
+                await _nullAuthenticationNext(context).ConfigureAwait(false);
                 return;
             }
 
@@ -104,18 +104,18 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
             {
                 var introspectionResponse = await identityServerUmaClientFactory
                     .GetIntrospectionClient()
-                    .GetByResolution(rpt, _options.UmaConfigurationUrl);
+                    .GetByResolution(rpt, _options.UmaConfigurationUrl).ConfigureAwait(false);
                 // Add the permissions
                 if (introspectionResponse.IsActive)
                 {
-                    await AddPermissions(context, introspectionResponse.Permissions);
+                    await AddPermissions(context, introspectionResponse.Permissions).ConfigureAwait(false);
                 }
             }
             catch (Exception)
             {
             }
 
-            await _nullAuthenticationNext(context);
+            await _nullAuthenticationNext(context).ConfigureAwait(false);
         }
         
         private async Task AddPermissions(
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 claimsIdentity = context.User.Identity as ClaimsIdentity;
             }
 
-            var accessToken = await GetAccessToken();
+            var accessToken = await GetAccessToken().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 return;
@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                     .SearchResources(new SearchResourceRequest
                     {
                         ResourceId = permission.ResourceSetId
-                    }, _options.ResourcesUrl, accessToken);
+                    }, _options.ResourcesUrl, accessToken).ConfigureAwait(false);
                 if (operations != null && operations.Any())
                 {
                     var operation = operations.First();
@@ -172,7 +172,7 @@ namespace SimpleIdentityServer.UmaIntrospection.Authentication
                 var response = await serverClientFactory.CreateAuthSelector()
                     .UseClientSecretPostAuth(_options.ClientId, _options.ClientSecret)
                     .UseClientCredentials("website_api")
-                    .ResolveAsync(_options.OpenIdWellKnownConfigurationUrl);
+                    .ResolveAsync(_options.OpenIdWellKnownConfigurationUrl).ConfigureAwait(false);
                 if (response == null)
                 {
                     return null;

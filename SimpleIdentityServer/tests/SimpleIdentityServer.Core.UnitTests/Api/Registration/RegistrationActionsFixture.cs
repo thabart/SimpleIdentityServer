@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _registrationActions.PostRegistration(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _registrationActions.PostRegistration(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             InitializeFakeObjects();
 
             // ACT
-            await _registrationActions.PostRegistration(new RegistrationParameter());
+            await _registrationActions.PostRegistration(new RegistrationParameter()).ConfigureAwait(false);
 
             // ASSERT
             _registerClientActionFake.Verify(r => r.Execute(It.IsAny<RegistrationParameter>()));

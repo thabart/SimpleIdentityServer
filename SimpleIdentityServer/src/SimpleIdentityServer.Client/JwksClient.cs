@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, jwksUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return await ExecuteAsync(uri).ConfigureAwait(false);
         }
 
         public async Task<JsonWebKeySet> ExecuteAsync(Uri jwksUri)
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(jwksUri));
             }
 
-            return await _getJsonWebKeysOperation.ExecuteAsync(jwksUri);
+            return await _getJsonWebKeysOperation.ExecuteAsync(jwksUri).ConfigureAwait(false);
         }
 
         public async Task<JsonWebKeySet> ResolveAsync(string configurationUrl)
@@ -99,8 +99,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.JwksUri);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.JwksUri).ConfigureAwait(false);
         }
 
         #endregion

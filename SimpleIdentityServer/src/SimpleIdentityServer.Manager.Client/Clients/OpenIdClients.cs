@@ -30,8 +30,8 @@ namespace SimpleIdentityServer.Manager.Client.Clients
 
         public async Task<IEnumerable<OpenIdClientResponse>> ResolveGetAll(Uri wellKnownConfigurationUri, string authorizationHeaderValue = null)
         {
-            var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri);
-            return await GetAll(new Uri(configuration.ClientsEndpoint), authorizationHeaderValue);
+            var configuration = await _configurationClient.GetConfiguration(wellKnownConfigurationUri).ConfigureAwait(false);
+            return await GetAll(new Uri(configuration.ClientsEndpoint), authorizationHeaderValue).ConfigureAwait(false);
         }
     }
 }

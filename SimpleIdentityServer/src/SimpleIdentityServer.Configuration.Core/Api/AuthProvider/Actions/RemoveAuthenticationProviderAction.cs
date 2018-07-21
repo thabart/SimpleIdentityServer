@@ -49,13 +49,13 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var result = await _authenticationProviderRepository.GetAuthenticationProvider(name);
+            var result = await _authenticationProviderRepository.GetAuthenticationProvider(name).ConfigureAwait(false);
             if (result == null)
             {
                 return new NotFoundResult();
             }
 
-            if (!await _authenticationProviderRepository.RemoveAuthenticationProvider(name))
+            if (!await _authenticationProviderRepository.RemoveAuthenticationProvider(name).ConfigureAwait(false))
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }

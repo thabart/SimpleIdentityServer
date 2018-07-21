@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                     if (asset.Parent != null)
                     {
                         result.Add(GetAsset(asset.Parent));
-                        result.AddRange(await GetAllParents(asset.Parent.Hash));
+                        result.AddRange(await GetAllParents(asset.Parent.Hash).ConfigureAwait(false));
                     }
 
                     return result;
@@ -144,7 +144,7 @@ namespace SimpleIdentityServer.ResourceManager.EF.Repositories
                         }
                     }
 
-                    var lstAssets = await Task.WhenAll(tasks);
+                    var lstAssets = await Task.WhenAll(tasks).ConfigureAwait(false);
                     foreach (var rec in lstAssets)
                     {
                         result.AddRange(rec);

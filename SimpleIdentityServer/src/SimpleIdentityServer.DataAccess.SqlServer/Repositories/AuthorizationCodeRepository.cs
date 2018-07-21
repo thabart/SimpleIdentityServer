@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         UserInfoPayLoad = authorizationCode.UserInfoPayLoad == null ? string.Empty : authorizationCode.UserInfoPayLoad.SerializeWithJavascript()
                     };
                     _context.AuthorizationCodes.Add(newAuthorizationCode);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     transaction.Commit();
                 }
                 catch (Exception ex)

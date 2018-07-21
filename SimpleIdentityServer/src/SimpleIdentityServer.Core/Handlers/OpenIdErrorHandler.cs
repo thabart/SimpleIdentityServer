@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "An error occured",
                 Payload =  payload,
                 Order = evt.Order
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

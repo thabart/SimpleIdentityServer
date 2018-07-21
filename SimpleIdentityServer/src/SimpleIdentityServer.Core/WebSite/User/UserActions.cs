@@ -55,27 +55,27 @@ namespace SimpleIdentityServer.Core.WebSite.User
 
         public async Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getConsentsOperation.Execute(claimsPrincipal);
+            return await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteConsent(string consentId)
         {
-            return await _removeConsentOperation.Execute(consentId);
+            return await _removeConsentOperation.Execute(consentId).ConfigureAwait(false);
         }
 
         public async Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getUserOperation.Execute(claimsPrincipal);
+            return await _getUserOperation.Execute(claimsPrincipal).ConfigureAwait(false);
         }
 
         public async Task<bool> UpdateUser(UpdateUserParameter updateUserParameter)
         {
-            return await _updateUserOperation.Execute(updateUserParameter);
+            return await _updateUserOperation.Execute(updateUserParameter).ConfigureAwait(false);
         }
 
         public async Task ConfirmUser(ClaimsPrincipal claimsPrincipal)
         {
-            await _confirmUserOperation.Execute(claimsPrincipal);
+            await _confirmUserOperation.Execute(claimsPrincipal).ConfigureAwait(false);
         }
     }
 }

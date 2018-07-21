@@ -36,9 +36,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<List<Claim>>())).Returns(Task.FromResult(actionResult));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code)).ConfigureAwait(false);
             Assert.True(exception.Message == ErrorDescriptions.NoSubjectCanBeExtracted);
         }
 
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 It.IsAny<List<Claim>>())).Returns(Task.FromResult(actionResult));
 
             // ACT
-            var result = await _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code);
+            var result = await _externalOpenIdUserAuthenticationAction.Execute(claims, authorizationParameter, code).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

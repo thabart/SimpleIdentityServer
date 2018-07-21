@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
             
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(
@@ -73,20 +73,20 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Code = await GetCode(),
+                Code = await GetCode().ConfigureAwait(false),
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 300,
                 IsConfirmed = false
             };
 
-            if (!await _confirmationCodeRepository.AddAsync(confirmationCode))
+            if (!await _confirmationCodeRepository.AddAsync(confirmationCode).ConfigureAwait(false))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
                     ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner);
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner).ConfigureAwait(false);
             return confirmationCode.Code;
         }
         
@@ -94,9 +94,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeRepository.GetAsync(number.ToString()) != null)
+            if (await _confirmationCodeRepository.GetAsync(number.ToString()).ConfigureAwait(false) != null)
             {
-                return await GetCode();
+                return await GetCode().ConfigureAwait(false);
             }
 
             return number.ToString();

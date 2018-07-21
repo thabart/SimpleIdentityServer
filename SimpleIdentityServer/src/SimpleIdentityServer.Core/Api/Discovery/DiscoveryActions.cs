@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Api.Discovery
 
         public async Task<DiscoveryInformation> CreateDiscoveryInformation()
         {
-            return await _createDiscoveryDocumentationAction.Execute();
+            return await _createDiscoveryDocumentationAction.Execute().ConfigureAwait(false);
         }
     }
 }

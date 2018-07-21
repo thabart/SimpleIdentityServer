@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
-                code);
+                code).ConfigureAwait(false);
         }
 
         public async Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
                 throw new ArgumentNullException("localAuthenticationParameter");
             }
 
-            return await _localUserAuthenticationAction.Execute(localAuthenticationParameter);
+            return await _localUserAuthenticationAction.Execute(localAuthenticationParameter).ConfigureAwait(false);
         }
 
         public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code);
+                code).ConfigureAwait(false);
         }
 
 
@@ -144,27 +144,27 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return await _externalOpenIdUserAuthenticationAction.Execute(claims,
                 authorizationParameter,
-                code);
+                code).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal)
         {
-            return await _loginCallbackAction.Execute(claimsPrincipal);
+            return await _loginCallbackAction.Execute(claimsPrincipal).ConfigureAwait(false);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)
         {
-            return await _generateAndSendCodeAction.ExecuteAsync(subject);
+            return await _generateAndSendCodeAction.ExecuteAsync(subject).ConfigureAwait(false);
         }
 
         public async Task<bool> ValidateCode(string code)
         {
-            return await _validateConfirmationCodeAction.Execute(code);
+            return await _validateConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
 
         public async Task<bool> RemoveCode(string code)
         {
-            return await _removeConfirmationCodeAction.Execute(code);
+            return await _removeConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
     }
 }

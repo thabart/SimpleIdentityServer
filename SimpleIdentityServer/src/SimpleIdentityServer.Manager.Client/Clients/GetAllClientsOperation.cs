@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Manager.Client.Clients
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             }
 
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var jArr = JArray.Parse(content);

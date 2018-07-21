@@ -40,8 +40,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(new UpdateUserParameter()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserOperation.Execute(new UpdateUserParameter())).ConfigureAwait(false);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserOperation.Execute(parameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserOperation.Execute(parameter)).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _updateUserOperation.Execute(parameter);
+            await _updateUserOperation.Execute(parameter).ConfigureAwait(false);
 
             // ASSERTS
             _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));

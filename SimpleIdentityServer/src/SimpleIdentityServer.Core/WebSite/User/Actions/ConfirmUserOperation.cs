@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false);
             if (result == null)
             {
                 throw new IdentityServerException(
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 result.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt, DateTime.UtcNow.ToString()));
             }
 
-            await _resourceOwnerRepository.UpdateAsync(result);
+            await _resourceOwnerRepository.UpdateAsync(result).ConfigureAwait(false);
         }
     }
 }

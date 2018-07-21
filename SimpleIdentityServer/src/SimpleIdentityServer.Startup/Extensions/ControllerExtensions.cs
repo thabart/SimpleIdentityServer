@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Startup.Extensions
 {
+    using Authentication.Middleware;
+
     internal static class ControllerExtensions
     {
         public static async Task<ClaimsPrincipal> GetAuthenticatedUserExternal(this Controller controller)
@@ -30,7 +32,7 @@ namespace SimpleIdentityServer.Startup.Extensions
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Authentication.Middleware.Constants.CookieName);
+            var user = await controller.HttpContext.Authentication.AuthenticateAsync(Constants.CookieName).ConfigureAwait(false);
             return user ?? new ClaimsPrincipal(new ClaimsIdentity());
         }
     }

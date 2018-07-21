@@ -42,7 +42,7 @@ namespace WebApiContrib.Core.Concurrency
 
         public async Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId)
         {
-            return await TryUpdateRepresentationAsync(representationId, Guid.NewGuid().ToString());
+            return await TryUpdateRepresentationAsync(representationId, Guid.NewGuid().ToString()).ConfigureAwait(false);
         }
 
         public async Task<ConcurrentObject> TryUpdateRepresentationAsync(string representationId, string etag)
@@ -62,7 +62,7 @@ namespace WebApiContrib.Core.Concurrency
                 Etag = "\"" + etag + "\"",
                 DateTime = DateTime.UtcNow
             };
-            await _options.Storage.SetAsync(representationId, concurrentObject);
+            await _options.Storage.SetAsync(representationId, concurrentObject).ConfigureAwait(false);
             return concurrentObject;
         }
 
@@ -73,7 +73,7 @@ namespace WebApiContrib.Core.Concurrency
 
         public async Task<bool> IsRepresentationDifferentAsync(string representationId, string etag)
         {
-            var representation = await TryGetRepresentationAsync(representationId);
+            var representation = await TryGetRepresentationAsync(representationId).ConfigureAwait(false);
             if (representation == null)
             {
                 return false;
@@ -94,7 +94,7 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(representationId));
             }
 
-            var value = await _options.Storage.TryGetValueAsync<ConcurrentObject>(representationId);
+            var value = await _options.Storage.TryGetValueAsync<ConcurrentObject>(representationId).ConfigureAwait(false);
             if (value == null)
             {
                 return null;
@@ -115,7 +115,7 @@ namespace WebApiContrib.Core.Concurrency
 
         public async Task RemoveAllAsync()
         {
-            await _options.Storage.RemoveAllAsync();
+            await _options.Storage.RemoveAllAsync().ConfigureAwait(false);
         }
 
         public async Task RemoveAsync(string name)
@@ -125,7 +125,7 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(name));
             }
 
-            await _options.Storage.RemoveAsync(name);
+            await _options.Storage.RemoveAsync(name).ConfigureAwait(false);
         }
     }
 }

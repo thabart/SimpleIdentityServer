@@ -56,9 +56,9 @@ namespace SimpleIdentityServer.Configuration.Client
                 Method = HttpMethod.Get,
                 RequestUri = uri
             };
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync();
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<ConfigurationResponse>(content);
         }
 

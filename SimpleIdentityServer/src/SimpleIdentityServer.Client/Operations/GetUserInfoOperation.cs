@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var serializedContent = await httpClient.SendAsync(request).ConfigureAwait(false);
-            var json = await serializedContent.Content.ReadAsStringAsync();
+            var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JObject.Parse(json);
         }
     }

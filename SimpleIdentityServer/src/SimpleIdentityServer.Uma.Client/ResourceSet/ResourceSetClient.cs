@@ -68,8 +68,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         public async Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Update(request, configuration.ResourceSetRegistrationEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Update(request, configuration.ResourceSetRegistrationEndPoint, token).ConfigureAwait(false);
         }
 
         public Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token)
@@ -79,19 +79,19 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         public async Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.ResourceSetRegistrationEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Add(request, configuration.ResourceSetRegistrationEndPoint, token).ConfigureAwait(false);
         }
 
         public async Task<bool> Delete(string id, string url, string token)
         {
-            return await _deleteResourceSetOperation.ExecuteAsync(id, url, token);
+            return await _deleteResourceSetOperation.ExecuteAsync(id, url, token).ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteByResolution(string id, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Delete(id, configuration.ResourceSetRegistrationEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Delete(id, configuration.ResourceSetRegistrationEndPoint, token).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<string>> GetAll(string url, string token)
@@ -101,8 +101,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await GetAll(configuration.ResourceSetRegistrationEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await GetAll(configuration.ResourceSetRegistrationEndPoint, token).ConfigureAwait(false);
         }
 
         public Task<ResourceSetResponse> Get(string id, string url, string token)
@@ -112,8 +112,8 @@ namespace SimpleIdentityServer.Client.ResourceSet
 
         public async Task<ResourceSetResponse> GetByResolution(string id, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(id, configuration.ResourceSetRegistrationEndPoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(id, configuration.ResourceSetRegistrationEndPoint, token).ConfigureAwait(false);
         }
     }
 }

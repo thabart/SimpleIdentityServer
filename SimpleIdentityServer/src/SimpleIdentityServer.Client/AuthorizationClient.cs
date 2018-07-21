@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return await _getAuthorizationOperation.ExecuteAsync(authorizationUri, request);
+            return await _getAuthorizationOperation.ExecuteAsync(authorizationUri, request).ConfigureAwait(false);
         }
 
         public async Task<ApiResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, authorizationUrl));
             }
 
-            return await ExecuteAsync(uri, request);
+            return await ExecuteAsync(uri, request).ConfigureAwait(false);
         }
 
         public async Task<ApiResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
@@ -85,8 +85,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.AuthorizationEndPoint, request);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.AuthorizationEndPoint, request).ConfigureAwait(false);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 Id = consentId
             };
 
-            return await _consentRepository.DeleteAsync(consentToBeDeleted);
+            return await _consentRepository.DeleteAsync(consentToBeDeleted).ConfigureAwait(false);
         }
     }
 }

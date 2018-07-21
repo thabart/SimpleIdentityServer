@@ -48,19 +48,19 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var newResult = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UseRefreshToken(result.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .RevokeToken(result.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
             var newEx = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(newResult.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(revoke);
@@ -78,19 +78,19 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var newResult = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UseRefreshToken(result.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var revoke = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .RevokeToken(result.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
             var newEx = await Assert.ThrowsAsync<HttpRequestException>(() => _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(newResult.RefreshToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration"));
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration")).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(revoke);

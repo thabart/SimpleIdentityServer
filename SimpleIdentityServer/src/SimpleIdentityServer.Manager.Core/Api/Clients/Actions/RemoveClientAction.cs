@@ -49,14 +49,14 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.TheClientDoesntExist, clientId));
             }
 
-            var result = await _clientRepository.DeleteAsync(client);
+            var result = await _clientRepository.DeleteAsync(client).ConfigureAwait(false);
             if (result)
             {
                 _managerEventSource.FinishToRemoveClient(clientId);

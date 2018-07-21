@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var consents = await _consentRepository.GetConsentsForGivenUserAsync(subject);
+            var consents = await _consentRepository.GetConsentsForGivenUserAsync(subject).ConfigureAwait(false);
             Consent confirmedConsent = null;
             if (consents != null && consents.Any())
             {

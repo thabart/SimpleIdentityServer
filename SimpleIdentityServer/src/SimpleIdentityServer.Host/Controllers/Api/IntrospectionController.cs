@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 }
             }
 
-            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue).ConfigureAwait(false);
             return result.ToDto();
         }
     }

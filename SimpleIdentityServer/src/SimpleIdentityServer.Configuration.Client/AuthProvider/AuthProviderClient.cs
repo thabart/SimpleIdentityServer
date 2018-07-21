@@ -92,62 +92,62 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
             string authenticationProviderUrl,
             string accessToken)
         {
-            return await _disableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
+            return await _disableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> DisableAuthProviderByResolving(string name,
             string configurationUrl,
             string accessToken)
         {
-            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl).ConfigureAwait(false);
             return await DisableAuthProvider(name,
                 authProviderUrl,
-                accessToken);
+                accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> EnableAuthProvider(string name,
             string authenticationProviderUrl,
             string accessToken)
         {
-            return await _enableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
+            return await _enableAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<bool> EnableAuthProviderByResolving(string name,
             string configurationUrl,
             string accessToken)
         {
-            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl).ConfigureAwait(false);
             return await EnableAuthProvider(name,
                 authProviderUrl,
-                accessToken);
+                accessToken).ConfigureAwait(false);
         }
 
         public async Task<AuthenticationProviderResponse> GetAuthProvider(string name,
             string authenticationProviderUrl,
             string accessToken)
         {
-            return await _getAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken);
+            return await _getAuthProviderOperation.ExecuteAsync(name, authenticationProviderUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<AuthenticationProviderResponse> GetAuthProviderByResolving(string name,
             string configurationUrl,
             string accessToken)
         {
-            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
-            return await GetAuthProvider(name, authProviderUrl, accessToken);
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl).ConfigureAwait(false);
+            return await GetAuthProvider(name, authProviderUrl, accessToken).ConfigureAwait(false);
         }
 
         public async Task<List<AuthenticationProviderResponse>> GetAuthProviders(Uri authenticationProviderUri,
             string accessToken)
         {
-            return await _getAuthProvidersOperation.ExecuteAsync(authenticationProviderUri, accessToken);
+            return await _getAuthProvidersOperation.ExecuteAsync(authenticationProviderUri, accessToken).ConfigureAwait(false);
         }
 
         public async Task<List<AuthenticationProviderResponse>> GetAuthProvidersByResolving(string configurationUrl,
             string accessToken)
         {
-            var authProviderUrl = await GetAuthProviderUrl(configurationUrl);
-            return await GetAuthProviders(new Uri(authProviderUrl), accessToken);
+            var authProviderUrl = await GetAuthProviderUrl(configurationUrl).ConfigureAwait(false);
+            return await GetAuthProviders(new Uri(authProviderUrl), accessToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace SimpleIdentityServer.Configuration.Client.AuthProvider
         private async Task<string> GetAuthProviderUrl(string configurationUrl)
         {
             var configurationUri = GetUri(configurationUrl);
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri).ConfigureAwait(false);
             return configuration.AuthProviderEndPoint;
         }
 

@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal).ConfigureAwait(false);
         }
 
         public async Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal)
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            return await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal).ConfigureAwait(false);
         }
     }
 }

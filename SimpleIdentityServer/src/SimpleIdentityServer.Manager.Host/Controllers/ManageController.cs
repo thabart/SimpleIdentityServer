@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
         [Authorize("manager")]
         public async Task<ActionResult> Export()
         {
-            var export = (await _manageActions.Export()).ToDto();
+            var export = (await _manageActions.Export().ConfigureAwait(false)).ToDto();
             var json = JsonConvert.SerializeObject(export);
             return new FileContentResult(Encoding.UTF8.GetBytes(json), "application/json")
             {
@@ -77,11 +77,11 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
             var content = string.Empty;
             using (var memoryStream = new MemoryStream())
             {
-                await settingsFile.CopyToAsync(memoryStream);
+                await settingsFile.CopyToAsync(memoryStream).ConfigureAwait(false);
                 memoryStream.Position = 0;
                 using (var reader = new StreamReader(memoryStream))
                 {
-                    content = await reader.ReadToEndAsync();
+                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
             }
 
@@ -96,12 +96,12 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                     ErrorDescriptions.TheFileIsNotWellFormed);
             }
 
-            if (!await _manageActions.Import(response.ToParameter()))
+            if (!await _manageActions.Import(response.ToParameter()).ConfigureAwait(false))
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, ClientsController.GetClientsStoreName);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, ClientsController.GetClientsStoreName).ConfigureAwait(false);
             return new NoContentResult();
         }
     }

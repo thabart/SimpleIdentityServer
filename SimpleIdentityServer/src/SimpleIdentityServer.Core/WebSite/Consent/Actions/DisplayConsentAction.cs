@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
             
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode,
@@ -115,12 +115,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 
             ActionResult actionResult;
             var subject = claimsPrincipal.GetSubject();
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
             // If there's already a consent then redirect to the callback
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {
@@ -146,7 +146,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
             else
             {
-                allowedScopes = (await GetScopes(authorizationParameter.Scope))
+                allowedScopes = (await GetScopes(authorizationParameter.Scope).ConfigureAwait(false))
                     .Where(s => s.IsDisplayedInConsent)
                     .ToList();
             }
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         {
             var result = new List<Scope>();
             var scopeNames = concatenateListOfScopes.Split(' ');
-            return await _scopeRepository.SearchByNamesAsync(scopeNames);
+            return await _scopeRepository.SearchByNamesAsync(scopeNames).ConfigureAwait(false);
         }
 
         #region Private static methods

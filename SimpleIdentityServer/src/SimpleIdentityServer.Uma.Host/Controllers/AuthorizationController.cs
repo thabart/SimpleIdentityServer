@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postAuthorization.ToParameter();
             var clientId = this.GetClientId();
-            var result = await _authorizationActions.GetAuthorization(parameter, clientId);
+            var result = await _authorizationActions.GetAuthorization(parameter, clientId).ConfigureAwait(false);
             if (result.AuthorizationPolicyResult != AuthorizationPolicyResultEnum.Authorized)
             {
                 return GetErrorResponse(result.AuthorizationPolicyResult);
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameters = postAuthorizations.Select(p => p.ToParameter());
             var clientId = this.GetClientId();
-            var responses = await _authorizationActions.GetAuthorization(parameters, clientId);
+            var responses = await _authorizationActions.GetAuthorization(parameters, clientId).ConfigureAwait(false);
             if (!responses.Any(r => r.AuthorizationPolicyResult == AuthorizationPolicyResultEnum.Authorized))
             {
                 return new StatusCodeResult((int)HttpStatusCode.Forbidden);

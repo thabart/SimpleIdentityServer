@@ -89,11 +89,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, principal as ClaimsPrincipal, client).ConfigureAwait(false);
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var claimsPrincipal = principal as ClaimsPrincipal;
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
             }
             
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

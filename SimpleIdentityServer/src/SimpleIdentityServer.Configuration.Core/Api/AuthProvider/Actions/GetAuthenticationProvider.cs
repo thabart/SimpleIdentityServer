@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var result = await _authenticationProviderRepository.GetAuthenticationProvider(name);
+            var result = await _authenticationProviderRepository.GetAuthenticationProvider(name).ConfigureAwait(false);
             if (result == null)
             {
                 return new NotFoundResult();

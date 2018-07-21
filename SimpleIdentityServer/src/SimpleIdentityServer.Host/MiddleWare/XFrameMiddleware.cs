@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
         public async Task Invoke(HttpContext context)
         {
             context.Response.Headers.Add("X-Frame-Options", new StringValues("DENY"));
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
 
         #endregion

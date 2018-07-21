@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.Handlers
             }
 
             var payload = _serializer.GetPayload(parameter);
-            await AddEvent(parameter.Id, parameter.ProcessId, payload, "Start user information", parameter.Order);
+            await AddEvent(parameter.Id, parameter.ProcessId, payload, "Start user information", parameter.Order).ConfigureAwait(false);
         }
 
         public async Task Handle(UserInformationReturned parameter)
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.Handlers
             }
 
             var payload = _serializer.GetPayload(parameter);
-            await AddEvent(parameter.Id, parameter.ProcessId, payload, "User information returned", parameter.Order);
+            await AddEvent(parameter.Id, parameter.ProcessId, payload, "User information returned", parameter.Order).ConfigureAwait(false);
         }
 
         private async Task AddEvent(string id, string processId, string content, string message, int order)
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 AggregateId = processId,
                 Payload = content,
                 Order = order
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             }
             
             // 4. If a user already exists with the same subject then ignore.
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject).ConfigureAwait(false);
             if (resourceOwner != null)
             {
                 return resourceOwner.Claims;
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 Claims = new List<Claim>(),
                 Password = _authenticateResourceOwnerService.GetHashedPassword(clearPassword)
             };
-            var claims = await _claimRepository.GetAllAsync();
+            var claims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
             foreach(var claim in claimsPrincipal.Claims.Where(c => claims.Contains(c.Type)))
             {
                 resourceOwner.Claims.Add(claim);
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 resourceOwner.Claims.Add(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject));
             }
 
-            await _resourceOwnerRepository.InsertAsync(resourceOwner);
+            await _resourceOwnerRepository.InsertAsync(resourceOwner).ConfigureAwait(false);
             return resourceOwner.Claims;
         }
     }

@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
                 authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -131,11 +131,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Generate token
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes);
-                await _grantedTokenRepository.InsertAsync(grantedToken);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client.ClientId, allowedTokenScopes).ConfigureAwait(false);
+                await _grantedTokenRepository.InsertAsync(grantedToken).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 

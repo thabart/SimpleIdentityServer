@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> Logout()
         {
             var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(Constants.CookieName);
+            await authenticationManager.SignOutAsync(Constants.CookieName).ConfigureAwait(false);
             return RedirectToAction("Index", "Authenticate");
         }
                 
@@ -90,12 +90,12 @@ namespace SimpleIdentityServer.Startup.Controllers
         
         public async Task<ActionResult> Index(string name)
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
                 !authenticatedUser.Identity.IsAuthenticated)
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View(new AuthorizeViewModel());
             }
 
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpPost]
         public async Task<ActionResult> LocalLogin(AuthorizeViewModel authorizeViewModel)
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity != null &&
                 authenticatedUser.Identity.IsAuthenticated)
@@ -120,13 +120,13 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             if (!ModelState.IsValid)
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View("Index", authorizeViewModel);
             }
 
             try
             {
-                var resourceOwner = await _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter());
+                var resourceOwner = await _authenticateActions.LocalUserAuthentication(authorizeViewModel.ToParameter()).ConfigureAwait(false);
                 var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
@@ -135,22 +135,22 @@ namespace SimpleIdentityServer.Startup.Controllers
                 var authenticationManager = this.GetAuthenticationManager();
                 if (resourceOwner.TwoFactorAuthentication == Core.Models.TwoFactorAuthentications.NONE)
                 {
-                    await SetLocalCookie(authenticationManager, claims);
+                    await SetLocalCookie(authenticationManager, claims).ConfigureAwait(false);
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
                     return RedirectToAction("Index", "User");
                 }
 
                 // 2.1 Store temporary information in cookie
-                await SetTwoFactorCookie(authenticationManager, claims);
+                await SetTwoFactorCookie(authenticationManager, claims).ConfigureAwait(false);
                 // 2.2. Send confirmation code
-                var code = await _authenticateActions.GenerateAndSendCode(subject);
+                var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 return RedirectToAction("SendCode");
             }
             catch (Exception exception)
             {
                 _simpleIdentityServerEventSource.Failure(exception.Message);
-                await TranslateView("en");
+                await TranslateView("en").ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 return View("Index", authorizeViewModel);
             }
@@ -168,7 +168,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             await HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties() 
             {
                 RedirectUri = redirectUrl
-            });
+            }).ConfigureAwait(false);
         }
         
         [HttpGet]
@@ -182,13 +182,13 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 1. Check if the user exists and insert it
-            var authenticatedUser = await this.GetAuthenticatedUserExternal();
-            var claims = await _authenticateActions.LoginCallback(authenticatedUser);
+            var authenticatedUser = await this.GetAuthenticatedUserExternal().ConfigureAwait(false);
+            var claims = await _authenticateActions.LoginCallback(authenticatedUser).ConfigureAwait(false);
 
             // 2. Set cookie
             var authManager = this.GetAuthenticationManager();
-            await SetLocalCookie(authManager, claims);
-            await authManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
+            await SetLocalCookie(authManager, claims).ConfigureAwait(false);
+            await authManager.SignOutAsync(Authentication.Middleware.Constants.CookieName).ConfigureAwait(false);
 
             // 3. Redirect to the profile
             return RedirectToAction("Index", "User");
@@ -198,7 +198,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> SendCode()
         {
             // 1. Retrieve user
-            var authenticatedUser = await this.GetAuthenticatedUser2F();
+            var authenticatedUser = await this.GetAuthenticatedUser2F().ConfigureAwait(false);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 2. Return translated view
-            await TranslateView(DefaultLanguage);
+            await TranslateView(DefaultLanguage).ConfigureAwait(false);
             return View();
         }
 
@@ -216,7 +216,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         public async Task<ActionResult> ResendCode()
         {
             // 1. Retrieve user
-            var authenticatedUser = await this.GetAuthenticatedUser2F();
+            var authenticatedUser = await this.GetAuthenticatedUser2F().ConfigureAwait(false);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
@@ -226,7 +226,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             // 2. Send the code
             var subject = authenticatedUser.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
-            var code = await _authenticateActions.GenerateAndSendCode(subject);
+            var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
             _simpleIdentityServerEventSource.GetConfirmationCode(code);
 
             // 3. Redirect to code view
@@ -244,12 +244,12 @@ namespace SimpleIdentityServer.Startup.Controllers
 
             if (!ModelState.IsValid)
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 return View(codeViewModel);
             }
 
             // 1. Check user is authenticated
-            var authenticatedUser = await this.GetAuthenticatedUser2F();
+            var authenticatedUser = await this.GetAuthenticatedUser2F().ConfigureAwait(false);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(
@@ -258,26 +258,26 @@ namespace SimpleIdentityServer.Startup.Controllers
             }
 
             // 2. Validate the code
-            if (!await _authenticateActions.ValidateCode(codeViewModel.Code))
+            if (!await _authenticateActions.ValidateCode(codeViewModel.Code).ConfigureAwait(false))
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("Code", "confirmation code is not valid");
                 _simpleIdentityServerEventSource.ConfirmationCodeNotValid(codeViewModel.Code);
                 return View(codeViewModel);
             }
 
             // 3. Remove the code
-            if (!await _authenticateActions.RemoveCode(codeViewModel.Code))
+            if (!await _authenticateActions.RemoveCode(codeViewModel.Code).ConfigureAwait(false))
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("Code", "an error occured while trying to remove the code");
                 return View(codeViewModel);
             }
 
             // 4. Authenticate the resource owner
             var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignOutAsync(Host.Constants.TwoFactorCookieName);
-            await SetLocalCookie(authenticationManager, authenticatedUser.Claims);
+            await authenticationManager.SignOutAsync(Host.Constants.TwoFactorCookieName).ConfigureAwait(false);
+            await SetLocalCookie(authenticationManager, authenticatedUser.Claims).ConfigureAwait(false);
             return RedirectToAction("Index", "User");
         }
         
@@ -293,21 +293,21 @@ namespace SimpleIdentityServer.Startup.Controllers
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var actionResult = await _authenticateActions.AuthenticateResourceOwnerOpenId(
                 request.ToParameter(),
                 authenticatedUser,
-                code);
+                code).ConfigureAwait(false);
             var result = this.CreateRedirectionFromActionResult(actionResult,
                 request);
             if (result != null)
             {
-                await LogAuthenticateUser(actionResult, request.ProcessId);
+                await LogAuthenticateUser(actionResult, request.ProcessId).ConfigureAwait(false);
                 return result;
             }
 
-            await TranslateView(request.UiLocales);
+            await TranslateView(request.UiLocales).ConfigureAwait(false);
             var viewModel = new AuthorizeOpenIdViewModel
             {
                 Code = code
@@ -341,19 +341,19 @@ namespace SimpleIdentityServer.Startup.Controllers
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
                 {
-                    await TranslateView(uiLocales);
+                    await TranslateView(uiLocales).ConfigureAwait(false);
                     return View("OpenId", authorizeOpenId);
                 }
 
                 // 4. Local authentication
                 var actionResult = await _authenticateActions.LocalOpenIdUserAuthentication(authorizeOpenId.ToParameter(),
                     request.ToParameter(),
-                    authorizeOpenId.Code);
+                    authorizeOpenId.Code).ConfigureAwait(false);
                 var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Authenticate the user by adding a cookie
                 var authenticationManager = this.GetAuthenticationManager();
-                await SetLocalCookie(authenticationManager, actionResult.Claims);
+                await SetLocalCookie(authenticationManager, actionResult.Claims).ConfigureAwait(false);
                 _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
                 // 6. Redirect the user agent
@@ -361,7 +361,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                     request);
                 if (result != null)
                 {
-                    await LogAuthenticateUser(actionResult.ActionResult, request.ProcessId);
+                    await LogAuthenticateUser(actionResult.ActionResult, request.ProcessId).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -371,7 +371,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
-            await TranslateView(uiLocales);
+            await TranslateView(uiLocales).ConfigureAwait(false);
             return View("OpenId", authorizeOpenId);
         }
         
@@ -397,7 +397,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             await this.HttpContext.Authentication.ChallengeAsync(provider, new AuthenticationProperties() 
             {
                 RedirectUri = redirectUrl
-            });
+            }).ConfigureAwait(false);
         }
         
         [HttpGet]
@@ -432,7 +432,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             }            
             
             // 4. Check if the user is authenticated
-            var authenticatedUser = await this.GetAuthenticatedUserExternal();
+            var authenticatedUser = await this.GetAuthenticatedUserExternal().ConfigureAwait(false);
             if (authenticatedUser == null ||
                 !authenticatedUser.Identity.IsAuthenticated ||
                 !(authenticatedUser.Identity is ClaimsIdentity)) {
@@ -450,15 +450,15 @@ namespace SimpleIdentityServer.Startup.Controllers
             var actionResult = await _authenticateActions.ExternalOpenIdUserAuthentication(
                 claims,
                 authorizationRequest.ToParameter(),
-                request);
+                request).ConfigureAwait(false);
 
             // 7. Store claims into new cookie
             if (actionResult.ActionResult != null)
             {
                 var authenticationManager = this.GetAuthenticationManager();
-                await SetLocalCookie(authenticationManager, actionResult.Claims);
-                await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName);
-                await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId);
+                await SetLocalCookie(authenticationManager, actionResult.Claims).ConfigureAwait(false);
+                await authenticationManager.SignOutAsync(Authentication.Middleware.Constants.CookieName).ConfigureAwait(false);
+                await LogAuthenticateUser(actionResult.ActionResult, authorizationRequest.ProcessId).ConfigureAwait(false);
                 return this.CreateRedirectionFromActionResult(actionResult.ActionResult,
                     authorizationRequest);
             }
@@ -479,7 +479,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 return;
             }
 
-            var evtAggregate = await GetLastEventAggregate(processId);
+            var evtAggregate = await GetLastEventAggregate(processId).ConfigureAwait(false);
             if (evtAggregate == null)
             {
                 return;
@@ -490,7 +490,7 @@ namespace SimpleIdentityServer.Startup.Controllers
 
         private async Task<EventAggregate> GetLastEventAggregate(string aggregateId)
         {
-            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId)).OrderByDescending(e => e.Order);
+            var events = (await _eventAggregateRepository.GetByAggregate(aggregateId).ConfigureAwait(false)).OrderByDescending(e => e.Order);
             if (events == null || !events.Any())
             {
                 return null;
@@ -513,7 +513,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 Core.Constants.StandardTranslationCodes.Code,
                 Core.Constants.StandardTranslationCodes.ConfirmCode,
                 Core.Constants.StandardTranslationCodes.SendConfirmationCode
-            });
+            }).ConfigureAwait(false);
 
             ViewBag.Translations = translations;
         }
@@ -528,7 +528,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 {
                     ExpiresUtc = DateTime.UtcNow.AddDays(7),
                     IsPersistent = false
-                });
+                }).ConfigureAwait(false);
         }
 
         private async Task SetTwoFactorCookie(AuthenticationManager authenticationManager, IEnumerable<Claim> claims)
@@ -536,12 +536,12 @@ namespace SimpleIdentityServer.Startup.Controllers
             var identity = new ClaimsIdentity(claims, Host.Constants.TwoFactorCookieName);
             var principal = new ClaimsPrincipal(identity);
             await authenticationManager.SignInAsync(Host.Constants.TwoFactorCookieName,
-                    principal,
-                    new AuthenticationProperties
-                    {
-                        ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
-                        IsPersistent = false
-                    });
+                principal,
+                new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(5),
+                    IsPersistent = false
+                }).ConfigureAwait(false);
         }
 
         #endregion

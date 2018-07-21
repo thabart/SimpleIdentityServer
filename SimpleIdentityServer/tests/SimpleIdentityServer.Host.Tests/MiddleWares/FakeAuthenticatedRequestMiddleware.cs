@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
             }, TestingCookieAuthentication);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             context.User = claimsPrincipal;
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
+            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshToken);
+            var grantedToken = await _grantedTokenRepository.GetTokenByRefreshTokenAsync(refreshToken).ConfigureAwait(false);
             return CheckGrantedToken(grantedToken);
         }
 

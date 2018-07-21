@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Startup.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Startup.Controllers
                 throw new ArgumentNullException(nameof(updateResourceOwnerViewModel));
             }
 
-            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName);
+            var authenticatedUser = await this.GetAuthenticatedUser(Constants.CookieName).ConfigureAwait(false);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity.IsAuthenticated)
             {
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Startup.Controllers
             {
                 Login = updateResourceOwnerViewModel.Login,
                 Password = updateResourceOwnerViewModel.Password
-            });
+            }).ConfigureAwait(false);
 
             return RedirectToAction("Index", "Authenticate");
         }

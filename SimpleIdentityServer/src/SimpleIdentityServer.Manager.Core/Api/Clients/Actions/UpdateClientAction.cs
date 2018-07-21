@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
                 throw new ArgumentNullException(nameof(updateClientParameter));
             }
 
-            var existedClient = await _clientRepository.GetClientByIdAsync(updateClientParameter.ClientId);
+            var existedClient = await _clientRepository.GetClientByIdAsync(updateClientParameter.ClientId).ConfigureAwait(false);
             if (existedClient == null)
             {
                 throw new IdentityServerManagerException(ErrorCodes.InvalidParameterCode,
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Clients.Actions
             {
                 Name = s
             }).ToList();
-            return await _clientRepository.UpdateAsync(client);
+            return await _clientRepository.UpdateAsync(client).ConfigureAwait(false);
         }
     }
 }

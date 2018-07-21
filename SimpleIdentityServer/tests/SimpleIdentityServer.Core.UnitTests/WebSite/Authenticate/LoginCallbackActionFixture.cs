@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _loginCallbackAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _loginCallbackAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _loginCallbackAction.Execute(emptyClaimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _loginCallbackAction.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _loginCallbackAction.Execute(claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _loginCallbackAction.Execute(claimsPrincipal)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _loginCallbackAction.Execute(claimsPrincipal);
+            await _loginCallbackAction.Execute(claimsPrincipal).ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()), Times.Never);
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             _claimRepositoryStub.Setup(c => c.GetAllAsync()).Returns(Task.FromResult(claimNames));
 
             // ACT
-            await _loginCallbackAction.Execute(claimsPrincipal);
+            await _loginCallbackAction.Execute(claimsPrincipal).ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));

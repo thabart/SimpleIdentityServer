@@ -62,9 +62,9 @@ namespace SimpleIdentityServer.Client.Operations
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
-            var result = await httpClient.SendAsync(request);
+            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
-            var content = await result.Content.ReadAsStringAsync();
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<Core.Common.DTOs.ClientRegistrationResponse>(content);
         }
     }

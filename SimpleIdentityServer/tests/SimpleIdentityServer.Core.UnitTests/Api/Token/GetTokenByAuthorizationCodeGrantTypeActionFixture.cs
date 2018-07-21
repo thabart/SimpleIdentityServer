@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByAuthorizationCodeGrantTypeAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByAuthorizationCodeGrantTypeAction.Execute(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => 
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
 
@@ -108,7 +108,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationCodeIsNotCorrect);
         }
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheCodeVerifierIsNotCorrect);
         }
@@ -177,7 +177,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == 
                 string.Format(ErrorDescriptions.TheAuthorizationCodeHasNotBeenIssuedForTheGivenClientId,
@@ -216,7 +216,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheRedirectionUrlIsNotTheSame);
         }
@@ -255,7 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationCodeIsObsolete);
         }
@@ -297,7 +297,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() =>
-                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null));
+                _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidGrant);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.RedirectUrlIsNotValid, "redirectUri"));
         }
@@ -362,7 +362,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
+            await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _clientHelper.Verify(j => j.GenerateIdTokenAsync(It.IsAny<Client>(), It.IsAny<JwsPayload>()));
@@ -424,7 +424,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken)); ;
 
             // ACT
-            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null);
+            var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _grantedTokenRepositoryFake.Verify(g => g.InsertAsync(grantedToken));

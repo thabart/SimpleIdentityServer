@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(login));
             }
 
-            return await _resourceOwnerRepository.GetAsync(login);
+            return await _resourceOwnerRepository.GetAsync(login).ConfigureAwait(false);
         }
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return await _resourceOwnerRepository.GetAsync(login, GetHashedPassword(password));
+            return await _resourceOwnerRepository.GetAsync(login, GetHashedPassword(password)).ConfigureAwait(false);
         }
 
         public string GetHashedPassword(string password)

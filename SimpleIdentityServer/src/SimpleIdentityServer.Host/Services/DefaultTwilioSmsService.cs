@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Host.Services
                 throw new ArgumentException("the phone number is missing");
             }
 
-            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl);
+            var settings = await _settingClient.GetSettingsByResolving(_configurationUrl).ConfigureAwait(false);
             if (!_settingNames.All(k => settings.Any(s => s.Key == k)))
             {
                 throw new InvalidOperationException("there are one or more missing settings");
@@ -113,10 +113,10 @@ namespace SimpleIdentityServer.Host.Services
             var dic = settings.ToDictionary(s => s.Key);
             await SendMessage(new TwilioSmsCredentials
             {
-             AccountSid = dic[TwilioAccountSid].Value,
-             AuthToken = dic[TwilioAuthToken].Value,
-             FromNumber = dic[TwilioFromNumber].Value,
-            }, phoneNumberClaim.Value, string.Format(dic[TwilioMessage].Value, code));
+                AccountSid = dic[TwilioAccountSid].Value,
+                AuthToken = dic[TwilioAuthToken].Value,
+                FromNumber = dic[TwilioFromNumber].Value,
+            }, phoneNumberClaim.Value, string.Format(dic[TwilioMessage].Value, code)).ConfigureAwait(false);
         }
 
         private async Task<bool> SendMessage(

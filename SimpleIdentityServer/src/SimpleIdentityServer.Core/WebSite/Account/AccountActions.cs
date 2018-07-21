@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.Account
 
         public async Task AddResourceOwner(AddUserParameter addUserParameter)
         {
-            await _addResourceOwnerAction.Execute(addUserParameter);
+            await _addResourceOwnerAction.Execute(addUserParameter).ConfigureAwait(false);
         }
 
         #endregion

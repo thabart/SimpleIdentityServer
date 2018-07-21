@@ -65,33 +65,33 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             switch(deserializedParameter.ElFinderParameter.Command)
             {
                 case ElFinderCommands.Open:
-                    return new OkObjectResult(await ExecuteOpen(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteOpen(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Parents:
-                    return new OkObjectResult(await ExecuteParents(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteParents(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Mkdir:
-                    return new OkObjectResult(await ExecuteMkdir(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteMkdir(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Rm:
-                    return new OkObjectResult(await ExecuteRm(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteRm(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Rename:
-                    return new OkObjectResult(await ExecuteRename(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteRename(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Mkfile:
-                    return new OkObjectResult(await ExecuteMkfile(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteMkfile(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Tree:
-                    return new OkObjectResult(await ExecuteTree(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteTree(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Duplicate:
-                    return new OkObjectResult(await ExecuteDuplicate(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteDuplicate(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Paste:
-                    return new OkObjectResult(await ExecutePaste(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecutePaste(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Ls:
-                    return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteLs(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Search:
-                    return new OkObjectResult(await ExecuteSearch(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteSearch(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Access:
-                    return new OkObjectResult(await ExecuteAccess(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteAccess(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.Perms:
-                    return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecutePerms(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
                 case ElFinderCommands.MkPerm:
-                    return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter));
+                    return new OkObjectResult(await ExecuteMkPerm(deserializedParameter.ElFinderParameter).ConfigureAwait(false));
             }
 
             return new OkResult();
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             AssetAggregate rootDirectory = null;
             if (!string.IsNullOrWhiteSpace(elFinderParameter.Target)) // Search the target.
             {
-                rootDirectory = await _assetRepository.Get(elFinderParameter.Target);
+                rootDirectory = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             }
 
             if (elFinderParameter.Init || rootDirectory == null) // Returns the default root directory of the default volume.
@@ -125,7 +125,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     AssetLevelType = AssetLevelTypes.ROOT,
                     IsDefaultWorkingDirectory = true
                 };
-                rootDirectory = (await _assetRepository.Search(searchRootParameter)).First();
+                rootDirectory = (await _assetRepository.Search(searchRootParameter).ConfigureAwait(false)).First();
             }
 
             assets.Add(rootDirectory);
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                     AssetLevelType = AssetLevelTypes.ROOT,
                     ExcludedHashLst = assets.Select(a => a.Hash)
                 };
-                var searchResult = await _assetRepository.Search(searchRootParameter);
+                var searchResult = await _assetRepository.Search(searchRootParameter).ConfigureAwait(false);
                 foreach(var record in searchResult)
                 {
                     assets.Add(record);
@@ -153,7 +153,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 }
                 if (!string.IsNullOrWhiteSpace(elFinderParameter.Target)) // Search the parents.
                 {
-                    var parents = await _assetRepository.GetAllParents(elFinderParameter.Target);
+                    var parents = await _assetRepository.GetAllParents(elFinderParameter.Target).ConfigureAwait(false);
                     foreach(var parent in parents)
                     {
                         if (!assets.Any(a => a.Hash == parent.Hash))
@@ -206,13 +206,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(target);
+            var asset = await _assetRepository.Get(target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            var parents = await _assetRepository.GetAllParents(target);
+            var parents = await _assetRepository.GetAllParents(target).ConfigureAwait(false);
             var files = new JArray();
             foreach (var parent in parents)
             {
@@ -237,7 +237,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(target);
+            var asset = await _assetRepository.Get(target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -257,7 +257,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 MimeType=  Constants.MimeNames.Directory
             };
 
-            if (!(await _assetRepository.Add(new[] { record })))
+            if (!(await _assetRepository.Add(new[] { record }).ConfigureAwait(false)))
             {
                 return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
             }
@@ -279,14 +279,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var assets = await _assetRepository.Search(new SearchAssetsParameter
             {
                 HashLst = targets
-            });
+            }).ConfigureAwait(false);
 
             if (assets.Count() != targets.Count())
             {
                 return new ErrorResponse(Constants.Errors.ErrTargetsNotFound).GetJson();
             }
 
-            if (!await _assetRepository.Remove(targets))
+            if (!await _assetRepository.Remove(targets).ConfigureAwait(false))
             {
                 return new ErrorResponse(Constants.Errors.ErrRemoveAssets).GetJson();
             }
@@ -310,16 +310,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(target); // 1. Check the asset exists.
+            var asset = await _assetRepository.Get(target).ConfigureAwait(false); // 1. Check the asset exists.
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            var children = await _assetRepository.GetAllChildren(target); // 2. Get all the children & remove the assets.
+            var children = await _assetRepository.GetAllChildren(target).ConfigureAwait(false); // 2. Get all the children & remove the assets.
             var assetIds = new List<string> { asset.Hash };
             assetIds.AddRange(children.Select(c => c.Hash));
-            if (!await _assetRepository.Remove(assetIds))
+            if (!await _assetRepository.Remove(assetIds).ConfigureAwait(false))
             {
                 return new ErrorResponse(Constants.Errors.ErrRemoveAssets).GetJson();
             }
@@ -327,7 +327,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             Rename(asset, elFinderParameter.Name, children);
             var newAssets = new List<AssetAggregate> { asset };
             newAssets.AddRange(children);
-            if (!await _assetRepository.Add(newAssets))
+            if (!await _assetRepository.Add(newAssets).ConfigureAwait(false))
             {
                 return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
             }
@@ -358,7 +358,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(target);
+            var asset = await _assetRepository.Get(target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -378,7 +378,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 MimeType = Constants.MimeNames.TextPlain
             };
 
-            if (!(await _assetRepository.Add(new[] { record })))
+            if (!(await _assetRepository.Add(new[] { record }).ConfigureAwait(false)))
             {
                 return new ErrorResponse(Constants.Errors.ErrInsertAsset).GetJson();
             }
@@ -401,7 +401,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var targetedAsset = await _assetRepository.Get(elFinderParameter.Target);
+            var targetedAsset = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             if (targetedAsset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -414,7 +414,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 assets.Add(child);
             }
 
-            var parents = await _assetRepository.GetAllParents(elFinderParameter.Target);
+            var parents = await _assetRepository.GetAllParents(elFinderParameter.Target).ConfigureAwait(false);
             foreach (var parent in parents)
             {
                 if (!assets.Any(a => a.Hash == parent.Hash))
@@ -455,7 +455,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var targetAssets = await _assetRepository.Search(new SearchAssetsParameter
             {
                 HashLst = elFinderParameter.Targets
-            });
+            }).ConfigureAwait(false);
 
             if (targetAssets.Count() != elFinderParameter.Targets.Count())
             {
@@ -468,7 +468,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 tasks.Add(Duplicate(targetAsset));
             }
 
-            var result = await Task.WhenAll(tasks);
+            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
             if (result.Any(b => !b.Key))
             {
                 return new ErrorResponse(Constants.Errors.ErrDuplicateAsset).GetJson();
@@ -510,13 +510,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Targets)).GetJson();
             }
 
-            var sourceAsset = await _assetRepository.Get(elFinderParameter.Source);
+            var sourceAsset = await _assetRepository.Get(elFinderParameter.Source).ConfigureAwait(false);
             if (sourceAsset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
             }
 
-            var destinationAsset = await _assetRepository.Get(elFinderParameter.Destination);
+            var destinationAsset = await _assetRepository.Get(elFinderParameter.Destination).ConfigureAwait(false);
             if (destinationAsset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -526,7 +526,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var assets = await _assetRepository.Search(new SearchAssetsParameter
             {
                 HashLst = elFinderParameter.Targets
-            });
+            }).ConfigureAwait(false);
             if (assets.Count() != elFinderParameter.Targets.Count())
             {
                 return new ErrorResponse(Constants.Errors.ErrTargetsNotFound).GetJson();
@@ -538,7 +538,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 tasks.Add(Copy(asset, sourceAsset, destinationAsset, elFinderParameter.Cut));
             }
 
-            var tasksResult = await Task.WhenAll(tasks);
+            var tasksResult = await Task.WhenAll(tasks).ConfigureAwait(false);
             if (tasksResult.Any(t => t.IsError))
             {
                 if (elFinderParameter.Cut)
@@ -584,7 +584,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var targetAsset = await _assetRepository.Get(elFinderParameter.Target);
+            var targetAsset = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             if (targetAsset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -611,13 +611,13 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             IEnumerable<AssetAggregate> assets;
             if (!string.IsNullOrWhiteSpace(target))
             {
-                var targetAsset = await _assetRepository.Get(target);
+                var targetAsset = await _assetRepository.Get(target).ConfigureAwait(false);
                 if (targetAsset == null)
                 {
                     return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
                 }
 
-                var children = await _assetRepository.GetAllChildren(target);
+                var children = await _assetRepository.GetAllChildren(target).ConfigureAwait(false);
                 assets = children.Where(c => c.Name.Contains(elFinderParameter.Q));
             }
             else
@@ -625,7 +625,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 assets = await _assetRepository.Search(new SearchAssetsParameter
                 {
                     Names = new[] { elFinderParameter.Q }
-                });
+                }).ConfigureAwait(false);
             }
 
             var files = new JArray();
@@ -655,7 +655,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            var asset = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -678,7 +678,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Target)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            var asset = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -686,16 +686,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
             var openIdWellKnownConfigurationUrl = GetWellKnownOpenIdConfigurationUrl();
             var umaWellKnownConfigurationUrl = GetWellKnownUmaConfigurationUrl();
-            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes).ConfigureAwait(false);
             Func<Task<KeyValuePair<string, JArray>>> getDiscoveryInformation = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
             {
-                var openIdConfiguration = await _identityServerClientFactory.CreateDiscoveryClient().GetDiscoveryInformationAsync(openIdWellKnownConfigurationUrl);
+                var openIdConfiguration = await _identityServerClientFactory.CreateDiscoveryClient().GetDiscoveryInformationAsync(openIdWellKnownConfigurationUrl).ConfigureAwait(false);
                 return new KeyValuePair<string, JArray>(Constants.ElFinderResponseNames.OpenIdClaims, new JArray(openIdConfiguration.ClaimsSupported));
             });
             Func<Task<KeyValuePair<string, JArray>>> getOpenIdClients = new Func<Task<KeyValuePair<string, JArray>>>(async () =>
             {
                 var jArr = new JArray();
-                var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
+                var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken).ConfigureAwait(false);
                 foreach (var openIdClient in openIdClients)
                 {
                     var record = new JObject();
@@ -713,7 +713,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 if (asset.AuthorizationPolicies != null && asset.AuthorizationPolicies.Any(a => a.IsOwner))
                 {
                     var authorizationPolicy = asset.AuthorizationPolicies.First(a => a.IsOwner).AuthPolicyId;
-                    policyResponse = await _identityServerUmaClientFactory.GetPolicyClient().GetByResolution(authorizationPolicy, umaWellKnownConfigurationUrl, grantedToken.AccessToken); // Retrieve the authorization policy.
+                    policyResponse = await _identityServerUmaClientFactory.GetPolicyClient().GetByResolution(authorizationPolicy, umaWellKnownConfigurationUrl, grantedToken.AccessToken).ConfigureAwait(false); // Retrieve the authorization policy.
                 }
 
                 var jArrPolicyRules = new JArray();
@@ -749,7 +749,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 getOpenIdClients(),
                 getAuthPolicyRules()
             };
-            var tasksResult = await Task.WhenAll(tasks);
+            var tasksResult = await Task.WhenAll(tasks).ConfigureAwait(false);
             var result = new JObject();
             var permissions = new JArray(new List<string> { "read", "write", "execute" });
             foreach(var kvp in tasksResult)
@@ -778,7 +778,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 return new ErrorResponse(string.Format(Constants.Errors.ErrParamNotSpecified, Constants.ElFinderDtoNames.Rules)).GetJson();
             }
 
-            var asset = await _assetRepository.Get(elFinderParameter.Target);
+            var asset = await _assetRepository.Get(elFinderParameter.Target).ConfigureAwait(false);
             if (asset == null)
             {
                 return new ErrorResponse(Constants.ElFinderErrors.ErrTrgFolderNotFound).GetJson();
@@ -838,16 +838,16 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
             var openIdWellKnownConfigurationUrl = GetWellKnownOpenIdConfigurationUrl();
             var umaWellKnownConfigurationUrl = GetWellKnownUmaConfigurationUrl();
-            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(asset.ResourceId)) // CREATE AN UMA RESOURCE.
             {
                 var addedResource = await _identityServerUmaClientFactory.GetResourceSetClient().AddByResolution(new PostResourceSet
                 {
                     Name = asset.Name,
                     Scopes = new List<string> { "read", "write", "execute" }
-                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken).ConfigureAwait(false);
                 asset.ResourceId = addedResource.Id;
-                if (!await _assetRepository.Update(new[] { asset }))
+                if (!await _assetRepository.Update(new[] { asset }).ConfigureAwait(false))
                 {
                     // TODO : RETURNS AN ERROR.
                 }
@@ -872,14 +872,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                             IsResourceOwnerConsentNeeded = false
                         }
                     ).ToList()
-                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken).ConfigureAwait(false);
                 asset.AuthorizationPolicies.Add(new AssetAggregateAuthPolicy
                 {
                     IsOwner = true,
                     AuthPolicyId = addPolicyResponse.PolicyId
                 });
                 var lstAssets = new List<AssetAggregate> { asset };
-                var children = await _assetRepository.GetAllChildren(asset.Hash);
+                var children = await _assetRepository.GetAllChildren(asset.Hash).ConfigureAwait(false);
                 foreach(var child in children)
                 {
                     child.AuthorizationPolicies.Add(new AssetAggregateAuthPolicy
@@ -890,7 +890,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 }
 
                 lstAssets.AddRange(children);
-                if (!await _assetRepository.Update(lstAssets))
+                if (!await _assetRepository.Update(lstAssets).ConfigureAwait(false))
                 {
                     // TODO : Returns an error.
                 }
@@ -916,7 +916,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                             IsResourceOwnerConsentNeeded = false
                         }
                     ).ToList()
-                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken);
+                }, umaWellKnownConfigurationUrl, grantedToken.AccessToken).ConfigureAwait(false);
             }
             
             // TODO : Deserialize the rules & do the necessary to insert the permissions.
@@ -935,8 +935,8 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
         /// <returns></returns>
         private async Task<JObject> ExecuteOpenIdClients(ElFinderParameter elFinderParameter)
         {
-            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes);
-            var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken);
+            var grantedToken = await GetToken(_resourceManagerAccessToken, _scopes).ConfigureAwait(false);
+            var openIdClients = await _openIdManagerClientFactory.GetOpenIdsClient().ResolveGetAll(new Uri(GetWellKnownOpenIdManagerUrl()), grantedToken.AccessToken).ConfigureAwait(false);
             var jArr = new JArray();
             foreach(var openIdClient in openIdClients)
             {
@@ -956,7 +956,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
         private async Task<PasteOperation> Copy(AssetAggregate asset, AssetAggregate source, AssetAggregate target, bool isCut = false)
         {
-            var children = await _assetRepository.GetAllChildren(asset.Hash);
+            var children = await _assetRepository.GetAllChildren(asset.Hash).ConfigureAwait(false);
             var hashLst = new List<string> { asset.Hash };
             hashLst.AddRange(children.Select(c => c.Hash));
             var previousPath = target.Path;
@@ -977,14 +977,14 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
 
             var newAssets = new List<AssetAggregate> { asset };
             newAssets.AddRange(children);
-            if (!await _assetRepository.Add(newAssets))
+            if (!await _assetRepository.Add(newAssets).ConfigureAwait(false))
             {
                 return new PasteOperation(true);
             }
 
             if (isCut)
             {
-                if (!await _assetRepository.Remove(hashLst))
+                if (!await _assetRepository.Remove(hashLst).ConfigureAwait(false))
                 {
                     return new PasteOperation(true);
                 }
@@ -999,7 +999,7 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             var clientId = GetClientId();
             var clientSecret = GetClientSecret();
             var wellKnownConfiguration = GetWellKnownOpenIdConfigurationUrl();
-            var storageRecord = await _storageHelper.GetAsync<GrantedToken>(key);
+            var storageRecord = await _storageHelper.GetAsync<GrantedToken>(key).ConfigureAwait(false);
             var clientSelector = _identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretPostAuth(clientId, clientSecret);
             if (storageRecord != null && storageRecord.Obj != null)
@@ -1009,12 +1009,12 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
                 if (currentDate >= expirationDate) // Check expiration.
                 {
                     var refreshToken = storageRecord.Obj.RefreshToken;
-                    await _storageHelper.SetAsync<GrantedToken>(key, null);
+                    await _storageHelper.SetAsync<GrantedToken>(key, null).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(storageRecord.Obj.RefreshToken)) // Get an access token by using the refresh token.
                     {
                         try
                         {
-                            grantedToken = await clientSelector.UseRefreshToken(storageRecord.Obj.RefreshToken).ResolveAsync(wellKnownConfiguration);
+                            grantedToken = await clientSelector.UseRefreshToken(storageRecord.Obj.RefreshToken).ResolveAsync(wellKnownConfiguration).ConfigureAwait(false);
                         }
                         catch (Exception) { }
                     }
@@ -1033,18 +1033,18 @@ namespace SimpleIdentityServer.ResourceManager.API.Host.Controllers
             grantedToken = await _identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretPostAuth(clientId, clientSecret)
                 .UseClientCredentials(scopes.ToArray())
-                .ResolveAsync(wellKnownConfiguration);
-            await _storageHelper.SetAsync(key, grantedToken);
+                .ResolveAsync(wellKnownConfiguration).ConfigureAwait(false);
+            await _storageHelper.SetAsync(key, grantedToken).ConfigureAwait(false);
             return grantedToken;
         }
 
         private async Task<KeyValuePair<bool, IEnumerable<AssetAggregate>>> Duplicate(AssetAggregate asset)
         {
-            var children = await _assetRepository.GetAllChildren(asset.Hash);
+            var children = await _assetRepository.GetAllChildren(asset.Hash).ConfigureAwait(false);
             Rename(asset, asset.Name.Split('_').First() + "_" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), children);
             var newAssets = new List<AssetAggregate> { asset };
             newAssets.AddRange(children);
-            if (!await _assetRepository.Add(newAssets))
+            if (!await _assetRepository.Add(newAssets).ConfigureAwait(false))
             {
                 return new KeyValuePair<bool, IEnumerable<AssetAggregate>>(false, null);
             }

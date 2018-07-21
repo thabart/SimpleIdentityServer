@@ -55,7 +55,7 @@ namespace IdentityServer4.EntityFramework
 
                 try
                 {
-                    await Task.Delay(interval, cancellationToken);
+                    await Task.Delay(interval, cancellationToken).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -69,7 +69,7 @@ namespace IdentityServer4.EntityFramework
                     break;
                 }
 
-                await ClearTokens();
+                await ClearTokens().ConfigureAwait(false);
             }
         }
 
@@ -90,7 +90,7 @@ namespace IdentityServer4.EntityFramework
 
                     context.PersistedGrants.RemoveRange(expired);
 
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
             catch (Exception)

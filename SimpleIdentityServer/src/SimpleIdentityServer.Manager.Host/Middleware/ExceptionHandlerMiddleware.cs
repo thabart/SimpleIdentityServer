@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Manager.Host.Middleware
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";
                 var serializedErrorResponse = errorResponse.SerializeWithDataContract();
-                await context.Response.WriteAsync(serializedErrorResponse);
+                await context.Response.WriteAsync(serializedErrorResponse).ConfigureAwait(false);
             }
         }
 

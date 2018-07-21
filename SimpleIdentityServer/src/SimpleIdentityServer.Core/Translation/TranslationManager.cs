@@ -54,11 +54,11 @@ namespace SimpleIdentityServer.Core.Translation
                 throw new ArgumentNullException("translationCodes");
             }
 
-            var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages);
+            var preferredLanguage = await GetPreferredLanguage(concatenateListOfCodeLanguages).ConfigureAwait(false);
             var result = new Dictionary<string, string>();
             foreach(var translationCode in translationCodes)
             {
-                var record = await _translationRepository.GetAsync(preferredLanguage, translationCode);
+                var record = await _translationRepository.GetAsync(preferredLanguage, translationCode).ConfigureAwait(false);
                 if (record != null)
                 {
                     result.Add(record.Code, record.Value);
@@ -75,15 +75,15 @@ namespace SimpleIdentityServer.Core.Translation
         {
             if (string.IsNullOrWhiteSpace(concatenateListOfCodeLanguages))
             {
-                return await _configurationService.DefaultLanguageAsync();
+                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
             }
 
             var listOfCodeLanguages = concatenateListOfCodeLanguages.Split(' ');
-            var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync();
+            var supportedCodeLanguages = await _translationRepository.GetLanguageTagsAsync().ConfigureAwait(false);
             if (listOfCodeLanguages == null || !listOfCodeLanguages.Any() ||
                 supportedCodeLanguages == null || !supportedCodeLanguages.Any())
             {
-                return await _configurationService.DefaultLanguageAsync();
+                return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
             }
 
             foreach (var codeLanguage in listOfCodeLanguages)
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.Translation
                 }
             }
 
-            return await _configurationService.DefaultLanguageAsync();
+            return await _configurationService.DefaultLanguageAsync().ConfigureAwait(false);
         }
     }
 }

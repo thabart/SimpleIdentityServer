@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
         public async Task<string> Execute(string clientId, AddPermissionParameter addPermissionParameter)
         {
-            var result = await Execute(clientId, new[] { addPermissionParameter });
+            var result = await Execute(clientId, new[] { addPermissionParameter }).ConfigureAwait(false);
             return result.First();
         }
 
@@ -79,8 +79,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             var json = addPermissionParameters == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameters);
             _umaServerEventSource.StartAddPermission(json);
 
-            await CheckAddPermissionParameter(addPermissionParameters);
-            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
+            await CheckAddPermissionParameter(addPermissionParameters).ConfigureAwait(false);
+            var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime().ConfigureAwait(false);
             var tickets = new List<Ticket>();
             foreach(var addPermissionParameter in addPermissionParameters)
             {
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             
             await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.AtLeastOneTicketCannotBeInserted,
-                () => _ticketRepository.Insert(tickets));
+                () => _ticketRepository.Insert(tickets)).ConfigureAwait(false);
             _umaServerEventSource.FinishAddPermission(json);
             return tickets.Select(t => t.Id);
         }
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             // 1. Get resource sets.
             var resourceSets = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
-                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId)));
+                () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId))).ConfigureAwait(false);
 
             // 2. Check parameters & scope exist.
             foreach (var addPermissionParameter in addPermissionParameters)

@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Configuration.Middleware
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Configuration.Middleware
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Response.ContentType = "application/json";
                 var serializedErrorResponse = errorResponse.SerializeWithDataContract();
-                await context.Response.WriteAsync(serializedErrorResponse);
+                await context.Response.WriteAsync(serializedErrorResponse).ConfigureAwait(false);
             }
         }
     }

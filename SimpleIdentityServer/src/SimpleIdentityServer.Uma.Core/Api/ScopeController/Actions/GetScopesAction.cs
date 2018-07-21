@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
         {
             try
             {
-                var scopes = await _scopeRepository.GetAll();
+                var scopes = await _scopeRepository.GetAll().ConfigureAwait(false);
                 return scopes.Select(s => s.Id);
             }
             catch (Exception ex)

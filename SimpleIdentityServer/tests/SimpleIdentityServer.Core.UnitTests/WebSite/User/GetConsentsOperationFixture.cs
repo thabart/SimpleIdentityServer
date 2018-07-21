@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getConsentsOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(consents));
 
             // ACT
-            var result = await _getConsentsOperation.Execute(claimsPrincipal);
+            var result = await _getConsentsOperation.Execute(claimsPrincipal).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             {
                 Name = name,
                 CallbackPath = "callback_path"
-            }));
+            })).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalErrorCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheAuthenticationProviderAlreadyExists, name));
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             {
                 Name = name,
                 CallbackPath = "callback_path"
-            }) as StatusCodeResult;
+            }).ConfigureAwait(false) as StatusCodeResult;
 
             // ASSERTS
             Assert.NotNull(result);
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
             {
                 Name = name,
                 CallbackPath = "callback_path"
-            }) as StatusCodeResult;
+            }).ConfigureAwait(false) as StatusCodeResult;
 
             // ASSERTS
             Assert.NotNull(result);

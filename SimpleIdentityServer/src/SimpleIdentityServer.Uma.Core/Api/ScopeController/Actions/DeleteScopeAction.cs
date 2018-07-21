@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
             Scope scope = null;
             try
             {
-                scope = await _scopeRepository.Get(scopeId);
+                scope = await _scopeRepository.Get(scopeId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ScopeController.Actions
 
             try
             {
-                await _scopeRepository.Delete(scopeId);
+                await _scopeRepository.Delete(scopeId).ConfigureAwait(false);
                 _umaServerEventSource.FinishToRemoveScope(scopeId);
                 return true;
             }

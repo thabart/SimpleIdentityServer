@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(id);
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPolicyStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPolicyStoreName + id).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -60,14 +60,14 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var result = await _policyActions.GetPolicy(id);
+            var result = await _policyActions.GetPolicy(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundPolicy();
             }
 
             var content = result.ToResponse();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id).ConfigureAwait(false);
             return new OkObjectResult(content);
         }
 
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetPolicies()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -83,8 +83,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var policies = await _policyActions.GetPolicies();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
+            var policies = await _policyActions.GetPolicies().ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName).ConfigureAwait(false);
             return new OkObjectResult(policies);
         }
 
@@ -98,13 +98,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(putPolicy));
             }
 
-            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter());
+            var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter()).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + putPolicy.PolicyId, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + putPolicy.PolicyId, false).ConfigureAwait(false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
         
@@ -126,13 +126,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 PolicyId = id,
                 ResourceSets = postAddResourceSet.ResourceSets
-            });
+            }).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false).ConfigureAwait(false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -150,13 +150,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId);
+            var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false).ConfigureAwait(false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -169,13 +169,13 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(postPolicy));
             }
 
-            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter());
+            var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter()).ConfigureAwait(false);
             var content = new AddPolicyResponse
             {
                 PolicyId = policyId
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false).ConfigureAwait(false);
             return new ObjectResult(content)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -191,14 +191,14 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var isPolicyExists = await _policyActions.DeletePolicy(id);
+            var isPolicyExists = await _policyActions.DeletePolicy(id).ConfigureAwait(false);
             if (!isPolicyExists)
             {
                 return GetNotFoundPolicy();
             }
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false).ConfigureAwait(false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 

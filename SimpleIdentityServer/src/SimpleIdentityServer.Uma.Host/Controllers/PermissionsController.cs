@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameter = postPermission.ToParameter();
             var clientId = this.GetClientId();
-            var ticketId = await _permissionControllerActions.Add(parameter, clientId);
+            var ticketId = await _permissionControllerActions.Add(parameter, clientId).ConfigureAwait(false);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             var parameters = postPermissions.Select(p => p.ToParameter());
             var clientId = this.GetClientId();
-            var ticketIds = await _permissionControllerActions.Add(parameters, clientId);
+            var ticketIds = await _permissionControllerActions.Add(parameters, clientId).ConfigureAwait(false);
             var result = new AddPermissionsResponse
             {
                 TicketIds = ticketIds

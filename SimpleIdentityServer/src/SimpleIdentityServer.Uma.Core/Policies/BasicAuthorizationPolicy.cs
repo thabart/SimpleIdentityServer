@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             AuthorizationPolicyResult result = null;
             foreach (var rule in authorizationPolicy.Rules)
             {
-                result = await ExecuteAuthorizationPolicyRule(validTicket, rule, claimTokenParameters);
+                result = await ExecuteAuthorizationPolicyRule(validTicket, rule, claimTokenParameters).ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameters);
+            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameters).ConfigureAwait(false);
             if (claimAuthorizationResult != null
                 && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var idToken = claimTokenParameters.First(c => c.Format == IdTokenType);
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken.Token).ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult

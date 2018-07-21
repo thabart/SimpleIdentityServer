@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync();
+            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync().ConfigureAwait(false);
             var accessTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             return new GrantedToken

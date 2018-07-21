@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var firstResult = await _usersClient.AddUser(baseUrl)
                 .SetCommonAttributes("external_id")
                 .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "username"))
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(firstResult);
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Partial update user
             var secondResult = await _usersClient.PartialUpdateUser(baseUrl, id)
                 .AddOperation(patchOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(secondResult);
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 .SetCommonAttributes("new_external_id")
                 .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "other_username"))
                 .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.Active, "false"))
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(thirdResult);
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Add emails to the user
             var fourthResult = await _usersClient.PartialUpdateUser(baseUrl, id)
                 .AddOperation(addEmailsOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(fourthResult);
@@ -117,9 +117,9 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             for (int i = 0; i < 10; i++)
             {
                 await _usersClient.AddUser(baseUrl)
-                   .SetCommonAttributes(Guid.NewGuid().ToString())
-                   .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, Guid.NewGuid().ToString()))
-                   .Execute();
+                    .SetCommonAttributes(Guid.NewGuid().ToString())
+                    .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, Guid.NewGuid().ToString()))
+                    .Execute().ConfigureAwait(false);
             }
 
             // ACT : Get 10 users
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             {
                 StartIndex = 1,
                 Count = 10
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(sixResult);
@@ -138,13 +138,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             {
                 Filter = "emails[type pr]",
                 Attributes = new[] { "emails.type", "emails.value", "emails.display", "userName" }
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(sevenResult);
 
             // ACT : Remove the user
-            var eightResult = await _usersClient.DeleteUser(baseUrl, id);
+            var eightResult = await _usersClient.DeleteUser(baseUrl, id).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(eightResult);

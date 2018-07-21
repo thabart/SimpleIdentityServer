@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => null);
 
             // ACT
-            var result = await _jwtParser.DecryptAsync("jws");
+            var result = await _jwtParser.DecryptAsync("jws").ConfigureAwait(false);
 
             // ASSERT
             Assert.Empty(result);
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult((JsonWebKey)null));
 
             // ACT
-            var result = await _jwtParser.DecryptAsync("jws");
+            var result = await _jwtParser.DecryptAsync("jws").ConfigureAwait(false);
 
             // ASSERT
             Assert.Empty(result);
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(jsonWebKey));
 
             // ACT
-            var result = await _jwtParser.DecryptAsync("jws");
+            var result = await _jwtParser.DecryptAsync("jws").ConfigureAwait(false);
 
             // ASSERT
             _jweParserMock.Verify(j => j.Parse(It.IsAny<string>(), It.IsAny<JsonWebKey>()));
@@ -111,8 +111,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync(string.Empty, string.Empty));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync("jwe", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync(string.Empty, string.Empty)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.DecryptAsync("jwe", string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => Task.FromResult((Models.Client)null));
 
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.DecryptAsync("jws", clientId));
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.DecryptAsync("jws", clientId)).ConfigureAwait(false);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
         }
 
@@ -143,7 +143,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _jwtParser.DecryptAsync("jws", "client_id");
+            var result = await _jwtParser.DecryptAsync("jws", "client_id").ConfigureAwait(false);
 
             // ASSERT
             Assert.Empty(result);
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _jwtParser.DecryptAsync("jws", clientId);
+            var result = await _jwtParser.DecryptAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Empty(result);
@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(payLoad);
 
             // ACT
-            await _jwtParser.DecryptAsync(jws, clientId);
+            await _jwtParser.DecryptAsync(jws, clientId).ConfigureAwait(false);
 
             // ASSERT
             _jweParserMock.Verify(j => j.Parse(jws, jsonWebKey));
@@ -244,7 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _jwtParser.DecryptWithPasswordAsync("jws", clientId, password);
+            var result = await _jwtParser.DecryptWithPasswordAsync("jws", clientId, password).ConfigureAwait(false);
 
             // ASSERT
             Assert.Empty(result);
@@ -288,7 +288,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(payLoad);
 
             // ACT
-            await _jwtParser.DecryptWithPasswordAsync(jws, clientId, password);
+            await _jwtParser.DecryptWithPasswordAsync(jws, clientId, password).ConfigureAwait(false);
 
             // ASSERT
             _jweParserMock.Verify(j => j.ParseByUsingSymmetricPassword(jws, jsonWebKey, password));
@@ -305,7 +305,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -317,7 +317,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => null);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws");
+            var result = await _jwtParser.UnSignAsync("jws").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result == null);
@@ -351,7 +351,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(payLoad);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync(jws);
+            var result = await _jwtParser.UnSignAsync(jws).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -369,8 +369,8 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync(string.Empty, string.Empty));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync("jws", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync(string.Empty, string.Empty)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtParser.UnSignAsync("jws", string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -383,7 +383,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => Task.FromResult((Models.Client)null));
 
             // ACT & ASSERTS
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.UnSignAsync("jws", clientId));
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _jwtParser.UnSignAsync("jws", clientId)).ConfigureAwait(false);
             Assert.True(ex.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
         }
 
@@ -400,7 +400,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(() => null);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -430,7 +430,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -466,7 +466,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(httpClientFake);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -506,7 +506,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -533,7 +533,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -559,7 +559,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(Task.FromResult(client));
 
             // ACT
-            var result = await _jwtParser.UnSignAsync("jws", clientId);
+            var result = await _jwtParser.UnSignAsync("jws", clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -590,7 +590,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(payLoad);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -646,7 +646,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(jsonWebKeys);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -689,7 +689,7 @@ namespace SimpleIdentityServer.Core.UnitTests.JwtToken
                 .Returns(payLoad);
 
             // ACT
-            var result = await _jwtParser.UnSignAsync(jws, clientId);
+            var result = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

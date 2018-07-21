@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.AuthProvider.Actions
 
         public async Task<ActionResult> ExecuteAsync()
         {
-            var result = await _authenticationProviderRepository.GetAuthenticationProviders();
+            var result = await _authenticationProviderRepository.GetAuthenticationProviders().ConfigureAwait(false);
             if (result == null)
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);

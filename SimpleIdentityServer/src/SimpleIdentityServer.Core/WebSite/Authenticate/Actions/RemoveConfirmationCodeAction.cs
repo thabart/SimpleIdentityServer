@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(code));
             }
 
-            return await _confirmationCodeRepository.RemoveAsync(code);
+            return await _confirmationCodeRepository.RemoveAsync(code).ConfigureAwait(false);
         }
     }
 }

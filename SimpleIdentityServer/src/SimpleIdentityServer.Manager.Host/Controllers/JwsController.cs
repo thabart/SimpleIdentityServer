@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(getJwsRequest));
             }
 
-            var result = await _jwsActions.GetJwsInformation(getJwsRequest.ToParameter());
+            var result = await _jwsActions.GetJwsInformation(getJwsRequest.ToParameter()).ConfigureAwait(false);
             return result.ToDto();
         }
         
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(createJwsRequest));
             }
 
-            return await _jwsActions.CreateJws(createJwsRequest.ToParameter());
+            return await _jwsActions.CreateJws(createJwsRequest.ToParameter()).ConfigureAwait(false);
         }
     }
 }

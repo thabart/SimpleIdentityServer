@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
         [Authorize("display")]
         public async Task<ActionResult> Get()
         {
-            var representations = await _representationManager.GetRepresentations();
+            var representations = await _representationManager.GetRepresentations().ConfigureAwait(false);
             return new OkObjectResult(representations.ToDtos());
         }
 
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
         [Authorize("manage")]
         public async Task<ActionResult> Delete()
         {
-            await _representationManager.RemoveRepresentations();
+            await _representationManager.RemoveRepresentations().ConfigureAwait(false);
             return new NoContentResult();
         }
     }

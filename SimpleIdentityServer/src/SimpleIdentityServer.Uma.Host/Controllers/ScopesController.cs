@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [HttpGet]
         public async Task<ActionResult> GetScopes()
         {
-            var resourceSetIds = await _scopeActions.GetScopes();
+            var resourceSetIds = await _scopeActions.GetScopes().ConfigureAwait(false);
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var result = await _scopeActions.GetScope(id);
+            var result = await _scopeActions.GetScope(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundScope();
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = postScope.ToParameter();
-            await _scopeActions.InsertScope(parameter);
+            await _scopeActions.InsertScope(parameter).ConfigureAwait(false);
             var response = new AddScopeResponse
             {
                 Id = postScope.Id
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putScope.ToParameter();
-            var resourceSetExists = await _scopeActions.UpdateScope(parameter);
+            var resourceSetExists = await _scopeActions.UpdateScope(parameter).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundScope();
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            var resourceSetExists = await _scopeActions.DeleteScope(id);
+            var resourceSetExists = await _scopeActions.DeleteScope(id).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundScope();

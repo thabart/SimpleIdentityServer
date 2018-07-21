@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             _managerEventSource.StartToImport();
 
             // 1. Remove all the clients
-            if (!await _clientRepository.RemoveAllAsync())
+            if (!await _clientRepository.RemoveAllAsync().ConfigureAwait(false))
             {
                 return false;
             }
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Manager.Core.Api.Manage.Actions
             {
                 try
                 {
-                    await _clientRepository.InsertAsync(client);
+                    await _clientRepository.InsertAsync(client).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

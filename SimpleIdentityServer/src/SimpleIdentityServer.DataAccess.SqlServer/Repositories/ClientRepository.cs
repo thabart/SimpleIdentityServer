@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.DataAccess.SqlServer.Repositories
                         connectedClient.ClientScopes.Remove(connectedClient.ClientScopes.First(s => s.ScopeName == scopeName));
                     }
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                     translation.Commit();
                 }
                 catch(Exception ex)

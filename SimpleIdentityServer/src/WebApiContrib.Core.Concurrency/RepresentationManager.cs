@@ -53,7 +53,7 @@ namespace WebApiContrib.Core.Concurrency
             string representationId,
             bool addHeader = true)
         {
-            await AddOrUpdateRepresentationAsync(controller, representationId, Guid.NewGuid().ToString(), addHeader);
+            await AddOrUpdateRepresentationAsync(controller, representationId, Guid.NewGuid().ToString(), addHeader).ConfigureAwait(false);
         }
 
         public async Task AddOrUpdateRepresentationAsync(
@@ -77,7 +77,7 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(etag));
             }
 
-            var concurrentObject = await _concurrencyManager.TryUpdateRepresentationAsync(representationId, etag);
+            var concurrentObject = await _concurrencyManager.TryUpdateRepresentationAsync(representationId, etag).ConfigureAwait(false);
             if (addHeader)
             {
                 SetHeaders(controller, concurrentObject);
@@ -98,7 +98,7 @@ namespace WebApiContrib.Core.Concurrency
                 throw new ArgumentNullException(nameof(representationId));
             }
 
-            var concurrentObject = await _concurrencyManager.TryGetRepresentationAsync(representationId);
+            var concurrentObject = await _concurrencyManager.TryGetRepresentationAsync(representationId).ConfigureAwait(false);
             if (concurrentObject == null)
             {
                 return;
@@ -150,7 +150,7 @@ namespace WebApiContrib.Core.Concurrency
                     return false;
                 });
             });
-            return await ContinueExecution(concatenatedEtags, unmodifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback);
+            return await ContinueExecution(concatenatedEtags, unmodifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback).ConfigureAwait(false);
         }
 
         public async Task<bool> CheckRepresentationHasChangedAsync(
@@ -197,7 +197,7 @@ namespace WebApiContrib.Core.Concurrency
                     return true;
                 });
             });
-            return await ContinueExecution(concatenatedEtags, modifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback);
+            return await ContinueExecution(concatenatedEtags, modifiedSince, representationId, checkDateCallback, checkEtagCorrectCallback).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<Record>> GetRepresentations()
@@ -207,7 +207,7 @@ namespace WebApiContrib.Core.Concurrency
 
         public async Task RemoveRepresentations()
         {
-           await _concurrencyManager.RemoveAllAsync();
+           await _concurrencyManager.RemoveAllAsync().ConfigureAwait(false);
         }
 
         private async Task<bool> ContinueExecution(
@@ -224,7 +224,7 @@ namespace WebApiContrib.Core.Concurrency
             }
 
             // Check a representation exists
-            var lastRepresentation = await _concurrencyManager.TryGetRepresentationAsync(representationId);
+            var lastRepresentation = await _concurrencyManager.TryGetRepresentationAsync(representationId).ConfigureAwait(false);
             if (lastRepresentation == null)
             {
                 return true;

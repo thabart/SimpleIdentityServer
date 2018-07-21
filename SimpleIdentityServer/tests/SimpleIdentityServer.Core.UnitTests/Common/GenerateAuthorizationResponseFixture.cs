@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(null, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
             
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             };
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity("fake"));
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAuthorizationResponse.ExecuteAsync(redirectInstruction, new AuthorizationParameter(), claimsPrincipal, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Constants.StandardAuthorizationResponseNames.IdTokenName));
@@ -190,7 +190,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -244,7 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AccessTokenName));
@@ -289,7 +289,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(consent));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Parameters.Any(p => p.Name == Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName));
@@ -339,7 +339,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(Task.FromResult(idToken));
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERT
             _simpleIdentityServerEventSource.Verify(s => s.StartGeneratingAuthorizationResponseToClient(clientId, responseType));
@@ -393,7 +393,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Common
                 .Returns(AuthorizationFlow.ImplicitFlow);
 
             // ACT
-            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client());
+            await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, new Client()).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.fragment);

@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(resourceId));
             }
 
-            var result = await _repository.SearchByResourceId(resourceId);
+            var result = await _repository.SearchByResourceId(resourceId).ConfigureAwait(false);
             return result.Select(p => p.Id);
         }
     }

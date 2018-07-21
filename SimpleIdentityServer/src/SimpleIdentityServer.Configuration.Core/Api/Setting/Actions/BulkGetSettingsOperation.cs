@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
                 throw new ArgumentNullException(nameof(getBulkSettingsParameter));
             }
 
-            return await _settingRepository.Get(getBulkSettingsParameter.Ids);
+            return await _settingRepository.Get(getBulkSettingsParameter.Ids).ConfigureAwait(false);
         }
     }
 }

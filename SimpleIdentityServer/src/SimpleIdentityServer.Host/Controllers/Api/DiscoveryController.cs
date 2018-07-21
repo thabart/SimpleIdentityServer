@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         [HttpGet]
         public async Task<DiscoveryInformation> Get()
         {
-            return await GetMetadata();
+            return await GetMetadata().ConfigureAwait(false);
         }
 
         private async Task<DiscoveryInformation> GetMetadata()
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             var endSessionEndPoint = issuer + "/" + Constants.EndPoints.EndSession;
             var introspectionEndPoint = issuer + "/" + Constants.EndPoints.Introspection;
 
-            var result = await _discoveryActions.CreateDiscoveryInformation();
+            var result = await _discoveryActions.CreateDiscoveryInformation().ConfigureAwait(false);
             result.Issuer = issuer;
             result.AuthorizationEndPoint = authorizationEndPoint;
             result.TokenEndPoint = tokenEndPoint;

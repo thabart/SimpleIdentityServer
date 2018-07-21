@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
         [Authorize("display")]
         public async Task<ActionResult> Get()
         {
-           return await _authProviderActions.GetAuthenticationProviders();
+           return await _authProviderActions.GetAuthenticationProviders().ConfigureAwait(false);
         }
 
         [HttpGet("{id}")]
@@ -49,7 +49,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await _authProviderActions.GetAuthenticationProvider(id);
+            return await _authProviderActions.GetAuthenticationProvider(id).ConfigureAwait(false);
         }
 
         [HttpGet("{id}/enable")]
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await _authProviderActions.EnableAuthenticationProvider(id);
+            return await _authProviderActions.EnableAuthenticationProvider(id).ConfigureAwait(false);
         }
 
         [HttpGet("{id}/disable")]
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await _authProviderActions.DisableAuthenticationProvider(id);
+            return await _authProviderActions.DisableAuthenticationProvider(id).ConfigureAwait(false);
         }
 
         [HttpPut]
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(authenticationProvider));
             }
 
-            return await _authProviderActions.UpdateAuthenticationProvider(authenticationProvider);
+            return await _authProviderActions.UpdateAuthenticationProvider(authenticationProvider).ConfigureAwait(false);
         }
 
         [HttpPost]
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(authenticationProvider));
             }
 
-            return await _authProviderActions.AddAuthenticationProvider(authenticationProvider);
+            return await _authProviderActions.AddAuthenticationProvider(authenticationProvider).ConfigureAwait(false);
         }
 
         [HttpDelete("{id}")]
@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Configuration.Controllers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await _authProviderActions.DeleteAuthenticationProvider(id);
+            return await _authProviderActions.DeleteAuthenticationProvider(id).ConfigureAwait(false);
         }
     }
 }

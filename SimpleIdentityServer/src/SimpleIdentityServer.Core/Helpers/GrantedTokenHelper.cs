@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = await _grantedTokenRepository.GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
+            var token = await _grantedTokenRepository.GetTokenAsync(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).ConfigureAwait(false);
             if (token == null)
             {
                 return null;

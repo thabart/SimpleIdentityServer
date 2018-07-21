@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Client.Introspection
             };
             request.Headers.Add("Authorization", "Bearer " + rpt);
             var httpClient = _httpClientFactory.GetHttpClient();
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<IntrospectionResponse>(content);

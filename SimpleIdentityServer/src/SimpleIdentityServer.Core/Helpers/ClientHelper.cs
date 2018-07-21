@@ -53,13 +53,13 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(jwsPayload));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 return null;
             }
 
-            return await GenerateIdTokenAsync(client, jwsPayload);
+            return await GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
         }
 
         public async Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload)
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 signedResponseAlg = JwsAlg.RS256;
             }
 
-            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value);
+            var idToken = await _jwtGenerator.SignAsync(jwsPayload, signedResponseAlg.Value).ConfigureAwait(false);
             if (encryptResponseAlg == null)
             {
                 return idToken;
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 encryptResponseEnc = JweEnc.A128CBC_HS256;
             }
 
-            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value);
+            return await _jwtGenerator.EncryptAsync(idToken, encryptResponseAlg.Value, encryptResponseEnc.Value).ConfigureAwait(false);
         }
     }
 }

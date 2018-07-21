@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task Handle(AuthorizationGranted message)
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task Handle(ResourceOwnerAuthenticated message)
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task Handle(ConsentAccepted message)
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 CreatedOn = DateTime.UtcNow,
                 Payload = payload,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task Handle(ConsentRejected message)
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.Handlers
                 Description = "Consent rejected",
                 CreatedOn = DateTime.UtcNow,
                 Order = message.Order
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

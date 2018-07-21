@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckAccessTokenAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckAccessTokenAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token");
+            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result.IsValid);
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token");
+            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result.IsValid);
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token");
+            var result = await _grantedTokenValidator.CheckAccessTokenAsync("access_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.IsValid);
@@ -122,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckRefreshTokenAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _grantedTokenValidator.CheckRefreshTokenAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token");
+            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result.IsValid);
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token");
+            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result.IsValid);
@@ -182,7 +182,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token");
+            var result = await _grantedTokenValidator.CheckRefreshTokenAsync("refresh_token").ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.IsValid);

@@ -49,13 +49,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(resourceSetId));
             }
 
-            var result = await _resourceSetRepository.Get(resourceSetId);
+            var result = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
             if (result == null)
             {
                 return false;
             }
 
-            if (!await _resourceSetRepository.Delete(resourceSetId))
+            if (!await _resourceSetRepository.Delete(resourceSetId).ConfigureAwait(false))
             {
                 throw new BaseUmaException(
                     ErrorCodes.InternalError,

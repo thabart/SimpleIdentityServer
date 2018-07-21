@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(getJweRequest));
             }
 
-            var result = await _jweActions.GetJweInformation(getJweRequest.ToParameter());
+            var result = await _jweActions.GetJweInformation(getJweRequest.ToParameter()).ConfigureAwait(false);
             return result.ToDto();
         }
 
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Manager.Host.Controllers
                 throw new ArgumentNullException(nameof(createJweRequest));
             }
 
-            return await _jweActions.CreateJwe(createJweRequest.ToParameter());
+            return await _jweActions.CreateJwe(createJweRequest.ToParameter()).ConfigureAwait(false);
         }
     }
 }

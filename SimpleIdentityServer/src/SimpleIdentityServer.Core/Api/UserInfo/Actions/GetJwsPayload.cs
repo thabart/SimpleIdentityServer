@@ -66,16 +66,16 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
             // Check if the access token is still valid otherwise raise an authorization exception.
             GrantedTokenValidationResult valResult;
-            if (!((valResult = await _grantedTokenValidator.CheckAccessTokenAsync(accessToken)).IsValid))
+            if (!((valResult = await _grantedTokenValidator.CheckAccessTokenAsync(accessToken).ConfigureAwait(false)).IsValid))
             {
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken);
-            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
+            var grantedToken = await _grantedTokenRepository.GetTokenAsync(accessToken).ConfigureAwait(false);
+            var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId).ConfigureAwait(false);
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
+                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId).ConfigureAwait(false);
                 if (client == null)
                 {
                     throw new IdentityServerException(ErrorCodes.InternalError,
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             }
 
             var jwt = await _jwtGenerator.SignAsync(userInformationPayload,
-                signedResponseAlg.Value);
+                signedResponseAlg.Value).ConfigureAwait(false);
             var encryptedResponseAlg = client.GetUserInfoEncryptedResponseAlg();
             var encryptedResponseEnc = client.GetUserInfoEncryptedResponseEnc();
             if (encryptedResponseAlg != null)
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
 
                 jwt = await _jwtGenerator.EncryptAsync(jwt,
                     encryptedResponseAlg.Value,
-                    encryptedResponseEnc.Value);
+                    encryptedResponseEnc.Value).ConfigureAwait(false);
             }
 
             // Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")

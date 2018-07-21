@@ -66,14 +66,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
         public async Task<AuthorizationResponse> Execute(GetAuthorizationActionParameter getAuthorizationActionParameter, string clientId)
         {
-            var result = await Execute(new[] { getAuthorizationActionParameter }, clientId);
+            var result = await Execute(new[] { getAuthorizationActionParameter }, clientId).ConfigureAwait(false);
             return result.First();
         }
 
         public async Task<IEnumerable<AuthorizationResponse>> Execute(IEnumerable<GetAuthorizationActionParameter> parameters, string clientId)
         {
             var result = new List<AuthorizationResponse>();
-            var rptLifeTime = await _configurationService.GetRptLifeTime();
+            var rptLifeTime = await _configurationService.GetRptLifeTime().ConfigureAwait(false);
             // 1. Check parameters.
             if (parameters == null)
             {
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
 
             // 2. Retrieve the tickets.
             _umaServerEventSource.StartGettingAuthorization(JsonConvert.SerializeObject(parameters));
-            var tickets = await _ticketRepository.Get(parameters.Select(p => p.TicketId));
+            var tickets = await _ticketRepository.Get(parameters.Select(p => p.TicketId)).ConfigureAwait(false);
             var rptLst = new List<Rpt>();
             // 3. Check parameters.
             foreach(var parameter in parameters)
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
                 }
 
                 _umaServerEventSource.CheckAuthorizationPolicy(json);
-                var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket, clientId, parameter.ClaimTokenParameters);
+                var authorizationResult = await _authorizationPolicyValidator.IsAuthorized(ticket, clientId, parameter.ClaimTokenParameters).ConfigureAwait(false);
                 if (authorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
                     _umaServerEventSource.RequestIsNotAuthorized(json);
@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Authorization.Actions
             {
                 await _repositoryExceptionHelper.HandleException(
                     ErrorDescriptions.TheRptCannotBeInserted,
-                    () => _rptRepository.Insert(rptLst));
+                    () => _rptRepository.Insert(rptLst)).ConfigureAwait(false);
             }
 
             return result;

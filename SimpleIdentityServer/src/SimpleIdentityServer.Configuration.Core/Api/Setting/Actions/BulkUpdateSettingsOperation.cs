@@ -23,6 +23,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
 {
+    using Models;
+
     public interface IBulkUpdateSettingsOperation
     {
         Task<bool> Execute(IEnumerable<UpdateSettingParameter> settings);
@@ -44,11 +46,11 @@ namespace SimpleIdentityServer.Configuration.Core.Api.Setting.Actions
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            return await _settingRepository.Update(settings.Select(s => new Models.Setting
+            return await _settingRepository.Update(settings.Select(s => new Setting
             {
                 Key = s.Key,
                 Value = s.Value
-            }));
+            })).ConfigureAwait(false);
         }
     }
 }

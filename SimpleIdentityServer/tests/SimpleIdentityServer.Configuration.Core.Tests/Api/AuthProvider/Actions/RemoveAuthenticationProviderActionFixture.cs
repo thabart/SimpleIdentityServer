@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 .Returns(Task.FromResult<AuthenticationProvider>(null));
 
             // ACT
-            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name");
+            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -70,7 +70,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 .Returns(Task.FromResult(false));
 
             // ACT
-            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name") as StatusCodeResult;
+            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name").ConfigureAwait(false) as StatusCodeResult;
 
             // ASSERT
             Assert.NotNull(result);
@@ -88,7 +88,7 @@ namespace SimpleIdentityServer.Configuration.Core.Tests.Api.AuthProvider.Actions
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name") as StatusCodeResult;
+            var result = await _removeAuthenticationProviderAction.ExecuteAsync("name").ConfigureAwait(false) as StatusCodeResult;
 
             // ASSERT
             Assert.NotNull(result);

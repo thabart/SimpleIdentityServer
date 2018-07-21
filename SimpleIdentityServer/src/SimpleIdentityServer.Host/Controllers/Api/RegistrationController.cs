@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 throw new ArgumentNullException(nameof(client));
             }
             
-            return await _registerActions.PostRegistration(client.ToParameter());
+            return await _registerActions.PostRegistration(client.ToParameter()).ConfigureAwait(false);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return await ExecuteAsync(uri).ConfigureAwait(false);
         }
 
         public async Task<GrantedToken> ExecuteAsync(Uri tokenUri)
@@ -74,12 +74,12 @@ namespace SimpleIdentityServer.Client
                 return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                     tokenUri,
                     _requestBuilder.AuthorizationHeaderValue,
-                    _requestBuilder.Certificate);
+                    _requestBuilder.Certificate).ConfigureAwait(false);
             }
             
             return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                 tokenUri,
-                _requestBuilder.AuthorizationHeaderValue);
+                _requestBuilder.AuthorizationHeaderValue).ConfigureAwait(false);
         }
 
         public async Task<GrantedToken> ResolveAsync(string discoveryDocumentationUrl)
@@ -95,8 +95,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.TokenEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.TokenEndPoint).ConfigureAwait(false);
         }
     }
 }
