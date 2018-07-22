@@ -17,6 +17,7 @@
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.EF.Postgre\SimpleIdentityServer.EF.Postgre.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Shell\SimpleIdentityServer.Shell.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.TwoFactorAuthentication.Twilio\SimpleIdentityServer.TwoFactorAuthentication.Twilio.csproj" />
