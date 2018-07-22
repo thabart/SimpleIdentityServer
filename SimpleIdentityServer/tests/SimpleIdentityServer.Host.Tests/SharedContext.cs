@@ -15,8 +15,8 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Twilio.Client;
 using System.Security.Cryptography;
@@ -80,6 +80,7 @@ namespace SimpleIdentityServer.Host.Tests
             HttpClientFactory = new FakeHttpClientFactory();
             ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
             TwilioClient = new Mock<ITwilioClient>();
+            Oauth2IntrospectionHttpClientFactory = new Mock<IHttpClientFactory>();
         }
 
         public JsonWebKey EncryptionKey { get; }
@@ -89,5 +90,6 @@ namespace SimpleIdentityServer.Host.Tests
         public FakeHttpClientFactory HttpClientFactory { get; }
         public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
         public Mock<ITwilioClient> TwilioClient { get; }
+        public Mock<IHttpClientFactory> Oauth2IntrospectionHttpClientFactory { get; }
     }
 }

@@ -29,6 +29,7 @@ using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.Postgre;
 using SimpleIdentityServer.Host;
+using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
@@ -101,6 +102,12 @@ namespace SimpleIdentityServer.Startup
                 .AddCookie(Constants.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
+                })
+                .AddOAuth2Introspection(opts =>
+                {
+                    opts.ClientId = "SimpleIdentityServer";
+                    opts.ClientSecret = "SimpleIdentityServer";
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
             services.AddAuthorization(opts =>
             {

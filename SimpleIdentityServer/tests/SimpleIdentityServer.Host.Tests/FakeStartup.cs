@@ -26,10 +26,11 @@ using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
@@ -48,6 +49,7 @@ using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using WebApiContrib.Core.Storage;
@@ -95,7 +97,15 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
                 opts.DefaultChallengeScheme = DefaultSchema;
-            }).AddFakeCustomAuth(o => { });
+            })
+            .AddFakeCustomAuth(o => { })
+            .AddFakeOAuth2Introspection(o =>
+            {
+                o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+                o.ClientId = "stateless_client";
+                o.ClientSecret = "stateless_client";
+                o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
+            });
             services.AddAuthorization(opt =>
             {
                 opt.AddOpenIdSecurityPolicy(DefaultSchema);

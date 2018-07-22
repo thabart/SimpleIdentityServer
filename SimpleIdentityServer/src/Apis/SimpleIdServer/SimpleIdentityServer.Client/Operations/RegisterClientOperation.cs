@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
+using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IRegisterClientOperation
     {
-        Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue);
+        Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue);
     }
 
     internal class RegisterClientOperation : IRegisterClientOperation
@@ -37,7 +39,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue)
+        public async Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri requestUri, string authorizationValue)
         {
             if (client == null)
             {
@@ -61,11 +63,32 @@ namespace SimpleIdentityServer.Client.Operations
                 RequestUri = requestUri
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            request.Headers.Add("Authorization", "Basic " + authorizationValue);
-            var result = await httpClient.SendAsync(request);
-            result.EnsureSuccessStatusCode();
-            var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Core.Common.DTOs.Responses.ClientRegistrationResponse>(content);
+            if (!string.IsNullOrWhiteSpace(authorizationValue))
+            {
+                request.Headers.Add("Authorization", "Bearer " + authorizationValue);
+            }
+
+            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new GetRegisterClientResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = result.StatusCode
+                };
+            }
+
+            return new GetRegisterClientResult
+            {
+                ContainsError = false,
+                Content = JsonConvert.DeserializeObject<ClientRegistrationResponse>(content)
+            };
         }
     }
 }

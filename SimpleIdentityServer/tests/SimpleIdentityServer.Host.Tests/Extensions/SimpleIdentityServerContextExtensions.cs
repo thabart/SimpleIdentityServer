@@ -194,6 +194,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IsDisplayedInConsent = true,
                         Description = "Access to your api1",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "register_client",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Register a client",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -1045,6 +1054,10 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ClientScope
                             {
                                 ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "register_client"
                             }
                         },
                         GrantTypes = "3",

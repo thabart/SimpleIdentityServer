@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ACT & ASSERTS
             var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
             Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+            Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, "invalid"));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ACT & ASSERTS
             var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
             Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == ErrorDescriptions.TheRedirectUriContainsAFragment);
+            Assert.True(ex.Message == string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, "http://localhost#localhost"));
         }
 
         [Fact]
@@ -149,64 +149,6 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             // ASSERT
             Assert.NotNull(parameter);
             Assert.True(parameter.ApplicationType == ApplicationTypes.web);
-        }
-
-        [Fact]
-        public void When_Application_Type_Is_Web_And_Redirect_Uri_Is_Not_Https_Then_Exception_Is_Raised()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "http://google.fr"
-                }
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == ErrorDescriptions.TheRedirectUriParameterIsNotValid);
-        }
-
-        [Fact]
-        public void When_Application_Type_Is_Web_And_Redirect_Uri_Is_Localhost_Then_Exception_Is_Raised()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "http://localhost.fr"
-                }
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == ErrorDescriptions.TheRedirectUriParameterIsNotValid);
-        }
-
-        [Fact]
-        public void When_Application_Type_Is_Native_And_Redirect_Uri_Is_Not_Localhost_Then_Exception_Is_Raised()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var parameter = new RegistrationParameter
-            {
-                RedirectUris = new List<string>
-                {
-                    "http://google.fr"
-                },
-                ApplicationType = ApplicationTypes.native
-            };
-
-            // ACT & ASSERTS
-            var ex = Assert.Throws<IdentityServerException>(() => _registrationParameterValidator.Validate(parameter));
-            Assert.True(ex.Code == ErrorCodes.InvalidRedirectUri);
-            Assert.True(ex.Message == ErrorDescriptions.TheRedirectUriParameterIsNotValid);
         }
 
         [Fact]

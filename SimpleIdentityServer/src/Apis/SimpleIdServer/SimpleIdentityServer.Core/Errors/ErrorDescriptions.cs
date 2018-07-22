@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string ClientIsNotValid = "the client id parameter {0} doesn't exist or is not valid";
         public const string RedirectUrlIsNotValid = "the redirect url {0} doesn't exist or is not valid";
         public const string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
-        public const string ParameterIsNotCorrect = "the paramater {0} is not correct";
+        public const string ParameterIsNotCorrect = "the parameter {0} is not correct";
         public const string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
         public const string DuplicateScopeValues = "duplicate scopes {0} have been passed in parameter";
         public const string TheScopesNeedToBeSpecified = "the scope(s) {0} need(s) to be specified";
@@ -88,6 +88,8 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken = "the current authenticated user doesn't match with the identity token";
         public const string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
             "the response cannot be generated because the resource owner needs to be authenticated";
+        public const string TheRedirectUrlIsNotValid = "the redirect_uri {0} is not well formed";
+        public const string TheRedirectUrlCannotContainsFragment = "the redirect_uri {0} cannot contains fragment";
         public const string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
         public const string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
         public const string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =

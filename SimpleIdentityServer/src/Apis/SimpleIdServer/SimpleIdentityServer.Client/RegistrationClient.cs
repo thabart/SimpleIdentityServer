@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -23,11 +24,11 @@ namespace SimpleIdentityServer.Client
 {
     public interface IRegistrationClient
     {
-        Core.Common.DTOs.Responses.ClientRegistrationResponse Execute(Core.Common.DTOs.Requests.ClientRequest client, string jwksUrl);
-        Core.Common.DTOs.Responses.ClientRegistrationResponse Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri jwksUri);
-        Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl);
-        Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri);
-        Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl);
+        GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, string jwksUrl, string accessToken);
+        GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri jwksUri, string accessToken);
+        Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken);
+        Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken);
+        Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken);
     }
 
     internal class RegistrationClient : IRegistrationClient
@@ -41,17 +42,17 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public Core.Common.DTOs.Responses.ClientRegistrationResponse Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri)
+        public GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken)
         {
-            return ExecuteAsync(client, registrationUri).Result;
+            return ExecuteAsync(client, registrationUri, accessToken).Result;
         }
 
-        public Core.Common.DTOs.Responses.ClientRegistrationResponse Execute(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl)
+        public GetRegisterClientResult Execute(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken)
         {
-            return ExecuteAsync(client, registrationUrl).Result;
+            return ExecuteAsync(client, registrationUrl, accessToken).Result;
         }
 
-        public async Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri)
+        public Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, Uri registrationUri, string accessToken)
         {
             if (client == null)
             {
@@ -63,10 +64,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(registrationUri));
             }
 
-            return await _registerClientOperation.ExecuteAsync(client, registrationUri, string.Empty);
+            return _registerClientOperation.ExecuteAsync(client, registrationUri, accessToken);
         }
 
-        public async Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl)
+        public Task<GetRegisterClientResult> ExecuteAsync(Core.Common.DTOs.Requests.ClientRequest client, string registrationUrl, string accessToken)
         {
             if (client == null)
             {
@@ -84,10 +85,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, registrationUrl));
             }
 
-            return await ExecuteAsync(client, uri);
+            return ExecuteAsync(client, uri, accessToken);
         }
 
-        public async Task<Core.Common.DTOs.Responses.ClientRegistrationResponse> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl)
+        public async Task<GetRegisterClientResult> ResolveAsync(Core.Common.DTOs.Requests.ClientRequest client, string configurationUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(configurationUrl))
             {
@@ -100,8 +101,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(client, discoveryDocument.RegistrationEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(client, discoveryDocument.RegistrationEndPoint, accessToken).ConfigureAwait(false);
         }
     }
 }
