@@ -77,8 +77,8 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
-            var result = await httpClient.SendAsync(request);
-            var content = await result.Content.ReadAsStringAsync();
+            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {
                 result.EnsureSuccessStatusCode();

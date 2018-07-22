@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Client
             return GetUserInfoAsync(userInfoUrl, accessToken).Result;
         }
 
-        public async Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false)
+        public Task<GetUserInfoResult> GetUserInfoAsync(string userInfoUrl, string accessToken, bool inBody = false)
         {
             if (string.IsNullOrWhiteSpace(userInfoUrl))
             {
@@ -82,10 +82,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, userInfoUrl));
             }
 
-            return await GetUserInfoAsync(uri, accessToken);
+            return GetUserInfoAsync(uri, accessToken);
         }
 
-        public async Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
+        public Task<GetUserInfoResult> GetUserInfoAsync(Uri userInfoUri, string accessToken, bool inBody = false)
         {
             if (userInfoUri == null)
             {
@@ -97,7 +97,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(accessToken));
             }
             
-            return await _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody);
+            return _getUserInfoOperation.ExecuteAsync(userInfoUri, accessToken, inBody);
         }
 
         public async Task<GetUserInfoResult> Resolve(string configurationUrl, string accessToken, bool inBody = false)
@@ -118,8 +118,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, configurationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await GetUserInfoAsync(discoveryDocument.UserInfoEndPoint, accessToken).ConfigureAwait(false);
         }
     }
 }

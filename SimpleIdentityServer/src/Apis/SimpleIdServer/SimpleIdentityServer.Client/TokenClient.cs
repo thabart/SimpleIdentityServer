@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
         
-        public async Task<GetTokenResult> ExecuteAsync(string tokenUrl)
+        public Task<GetTokenResult> ExecuteAsync(string tokenUrl)
         {
             if (string.IsNullOrWhiteSpace(tokenUrl))
             {
@@ -59,10 +59,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return ExecuteAsync(uri);
         }
 
-        public async Task<GetTokenResult> ExecuteAsync(Uri tokenUri)
+        public Task<GetTokenResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
@@ -71,13 +71,13 @@ namespace SimpleIdentityServer.Client
             
             if (_requestBuilder.Certificate != null)
             {
-                return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
+                return _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                     tokenUri,
                     _requestBuilder.AuthorizationHeaderValue,
                     _requestBuilder.Certificate);
             }
             
-            return await _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
+            return _postTokenOperation.ExecuteAsync(_requestBuilder.Content,
                 tokenUri,
                 _requestBuilder.AuthorizationHeaderValue);
         }
@@ -95,8 +95,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.TokenEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.TokenEndPoint).ConfigureAwait(false);
         }
     }
 }

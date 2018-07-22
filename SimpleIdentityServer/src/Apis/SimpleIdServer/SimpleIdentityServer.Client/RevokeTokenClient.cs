@@ -46,17 +46,17 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
+        public Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            return await _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
+            return _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
         }
 
-        public async Task<GetRevokeTokenResult> ExecuteAsync(string revokeUrl)
+        public Task<GetRevokeTokenResult> ExecuteAsync(string revokeUrl)
         {
             if (string.IsNullOrWhiteSpace(revokeUrl))
             {
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, revokeUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return ExecuteAsync(uri);
         }
 
         public async Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl)
@@ -85,8 +85,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.RevocationEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.RevocationEndPoint).ConfigureAwait(false);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request)
+        public Task<GetAuthorizationResult> ExecuteAsync(Uri authorizationUri, AuthorizationRequest request)
         {
             if (authorizationUri == null)
             {
@@ -53,10 +53,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentNullException(nameof(request));
             }
 
-            return await _getAuthorizationOperation.ExecuteAsync(authorizationUri, request);
+            return _getAuthorizationOperation.ExecuteAsync(authorizationUri, request);
         }
 
-        public async Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
+        public Task<GetAuthorizationResult> ExecuteAsync(string authorizationUrl, AuthorizationRequest request)
         {
             if (string.IsNullOrWhiteSpace(authorizationUrl))
             {
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, authorizationUrl));
             }
 
-            return await ExecuteAsync(uri, request);
+            return ExecuteAsync(uri, request);
         }
 
         public async Task<GetAuthorizationResult> ResolveAsync(string discoveryDocumentationUrl, AuthorizationRequest request)
@@ -85,8 +85,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.AuthorizationEndPoint, request);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.AuthorizationEndPoint, request).ConfigureAwait(false);
         }
     }
 }

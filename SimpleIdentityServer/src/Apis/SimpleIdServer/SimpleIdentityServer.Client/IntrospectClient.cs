@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl)
+        public Task<GetIntrospectionResult> ExecuteAsync(string tokenUrl)
         {
             if (string.IsNullOrWhiteSpace(tokenUrl))
             {
@@ -66,17 +66,17 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, tokenUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return ExecuteAsync(uri);
         }
 
-        public async Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
+        public Task<GetIntrospectionResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
             
-            return await _introspectOperation.ExecuteAsync(_requestBuilder.Content,
+            return _introspectOperation.ExecuteAsync(_requestBuilder.Content,
                 tokenUri,
                 _requestBuilder.AuthorizationHeaderValue);
         }
@@ -94,8 +94,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.IntrospectionEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.IntrospectionEndPoint).ConfigureAwait(false);
         }
     }
 }

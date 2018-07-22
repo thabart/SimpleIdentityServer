@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Client.Operations
             var uriBuilder = new UriBuilder(uri);
             var pSerializer = new ParamSerializer();            
             uriBuilder.Query = pSerializer.Serialize(request);
-            var response = await httpClient.GetAsync(uriBuilder.Uri);
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await httpClient.GetAsync(uriBuilder.Uri).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (response.StatusCode >= System.Net.HttpStatusCode.BadRequest)
             {
                 return new GetAuthorizationResult
