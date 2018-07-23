@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;

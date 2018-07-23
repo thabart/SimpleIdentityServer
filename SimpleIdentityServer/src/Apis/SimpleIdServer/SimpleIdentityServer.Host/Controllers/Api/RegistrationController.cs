@@ -14,18 +14,21 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Host;
-using SimpleIdentityServer.Host.DTOs.Response;
 using SimpleIdentityServer.Host.Extensions;
-using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Api.Controllers.Api
 {
     [Route(Constants.EndPoints.Registration)]
+    [Authorize("registration")]
     public class RegistrationController : Controller
     {
         private readonly IRegistrationActions _registerActions;
@@ -36,14 +39,35 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<ClientRegistrationResponse> Post([FromBody] ClientResponse client)
+        public async Task<IActionResult> Post([FromBody] ClientRequest client)
         {
             if (client == null)
             {
-                throw new ArgumentNullException(nameof(client));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
             
-            return await _registerActions.PostRegistration(client.ToParameter());
+            var result = await _registerActions.PostRegistration(client.ToParameter());
+            return new OkObjectResult(result);
+        }
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

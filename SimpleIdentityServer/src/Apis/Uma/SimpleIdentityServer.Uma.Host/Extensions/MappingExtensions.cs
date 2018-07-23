@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
@@ -400,9 +400,9 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         }
 
 
-        public static Introspection ToDto(this IntrospectionResult introspectionResult)
+        public static SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
         {
-            return new Introspection
+            return new SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse
             {
                 Active = introspectionResult.Active,
                 Audience = introspectionResult.Audience,

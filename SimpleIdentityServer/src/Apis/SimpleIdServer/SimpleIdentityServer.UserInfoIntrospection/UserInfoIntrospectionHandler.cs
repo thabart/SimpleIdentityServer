@@ -41,13 +41,13 @@ namespace SimpleIdentityServer.UserInfoIntrospection
                 var introspectionResult = await factory.CreateUserInfoClient()
                     .Resolve(Options.WellKnownConfigurationUrl, token)
                     .ConfigureAwait(false);
-                if (introspectionResult == null)
+                if (introspectionResult == null || introspectionResult.ContainsError)
                 {
                     return AuthenticateResult.NoResult();
                 }
 
                 var claims = new List<Claim>();
-                var values = introspectionResult.ToObject<Dictionary<string, object>>();
+                var values = introspectionResult.Content.ToObject<Dictionary<string, object>>();
                 foreach(var kvp in values)
                 {
                     claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));

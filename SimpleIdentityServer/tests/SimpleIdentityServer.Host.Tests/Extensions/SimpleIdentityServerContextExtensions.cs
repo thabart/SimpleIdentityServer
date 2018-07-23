@@ -194,6 +194,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IsDisplayedInConsent = true,
                         Description = "Access to your api1",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "register_client",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Register a client",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -344,6 +353,21 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             }
                         },
                         Password = "password",
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "user",
+                        Password = "password",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "user"
+                            }
+                        },
                         IsLocalAccount = true
                     }
                 });
@@ -512,8 +536,168 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                                 ScopeName = "scim"
                             }
                         },
-                        GrantTypes = "4",
+                        GrantTypes = "2,4",
                         ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
+                        ClientId = "client_userinfo_sig_rs256",
+                        ClientName = "client_userinfo_sig_rs256",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client_userinfo_sig_rs256"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
+                            }
+                        },
+                        GrantTypes = "2,4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
+                        ClientId = "client_userinfo_enc_rsa15",
+                        ClientName = "client_userinfo_enc_rsa15",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "client_userinfo_enc_rsa15"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
+                            }
+                        },
+                        GrantTypes = "2,4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        UserInfoSignedResponseAlg = "RS256",
+                        UserInfoEncryptedResponseAlg = "RSA1_5",
+                        UserInfoEncryptedResponseEnc = "A128CBC-HS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
+                        ClientId = "clientWithWrongResponseType",
+                        ClientName = "clientWithWrongResponseType",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "clientWithWrongResponseType"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
+                            }
+                        },
+                        GrantTypes = "2,3",
+                        ResponseTypes = "2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://localhost:4200/callback"
+                    },
+                    new EF.Models.Client
+                    {
+                        ClientId = "clientCredentials",
+                        ClientName = "clientCredentials",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "clientCredentials"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            }
+                        },
+                        GrantTypes = "2,3",
+                        ResponseTypes = "1",
                         IdTokenSignedResponseAlg = "RS256",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "https://localhost:4200/callback"
@@ -680,6 +864,40 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                     },
                     new EF.Models.Client
                     {
+                        ClientId = "incomplete_authcode_client",
+                        ClientName = "incomplete_authcode_client",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "incomplete_authcode_client"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "api1"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            }
+                        },
+                        GrantTypes = "0",
+                        ResponseTypes = "2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "http://localhost:5000/callback"
+                    },
+                    new EF.Models.Client
+                    {
                         ClientId = "implicit_client",
                         ClientName = "implicit_client",
                         ClientSecrets = new List<ClientSecret>
@@ -836,6 +1054,10 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ClientScope
                             {
                                 ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "register_client"
                             }
                         },
                         GrantTypes = "3",

@@ -76,16 +76,16 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
             var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
-                if (client == null)
-                {
-                    throw new IdentityServerException(ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
-                }
+                throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
             }
 
             var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
             var userInformationPayload = grantedToken.UserInfoPayLoad;
+            if (userInformationPayload == null)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
+            }
+
             if (signedResponseAlg == null ||
                 signedResponseAlg.Value == JwsAlg.none)
             {
@@ -116,8 +116,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseAlg.Value,
                     encryptedResponseEnc.Value);
             }
-
-            // Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")
+            
             return new UserInfoResult
             {
                 Content = new ContentResult

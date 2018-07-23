@@ -16,6 +16,11 @@
 
 namespace SimpleIdentityServer.Core.Common
 {
+    public static class ErrorResponseWithStateNames
+    {
+        public const string State = "state";
+    }
+
     public static class StandardClaimNames
     {
         public static string Issuer = "iss";
@@ -41,6 +46,55 @@ namespace SimpleIdentityServer.Core.Common
         public static string CHash = "c_hash";
         public static string ClientId = "client_id";
         public static string Scopes = "scope";
+    }
+
+
+    public static class GrantTypes
+    {
+        public const string ClientCredentials = "client_credentials";
+        public const string Password = "password";
+        public const string RefreshToken = "refresh_token";
+        public const string AuthorizationCode = "authorization_code";
+        public const string ValidateBearer = "validate_bearer";
+        public const string UmaTicket = "uma_ticket";
+    }
+
+    public static class TokenTypes
+    {
+        public const string AccessToken = "access_token";
+        public const string RefreshToken = "refresh_token";
+    }
+
+    public static class PromptNames
+    {
+        public const string None = "none";
+        public const string Login = "login";
+        public const string Consent = "consent";
+        public const string SelectAccount = "select_account";
+    }
+    public static class ClientAssertionTypes
+    {
+        public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+    }
+
+    // https://docs.kantarainitiative.org/uma/wg/oauth-uma-grant-2.0-05.html#seek-authorization
+    public static class RequestTokenUma
+    {
+        public const string Ticket = "ticket";
+        public const string ClaimToken = "claim_token";
+        public const string ClaimTokenFormat = "claim_token_format";
+        public const string Pct = "pct";
+        public const string Rpt = "rpt";
+    }
+
+    public static class GrantedTokenNames
+    {
+        public const string AccessToken = "access_token";
+        public const string IdToken = "id_token";
+        public const string TokenType = "token_type";
+        public const string RefreshToken = "refresh_token";
+        public const string ExpiresIn = "expires_in";
+        public const string Scope = "scope";
     }
 
     public static class ClientNames
@@ -78,45 +132,55 @@ namespace SimpleIdentityServer.Core.Common
         public const string ScimProfile = "scim_profile";
     }
 
-    public static class RevokeSessionRequestNames
+    public static class ResponseModeNames
     {
-        public const string IdTokenHint = "id_token_hint";
-        public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
-        public const string State = "state";
+        public const string None = "none";
+        public const string Query = "query";
+        public const string Fragment = "fragment";
+        public const string FormPost = "form_post";
     }
 
-    public static class JwsProtectedHeaderNames
+    public static class ResponseTypeNames
     {
-        public const string Type = "typ";
-        public const string Alg = "alg";
-        public const string Kid = "kid";
-    }
-
-    public static class ClientAssertionTypes
-    {
-        public static string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
-    }
-    
-    public static class IntrospectionNames
-    {
-        public const string Active = "active";
-        public const string Scope = "scope";
-        public const string ClientId = "client_id";
-        public const string UserName = "username";
-        public const string TokenType = "token_type";
-        public const string Expiration = "exp";
-        public const string IssuedAt = "iat";
-        public const string Nbf = "nbf";
-        public const string Subject = "sub";
-        public const string Audience = "aud";
-        public const string Issuer = "iss";
-        public const string Jti = "jti";
-    }
-
-    public static class IntrospectionRequestNames
-    {
+        public const string Code = "code";
         public const string Token = "token";
-        public const string TokenTypeHint = "token_type_hint";        
+        public const string IdToken = "id_token";
+    }
+
+    public static class PageNames
+    {
+        public const string Page = "page";
+        public const string Popup = "popup";
+        public const string Touch = "touch";
+        public const string Wap = "wap";
+    }
+
+    public static class CodeChallenges
+    {
+        public const string Plain = "plain";
+        public const string S256 = "S256";
+    }
+
+    public static class RequestAuthorizationCodeNames
+    {
+        public const string Scope = "scope";
+        public const string ResponseType = "response_type";
+        public const string RedirectUri = "redirect_uri";
+        public const string State = "state";
+        public const string ResponseMode = "response_mode";
+        public const string Nonce = "nonce";
+        public const string Display = "display";
+        public const string Prompt = "prompt";
+        public const string MaxAge = "max_age";
+        public const string UiLocales = "ui_locales";
+        public const string IdTokenHint = "id_token_hint";
+        public const string LoginHint = "login_hint";
+        public const string Claims = "claims";
+        public const string AcrValues = "acr_values";
+        public const string Request = "request";
+        public const string RequestUri = "request_uri";
+        public const string CodeChallenge = "code_challenge";
+        public const string CodeChallengeMethod = "code_challenge_method";
     }
 
     public static class ClientAuthNames
@@ -125,6 +189,24 @@ namespace SimpleIdentityServer.Core.Common
         public const string ClientSecret = "client_secret";
         public const string ClientAssertion = "client_assertion";
         public const string ClientAssertionType = "client_assertion_type";
+    }
+
+    public static class EventResponseNames
+    {
+        public const string Id = "id";
+        public const string AggregateId = "aggregate_id";
+        public const string Payload = "payload";
+        public const string Description = "description";
+        public const string Order = "order";
+        public const string CreatedOn = "created_on";
+    }
+
+    public static class RegistrationResponseNames
+    {
+        public const string RegistrationAccessToken = "registration_access_token";
+        public const string RegistrationClientUri = "registration_client_uri";
+        public const string ClientIdIssuedAt = "client_id_issued_at";
+        public const string ClientSecretExpiresAt = "client_secret_expires_at";
     }
 
     public static class DiscoveryInformationNames
@@ -155,6 +237,48 @@ namespace SimpleIdentityServer.Core.Common
         public const string ScimEndpoint = "scim_endpoint";
     }
 
+    public static class IntrospectionNames
+    {
+        public const string Active = "active";
+        public const string Scope = "scope";
+        public const string ClientId = "client_id";
+        public const string UserName = "username";
+        public const string TokenType = "token_type";
+        public const string Expiration = "exp";
+        public const string IssuedAt = "iat";
+        public const string Nbf = "nbf";
+        public const string Subject = "sub";
+        public const string Audience = "aud";
+        public const string Issuer = "iss";
+        public const string Jti = "jti";
+    }
+
+    public static class IntrospectionRequestNames
+    {
+        public const string Token = "token";
+        public const string TokenTypeHint = "token_type_hint";
+    }
+
+    public static class JwsProtectedHeaderNames
+    {
+        public const string Type = "typ";
+        public const string Alg = "alg";
+        public const string Kid = "kid";
+    }
+
+    public static class RevocationRequestNames
+    {
+        public const string Token = "token";
+        public const string TokenTypeHint = "token_type_hint";
+    }
+
+    public static class RevokeSessionRequestNames
+    {
+        public const string IdTokenHint = "id_token_hint";
+        public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
+        public const string State = "state";
+    }
+
     public static class RequestTokenNames
     {
         public const string GrantType = "grant_type";
@@ -166,124 +290,5 @@ namespace SimpleIdentityServer.Core.Common
         public const string RefreshToken = "refresh_token";
         public const string CodeVerifier = "code_verifier";
         public const string AmrValues = "amr_values";
-    }
-
-    // https://docs.kantarainitiative.org/uma/wg/oauth-uma-grant-2.0-05.html#seek-authorization
-    public static class RequestTokenUma
-    {
-        public const string Ticket = "ticket";
-        public const string ClaimToken = "claim_token";
-        public const string ClaimTokenFormat = "claim_token_format";
-        public const string Pct = "pct";
-        public const string Rpt = "rpt";
-    }
-
-    public static class GrantTypes
-    {
-        public const string ClientCredentials = "client_credentials";
-        public const string Password = "password";
-        public const string RefreshToken = "refresh_token";
-        public const string AuthorizationCode = "authorization_code";
-        public const string ValidateBearer = "validate_bearer";
-        public const string UmaTicket = "uma_ticket";
-    }
-
-    public static class TokenTypes
-    {
-        public const string AccessToken = "access_token";
-        public const string RefreshToken = "refresh_token";
-    }
-
-    public static class RevocationRequestNames
-    {
-        public const string Token = "token";
-        public const string TokenTypeHint = "token_type_hint";
-    }
-
-    public static class RequestAuthorizationCodeNames
-    {
-        public const string Scope = "scope";
-        public const string ResponseType = "response_type";
-        public const string RedirectUri = "redirect_uri";
-        public const string State = "state";
-        public const string ResponseMode = "response_mode";
-        public const string Nonce = "nonce";
-        public const string Display = "display";
-        public const string Prompt = "prompt";
-        public const string MaxAge = "max_age";
-        public const string UiLocales = "ui_locales";
-        public const string IdTokenHint = "id_token_hint";
-        public const string LoginHint = "login_hint";
-        public const string Claims = "claims";
-        public const string AcrValues = "acr_values";
-        public const string Request = "request";
-        public const string RequestUri = "request_uri";
-        public const string CodeChallenge = "code_challenge";
-        public const string CodeChallengeMethod = "code_challenge_method";
-    }
-
-    public static class ResponseModeNames
-    {
-        public const string None = "none";
-        public const string Query = "query";
-        public const string Fragment = "fragment";
-        public const string FormPost = "form_post";
-    }
-
-    public static class ResponseTypeNames
-    {
-        public const string Code = "code";
-        public const string Token = "token";
-        public const string IdToken = "id_token";
-    }
-
-    public static class PageNames
-    {
-        public const string Page = "page";
-        public const string Popup = "popup";
-        public const string Touch = "touch";
-        public const string Wap = "wap";
-    }
-
-    public static class CodeChallenges
-    {
-        public const string Plain = "plain";
-        public const string S256 = "S256";
-    }
-
-    public static class GrantedTokenNames
-    {
-        public const string AccessToken = "access_token";
-        public const string IdToken = "id_token";
-        public const string RefreshToken = "refresh_token";
-        public const string TokenType = "token_type";
-        public const string Scope = "scope";
-        public const string ExpiresIn = "expires_in";
-    }
-
-    public static class RegistrationResponseNames
-    {
-        public const string RegistrationAccessToken = "registration_access_token";
-        public const string RegistrationClientUri = "registration_client_uri";
-        public const string ClientIdIssuedAt = "client_id_issued_at";
-        public const string ClientSecretExpiresAt = "client_secret_expires_at";
-    }
-
-    public static class PromptNames
-    {
-        public const string None = "none";
-        public const string Login = "login";
-        public const string Consent = "consent";
-        public const string SelectAccount = "select_account";
-    }
-
-    public static class EventResponseNames
-    {
-        public const string Id = "id";
-        public const string AggregateId = "aggregate_id";
-        public const string Payload = "payload";
-        public const string Description = "description";
-        public const string Order = "order";
-        public const string CreatedOn = "created_on";
     }
 }

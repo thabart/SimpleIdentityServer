@@ -43,7 +43,6 @@ namespace SimpleIdentityServer.Core.Validators
 
         public void Validate(RegistrationParameter parameter)
         {
-            const string localhost = "localhost";
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
@@ -56,24 +55,6 @@ namespace SimpleIdentityServer.Core.Validators
                 throw new IdentityServerException(
                     ErrorCodes.InvalidRedirectUri,
                     string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
-            }
-
-            foreach (var redirectUri in parameter.RedirectUris)
-            {
-                if (!CheckUriIsWellFormed(redirectUri))
-                {
-                    throw new IdentityServerException(
-                        ErrorCodes.InvalidRedirectUri,
-                        ErrorDescriptions.TheRedirectUriParameterIsNotValid);
-                }
-
-                var uri = new Uri(redirectUri);
-                if (!string.IsNullOrWhiteSpace(uri.Fragment))
-                {
-                    throw new IdentityServerException(
-                        ErrorCodes.InvalidRedirectUri,
-                        ErrorDescriptions.TheRedirectUriContainsAFragment);
-                }
             }
 
             // If the response type is not defined then set to code
@@ -107,27 +88,25 @@ namespace SimpleIdentityServer.Core.Validators
             {
                 foreach(var redirectUri in parameter.RedirectUris)
                 {
-                    var uri = new Uri(redirectUri);
-                    if (uri.Scheme != "https")
+                    if (!CheckUriIsWellFormed(redirectUri))
                     {
-                        throw new IdentityServerException(
-                            ErrorCodes.InvalidRedirectUri,
-                            ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
+                    }
+
+                    var uri = new Uri(redirectUri);
+                    if (!string.IsNullOrWhiteSpace(uri.Fragment))
+                    {
+                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlCannotContainsFragment, redirectUri));
                     }
                 }
             }
-
-            // Check the parameters when the application type is native
-            if (parameter.ApplicationType == ApplicationTypes.native)
+            else
             {
-                foreach(var redirectUri in parameter.RedirectUris)
+                foreach (var redirectUri in parameter.RedirectUris)
                 {
-                    var uri = new Uri(redirectUri);
-                    if (string.Compare(uri.Host, localhost, StringComparison.CurrentCultureIgnoreCase) != 0)
+                    if (!CheckUriIsWellFormed(redirectUri))
                     {
-                        throw new IdentityServerException(
-                            ErrorCodes.InvalidRedirectUri,
-                            ErrorDescriptions.TheRedirectUriParameterIsNotValid);
+                        throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.TheRedirectUrlIsNotValid, redirectUri));
                     }
                 }
             }

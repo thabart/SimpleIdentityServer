@@ -27,11 +27,6 @@ namespace SimpleIdentityServer.Store.Redis
             var id = Guid.NewGuid().ToString();
             await _storage.SetAsync(id, grantedToken, grantedToken.ExpiresIn); // 1. Store tokens.
             await _storage.SetAsync("access_token_" + grantedToken.AccessToken, id, grantedToken.ExpiresIn);
-            if (!string.IsNullOrWhiteSpace(grantedToken.IdToken))
-            {
-                await _storage.SetAsync("access_token_" + grantedToken.IdToken, id, grantedToken.ExpiresIn);
-            }
-
             await _storage.SetAsync("refresh_token_" + grantedToken.RefreshToken, id, grantedToken.ExpiresIn);
 
             var searchKey = GetSearchKey(grantedToken);

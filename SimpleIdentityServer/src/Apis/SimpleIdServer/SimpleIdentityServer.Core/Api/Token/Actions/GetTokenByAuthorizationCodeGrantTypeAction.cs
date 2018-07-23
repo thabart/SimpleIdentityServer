@@ -28,13 +28,14 @@ using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByAuthorizationCodeGrantTypeAction
     {
-        Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
     }
 
     public class GetTokenByAuthorizationCodeGrantTypeAction : IGetTokenByAuthorizationCodeGrantTypeAction
@@ -89,19 +90,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<GrantedToken> Execute(
-            AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, 
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
         {
             if (authorizationCodeGrantTypeParameter == null)
             {
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var result = await ValidateParameter(
-                authorizationCodeGrantTypeParameter, 
-                authenticationHeaderValue);
-
+            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
             await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code); // 1. Invalidate the authorization code by removing it !
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                 result.AuthCode.Scopes,
@@ -140,15 +136,29 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         /// <returns></returns>
         private async Task<ValidationResult> ValidateParameter(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate)
         {
             // 1. Authenticate the client
-            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue);
+            var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
             {
+                _oauthEventSource.Info(authResult.ErrorMessage);
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+            }
+
+            // 2. Check the client
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.authorization_code))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.authorization_code));
+            }
+
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.code))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.code));
             }
 
             var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);
@@ -208,13 +218,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             AuthorizationCodeGrantTypeParameter authorizationCodeGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 

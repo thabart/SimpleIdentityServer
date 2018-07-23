@@ -109,7 +109,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InvalidGrant);
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
         }
 

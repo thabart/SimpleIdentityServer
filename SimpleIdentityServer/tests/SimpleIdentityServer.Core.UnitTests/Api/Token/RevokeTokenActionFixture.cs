@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
         }
 
         [Fact]
-        public async Task When_AnonymousClient_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -70,16 +70,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+            Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
 
-        #endregion
-
-        #region Happy path
-
         [Fact]
-        public async Task When_Token_Doesnt_Exist_Then_False_Is_Returned()
+        public async Task When_Token_Doesnt_Exist_Then_Exception_Is_Returned()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -97,11 +92,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT
-            var result = await _revokeTokenAction.Execute(parameter, null);
+            var result = await Assert.ThrowsAsync<IdentityServerException>(() => _revokeTokenAction.Execute(parameter, null));
 
             // ASSERT
-            Assert.False(result);
+            Assert.NotNull(result);
+            Assert.Equal("invalid_token", result.Code);
         }
+
+        #endregion
+
+        #region Happy path
 
         [Fact]
         public async Task When_Invalidating_Refresh_Token_Then_GrantedTokenChildren_Are_Removed()

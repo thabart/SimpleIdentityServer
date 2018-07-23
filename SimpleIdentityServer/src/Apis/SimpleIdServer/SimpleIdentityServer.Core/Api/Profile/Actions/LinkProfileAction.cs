@@ -75,7 +75,9 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 {
                     ResourceOwnerId = localSubject,
                     Subject = externalSubject,
-                    Issuer = issuer
+                    Issuer = issuer,
+                    CreateDateTime = DateTime.UtcNow,
+                    UpdateTime = DateTime.UtcNow
                 }
             });
         }

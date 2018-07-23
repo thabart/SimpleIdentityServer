@@ -23,17 +23,11 @@ namespace SimpleIdentityServer.Core.Common.Models
     public class GrantedToken
     {
         public string Id { get; set; }
-        [DataMember(Name = GrantedTokenNames.AccessToken)]
         public string AccessToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.IdToken)]
         public string IdToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.TokenType)]
         public string TokenType { get; set; }
-        [DataMember(Name = GrantedTokenNames.RefreshToken)]
         public string RefreshToken { get; set; }
-        [DataMember(Name = GrantedTokenNames.ExpiresIn)]
         public int ExpiresIn { get; set; }
-        [DataMember(Name = GrantedTokenNames.Scope)]
         public string Scope { get; set; }
         public DateTime CreateDateTime { get; set; }
         public string ClientId { get; set; }

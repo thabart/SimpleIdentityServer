@@ -260,6 +260,15 @@ namespace SimpleIdentityServer.Startup.Extensions
                         Type = ScopeType.ProtectedApi,
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
+                    },
+                    new Scope
+                    {
+                        Name = "register_client",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Register a client",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -1445,7 +1454,7 @@ namespace SimpleIdentityServer.Startup.Extensions
                         {
                             new ClientScope
                             {
-                                ScopeName = "display_configuration"
+                                ScopeName = "register_client"
                             }
                         },
                         GrantTypes = "3",

@@ -88,9 +88,16 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(authenticateOptions));
             }
 
-            authenticateOptions.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == cookieName;
-            }));
+            authenticateOptions.AddPolicy("Connected", policy => // User is connected
+            {
+                policy.AddAuthenticationSchemes(cookieName);
+                policy.RequireAuthenticatedUser();
+            });
+            authenticateOptions.AddPolicy("registration", policy => // Access token with scope = register_client
+            {
+                policy.AddAuthenticationSchemes("OAuth2Introspection");
+                policy.RequireClaim("scope", "register_client");
+            });
             return authenticateOptions;
         }
 

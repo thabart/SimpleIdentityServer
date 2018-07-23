@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.JwtToken;

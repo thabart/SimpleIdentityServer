@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Core.Api.Token;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Uma.Core.Api.Token;
@@ -62,17 +63,15 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
-                        authCodeParameter,
-                        authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate);
                     break;
                 case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate);
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate);
                     break;
                 case GrantTypes.uma_ticket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();

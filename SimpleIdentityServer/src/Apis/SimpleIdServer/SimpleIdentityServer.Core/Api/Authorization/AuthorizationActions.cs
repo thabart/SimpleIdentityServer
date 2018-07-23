@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                     parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
                 if (client.RequirePkce && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId));
+                    throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId), parameter.State);
                 }
 
                 var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);

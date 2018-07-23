@@ -90,16 +90,24 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (authResult.Client == null)
-            {
-                _oauthEventSource.Info(ErrorDescriptions.TheClientCannotBeAuthenticated);
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
-                if (client == null)
-                {
-                    throw new IdentityServerException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
-                }
+            {                
+                _oauthEventSource.Info(authResult.ErrorMessage);
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            // 2. Try to authenticate a resource owner
+            // 2. Check the client.
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.password))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.password));
+            }
+
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token) || !client.ResponseTypes.Contains(ResponseType.id_token))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient, string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, "token id_token"));
+            }
+
+            // 3. Try to authenticate a resource owner
             var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(resourceOwnerGrantTypeParameter.UserName, 
                 resourceOwnerGrantTypeParameter.Password,
                 resourceOwnerGrantTypeParameter.AmrValues);
@@ -108,7 +116,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.ResourceOwnerCredentialsAreNotValid);
             }
 
-            // 3. Check if the requested scopes are valid
+            // 4. Check if the requested scopes are valid
             var allowedTokenScopes = string.Empty;
             if (!string.IsNullOrWhiteSpace(resourceOwnerGrantTypeParameter.Scope))
             {
@@ -121,7 +129,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 allowedTokenScopes = string.Join(" ", scopeValidation.Scopes);
             }
 
-            // 4. Generate the user information payload and store it.
+            // 5. Generate the user information payload and store it.
             var claims = resourceOwner.Claims;
             var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

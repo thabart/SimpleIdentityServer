@@ -16,6 +16,7 @@
 
 using Moq;
 using SimpleIdentityServer.AccessToken.Store;
+using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
@@ -34,10 +35,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class AddUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IProfileRepository> _profileRepositoryStub;
         private Mock<IClaimRepository> _claimsRepositoryStub;
         private Mock<IAccessTokenStore> _tokenStoreStub;
         private Mock<IScimClientFactory> _scimClientFactoryStub;
+        private Mock<ILinkProfileAction> _linkProfileActionStub;
         private Mock<IOpenIdEventSource> _openidEventSourceStub;
         private IAddUserOperation _addResourceOwnerAction;
         
@@ -73,6 +74,23 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoWithCredentialsAlreadyExists);
         }
+
+        [Fact]
+        public async Task When_ResourceOwner_Cannot_Be_Added_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(false));
+            var parameter = new AddUserParameter("name", "password");
+
+            // ACT
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _addResourceOwnerAction.Execute(parameter, null));
+
+            // ASSERTS
+            Assert.NotNull(exception);
+            Assert.Equal("unhandled_exception", exception.Code);
+            Assert.Equal("An error occured while trying to insert the resource owner", exception.Message);
+        }
         
         [Fact]
         public async Task When_Add_ResourceOwner_Then_Operation_Is_Called()
@@ -80,31 +98,32 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             // ARRANGE
             InitializeFakeObjects();
             var parameter = new AddUserParameter("name", "password", new List<Claim>());
-
             _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
+            _resourceOwnerRepositoryStub.Setup(r => r.InsertAsync(It.IsAny<ResourceOwner>())).Returns(Task.FromResult(true));
 
             // ACT
             await _addResourceOwnerAction.Execute(parameter, null);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.InsertAsync(It.IsAny<ResourceOwner>()));
+            _openidEventSourceStub.Verify(o => o.AddResourceOwner("name"));
         }
 
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _profileRepositoryStub = new Mock<IProfileRepository>();
             _claimsRepositoryStub = new Mock<IClaimRepository>();
             _tokenStoreStub = new Mock<IAccessTokenStore>();
             _scimClientFactoryStub = new Mock<IScimClientFactory>();
+            _linkProfileActionStub = new Mock<ILinkProfileAction>();
             _openidEventSourceStub = new Mock<IOpenIdEventSource>();
             _addResourceOwnerAction = new AddUserOperation(
                 _resourceOwnerRepositoryStub.Object,
-                _profileRepositoryStub.Object,
                 _claimsRepositoryStub.Object,
                 _tokenStoreStub.Object,
                 _scimClientFactoryStub.Object,
+                _linkProfileActionStub.Object,
                 null,
                 _openidEventSourceStub.Object);
         }

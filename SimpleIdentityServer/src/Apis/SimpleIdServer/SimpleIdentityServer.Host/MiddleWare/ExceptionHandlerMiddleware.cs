@@ -15,10 +15,11 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Host.DTOs.Response;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
                 {
                     var errorResponseWithState = new ErrorResponseWithState
                     {
-                        state = identityServerExceptionWithState.State
+                        State = identityServerExceptionWithState.State
                     };
 
                     PopulateError(errorResponseWithState, identityServerExceptionWithState);
@@ -112,8 +113,8 @@ namespace SimpleIdentityServer.Host.MiddleWare
         
         private static void PopulateError(ErrorResponse errorResponse, IdentityServerException exception)
         {
-            errorResponse.error = exception.Code;
-            errorResponse.error_description = exception.Message;
+            errorResponse.Error = exception.Code;
+            errorResponse.ErrorDescription = exception.Message;
         }
 
         #endregion

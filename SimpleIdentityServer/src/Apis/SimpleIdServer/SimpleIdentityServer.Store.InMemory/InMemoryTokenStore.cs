@@ -116,11 +116,6 @@ namespace SimpleIdentityServer.Store.InMemory
             _tokens.Add(id, grantedToken);
             _mappingStrToRefreshTokens.Add(grantedToken.RefreshToken, id);
             _mappingStrToAccessTokens.Add(grantedToken.AccessToken, id);
-            if (!string.IsNullOrWhiteSpace(grantedToken.IdToken))
-            {
-                _mappingStrToAccessTokens.Add(grantedToken.IdToken, id);
-            }
-
             return Task.FromResult(true);
         }
 

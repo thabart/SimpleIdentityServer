@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Security.Cryptography.X509Certificates;
@@ -108,7 +109,7 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
+            requestBuilder.SetClientAssertion(clientId, jwt, ClientAssertionTypes.JwtBearer);
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 
@@ -125,7 +126,7 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
+            requestBuilder.SetClientAssertion(clientId, jwt, ClientAssertionTypes.JwtBearer);
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 

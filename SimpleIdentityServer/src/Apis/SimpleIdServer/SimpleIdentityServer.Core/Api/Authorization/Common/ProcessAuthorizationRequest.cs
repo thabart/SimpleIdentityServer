@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
@@ -162,8 +163,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             // Check if the user connection is still valid.
             if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default(double)))
             {
-                var authenticationDateTimeClaim =
-                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                var authenticationDateTimeClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationDateTimeClaim != null)
                 {
                     var maxAge = authorizationParameter.MaxAge;

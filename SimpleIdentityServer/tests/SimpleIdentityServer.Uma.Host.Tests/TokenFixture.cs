@@ -2,21 +2,21 @@
 using Moq;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Client.Configuration;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Permission;
 using SimpleIdentityServer.Client.Policy;
-using SimpleIdentityServer.Uma.Client.Policy;
 using SimpleIdentityServer.Client.ResourceSet;
-using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Uma.Client.Policy;
+using SimpleIdentityServer.Uma.Client.ResourceSet;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using SimpleIdentityServer.Core.Common;
 
 namespace SimpleIdentityServer.Uma.Host.Tests
 {
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ASSERTS
             Assert.NotNull(result);
-            Assert.NotEmpty(result.AccessToken);
+            Assert.NotEmpty(result.Content.AccessToken);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                     "execute"
                 }
             },
-            baseUrl + "/.well-known/uma2-configuration", result.AccessToken);
+            baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
             var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
             {
                 Rules = new List<PostPolicyRule>
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 {
                     resource.Id
                 }
-            }, baseUrl + "/.well-known/uma2-configuration", result.AccessToken);
+            }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
             var ticket = await _permissionClient.AddByResolution(new PostPermission // Add permission & retrieve a ticket id.
             {
                 ResourceSetId = resource.Id,

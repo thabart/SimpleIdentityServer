@@ -42,6 +42,13 @@ namespace SimpleIdentityServer.Core.Validators
                     ErrorCodes.InvalidRequestCode,
                     string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.PasswordName));
             }
+
+            if (string.IsNullOrWhiteSpace(parameter.Scope))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, Constants.StandardTokenRequestParameterNames.ScopeName));
+            }
         }
     }
 }

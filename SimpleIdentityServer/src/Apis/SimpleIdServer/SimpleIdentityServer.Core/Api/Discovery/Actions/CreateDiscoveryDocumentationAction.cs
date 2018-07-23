@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Repositories;
 using System;

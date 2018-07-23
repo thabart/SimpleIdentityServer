@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Store.InMemory
 
             if (!_mappingStringToAuthCodes.ContainsKey(code))
             {
-                return null;
+                return Task.FromResult((AuthorizationCode)null);
             }
 
             return Task.FromResult(_mappingStringToAuthCodes[code]);

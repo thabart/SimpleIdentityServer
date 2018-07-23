@@ -11,5 +11,8 @@ REM SCIM
 dotnet test tests\SimpleIdentityServer.Scim.Core.Tests
 dotnet test tests\SimpleIdentityServer.Scim.Client.Tests
 
+REM UI
+dotnet test tests\SimpleIdentityServer.Authenticate.SMS.Tests
+
 REM BASIC USER FILTER
 dotnet test tests\SimpleIdentityServer.UserFilter.Basic.Tests

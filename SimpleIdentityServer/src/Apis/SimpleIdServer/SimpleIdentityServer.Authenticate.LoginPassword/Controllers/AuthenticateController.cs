@@ -11,6 +11,7 @@ using SimpleIdentityServer.Authenticate.LoginPassword.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Helpers;

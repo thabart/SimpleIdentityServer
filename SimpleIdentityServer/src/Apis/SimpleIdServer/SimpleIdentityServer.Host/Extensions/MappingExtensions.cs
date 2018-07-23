@@ -17,11 +17,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Host.DTOs.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,7 +149,11 @@ namespace SimpleIdentityServer.Host.Extensions
         {
             return new RefreshTokenGrantTypeParameter
             {
-                RefreshToken = request.RefreshToken
+                RefreshToken = request.RefreshToken,
+                ClientAssertion = request.ClientAssertion,
+                ClientAssertionType = request.ClientAssertionType,
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret
             };
         }
 
@@ -265,36 +269,32 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
+        public static RegistrationParameter ToParameter(this ClientRequest clientRequest)
         {
+            if (clientRequest == null)
+            {
+                throw new ArgumentNullException(nameof(clientRequest));
+            }
+
             var responseTypes = new List<Core.Common.Models.ResponseType>();
-            var redirectUris = clientResponse.redirect_uris == null
-                ? new List<string>()
-                : clientResponse.redirect_uris.ToList();
             var grantTypes = new List<GrantType>();
             ApplicationTypes? applicationType = null;
-            if (clientResponse.response_types != null &&
-                clientResponse.response_types.Any())
+            if (clientRequest.ResponseTypes != null && clientRequest.ResponseTypes.Any())
             {
-                foreach (var responseType in clientResponse.response_types)
+                foreach (var responseType in clientRequest.ResponseTypes)
                 {
-                    var responseTypeSplitted = responseType.Split(' ');
-                    foreach (var response in responseTypeSplitted)
+                    Core.Common.Models.ResponseType responseTypeEnum;
+                    if (Enum.TryParse(responseType, out responseTypeEnum) &&
+                        !responseTypes.Contains(responseTypeEnum))
                     {
-                        Core.Common.Models.ResponseType responseTypeEnum;
-                        if (Enum.TryParse(response, out responseTypeEnum) &&
-                            !responseTypes.Contains(responseTypeEnum))
-                        {
-                            responseTypes.Add(responseTypeEnum);
-                        }
+                        responseTypes.Add(responseTypeEnum);
                     }
                 }
             }
 
-            if(clientResponse.grant_types != null &&
-                clientResponse.grant_types.Any())
+            if(clientRequest.GrantTypes != null && clientRequest.GrantTypes.Any())
             {
-                foreach (var grantType in clientResponse.grant_types)
+                foreach (var grantType in clientRequest.GrantTypes)
                 {
                     GrantType grantTypeEnum;
                     if (Enum.TryParse(grantType, out grantTypeEnum))
@@ -305,7 +305,7 @@ namespace SimpleIdentityServer.Host.Extensions
             }
 
             ApplicationTypes appTypeEnum;
-            if (Enum.TryParse(clientResponse.application_type, out appTypeEnum))
+            if (Enum.TryParse(clientRequest.ApplicationType, out appTypeEnum))
             {
                 applicationType = appTypeEnum;
             }
@@ -313,42 +313,42 @@ namespace SimpleIdentityServer.Host.Extensions
             return new RegistrationParameter
             {
                 ApplicationType = applicationType,
-                ClientName = clientResponse.client_name,
-                ClientUri = clientResponse.client_uri,
-                Contacts = clientResponse.contacts == null ? new List<string>() : clientResponse.contacts.ToList(),
-                DefaultAcrValues = clientResponse.default_acr_values,
-                DefaultMaxAge = clientResponse.default_max_age,
+                ClientName = clientRequest.ClientName,
+                ClientUri = clientRequest.ClientUri,
+                Contacts = clientRequest.Contacts == null ? new List<string>() : clientRequest.Contacts.ToList(),
+                DefaultAcrValues = clientRequest.DefaultAcrValues,
+                DefaultMaxAge = clientRequest.DefaultMaxAge,
                 GrantTypes = grantTypes,
-                IdTokenEncryptedResponseAlg = clientResponse.id_token_encrypted_response_alg,
-                IdTokenEncryptedResponseEnc = clientResponse.id_token_encrypted_response_enc,
-                IdTokenSignedResponseAlg = clientResponse.id_token_signed_response_alg,
-                InitiateLoginUri = clientResponse.initiate_login_uri,
-                Jwks = clientResponse.jwks,
-                JwksUri = clientResponse.jwks_uri,
-                LogoUri = clientResponse.logo_uri,
-                PolicyUri = clientResponse.policy_uri,
-                RedirectUris = redirectUris,
-                RequestObjectEncryptionAlg = clientResponse.request_object_encryption_alg,
-                RequestObjectEncryptionEnc = clientResponse.request_object_encryption_enc,
-                RequestObjectSigningAlg = clientResponse.request_object_signing_alg,
-                RequestUris = clientResponse.request_uris,
-                RequireAuthTime = clientResponse.require_auth_time,
+                IdTokenEncryptedResponseAlg = clientRequest.IdTokenEncryptedResponseAlg,
+                IdTokenEncryptedResponseEnc = clientRequest.IdTokenEncryptedResponseEnc,
+                IdTokenSignedResponseAlg = clientRequest.IdTokenSignedResponseAlg,
+                InitiateLoginUri = clientRequest.InitiateLoginUri,
+                Jwks = clientRequest.Jwks,
+                JwksUri = clientRequest.JwksUri,
+                LogoUri = clientRequest.LogoUri,
+                PolicyUri = clientRequest.PolicyUri,
+                RedirectUris = clientRequest.RedirectUris == null ? new List<string>() : clientRequest.RedirectUris.ToList(),
+                RequestObjectEncryptionAlg = clientRequest.RequestObjectEncryptionAlg,
+                RequestObjectEncryptionEnc = clientRequest.RequestObjectEncryptionEnc,
+                RequestObjectSigningAlg = clientRequest.RequestObjectSigningAlg,
+                RequestUris = clientRequest.RequestUris == null ? new List<string>() : clientRequest.RequestUris.ToList(),
+                RequireAuthTime = clientRequest.RequireAuthTime,
                 ResponseTypes = responseTypes,
-                SectorIdentifierUri = clientResponse.sector_identifier_uri,
-                SubjectType = clientResponse.subject_type,
-                TokenEndPointAuthMethod = clientResponse.token_endpoint_auth_method,
-                TokenEndPointAuthSigningAlg = clientResponse.token_endpoint_auth_signing_alg,
-                TosUri = clientResponse.tos_uri,
-                UserInfoEncryptedResponseAlg = clientResponse.userinfo_encrypted_response_alg,
-                UserInfoEncryptedResponseEnc = clientResponse.userinfo_encrypted_response_enc,
-                UserInfoSignedResponseAlg = clientResponse.userinfo_signed_response_alg,
-                ScimProfile = clientResponse.scim_profile
+                SectorIdentifierUri = clientRequest.SectorIdentifierUri,
+                SubjectType = clientRequest.SubjectType,
+                TokenEndPointAuthMethod = clientRequest.TokenEndpointAuthMethod,
+                TokenEndPointAuthSigningAlg = clientRequest.TokenEndpointAuthSigningAlg,
+                TosUri = clientRequest.TosUri,
+                UserInfoEncryptedResponseAlg = clientRequest.UserInfoEncryptedResponseAlg,
+                UserInfoEncryptedResponseEnc = clientRequest.UserInfoEncryptedResponseEnc,
+                UserInfoSignedResponseAlg = clientRequest.UserInfoSignedResponseAlg,
+                ScimProfile = clientRequest.ScimProfile
             };
         }
 
-        public static Introspection ToDto(this IntrospectionResult introspectionResult)
+        public static IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
         {
-            return new Introspection
+            return new IntrospectionResponse
             {
                 Active = introspectionResult.Active,
                 Audience = introspectionResult.Audience,
@@ -365,14 +365,14 @@ namespace SimpleIdentityServer.Host.Extensions
             };
         }
 
-        public static TokenResponse ToDto(this GrantedToken grantedToken)
+        public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
         {
             if (grantedToken == null)
             {
                 throw new ArgumentNullException(nameof(grantedToken));
             }
 
-            return new TokenResponse
+            return new GrantedTokenResponse
             {
                 AccessToken = grantedToken.AccessToken,
                 IdToken = grantedToken.IdToken,

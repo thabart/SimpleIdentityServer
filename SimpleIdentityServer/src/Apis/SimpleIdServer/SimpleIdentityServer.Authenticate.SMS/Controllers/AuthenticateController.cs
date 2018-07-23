@@ -11,6 +11,7 @@ using SimpleIdentityServer.Authenticate.SMS.ViewModels;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
@@ -35,7 +36,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
     [Area(Constants.AMR)]
     public class AuthenticateController : BaseAuthenticateController
     {
-        private const string _passwordLessCookieName = "SimpleIdentityServer-PasswordLess";
         private readonly ISmsAuthenticationOperation _smsAuthenticationOperation;
         private readonly IGenerateAndSendSmsCodeOperation _generateAndSendSmsCodeOperation;
 
@@ -124,7 +124,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     try
                     {
                         var code = await _generateAndSendSmsCodeOperation.Execute(localAuthenticationViewModel.PhoneNumber);
-                        _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode");
                     }
                     catch (Exception ex)
@@ -152,7 +151,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _passwordLessCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.COOKIE_NAME);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
@@ -182,7 +181,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return RedirectToAction("Index", "User", new { area = "UserManagement" });
             }
 
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _passwordLessCookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.COOKIE_NAME);
             if (authenticatedUser == null || authenticatedUser.Identity == null || !authenticatedUser.Identity.IsAuthenticated)
             {
                 throw new IdentityServerException(Core.Errors.ErrorCodes.UnhandledExceptionCode, "SMS authentication cannot be performed");
@@ -193,7 +192,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             if (confirmCodeViewModel.Action == "resend") // Resend the confirmation code.
             {
                 var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
-                _simpleIdentityServerEventSource.GetConfirmationCode(code);
                 await TranslateView(DefaultLanguage);
                 return View("ConfirmCode", confirmCodeViewModel);
             }
@@ -205,7 +203,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 return View("ConfirmCode", confirmCodeViewModel);
             }
 
-            await _authenticationService.SignOutAsync(HttpContext, _passwordLessCookieName, new AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, Constants.COOKIE_NAME, new AuthenticationProperties());
             var resourceOwner = await _userActions.GetUser(authenticatedUser);
             if (!string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication)) // Execute TWO Factor authentication
             {
@@ -213,7 +211,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                 {
                     await SetTwoFactorCookie(authenticatedUser.Claims);
                     var code = await _generateAndSendSmsCodeOperation.Execute(phoneNumber.Value);
-                    _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode", new { code = confirmCodeViewModel.Code });
                 }
                 catch (ClaimRequiredException)
@@ -288,7 +285,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     try
                     {
                         var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
-                        _simpleIdentityServerEventSource.GetConfirmationCode(code);
                         return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
@@ -306,9 +302,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
 
         private async Task SetPasswordLessCookie(IEnumerable<Claim> claims)
         {
-            var identity = new ClaimsIdentity(claims, _passwordLessCookieName);
+            var identity = new ClaimsIdentity(claims, Constants.COOKIE_NAME);
             var principal = new ClaimsPrincipal(identity);
-            await _authenticationService.SignInAsync(HttpContext, _passwordLessCookieName, principal, new AuthenticationProperties
+            await _authenticationService.SignInAsync(HttpContext, Constants.COOKIE_NAME, principal, new AuthenticationProperties
             {
                 ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
                 IsPersistent = false

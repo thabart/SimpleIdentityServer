@@ -14,10 +14,15 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Client.Results;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -25,7 +30,7 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IGetUserInfoOperation
     {
-        Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false);
+        Task<GetUserInfoResult> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false);
     }
 
     internal class GetUserInfoOperation : IGetUserInfoOperation
@@ -37,7 +42,7 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<JObject> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false)
+        public async Task<GetUserInfoResult> ExecuteAsync(Uri userInfoUri, string accessToken, bool inBody = false)
         {
             if (userInfoUri == null)
             {
@@ -62,7 +67,7 @@ namespace SimpleIdentityServer.Client.Operations
                 request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     {
-                        Constants.GrantedTokenNames.AccessToken, accessToken
+                        GrantedTokenNames.AccessToken, accessToken
                     }
                 });
             }
@@ -73,8 +78,36 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             var serializedContent = await httpClient.SendAsync(request).ConfigureAwait(false);
-            var json = await serializedContent.Content.ReadAsStringAsync();
-            return JObject.Parse(json);
+            var json = await serializedContent.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                serializedContent.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetUserInfoResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json),
+                    Status = serializedContent.StatusCode
+                };
+            }
+
+            var contentType = serializedContent.Content.Headers.ContentType;
+            if (contentType != null && contentType.Parameters != null && contentType.MediaType == "application/jwt")
+            {
+                return new GetUserInfoResult
+                {
+                    ContainsError = false,
+                    JwtToken = json
+                };
+            }
+
+            return new GetUserInfoResult
+            {
+                ContainsError = false,
+                Content = JObject.Parse(json)
+            };
         }
     }
 }

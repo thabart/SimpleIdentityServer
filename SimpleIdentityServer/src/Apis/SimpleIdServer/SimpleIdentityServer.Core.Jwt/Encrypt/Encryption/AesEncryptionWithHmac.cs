@@ -141,11 +141,11 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
             try
             {
                 var toDecryptSplitted = toDecrypt.Split('.');
-                var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode();
-                var encryptedContentEncryptionKeyBytes = toDecryptSplitted[1].Base64DecodeBytes();
-                var ivBytes = toDecryptSplitted[2].Base64DecodeBytes();
-                var cipherText = toDecryptSplitted[3].Base64DecodeBytes();
-                var authenticationTag = toDecryptSplitted[4].Base64DecodeBytes();
+                var serializedProtectedHeader = toDecryptSplitted[0].Base64Decode(); // UTF8 (JWE PROTECTED HEADER)
+                var encryptedContentEncryptionKeyBytes = toDecryptSplitted[1].Base64DecodeBytes(); // ENCRYPTED KEY
+                var ivBytes = toDecryptSplitted[2].Base64DecodeBytes(); // INITIALIZATION VECTOR
+                var cipherText = toDecryptSplitted[3].Base64DecodeBytes(); // CIPHER TEXT
+                var authenticationTag = toDecryptSplitted[4].Base64DecodeBytes(); // AUTHENTICATION TAG
 
                 var contentEncryptionKey = _aesEncryptionHelper.DecryptContentEncryptionKey(
                     encryptedContentEncryptionKeyBytes,
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption
                     ivBytes);
 
                 // Calculate the additional authenticated data.
-                var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader);
+                var aad = Encoding.UTF8.GetBytes(serializedProtectedHeader); // ASCII(BASE64URL(UTF8(JWE Protected Header)))
 
                 // Calculate the authentication tag.
                 var al = ByteManipulator.LongToBytes(aad.Length * 8);

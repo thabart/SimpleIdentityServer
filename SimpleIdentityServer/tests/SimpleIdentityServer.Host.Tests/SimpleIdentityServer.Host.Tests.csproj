@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.LoginPassword\SimpleIdentityServer.Authenticate.LoginPassword.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />

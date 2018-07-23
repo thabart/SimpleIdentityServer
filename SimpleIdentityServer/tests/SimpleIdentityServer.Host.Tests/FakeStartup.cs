@@ -22,22 +22,22 @@ using Newtonsoft.Json;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
-using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
+using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Host.Tests.Extensions;
-using SimpleIdentityServer.Host.Tests.Fakes;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
 using SimpleIdentityServer.Logging;
@@ -49,6 +49,7 @@ using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using WebApiContrib.Core.Storage;
@@ -96,7 +97,15 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
                 opts.DefaultChallengeScheme = DefaultSchema;
-            }).AddFakeCustomAuth(o => { });
+            })
+            .AddFakeCustomAuth(o => { })
+            .AddFakeOAuth2Introspection(o =>
+            {
+                o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+                o.ClientId = "stateless_client";
+                o.ClientSecret = "stateless_client";
+                o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
+            });
             services.AddAuthorization(opt =>
             {
                 opt.AddOpenIdSecurityPolicy(DefaultSchema);
@@ -156,7 +165,7 @@ namespace SimpleIdentityServer.Host.Tests
         {
             services.AddSingleton(new SmsAuthenticationOptions());
             services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
-            services.AddTransient<ITwilioClient, FakeTwilioClient>();
+            services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
             services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
