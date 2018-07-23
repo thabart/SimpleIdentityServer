@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleBus.Core;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.WebSite.Consent;
 using SimpleIdentityServer.Core.WebSite.User;
