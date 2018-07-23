@@ -17,7 +17,6 @@
 using Newtonsoft.Json;
 using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
-using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Collections.Generic;

@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.Common.Parameters
     {
         public SearchResourceOwnerParameter()
         {
-            IsPagingEnabled = false;
+            IsPagingEnabled = true;
         }
 
         public OrderParameter Order { get; set; }
