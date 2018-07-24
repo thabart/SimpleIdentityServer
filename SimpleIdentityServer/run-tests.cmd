@@ -15,4 +15,4 @@ REM UI
 dotnet test tests\SimpleIdentityServer.Authenticate.SMS.Tests
 
 REM BASIC USER FILTER
-dotnet test tests\SimpleIdentityServer.UserFilter.Basic.Tests
+dotnet test tests\SimpleIdentityServer.AccountFilter.Basic.Tests

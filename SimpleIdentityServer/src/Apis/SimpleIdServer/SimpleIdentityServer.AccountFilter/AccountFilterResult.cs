@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleIdentityServer.UserFilter
+namespace SimpleIdentityServer.AccountFilter
 {
-    public class UserFilterRuleResult
+    public class AccountFilterRuleResult
     {
-        public UserFilterRuleResult(string ruleName)
+        public AccountFilterRuleResult(string ruleName)
         {
             RuleName = ruleName;
             ErrorMessages = new List<string>();
@@ -15,14 +15,14 @@ namespace SimpleIdentityServer.UserFilter
         public bool IsValid { get; set; }
     }
 
-    public class UserFilterResult
+    public class AccountFilterResult
     {
-        public UserFilterResult()
+        public AccountFilterResult()
         {
-            UserFilterRules = new List<UserFilterRuleResult>();
+            AccountFilterRules = new List<AccountFilterRuleResult>();
         }
 
         public bool IsValid { get; set; }
-        public IEnumerable<UserFilterRuleResult> UserFilterRules { get; set; }
+        public IEnumerable<AccountFilterRuleResult> AccountFilterRules { get; set; }
     }
 }

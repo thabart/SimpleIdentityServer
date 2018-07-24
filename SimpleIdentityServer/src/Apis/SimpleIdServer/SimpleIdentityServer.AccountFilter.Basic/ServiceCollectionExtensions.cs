@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace SimpleIdentityServer.UserFilter.Basic
+namespace SimpleIdentityServer.AccountFilter.Basic
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUserFilter(this IServiceCollection services, UserFilterBasicOptions options)
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services, AccountFilterBasicOptions options)
         {
             if (services == null)
             {
@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.UserFilter.Basic
             }
 
             services.AddSingleton(options);
-            services.AddTransient<IResourceOwnerFilter, ResourceOwnerFilter>();
+            services.AddTransient<IAccountFilter, AccountFilter>();
             return services;
         }
     }

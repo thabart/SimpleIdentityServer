@@ -4,30 +4,30 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
-namespace SimpleIdentityServer.UserFilter.Basic
+namespace SimpleIdentityServer.AccountFilter.Basic
 {
-    public class ResourceOwnerFilter : IResourceOwnerFilter
+    public class AccountFilter : IAccountFilter
     {
-        private readonly UserFilterBasicOptions _userFilterBasicOptions;
+        private readonly AccountFilterBasicOptions _accountFilterBasicOptions;
 
-        public ResourceOwnerFilter(UserFilterBasicOptions userFilterBasicOptions)
+        public AccountFilter(AccountFilterBasicOptions accountFilterBasicOptions)
         {
-            _userFilterBasicOptions = userFilterBasicOptions;
+            _accountFilterBasicOptions = accountFilterBasicOptions;
         }
 
-        public UserFilterResult Check(IEnumerable<Claim> claims)
+        public AccountFilterResult Check(IEnumerable<Claim> claims)
         {
             if (claims == null)
             {
                 throw new ArgumentNullException(nameof(claims));
             }
 
-            var userFilterRules = new List<UserFilterRuleResult>();
-            if(_userFilterBasicOptions.Rules != null)
+            var accountFilterRules = new List<AccountFilterRuleResult>();
+            if(_accountFilterBasicOptions.Rules != null)
             {
-                foreach(var rule in _userFilterBasicOptions.Rules)
+                foreach(var rule in _accountFilterBasicOptions.Rules)
                 {
-                    var userFilterRule = new UserFilterRuleResult(rule.Name);
+                    var accountFilterRule = new AccountFilterRuleResult(rule.Name);
                     var errorMessages = new List<string>();
                     if (rule.Comparisons != null)
                     {
@@ -65,16 +65,16 @@ namespace SimpleIdentityServer.UserFilter.Basic
                         }
                     }
                     
-                    userFilterRule.ErrorMessages = errorMessages;
-                    userFilterRules.Add(userFilterRule);
-                    userFilterRule.IsValid = !errorMessages.Any();
+                    accountFilterRule.ErrorMessages = errorMessages;
+                    accountFilterRule.IsValid = !errorMessages.Any();
+                    accountFilterRules.Add(accountFilterRule);
                 }
             }
 
-            return new UserFilterResult
+            return new AccountFilterResult
             {
-                UserFilterRules = userFilterRules,
-                IsValid = userFilterRules.Any(u => u.IsValid)
+                AccountFilterRules = accountFilterRules,
+                IsValid = accountFilterRules.Any(u => u.IsValid)
             };
         }
     }

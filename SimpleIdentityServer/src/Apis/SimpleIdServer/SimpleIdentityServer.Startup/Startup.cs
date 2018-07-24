@@ -35,7 +35,7 @@ using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.TwoFactorAuthentication;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
-using SimpleIdentityServer.UserFilter.Basic;
+using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.UserManagement;
 using System;
 using System.Collections.Generic;
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            ConfigureUserFilters(services);
+            ConfigureAccountFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
@@ -177,9 +177,9 @@ namespace SimpleIdentityServer.Startup
             });  // USER MANAGEMENT
         }
 
-        private void ConfigureUserFilters(IServiceCollection services)
+        private void ConfigureAccountFilters(IServiceCollection services)
         {
-            services.AddUserFilter(new UserFilterBasicOptions
+            services.AddAccountFilter(new AccountFilterBasicOptions
             {
                 Rules = new List<FilterRule>
                 {
@@ -190,8 +190,8 @@ namespace SimpleIdentityServer.Startup
                         {
                             new FilterComparison
                             {
-                                ClaimKey = "key",
-                                ClaimValue = "key",
+                                ClaimKey = "organization",
+                                ClaimValue = "entreprise",
                                 Operation = ComparisonOperations.Equal
                             }
                         }

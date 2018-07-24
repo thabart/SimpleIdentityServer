@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.UserFilter.Basic.Tests Unit test project</Description>
+    <Description>SimpleIdentityServer.AccountFilter.Basic.Tests Unit test project</Description>
     <Authors>thierry habart</Authors>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>SimpleIdentityServer.UserFilter.Basic.Tests</AssemblyName>
-    <PackageId>SimpleIdentityServer.UserFilter.Basic.Tests</PackageId>
+    <AssemblyName>SimpleIdentityServer.AccountFilter.Basic.Tests</AssemblyName>
+    <PackageId>SimpleIdentityServer.AccountFilter.Basic.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -34,7 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.UserFilter.Basic\SimpleIdentityServer.UserFilter.Basic.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.AccountFilter.Basic\SimpleIdentityServer.AccountFilter.Basic.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.AccountFilter\SimpleIdentityServer.AccountFilter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

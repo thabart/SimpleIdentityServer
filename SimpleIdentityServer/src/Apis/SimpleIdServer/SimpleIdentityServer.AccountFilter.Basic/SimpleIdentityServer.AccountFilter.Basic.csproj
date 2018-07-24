@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.UserFilter.Basic Class Library</Description>
+    <Description>SimpleIdentityServer.AccountFilter.Basic Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.UserFilter.Basic</AssemblyName>
-    <PackageId>SimpleIdentityServer.UserFilter.Basic</PackageId>
+    <AssemblyName>SimpleIdentityServer.AccountFilter.Basic</AssemblyName>
+    <PackageId>SimpleIdentityServer.AccountFilter.Basic</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
@@ -19,6 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.UserFilter\SimpleIdentityServer.UserFilter.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter\SimpleIdentityServer.AccountFilter.csproj" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SimpleIdentityServer.UserFilter.Basic
+namespace SimpleIdentityServer.AccountFilter.Basic
 {
     public enum ComparisonOperations
     {
@@ -27,9 +27,9 @@ namespace SimpleIdentityServer.UserFilter.Basic
         public IEnumerable<FilterComparison> Comparisons { get; set; }
     }
 
-    public class UserFilterBasicOptions
+    public class AccountFilterBasicOptions
     {
-        public UserFilterBasicOptions()
+        public AccountFilterBasicOptions()
         {
             Rules = new List<FilterRule>();
         }
