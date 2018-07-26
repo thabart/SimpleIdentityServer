@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IGetPolicyOperation
     {
-        Task<PolicyResponse> ExecuteAsync(string id, string url, string token);
+        Task<GetPolicyResult> ExecuteAsync(string id, string url, string token);
     }
 
     internal class GetPolicyOperation : IGetPolicyOperation
@@ -37,7 +39,7 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<PolicyResponse> ExecuteAsync(string id, string url, string token)
+        public async Task<GetPolicyResult> ExecuteAsync(string id, string url, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -68,9 +70,25 @@ namespace SimpleIdentityServer.Client.Policy
             request.Headers.Add("Authorization", "Bearer " + token);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<PolicyResponse>(content);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetPolicyResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new GetPolicyResult
+            {
+                Content = JsonConvert.DeserializeObject<PolicyResponse>(content)
+            };
         }
     }
 }

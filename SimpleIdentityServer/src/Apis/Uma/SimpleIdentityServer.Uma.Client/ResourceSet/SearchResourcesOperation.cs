@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
@@ -10,7 +12,7 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
 {
     public interface ISearchResourcesOperation
     {
-        Task<SearchResourceSetResponse> ExecuteAsync(string url, SearchResourceSet parameter, string authorizationHeaderValue = null);
+        Task<SearchResourceSetResult> ExecuteAsync(string url, SearchResourceSet parameter, string authorizationHeaderValue = null);
     }
 
     internal sealed class SearchResourcesOperation : ISearchResourcesOperation
@@ -22,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<SearchResourceSetResponse> ExecuteAsync(string url, SearchResourceSet parameter, string authorizationHeaderValue = null)
+        public async Task<SearchResourceSetResult> ExecuteAsync(string url, SearchResourceSet parameter, string authorizationHeaderValue = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -43,10 +45,26 @@ namespace SimpleIdentityServer.Uma.Client.ResourceSet
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             }
 
-            var httpResult = await httpClient.SendAsync(request);
-            httpResult.EnsureSuccessStatusCode();
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<SearchResourceSetResponse>(content);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new SearchResourceSetResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new SearchResourceSetResult
+            {
+                Content = JsonConvert.DeserializeObject<SearchResourceSetResponse>(content)
+            };
         }
     }
 }

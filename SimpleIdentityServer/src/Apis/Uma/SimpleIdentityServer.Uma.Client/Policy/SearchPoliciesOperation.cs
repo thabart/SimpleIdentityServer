@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
@@ -10,7 +12,7 @@ namespace SimpleIdentityServer.Uma.Client.Policy
 {
     public interface ISearchPoliciesOperation
     {
-        Task<SearchAuthPoliciesResponse> ExecuteAsync(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
+        Task<SearchAuthPoliciesResult> ExecuteAsync(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
     }
 
     internal sealed class SearchPoliciesOperation : ISearchPoliciesOperation
@@ -22,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<SearchAuthPoliciesResponse> ExecuteAsync(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
+        public async Task<SearchAuthPoliciesResult> ExecuteAsync(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -44,9 +46,25 @@ namespace SimpleIdentityServer.Uma.Client.Policy
             }
 
             var httpResult = await httpClient.SendAsync(request);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<SearchAuthPoliciesResponse>(content);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new SearchAuthPoliciesResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new SearchAuthPoliciesResult
+            {
+                Content = JsonConvert.DeserializeObject<SearchAuthPoliciesResponse>(content)
+            };
         }
     }
 }

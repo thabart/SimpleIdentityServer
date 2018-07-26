@@ -1,5 +1,5 @@
 ﻿#region copyright
-// Copyright 2015 Habart Thierry
+// Copyright 2016 Habart Thierry
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Authentication;
+using SimpleIdentityServer.Uma.Host.Tests.Fakes;
+using System;
 
-namespace SimpleIdentityServer.Uma.Host.DTOs.Responses
+namespace SimpleIdentityServer.Uma.Host.Tests.MiddleWares
 {
-    [DataContract]
-    public class ErrorResponse
+    public static class FakeCustomAuthExtensions
     {
-        [DataMember(Name = Constants.ErrorResponseNames.Error)]
-        public string Error { get; set; }
-
-        [DataMember(Name = Constants.ErrorResponseNames.ErrorDescription)]
-        public string ErrorDescription { get; set; }
-
-        [DataMember(Name = Constants.ErrorResponseNames.ErrorDetails)]
-        public object ErrorDetails { get; set; }
+        public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
+        {
+            return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeUmaStartup.DefaultSchema, FakeUmaStartup.DefaultSchema, configureOptions);
+        }
     }
 }

@@ -23,7 +23,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Errors;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
 {
@@ -43,11 +45,16 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (postPermission == null)
             {
-                throw new ArgumentNullException(nameof(postPermission));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var parameter = postPermission.ToParameter();
             var clientId = this.GetClientId();
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
+            }
+
             var ticketId = await _permissionControllerActions.Add(parameter, clientId);
             var result = new AddPermissionResponse
             {
@@ -65,11 +72,16 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (postPermissions == null)
             {
-                throw new ArgumentNullException(nameof(postPermissions));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var parameters = postPermissions.Select(p => p.ToParameter());
             var clientId = this.GetClientId();
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
+            }
+
             var ticketId = await _permissionControllerActions.Add(parameters, clientId);
             var result = new AddPermissionResponse
             {
@@ -78,6 +90,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             return new ObjectResult(result)
             {
                 StatusCode = (int)HttpStatusCode.Created
+            };
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
             };
         }
     }

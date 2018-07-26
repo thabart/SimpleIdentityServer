@@ -79,7 +79,6 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
 
             var json = addPermissionParameters == null ? string.Empty : JsonConvert.SerializeObject(addPermissionParameters);
             _umaServerEventSource.StartAddPermission(json);
-
             await CheckAddPermissionParameter(addPermissionParameters);
             var ticketLifetimeInSeconds = await _configurationService.GetTicketLifeTime();
             var ticket = new Ticket
@@ -104,7 +103,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             ticket.Lines = ticketLines;
             if(!await _ticketStore.AddAsync(ticket))
             {
-                throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketAlreadyExists);
+                throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheTicketCannotBeInserted);
             }
 
             _umaServerEventSource.FinishAddPermission(json);
@@ -114,8 +113,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
         private async Task CheckAddPermissionParameter(IEnumerable<AddPermissionParameter> addPermissionParameters)
         {
             // 1. Get resource sets.
-            var resourceSets = await _repositoryExceptionHelper.HandleException(
-                ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
+            var resourceSets = await _repositoryExceptionHelper.HandleException(ErrorDescriptions.TheResourceSetsCannotBeRetrieved,
                 () => _resourceSetRepository.Get(addPermissionParameters.Select(p => p.ResourceSetId)));
 
             // 2. Check parameters & scope exist.
@@ -123,33 +121,25 @@ namespace SimpleIdentityServer.Uma.Core.Api.PermissionController.Actions
             {
                 if (string.IsNullOrWhiteSpace(addPermissionParameter.ResourceSetId))
                 {
-                    throw new BaseUmaException(
-                        ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.ResourceSetId));
                 }
 
                 if (addPermissionParameter.Scopes == null ||
                     !addPermissionParameter.Scopes.Any())
                 {
-                    throw new BaseUmaException(
-                        ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
+                    throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPermissionNames.Scopes));
                 }
 
                 var resourceSet = resourceSets.FirstOrDefault(r => addPermissionParameter.ResourceSetId == r.Id);
                 if (resourceSet == null)
                 {
-                    throw new BaseUmaException(
-                        ErrorCodes.InvalidResourceSetId,
-                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId));
+                    throw new BaseUmaException(ErrorCodes.InvalidResourceSetId, string.Format(ErrorDescriptions.TheResourceSetDoesntExist, addPermissionParameter.ResourceSetId));
                 }
 
                 if (resourceSet.Scopes == null ||
                     addPermissionParameter.Scopes.Any(s => !resourceSet.Scopes.Contains(s)))
                 {
-                    throw new BaseUmaException(
-                        ErrorCodes.InvalidScope,
-                        ErrorDescriptions.TheScopeAreNotValid);
+                    throw new BaseUmaException(ErrorCodes.InvalidScope, ErrorDescriptions.TheScopeAreNotValid);
                 }
             }
         }

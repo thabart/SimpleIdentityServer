@@ -35,8 +35,10 @@ using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Controllers;
+using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Host.Tests.Extensions;
+using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Uma.Host.Tests.Services;
 using SimpleIdentityServer.Uma.Logging;
 using SimpleIdentityServer.Uma.Store.InMemory;
@@ -51,6 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
 {
     public class FakeUmaStartup : IStartup
     {
+        public const string DefaultSchema = "OAuth2Introspection";
         private UmaHostConfiguration _configuration;
         private SharedContext _context;
 
@@ -70,14 +73,19 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             // 1. Add the dependencies.
             RegisterServices(services, _configuration);
             // 2. Add authorization policies.
-            services.AddAuthorization(options =>
+            services.AddAuthentication(opts =>
             {
-                options.AddPolicy("UmaProtection", policy => policy.RequireAssertion((ctx) => {
-                    return true;
-                }));
-                options.AddPolicy("Authorization", policy => policy.RequireAssertion((ctx) => {
-                    return true;
-                }));
+                opts.DefaultAuthenticateScheme = DefaultSchema;
+                opts.DefaultChallengeScheme = DefaultSchema;
+            })
+            .AddFakeCustomAuth(o => { });
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("UmaProtection", policy =>
+                {
+                    policy.AddAuthenticationSchemes(DefaultSchema);
+                    policy.RequireAssertion(p => true);
+                });
             });
             // 3. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()

@@ -14,14 +14,15 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using SimpleIdentityServer.Uma.Logging;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
@@ -35,13 +36,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
     {
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IResourceSetParameterValidator _resourceSetParameterValidator;
+        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public UpdateResourceSetAction(
             IResourceSetRepository resourceSetRepository,
-            IResourceSetParameterValidator resourceSetParameterValidator)
+            IResourceSetParameterValidator resourceSetParameterValidator,
+            IUmaServerEventSource umaServerEventSource)
         {
             _resourceSetRepository = resourceSetRepository;
             _resourceSetParameterValidator = resourceSetParameterValidator;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(UpdateResourceSetParameter udpateResourceSetParameter)
@@ -51,11 +55,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(udpateResourceSetParameter));
             }
 
-            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id) == null)
-            {
-                return false;
-            }
-
+            var json = JsonConvert.SerializeObject(udpateResourceSetParameter);
+            _umaServerEventSource.StartToUpdateResourceSet(json);
             var resourceSet = new ResourceSet
             {
                 Id = udpateResourceSetParameter.Id,
@@ -66,14 +67,22 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 IconUri = udpateResourceSetParameter.IconUri
             };
 
-            _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
-            if (!await _resourceSetRepository.Update(resourceSet))
+            if (string.IsNullOrWhiteSpace(udpateResourceSetParameter.Id))
             {
-                throw new BaseUmaException(
-                    ErrorCodes.InternalError,
-                    string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
+            }
+            _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
+            if (await _resourceSetRepository.Get(udpateResourceSetParameter.Id) == null)
+            {
+                return false;
             }
 
+            if (!await _resourceSetRepository.Update(resourceSet))
+            {
+                throw new BaseUmaException(ErrorCodes.InternalError, string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, resourceSet.Id));
+            }
+
+            _umaServerEventSource.FinishToUpdateResourceSet(json);
             return true;
         }
     }

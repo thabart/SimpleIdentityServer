@@ -48,7 +48,6 @@ namespace SimpleIdentityServer.Uma.Logging
         #region Events linked to permission
 
         void StartAddPermission(string request);
-
         void FinishAddPermission(string request);
 
         #endregion
@@ -68,12 +67,11 @@ namespace SimpleIdentityServer.Uma.Logging
         #region Events linked to resource set
 
         void StartToAddResourceSet(string request);
-
         void FinishToAddResourceSet(string result);
-
         void StartToRemoveResourceSet(string resourceSetId);
-
         void FinishToRemoveResourceSet(string resourceSetId);
+        void StartToUpdateResourceSet(string request);
+        void FinishToUpdateResourceSet(string request);
 
         #endregion
 
@@ -117,7 +115,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 1,
+                Id = 700,
                 Task = Tasks.Authorization,
                 Message = $"Start getting RPT tokens : {request}"
             };
@@ -129,7 +127,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 2,
+                Id = 701,
                 Task = Tasks.Authorization,
                 Message = $"Check authorization policy : {request}"
             };
@@ -141,7 +139,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 3,
+                Id = 702,
                 Task = Tasks.Authorization,
                 Message = $"The authorization policies failed for the ticket {ticketId}"
             };
@@ -153,7 +151,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 4,
+                Id = 703,
                 Task = Tasks.Authorization,
                 Message = $"Request is not authorized : {request}",
                 Operation = "not-authorized"
@@ -166,7 +164,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 5,
+                Id = 704,
                 Task = Tasks.Authorization,
                 Message = $"Request is authorized : {request}",
                 Operation = "authorized"
@@ -183,7 +181,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 6,
+                Id = 710,
                 Task = Tasks.Introspection,
                 Message = $"Start to introspect the RPT {rpt}"
             };
@@ -195,7 +193,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 7,
+                Id = 711,
                 Task = Tasks.Introspection,
                 Message = $"RPT {rpt} has expired"
             };
@@ -207,7 +205,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 8,
+                Id = 712,
                 Task = Tasks.Introspection,
                 Message = $"End introspection {result}"
             };
@@ -223,7 +221,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 9,
+                Id = 720,
                 Task = Tasks.Permission,
                 Message = $"Start to add permission : {request}"
             };
@@ -235,7 +233,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 10,
+                Id = 721,
                 Task = Tasks.Permission,
                 Message = $"Finish to add permission : {request}"
             };
@@ -251,7 +249,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 11,
+                Id = 730,
                 Task = Tasks.AuthorizationPolicy,
                 Message = $"Start adding authorization policy : {request}"
             };
@@ -263,7 +261,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 12,
+                Id = 731,
                 Task = Tasks.AuthorizationPolicy,
                 Message = $"Finish to add authorization policy : {result}"
             };
@@ -275,7 +273,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 13,
+                Id = 732,
                 Task = Tasks.AuthorizationPolicy,
                 Message = $"Start to remove authorization policy : {policyId}"
             };
@@ -287,7 +285,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 14,
+                Id = 733,
                 Task = Tasks.AuthorizationPolicy,
                 Message = $"Finish to remove authorization policy : {policyId}"
             };
@@ -303,7 +301,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 15,
+                Id = 740,
                 Task = Tasks.ResourceSet,
                 Message = $"Start to add resource set : {request}"
             };
@@ -315,7 +313,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 16,
+                Id = 741,
                 Task = Tasks.ResourceSet,
                 Message = $"Finish to add resource set : {result}"
             };
@@ -327,7 +325,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 17,
+                Id = 742,
                 Task = Tasks.ResourceSet,
                 Message = $"Start to remove resource set : {resourceSetId}"
             };
@@ -339,9 +337,33 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 18,
+                Id = 743,
                 Task = Tasks.ResourceSet,
                 Message = $"Finish to remove resource set : {resourceSetId}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void StartToUpdateResourceSet(string request)
+        {
+            var evt = new Event
+            {
+                Id = 744,
+                Task = Tasks.ResourceSet,
+                Message = $"Start to update the resource set : {request}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishToUpdateResourceSet(string request)
+        {
+            var evt = new Event
+            {
+                Id = 745,
+                Task = Tasks.ResourceSet,
+                Message = $"Start to update the resource set : {request}"
             };
 
             LogInformation(evt);
@@ -355,7 +377,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 19,
+                Id = 750,
                 Task = Tasks.Scope,
                 Message = $"Start to add scope: {request}"
             };
@@ -367,7 +389,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 20,
+                Id = 751,
                 Task = Tasks.Scope,
                 Message = $"Finish to add scope: {result}"
             };
@@ -379,7 +401,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 21,
+                Id = 752,
                 Task = Tasks.Scope,
                 Message = $"Start to remove scope: {scope}"
             };
@@ -391,7 +413,7 @@ namespace SimpleIdentityServer.Uma.Logging
         {
             var evt = new Event
             {
-                Id = 22,
+                Id = 753,
                 Task = Tasks.Scope,
                 Message = $"Finish to remove scope: {scope}"
             };

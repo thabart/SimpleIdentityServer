@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Validators;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,6 +33,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
     {
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IResourceSetParameterValidator> _resourceSetParameterValidator;
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IUpdateResourceSetAction _updateResourceSetAction;
 
         [Fact]
@@ -71,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         }
 
         [Fact]
-        public async Task When_A_ResourceSet_Is_Updated_Then_Http_Ok_Is_Returned()
+        public async Task When_A_ResourceSet_Is_Updated_Then_True_Is_Returned()
         {
             // ARRANGE
             const string id = "id";
@@ -102,9 +104,11 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
         {
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _resourceSetParameterValidator = new Mock<IResourceSetParameterValidator>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _updateResourceSetAction = new UpdateResourceSetAction(
                 _resourceSetRepositoryStub.Object,
-                _resourceSetParameterValidator.Object);
+                _resourceSetParameterValidator.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

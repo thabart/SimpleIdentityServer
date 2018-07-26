@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Collections.Generic;
@@ -27,8 +29,8 @@ namespace SimpleIdentityServer.Client.Permission
 {
     public interface IAddPermissionsOperation
     {
-        Task<AddPermissionResponse> ExecuteAsync(PostPermission request, string url, string token);
-        Task<AddPermissionResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResult> ExecuteAsync(PostPermission request, string url, string token);
+        Task<AddPermissionResult> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token);
     }
 
     internal class AddPermissionsOperation : IAddPermissionsOperation
@@ -40,7 +42,7 @@ namespace SimpleIdentityServer.Client.Permission
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<AddPermissionResponse> ExecuteAsync(PostPermission request, string url, string token)
+        public async Task<AddPermissionResult> ExecuteAsync(PostPermission request, string url, string token)
         {
             if (request == null)
             {
@@ -68,12 +70,28 @@ namespace SimpleIdentityServer.Client.Permission
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
             var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
-            result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                return new AddPermissionResult
+                {
+                    ContainsError = true,
+                    HttpStatus = result.StatusCode,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
+                };
+            }
+
+            return new AddPermissionResult
+            {
+                Content = JsonConvert.DeserializeObject<AddPermissionResponse>(content)
+            };
         }
 
-        public async Task<AddPermissionResponse> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token)
+        public async Task<AddPermissionResult> ExecuteAsync(IEnumerable<PostPermission> request, string url, string token)
         {
             if (request == null)
             {
@@ -108,9 +126,25 @@ namespace SimpleIdentityServer.Client.Permission
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
             var result = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
-            result.EnsureSuccessStatusCode();
             var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<AddPermissionResponse>(content);
+            try
+            {
+                result.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new AddPermissionResult
+                {
+                    ContainsError = true,
+                    HttpStatus = result.StatusCode,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content)
+                };
+            }
+
+            return new AddPermissionResult
+            {
+                Content = JsonConvert.DeserializeObject<AddPermissionResponse>(content)
+            };
         }
     }
 }

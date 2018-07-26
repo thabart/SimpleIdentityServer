@@ -16,26 +16,27 @@
 
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
+using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Uma.Client.ResourceSet;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IResourceSetClient
     {
-        Task<UpdateResourceSetResponse> Update(PutResourceSet request, string url, string token);
-        Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token);
-        Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token);
-        Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token);
-        Task<bool> Delete(string id, string url, string token);
-        Task<bool> DeleteByResolution(string id, string url, string token);
-        Task<IEnumerable<string>> GetAll(string url, string token);
-        Task<IEnumerable<string>> GetAllByResolution(string url, string token);
-        Task<ResourceSetResponse> Get(string id,  string url, string token);
-        Task<ResourceSetResponse> GetByResolution(string id, string url, string token);
-        Task<SearchResourceSetResponse> ResolveSearch(string url, SearchResourceSet parameter, string authorizationHeaderValue = null);
+        Task<UpdateResourceSetResult> Update(PutResourceSet request, string url, string token);
+        Task<UpdateResourceSetResult> UpdateByResolution(PutResourceSet request, string url, string token);
+        Task<AddResourceSetResult> Add(PostResourceSet request, string url, string token);
+        Task<AddResourceSetResult> AddByResolution(PostResourceSet request, string url, string token);
+        Task<BaseResponse> Delete(string id, string url, string token);
+        Task<BaseResponse> DeleteByResolution(string id, string url, string token);
+        Task<GetResourcesResult> GetAll(string url, string token);
+        Task<GetResourcesResult> GetAllByResolution(string url, string token);
+        Task<GetResourceSetResult> Get(string id,  string url, string token);
+        Task<GetResourceSetResult> GetByResolution(string id, string url, string token);
+        Task<SearchResourceSetResult> ResolveSearch(string url, SearchResourceSet parameter, string authorizationHeaderValue = null);
     }
 
     internal class ResourceSetClient : IResourceSetClient
@@ -66,65 +67,65 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _searchResourcesOperation = searchResourcesOperation;
         }
 
-        public Task<UpdateResourceSetResponse> Update(PutResourceSet request, string url, string token)
+        public Task<UpdateResourceSetResult> Update(PutResourceSet request, string url, string token)
         {
             return _updateResourceOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<UpdateResourceSetResponse> UpdateByResolution(PutResourceSet request, string url, string token)
+        public async Task<UpdateResourceSetResult> UpdateByResolution(PutResourceSet request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Update(request, configuration.ResourceRegistrationEndpoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Update(request, configuration.ResourceRegistrationEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<AddResourceSetResponse> Add(PostResourceSet request, string url, string token)
+        public Task<AddResourceSetResult> Add(PostResourceSet request, string url, string token)
         {
             return _addResourceSetOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddResourceSetResponse> AddByResolution(PostResourceSet request, string url, string token)
+        public async Task<AddResourceSetResult> AddByResolution(PostResourceSet request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Add(request, configuration.ResourceRegistrationEndpoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Add(request, configuration.ResourceRegistrationEndpoint, token).ConfigureAwait(false);
         }
 
-        public async Task<bool> Delete(string id, string url, string token)
+        public Task<BaseResponse> Delete(string id, string url, string token)
         {
-            return await _deleteResourceSetOperation.ExecuteAsync(id, url, token);
+            return _deleteResourceSetOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<bool> DeleteByResolution(string id, string url, string token)
+        public async Task<BaseResponse> DeleteByResolution(string id, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Delete(id, configuration.ResourceRegistrationEndpoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Delete(id, configuration.ResourceRegistrationEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<IEnumerable<string>> GetAll(string url, string token)
+        public Task<GetResourcesResult> GetAll(string url, string token)
         {
             return _getResourcesOperation.ExecuteAsync(url, token);
         }
 
-        public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
+        public async Task<GetResourcesResult> GetAllByResolution(string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await GetAll(configuration.ResourceRegistrationEndpoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await GetAll(configuration.ResourceRegistrationEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<ResourceSetResponse> Get(string id, string url, string token)
+        public Task<GetResourceSetResult> Get(string id, string url, string token)
         {
             return _getResourceOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<ResourceSetResponse> GetByResolution(string id, string url, string token)
+        public async Task<GetResourceSetResult> GetByResolution(string id, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await Get(id, configuration.ResourceRegistrationEndpoint, token);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(id, configuration.ResourceRegistrationEndpoint, token).ConfigureAwait(false);
         }
 
-        public async Task<SearchResourceSetResponse> ResolveSearch(string url, SearchResourceSet parameter, string authorizationHeaderValue = null)
+        public async Task<SearchResourceSetResult> ResolveSearch(string url, SearchResourceSet parameter, string authorizationHeaderValue = null)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
-            return await _searchResourcesOperation.ExecuteAsync(configuration.ResourceRegistrationEndpoint + "/.search", parameter, authorizationHeaderValue);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await _searchResourcesOperation.ExecuteAsync(configuration.ResourceRegistrationEndpoint + "/.search", parameter, authorizationHeaderValue).ConfigureAwait(false);
         }
     }
 }

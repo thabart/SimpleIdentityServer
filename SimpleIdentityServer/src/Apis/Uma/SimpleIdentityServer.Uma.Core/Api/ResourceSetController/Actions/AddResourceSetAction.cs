@@ -70,8 +70,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
             _resourceSetParameterValidator.CheckResourceSetParameter(resourceSet);
             if (!await _resourceSetRepository.Insert(resourceSet))
             {
-                throw new BaseUmaException(ErrorCodes.InternalError,
-                    ErrorDescriptions.TheResourceSetCannotBeInserted);
+                throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.TheResourceSetCannotBeInserted);
             }
 
             _umaServerEventSource.FinishToAddResourceSet(JsonConvert.SerializeObject(resourceSet));

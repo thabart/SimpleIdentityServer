@@ -24,7 +24,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
     {
         private const string baseUrl = "http://localhost:5000";
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
-        private Mock<SimpleIdentityServer.Uma.Client.Factory.IHttpClientFactory> _umaHttpClientFactoryStub;
         private IJwsGenerator _jwsGenerator;
         private IClientAuthSelector _clientAuthSelector;
         private IResourceSetClient _resourceSetClient;
@@ -60,7 +59,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
-            _umaHttpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             var jwsPayload = new JwsPayload();
             jwsPayload.Add("iss", "http://server.example.com");
@@ -109,19 +107,19 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 },
                 ResourceSetIds = new List<string>
                 {
-                    resource.Id
+                    resource.Content.Id
                 }
             }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
             var ticket = await _permissionClient.AddByResolution(new PostPermission // Add permission & retrieve a ticket id.
             {
-                ResourceSetId = resource.Id,
+                ResourceSetId = resource.Content.Id,
                 Scopes = new List<string>
                 {
                     "read"
                 }
             }, baseUrl + "/.well-known/uma2-configuration", "header");
             var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
-                .UseTicketId(ticket.TicketId, jwt)
+                .UseTicketId(ticket.Content.TicketId, jwt)
                 .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
 
             // ASSERTS.
@@ -135,7 +133,6 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             var provider = services.BuildServiceProvider();
             _jwsGenerator = provider.GetService<IJwsGenerator>();
             _httpClientFactoryStub = new Mock<IHttpClientFactory>();
-            _umaHttpClientFactoryStub = new Mock<SimpleIdentityServer.Uma.Client.Factory.IHttpClientFactory>();
             var postTokenOperation = new PostTokenOperation(_httpClientFactoryStub.Object);
             var getDiscoveryOperation = new GetDiscoveryOperation(_httpClientFactoryStub.Object);
             var introspectionOperation = new IntrospectOperation(_httpClientFactoryStub.Object);
@@ -144,25 +141,25 @@ namespace SimpleIdentityServer.Uma.Host.Tests
                 new TokenClientFactory(postTokenOperation, getDiscoveryOperation),
                 new IntrospectClientFactory(introspectionOperation, getDiscoveryOperation),
                 new RevokeTokenClientFactory(revokeTokenOperation, getDiscoveryOperation));
-            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_umaHttpClientFactoryStub.Object),
-                new DeleteResourceSetOperation(_umaHttpClientFactoryStub.Object),
-                new GetResourcesOperation(_umaHttpClientFactoryStub.Object),
-                new GetResourceOperation(_umaHttpClientFactoryStub.Object),
-                new UpdateResourceOperation(_umaHttpClientFactoryStub.Object),
-                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object),
-				new SearchResourcesOperation(_umaHttpClientFactoryStub.Object));
+            _resourceSetClient = new ResourceSetClient(new AddResourceSetOperation(_httpClientFactoryStub.Object),
+                new DeleteResourceSetOperation(_httpClientFactoryStub.Object),
+                new GetResourcesOperation(_httpClientFactoryStub.Object),
+                new GetResourceOperation(_httpClientFactoryStub.Object),
+                new UpdateResourceOperation(_httpClientFactoryStub.Object),
+                new GetConfigurationOperation(_httpClientFactoryStub.Object),
+				new SearchResourcesOperation(_httpClientFactoryStub.Object));
             _permissionClient = new PermissionClient(
-                new AddPermissionsOperation(_umaHttpClientFactoryStub.Object),
-                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object));
-            _policyClient = new PolicyClient(new AddPolicyOperation(_umaHttpClientFactoryStub.Object),
-                new GetPolicyOperation(_umaHttpClientFactoryStub.Object),
-                new DeletePolicyOperation(_umaHttpClientFactoryStub.Object),
-                new GetPoliciesOperation(_umaHttpClientFactoryStub.Object),
-                new AddResourceToPolicyOperation(_umaHttpClientFactoryStub.Object),
-                new DeleteResourceFromPolicyOperation(_umaHttpClientFactoryStub.Object),
-                new UpdatePolicyOperation(_umaHttpClientFactoryStub.Object),
-                new GetConfigurationOperation(_umaHttpClientFactoryStub.Object),
-				new SearchPoliciesOperation(_umaHttpClientFactoryStub.Object));
+                new AddPermissionsOperation(_httpClientFactoryStub.Object),
+                new GetConfigurationOperation(_httpClientFactoryStub.Object));
+            _policyClient = new PolicyClient(new AddPolicyOperation(_httpClientFactoryStub.Object),
+                new GetPolicyOperation(_httpClientFactoryStub.Object),
+                new DeletePolicyOperation(_httpClientFactoryStub.Object),
+                new GetPoliciesOperation(_httpClientFactoryStub.Object),
+                new AddResourceToPolicyOperation(_httpClientFactoryStub.Object),
+                new DeleteResourceFromPolicyOperation(_httpClientFactoryStub.Object),
+                new UpdatePolicyOperation(_httpClientFactoryStub.Object),
+                new GetConfigurationOperation(_httpClientFactoryStub.Object),
+				new SearchPoliciesOperation(_httpClientFactoryStub.Object));
         }
     }
 }

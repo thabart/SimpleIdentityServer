@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController

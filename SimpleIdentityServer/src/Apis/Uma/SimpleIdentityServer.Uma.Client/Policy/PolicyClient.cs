@@ -16,7 +16,9 @@
 
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
+using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Uma.Client.Policy;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Collections.Generic;
@@ -26,21 +28,21 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IPolicyClient
     {
-        Task<AddPolicyResponse> Add(PostPolicy request, string url, string token);
-        Task<AddPolicyResponse> AddByResolution(PostPolicy request, string url, string token);
-        Task<PolicyResponse> Get(string id, string url, string token);
-        Task<PolicyResponse> GetByResolution(string id, string url, string token);
-        Task<IEnumerable<string>> GetAll(string url, string token);
-        Task<IEnumerable<string>> GetAllByResolution(string url, string token);
-        Task<bool> Delete(string id, string url, string token);
-        Task<bool> DeleteByResolution(string id, string url, string token);
-        Task<bool> Update(PutPolicy request, string url, string token);
-        Task<bool> UpdateByResolution(PutPolicy request, string url, string token);
-        Task<bool> AddResource(string id, PostAddResourceSet request, string url, string token);
-        Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token);
-        Task<bool> DeleteResource(string id, string resourceId, string url, string token);
-        Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token);
-        Task<SearchAuthPoliciesResponse> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
+        Task<AddPolicyResult> Add(PostPolicy request, string url, string token);
+        Task<AddPolicyResult> AddByResolution(PostPolicy request, string url, string token);
+        Task<GetPolicyResult> Get(string id, string url, string token);
+        Task<GetPolicyResult> GetByResolution(string id, string url, string token);
+        Task<GetPoliciesResult> GetAll(string url, string token);
+        Task<GetPoliciesResult> GetAllByResolution(string url, string token);
+        Task<BaseResponse> Delete(string id, string url, string token);
+        Task<BaseResponse> DeleteByResolution(string id, string url, string token);
+        Task<BaseResponse> Update(PutPolicy request, string url, string token);
+        Task<BaseResponse> UpdateByResolution(PutPolicy request, string url, string token);
+        Task<BaseResponse> AddResource(string id, PostAddResourceSet request, string url, string token);
+        Task<BaseResponse> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token);
+        Task<BaseResponse> DeleteResource(string id, string resourceId, string url, string token);
+        Task<BaseResponse> DeleteResourceByResolution(string id, string resourceId, string url, string token);
+        Task<SearchAuthPoliciesResult> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null);
     }
 
     internal class PolicyClient : IPolicyClient
@@ -77,87 +79,87 @@ namespace SimpleIdentityServer.Client.Policy
             _searchPoliciesOperation = searchPoliciesOperation;
         }
 
-        public Task<AddPolicyResponse> Add(PostPolicy request, string url, string token)
+        public Task<AddPolicyResult> Add(PostPolicy request, string url, string token)
         {
             return _addPolicyOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddPolicyResponse> AddByResolution(PostPolicy request, string url, string token)
+        public async Task<AddPolicyResult> AddByResolution(PostPolicy request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Add(request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Add(request, policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<PolicyResponse> Get(string id, string url, string token)
+        public Task<GetPolicyResult> Get(string id, string url, string token)
         {
             return _getPolicyOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<PolicyResponse> GetByResolution(string id, string url, string token)
+        public async Task<GetPolicyResult> GetByResolution(string id, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Get(id, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Get(id, policyEndpoint, token).ConfigureAwait(false);
         }
         
-        public Task<IEnumerable<string>> GetAll(string url, string token)
+        public Task<GetPoliciesResult> GetAll(string url, string token)
         {
             return _getPoliciesOperation.ExecuteAsync(url, token);
         }
 
-        public async Task<IEnumerable<string>> GetAllByResolution(string url, string token)
+        public async Task<GetPoliciesResult> GetAllByResolution(string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await GetAll(policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await GetAll(policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<bool> Delete(string id, string url, string token)
+        public Task<BaseResponse> Delete(string id, string url, string token)
         {
             return _deletePolicyOperation.ExecuteAsync(id, url, token);
         }
 
-        public async Task<bool> DeleteByResolution(string id, string url, string token)
+        public async Task<BaseResponse> DeleteByResolution(string id, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Delete(id, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Delete(id, policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<bool> Update(PutPolicy request, string url, string token)
+        public Task<BaseResponse> Update(PutPolicy request, string url, string token)
         {
             return _updatePolicyOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<bool> UpdateByResolution(PutPolicy request, string url, string token)
+        public async Task<BaseResponse> UpdateByResolution(PutPolicy request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await Update(request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await Update(request, policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<bool> AddResource(string id, PostAddResourceSet request, string url, string token)
+        public Task<BaseResponse> AddResource(string id, PostAddResourceSet request, string url, string token)
         {
             return _addResourceToPolicyOperation.ExecuteAsync(id, request, url, token);
         }
 
-        public async Task<bool> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token)
+        public async Task<BaseResponse> AddResourceByResolution(string id, PostAddResourceSet request, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await AddResource(id, request, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await AddResource(id, request, policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public Task<bool> DeleteResource(string id, string resourceId, string url, string token)
+        public Task<BaseResponse> DeleteResource(string id, string resourceId, string url, string token)
         {
             return _deleteResourceFromPolicyOperation.ExecuteAsync(id, resourceId, url, token);
         }
 
-        public async Task<bool> DeleteResourceByResolution(string id, string resourceId, string url, string token)
+        public async Task<BaseResponse> DeleteResourceByResolution(string id, string resourceId, string url, string token)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await DeleteResource(id, resourceId, policyEndpoint, token);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await DeleteResource(id, resourceId, policyEndpoint, token).ConfigureAwait(false);
         }
 
-        public async Task<SearchAuthPoliciesResponse> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
+        public async Task<SearchAuthPoliciesResult> ResolveSearch(string url, SearchAuthPolicies parameter, string authorizationHeaderValue = null)
         {
-            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url));
-            return await _searchPoliciesOperation.ExecuteAsync(policyEndpoint + "/.search", parameter, authorizationHeaderValue);
+            var policyEndpoint = await GetPolicyEndPoint(UriHelpers.GetUri(url)).ConfigureAwait(false);
+            return await _searchPoliciesOperation.ExecuteAsync(policyEndpoint + "/.search", parameter, authorizationHeaderValue).ConfigureAwait(false);
         }
 
         private async Task<string> GetPolicyEndPoint(Uri configurationUri)
