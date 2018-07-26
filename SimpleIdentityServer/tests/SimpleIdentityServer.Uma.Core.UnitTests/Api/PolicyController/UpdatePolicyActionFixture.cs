@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -32,7 +33,9 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
     public class UpdatePolicyActionFixture
     {
         private Mock<IPolicyRepository> _policyRepositoryStub;
-        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;        
+        private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
+        private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IUpdatePolicyAction _updatePolicyAction;
         
         [Fact]
@@ -43,6 +46,25 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
+        }
+
+        [Fact]
+        public async Task When_Id_Is_Not_Passed_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            var updatePolicyParameter = new UpdatePolicyParameter
+            {
+            };
+            InitializeFakeObjects();
+            _repositoryExceptionHelperStub.Setup(r => r.HandleException(
+                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
+                It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
+
+            // ACT & ASSERTS
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
         }
 
         [Fact]
@@ -90,6 +112,51 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         }
 
         [Fact]
+        public async Task When_Scope_Is_Not_Valid_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            var updatePolicyParameter = new UpdatePolicyParameter
+            {
+                PolicyId = "policy_id",
+                Rules = new List<UpdatePolicyRuleParameter>
+                {
+                    new UpdatePolicyRuleParameter
+                    {
+                        Scopes = new List<string>
+                        {
+                            "invalid_scope"
+                        }
+                    }
+                }
+            };
+            InitializeFakeObjects();
+            _repositoryExceptionHelperStub.Setup(r => r.HandleException(
+                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
+                It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult(new Policy
+                {
+                    ResourceSetIds = new List<string>
+                    {
+                        "resource_id"
+                    }
+                }));
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceSet
+            {
+                Scopes = new List<string>
+                {
+                    "scope"
+                }
+            }));
+
+            // ACT
+            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+
+            // ASSERT
+            Assert.NotNull(result);
+            Assert.Equal("invalid_scope", result.Code);
+            Assert.Equal("one or more scopes don't belong to a resource set", result.Message);
+        }
+
+        [Fact]
         public async Task When_Authorization_Policy_Is_Updated_Then_True_Is_Returned()
         {
             // ARRANGE
@@ -107,6 +174,10 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                                 Type = "type",
                                 Value = "value"
                             }
+                        },
+                        Scopes = new List<string>
+                        {
+                            "scope"
                         }
                     }
                 }
@@ -115,11 +186,24 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                It.IsAny<Func<Task<Policy>>>())).Returns(Task.FromResult(new Policy()));
+                It.IsAny<Func<Task<Policy>>>())).Returns(Task.FromResult(new Policy
+                {
+                    ResourceSetIds = new List<string>
+                    {
+                        "resource_id"
+                    }
+                }));
             _repositoryExceptionHelperStub.Setup(r => r.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
                 It.IsAny<Func<Task<bool>>>())).Returns(Task.FromResult(true));
-            
+            _resourceSetRepositoryStub.Setup(r => r.Get(It.IsAny<string>())).Returns(Task.FromResult(new ResourceSet
+            {
+                Scopes = new List<string>
+                {
+                    "scope"
+                }
+            }));
+
             // ACT
             var result = await _updatePolicyAction.Execute(updatePolicyParameter);
 
@@ -131,9 +215,13 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         {
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
+            _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _updatePolicyAction = new UpdatePolicyAction(
                 _policyRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+                _repositoryExceptionHelperStub.Object,
+                _resourceSetRepositoryStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

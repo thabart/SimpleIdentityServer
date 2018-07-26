@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
@@ -317,6 +318,24 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         #endregion
 
         #region OAUTH2.0
+        
+        public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            return new GrantedTokenResponse
+            {
+                AccessToken = grantedToken.AccessToken,
+                IdToken = grantedToken.IdToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                TokenType = grantedToken.TokenType,
+                Scope = grantedToken.Scope.Split(' ').ToList()
+            };
+        }
 
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
@@ -480,24 +499,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Pct = request.Pct,
                 Rpt = request.Rpt,
                 Ticket = request.Ticket
-            };
-        }
-
-        public static TokenResponse ToDto(this GrantedToken grantedToken)
-        {
-            if (grantedToken == null)
-            {
-                throw new ArgumentNullException(nameof(grantedToken));
-            }
-
-            return new TokenResponse
-            {
-                AccessToken = grantedToken.AccessToken,
-                IdToken = grantedToken.IdToken,
-                ExpiresIn = grantedToken.ExpiresIn,
-                RefreshToken = grantedToken.RefreshToken,
-                TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope.Split(' ').ToList()
             };
         }
         

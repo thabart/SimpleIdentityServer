@@ -21,6 +21,7 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
+        private Mock<IUmaServerEventSource> _umaServerEventSource;
         private IDeleteResourcePolicyAction _deleteResourcePolicyAction;
 
         [Fact]
@@ -155,10 +157,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
+            _umaServerEventSource = new Mock<IUmaServerEventSource>();
             _deleteResourcePolicyAction = new DeleteResourcePolicyAction(
                 _policyRepositoryStub.Object,
                 _repositoryExceptionHelperStub.Object,
-                _resourceSetRepositoryStub.Object);
+                _resourceSetRepositoryStub.Object,
+                _umaServerEventSource.Object);
         }
     }
 }

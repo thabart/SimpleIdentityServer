@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Registration;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
@@ -19,14 +20,28 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<ClientRegistrationResponse> Post([FromBody] ClientResponse client)
+        public async Task<IActionResult> Post([FromBody] ClientResponse client)
         {
             if (client == null)
             {
-                throw new ArgumentNullException(nameof(client));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
-            return await _registerActions.PostRegistration(client.ToParameter());
+            var result = await _registerActions.PostRegistration(client.ToParameter());
+            return new OkObjectResult(result);
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

@@ -18,6 +18,7 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 {
     public interface IGetTokenByTicketIdAction
     {
-        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null);
     }
 
     internal sealed class GetTokenByTicketIdAction : IGetTokenByTicketIdAction
@@ -58,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             _tokenStore = tokenStore;
         }
 
-        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate = null)
         {
             // 1. Check parameters.
             if (parameter == null)
@@ -68,8 +69,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
             }
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 2. Try to authenticate the client.
-            var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue);
+            var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
             var authResult = await _authenticateClient.AuthenticateAsync(instruction);
             var client = authResult.Client;
             if (client == null)
@@ -86,11 +86,9 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
                 throw new BaseUmaException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            if (client.GrantTypes == null ||
-                !client.GrantTypes.Contains(GrantType.uma_ticket))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.uma_ticket))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.uma_ticket));
+                throw new BaseUmaException(ErrorCodes.InvalidGrant, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.uma_ticket));
             }
 
             // 3. Retrieve the ticket.
@@ -99,8 +97,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             var ticket = await _ticketStore.GetAsync(parameter.Ticket);
             if (ticket == null)
             {
-                throw new BaseUmaException(ErrorCodes.InvalidTicket,
-                    string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
+                throw new BaseUmaException(ErrorCodes.InvalidTicket, string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
             }
 
             // 4. Check the ticket.
@@ -131,13 +128,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             return grantedToken;
         }
 
-        private AuthenticateInstruction CreateAuthenticateInstruction(GetTokenViaTicketIdParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        private AuthenticateInstruction CreateAuthenticateInstruction(GetTokenViaTicketIdParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 

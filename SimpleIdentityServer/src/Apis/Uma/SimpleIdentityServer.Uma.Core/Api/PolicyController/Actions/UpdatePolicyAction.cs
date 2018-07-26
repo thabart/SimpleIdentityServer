@@ -14,12 +14,14 @@
 // limitations under the License.
 #endregion
 
+using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,28 +38,38 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly IResourceSetRepository _resourceSetRepository;
+        private readonly IUmaServerEventSource _umaServerEventSource;
 
-        public UpdatePolicyAction(IPolicyRepository policyRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+        public UpdatePolicyAction(IPolicyRepository policyRepository, IRepositoryExceptionHelper repositoryExceptionHelper,
+            IResourceSetRepository resourceSetRepository, IUmaServerEventSource umaServerEventSource)
         {
             _policyRepository = policyRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
+            _resourceSetRepository = resourceSetRepository;
+            _umaServerEventSource = umaServerEventSource;
         }
         
         public async Task<bool> Execute(UpdatePolicyParameter updatePolicyParameter)
         {
+            // Check the parameters
             if (updatePolicyParameter == null)
             {
                 throw new ArgumentNullException(nameof(updatePolicyParameter));
             }
 
-            if (updatePolicyParameter.Rules == null ||
-                !updatePolicyParameter.Rules.Any())
+            if (string.IsNullOrWhiteSpace(updatePolicyParameter.PolicyId))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                        string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
             }
 
+            if (updatePolicyParameter.Rules == null || !updatePolicyParameter.Rules.Any())
+            {
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
+            }
+            
+            _umaServerEventSource.StartUpdateAuthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
+            // Check the authorization policy exists.
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
                 () => _policyRepository.Get(updatePolicyParameter.PolicyId));
@@ -67,6 +79,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             }
 
             policy.Rules = new List<PolicyRule>();
+            // Check all the scopes are valid.
+            foreach (var resourceSetId in policy.ResourceSetIds)
+            {
+                var resourceSet = await _resourceSetRepository.Get(resourceSetId);
+                if (updatePolicyParameter.Rules.Any(r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
+                {
+                    throw new BaseUmaException(ErrorCodes.InvalidScope, ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
+                }
+            }
+
+            // Update the authorization policy.
             foreach (var ruleParameter in updatePolicyParameter.Rules)
             {
                 var claims = new List<Claim>();
@@ -91,9 +114,11 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                 });
             }
 
-            return await _repositoryExceptionHelper.HandleException(
+            var result = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
                 () => _policyRepository.Update(policy));
+            _umaServerEventSource.FinishUpdateAuhthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
+            return result;
         }
     }
 }

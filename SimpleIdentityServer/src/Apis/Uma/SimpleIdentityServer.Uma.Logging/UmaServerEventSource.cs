@@ -55,12 +55,15 @@ namespace SimpleIdentityServer.Uma.Logging
         #region Events linked to authorization policy
 
         void StartAddingAuthorizationPolicy(string request);
-
         void FinishToAddAuthorizationPolicy(string result);
-
         void StartToRemoveAuthorizationPolicy(string policyId);
-
         void FinishToRemoveAuthorizationPolicy(string policyId);
+        void StartAddResourceToAuthorizationPolicy(string policy, string resourceId);
+        void FinishAddResourceToAuthorizationPolicy(string policy, string resourceId);
+        void StartRemoveResourceFromAuthorizationPolicy(string policy, string resourceId);
+        void FinishRemoveResourceFromAuthorizationPolicy(string policy, string resourceId);
+        void StartUpdateAuthorizationPolicy(string request);
+        void FinishUpdateAuhthorizationPolicy(string request);
 
         #endregion
 
@@ -288,6 +291,78 @@ namespace SimpleIdentityServer.Uma.Logging
                 Id = 733,
                 Task = Tasks.AuthorizationPolicy,
                 Message = $"Finish to remove authorization policy : {policyId}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void StartAddResourceToAuthorizationPolicy(string policy, string resourceId)
+        {
+            var evt = new Event
+            {
+                Id = 734,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Start to add resource {resourceId} to authorization policy {policy}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishAddResourceToAuthorizationPolicy(string policy, string resourceId)
+        {
+            var evt = new Event
+            {
+                Id = 735,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Finish to add resource {resourceId} to authorization policy {policy}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void StartRemoveResourceFromAuthorizationPolicy(string policy, string resourceId)
+        {
+            var evt = new Event
+            {
+                Id = 736,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Start to remove resource {resourceId} from authorization policy {policy}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishRemoveResourceFromAuthorizationPolicy(string policy, string resourceId)
+        {
+            var evt = new Event
+            {
+                Id = 737,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Finish to remove resource {resourceId} from authorization policy {policy}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void StartUpdateAuthorizationPolicy(string request)
+        {
+            var evt = new Event
+            {
+                Id = 738,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Start to update authorization policy {request}"
+            };
+
+            LogInformation(evt);
+        }
+
+        public void FinishUpdateAuhthorizationPolicy(string request)
+        {
+            var evt = new Event
+            {
+                Id = 739,
+                Task = Tasks.AuthorizationPolicy,
+                Message = $"Start to update authorization policy {request}"
             };
 
             LogInformation(evt);
