@@ -56,6 +56,7 @@ namespace SimpleIdentityServer.Core.Common
             var client = new Models.Client
             {
                 RedirectionUrls = registrationParameter.RedirectUris,
+                PostLogoutRedirectUris = registrationParameter.PostLogoutRedirectUris,
                 Contacts = registrationParameter.Contacts,
                 // TODO : should support different languages for the client_name
                 ClientName = registrationParameter.ClientName,

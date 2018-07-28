@@ -52,9 +52,7 @@ namespace SimpleIdentityServer.Core.Validators
             if (parameter.RedirectUris == null ||
                 !parameter.RedirectUris.Any())
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRedirectUri,
-                    string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
+                throw new IdentityServerException(ErrorCodes.InvalidRedirectUri, string.Format(ErrorDescriptions.MissingParameter, ClientNames.RequestUris));
             }
 
             // If the response type is not defined then set to code

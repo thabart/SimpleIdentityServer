@@ -133,10 +133,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
             client.ClientId = result.ClientId;
             await _clientRepository.InsertAsync(client);
-
-            _oauthEventSource.EndRegistration(result.ClientId, 
-                client.ClientName);
-
+            _oauthEventSource.EndRegistration(result.ClientId, client.ClientName);
             return result;
         }
 
