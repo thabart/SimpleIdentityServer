@@ -21,11 +21,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using SimpleBus.InMemory;
+using SimpleBus.Core;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
 using SimpleIdentityServer.Uma.EF.InMemory;
@@ -34,7 +33,9 @@ using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Logging;
 using SimpleIdentityServer.Uma.Startup.Extensions;
+using SimpleIdentityServer.Uma.Startup.Services;
 using SimpleIdentityServer.Uma.Store.InMemory;
+using SimpleIdentityServer.UserInfoIntrospection;
 using System;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
@@ -92,10 +93,14 @@ namespace SimpleIdentityServer.Uma.Startup
 
         private void ConfigureBus(IServiceCollection services)
         {
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            // Uncomment the following line to use in-memory bus.
+            /*
             services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
             {
                 ServerName = "auth"
             });
+            */
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using SimpleBus.InMemory;
+using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.SMS;
@@ -27,7 +27,6 @@ using SimpleIdentityServer.Authenticate.SMS.Actions;
 using SimpleIdentityServer.Authenticate.SMS.Controllers;
 using SimpleIdentityServer.Authenticate.SMS.Services;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common;
@@ -49,7 +48,6 @@ using SimpleIdentityServer.Twilio.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using WebApiContrib.Core.Storage;
@@ -164,6 +162,7 @@ namespace SimpleIdentityServer.Host.Tests
         private void ConfigureIdServer(IServiceCollection services)
         {
             services.AddSingleton(new SmsAuthenticationOptions());
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
             services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
             services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
@@ -180,7 +179,6 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 .AddOAuthInMemoryEF()
-                .AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions())
                 .AddInMemoryAccessTokenStore();
         }
 

@@ -29,7 +29,8 @@ namespace SimpleBus.RabbitMq
             {
                 factory.Password = _options.Password;
             }
-            
+
+            evt.ServerName = _options.ServerName;
             using (var connection = factory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())

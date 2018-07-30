@@ -28,6 +28,8 @@ using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
+using SimpleIdentityServer.Scim.Startup.Services;
+using SimpleBus.Core;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -75,10 +77,13 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void ConfigureBus(IServiceCollection services)
         {
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            /*
             services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
             {
                 ServerName = "scim"
             });
+            */
         }
 
         private void ConfigureScimRepository(IServiceCollection services)

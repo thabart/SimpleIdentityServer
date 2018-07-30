@@ -21,8 +21,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using SimpleBus.InMemory;
+using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
@@ -32,10 +33,9 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Startup.Extensions;
+using SimpleIdentityServer.Startup.Services;
 using SimpleIdentityServer.Store.InMemory;
-using SimpleIdentityServer.TwoFactorAuthentication;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
-using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.UserManagement;
 using System;
 using System.Collections.Generic;
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            ConfigureAccountFilters(services);
+            // ConfigureAccountFilters(services); // Uncomment this code to filter the accounts
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
@@ -202,10 +202,14 @@ namespace SimpleIdentityServer.Startup
 
         private void ConfigureBus(IServiceCollection services)
         {
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            // Uncomment the following line to use in-memory bus (SignalR).
+            /*
+            services.AddSimpleBusInMemory(new InMemoryOptions
             {
                 ServerName = "openid"
             });
+            */
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

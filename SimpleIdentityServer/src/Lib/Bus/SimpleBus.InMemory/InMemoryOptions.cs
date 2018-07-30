@@ -8,5 +8,6 @@
         }
 
         public string Url { get; set; }
+        public string ServerName { get; set; }
     }
 }

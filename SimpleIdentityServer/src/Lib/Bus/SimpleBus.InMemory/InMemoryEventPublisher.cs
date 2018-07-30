@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SimpleBus.Core;
+using System;
 using System.Text;
 
 namespace SimpleBus.InMemory
@@ -15,6 +16,12 @@ namespace SimpleBus.InMemory
 
         public void Publish<T>(T evt) where T : Event
         {
+            if (evt == null)
+            {
+                throw new ArgumentNullException(nameof(evt));
+            }
+
+            evt.ServerName = _options.ServerName;
             var hubConnection = SignalrConnection.Instance(_options).GetHubConnection();
             var serializedMessage = new SerializedMessage
             {

@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleBus.InMemory;
+using SimpleBus.Core;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
@@ -35,7 +35,6 @@ using SimpleIdentityServer.Uma.EF.InMemory;
 using SimpleIdentityServer.Uma.Host.Configuration;
 using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Controllers;
-using SimpleIdentityServer.Uma.Host.Extensions;
 using SimpleIdentityServer.Uma.Host.Middlewares;
 using SimpleIdentityServer.Uma.Host.Tests.Extensions;
 using SimpleIdentityServer.Uma.Host.Tests.MiddleWares;
@@ -167,7 +166,8 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
             services.AddUmaInMemoryStore();
             services.AddInMemoryStorage();
 
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            // services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions());
 
             services.AddConcurrency(opt => opt.UseInMemory());
 

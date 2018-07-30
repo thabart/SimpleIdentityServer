@@ -18,8 +18,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleBus.Core;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.Scim.Client.Tests.Extensions;
+using SimpleIdentityServer.Scim.Client.Tests.Services;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.InMemory;
 using SimpleIdentityServer.Scim.Host.Controllers;
@@ -36,10 +38,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         {
             services.AddConcurrency(opt => opt.UseInMemory());
             services.AddScimInMemoryEF();
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            /*
             services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
             {
                 ServerName = "scim"
             });
+            */
             services.AddScimHost();
             services.AddAuthorization(options =>
             {
