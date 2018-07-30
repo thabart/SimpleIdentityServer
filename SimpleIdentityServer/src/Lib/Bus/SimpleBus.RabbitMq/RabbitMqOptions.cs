@@ -1,4 +1,5 @@
-﻿using SimpleBus.Core;
+﻿using RabbitMQ.Client;
+using SimpleBus.Core;
 
 namespace SimpleBus.RabbitMq
 {
@@ -6,11 +7,15 @@ namespace SimpleBus.RabbitMq
     {
         public RabbitMqOptions()
         {
-            ConnectionString = "localhost";
+            HostName = "localhost";
             BrokerName = "sid_events";
+            Port = AmqpTcpEndpoint.DefaultAmqpSslPort;
         }
 
-        public string ConnectionString { get; set; }
+        public string HostName { get; set; }
         public string BrokerName { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public int Port { get; set; }
     }
 }

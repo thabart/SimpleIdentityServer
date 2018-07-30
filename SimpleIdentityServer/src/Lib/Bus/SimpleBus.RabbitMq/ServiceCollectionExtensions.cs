@@ -19,7 +19,7 @@ namespace SimpleBus.RabbitMq
             }
 
             serviceCollection.AddSingleton(options);
-            serviceCollection.AddTransient<IEventPublisher, RabbitMqBus>();
+            serviceCollection.AddTransient<IEventPublisher, RabbitMqEventPublisher>();
             return serviceCollection;
         }
     }

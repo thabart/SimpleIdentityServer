@@ -1,14 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
+    <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <AssemblyName>SimpleBus.RabbitMq.Tests</AssemblyName>
-    <PackageId>SimpleBus.RabbitMq.Tests</PackageId>
+    <AssemblyName>SimpleBus.InMemory.Tests</AssemblyName>
+    <PackageId>SimpleBus.InMemory.Tests</PackageId>
     <OutputType>Exe</OutputType>
-    <StartupObject>SimpleBus.RabbitMq.Tests.Program</StartupObject>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <StartupObject>SimpleBus.InMemory.Tests.Program</StartupObject>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.OAuth.Events\SimpleIdentityServer.OAuth.Events.csproj" />
     <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
-    <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.RabbitMq\SimpleBus.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
   </ItemGroup>
 </Project>
