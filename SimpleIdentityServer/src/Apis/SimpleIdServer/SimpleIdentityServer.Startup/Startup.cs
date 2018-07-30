@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using SimpleBus.Core;
+using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.Authenticate.Basic;
@@ -202,14 +203,12 @@ namespace SimpleIdentityServer.Startup
 
         private void ConfigureBus(IServiceCollection services)
         {
-            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            // services.AddTransient<IEventPublisher, DefaultEventPublisher>();
             // Uncomment the following line to use in-memory bus (SignalR).
-            /*
             services.AddSimpleBusInMemory(new InMemoryOptions
             {
                 ServerName = "openid"
             });
-            */
         }
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)

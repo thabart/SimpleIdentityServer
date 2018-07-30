@@ -1,15 +1,12 @@
-﻿using Newtonsoft.Json;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SimpleBus.Core;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace SimpleBus.RabbitMq
 {
-    internal sealed class RabbitMqEventSubscriber
+    public sealed class RabbitMqEventSubscriber : IEventSubscriber
     {
         private readonly RabbitMqOptions _options;
         private IConnection _connection;

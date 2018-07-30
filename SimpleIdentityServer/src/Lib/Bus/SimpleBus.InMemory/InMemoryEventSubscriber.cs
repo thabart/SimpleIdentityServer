@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimpleBus.InMemory
 {
-    internal sealed class InMemoryEventSubscriber
+    public sealed class InMemoryEventSubscriber : IEventSubscriber
     {
         private readonly InMemoryOptions _options;
         private readonly IEnumerable<IEventHandler> _eventHandlers;

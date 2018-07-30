@@ -23,7 +23,7 @@ namespace SimpleBus.Core
                     continue;
                 }
 
-                var method = eventHandler.GetType().GetMethod("Handle");
+                var method = eventHandler.GetType().GetMethods().FirstOrDefault(m => m.Name == "Handle" && m.GetParameters().Any() && m.GetParameters().Count() == 1 && m.GetParameters().First().ParameterType == type);
                 if (method == null)
                 {
                     continue;
