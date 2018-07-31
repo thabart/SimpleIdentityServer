@@ -151,7 +151,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
-            if (!string.IsNullOrWhiteSpace(amr))
+            if (!string.IsNullOrWhiteSpace(amr) && identityServerEndPoints != IdentityServerEndPoints.ConsentIndex && identityServerEndPoints != IdentityServerEndPoints.FormIndex)
             {
                 partialUri = "/" + amr + partialUri;
             }

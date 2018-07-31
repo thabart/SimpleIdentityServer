@@ -29,8 +29,10 @@ namespace SimpleBus.InMemory
                 Content = JsonConvert.SerializeObject(evt)
             };
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(serializedMessage));
-            hubConnection.InvokeCoreAsync("BroadCastMessages", typeof(string), new[] { body }).Wait();
-            string s = "";
+            if (SignalrConnection.Instance(_options).IsConnected)
+            {
+                hubConnection.InvokeCoreAsync("BroadCastMessages", typeof(string), new[] { body }).Wait();
+            }
         }
     }
 }

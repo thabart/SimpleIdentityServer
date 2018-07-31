@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Threading.Tasks;
 
 namespace SimpleBus.InMemory
 {
@@ -11,6 +12,8 @@ namespace SimpleBus.InMemory
         {
             _connection = new HubConnectionBuilder().WithUrl(options.Url).Build();
             _connection.StartAsync().Wait();
+            _connection.Closed += HandleClosed;
+            IsConnected = true;
         }
 
         public static SignalrConnection Instance(InMemoryOptions options)
@@ -26,6 +29,14 @@ namespace SimpleBus.InMemory
         public HubConnection GetHubConnection()
         {
             return _connection;
+        }
+
+        public bool IsConnected { get; private set; }
+
+        private Task HandleClosed(System.Exception arg)
+        {
+            IsConnected = false;
+            return Task.FromResult(0);
         }
     }
 }
