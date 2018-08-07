@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Client.Factories;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Client
@@ -26,12 +23,12 @@ namespace SimpleIdentityServer.Scim.Client
 
         public async Task<JObject> GetServiceProviderConfig(string baseUri)
         {
-            return JObject.Parse(await Get(new Uri($"{baseUri}/ServiceProviderConfig")));
+            return JObject.Parse(await Get(new Uri($"{baseUri}/ServiceProviderConfig")).ConfigureAwait(false));
         }
 
         public async Task<JArray> GetSchemas(string baseUri)
         {
-            return JArray.Parse(await Get(new Uri($"{baseUri}/Schemas")));
+            return JArray.Parse(await Get(new Uri($"{baseUri}/Schemas")).ConfigureAwait(false));
         }
 
         private async Task<string> Get(Uri baseUri)

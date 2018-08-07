@@ -14,29 +14,16 @@
 // limitations under the License.
 #endregion
 
-#if NET
-using System.Net;
-#endif
-using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
+using System;
 
-namespace SimpleIdentityServer.Scim.Client.Factories
+namespace SimpleIdentityServer.Scim.Client.Tests.MiddleWares
 {
-    public interface IHttpClientFactory
+    public static class FakeCustomAuthExtensions
     {
-        HttpClient GetHttpClient();
-    }
-
-    public class HttpClientFactory : IHttpClientFactory
-    {
-        public HttpClient GetHttpClient()
+        public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
         {
-            var httpHandler = new HttpClientHandler();
-#if NET
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-#else
-            httpHandler.ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true;
-#endif
-            return new HttpClient(httpHandler);
+            return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeStartup.DefaultSchema, FakeStartup.DefaultSchema, configureOptions);
         }
     }
 }

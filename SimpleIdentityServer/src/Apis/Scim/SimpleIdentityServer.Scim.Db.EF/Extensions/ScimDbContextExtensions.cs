@@ -305,7 +305,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Extensions
                                     "MUST be unique across the service provider's entire set of Users."+
                                     "REQUIRED.",
                     uniqueness: Common.Constants.SchemaAttributeUniqueness.Server,
-                    required : true),
+                    required : false),
                 // name
                 SchemaAttributeFactory.CreateComplexAttribute(
                     Common.Constants.UserResourceResponseNames.Name,

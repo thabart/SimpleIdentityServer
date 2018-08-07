@@ -558,7 +558,7 @@ namespace SimpleIdentityServer.Host.Tests
 
             // ASSERT
             Assert.NotNull(result);
-            Assert.Equal("/pwd/Consent", result.Location.LocalPath);
+            Assert.Equal("/Consent", result.Location.LocalPath);
         }
 
         #endregion

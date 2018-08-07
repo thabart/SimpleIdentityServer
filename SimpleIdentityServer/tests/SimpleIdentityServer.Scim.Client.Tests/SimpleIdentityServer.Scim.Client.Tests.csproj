@@ -47,4 +47,8 @@
     <Reference Include="System.Web" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MiddleWares\" />
+  </ItemGroup>
+
 </Project>

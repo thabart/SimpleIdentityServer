@@ -19,8 +19,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleBus.Core;
-using SimpleBus.InMemory;
 using SimpleIdentityServer.Scim.Client.Tests.Extensions;
+using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
 using SimpleIdentityServer.Scim.Client.Tests.Services;
 using SimpleIdentityServer.Scim.Db.EF;
 using SimpleIdentityServer.Scim.Db.EF.InMemory;
@@ -34,6 +34,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 {
     public class FakeStartup
     {
+        public const string DefaultSchema = "Cookies";
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddConcurrency(opt => opt.UseInMemory());
@@ -46,6 +48,11 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             });
             */
             services.AddScimHost();
+            services.AddAuthentication(opts =>
+            {
+                opts.DefaultAuthenticateScheme = DefaultSchema;
+                opts.DefaultChallengeScheme = DefaultSchema;
+            }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {
@@ -54,6 +61,11 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => {
                     return true;
                 }));
+                options.AddPolicy("authenticated", (policy) =>
+                {
+                    policy.AddAuthenticationSchemes(DefaultSchema);
+                    policy.RequireAuthenticatedUser();
+                });
             });
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;

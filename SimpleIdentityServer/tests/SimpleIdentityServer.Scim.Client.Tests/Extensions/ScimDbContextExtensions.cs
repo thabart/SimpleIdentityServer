@@ -312,7 +312,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests.Extensions
                                     "MUST be unique across the service provider's entire set of Users."+
                                     "REQUIRED.",
                     uniqueness: Common.Constants.SchemaAttributeUniqueness.Server,
-                    required : true),
+                    required : false),
                 // TST : arr
                 SchemaAttributeFactory.CreateAttribute(
                     "arr",

@@ -66,6 +66,11 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                     return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "scim_read";
                 });
             });
+            options.AddPolicy("authenticated", policy =>
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                policy.RequireAuthenticatedUser();
+            });
             return options;
         }
 

@@ -15,9 +15,9 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Builders;
 using SimpleIdentityServer.Scim.Client.Extensions;
-using SimpleIdentityServer.Scim.Client.Factories;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Scim.Client
             return new RequestBuilder(_schema, (obj) => AddGroup(obj, new Uri(url), accessToken));
         }
 
-        public async Task<ScimResponse> GetGroup(string baseUrl, string id, string accessToken = null)
+        public Task<ScimResponse> GetGroup(string baseUrl, string id, string accessToken = null)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await GetGroup(baseUrl.ParseUri(), id, accessToken);
+            return GetGroup(baseUrl.ParseUri(), id, accessToken);
         }
 
         public async Task<ScimResponse> GetGroup(Uri baseUri, string id, string accessToken = null)
@@ -117,10 +117,11 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
-        public async Task<ScimResponse> DeleteGroup(string baseUrl, string id, string accessToken = null)
+        public Task<ScimResponse> DeleteGroup(string baseUrl, string id, string accessToken = null)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -132,7 +133,7 @@ namespace SimpleIdentityServer.Scim.Client
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await DeleteGroup(baseUrl.ParseUri(), id, accessToken);
+            return DeleteGroup(baseUrl.ParseUri(), id, accessToken);
         }
 
         public async Task<ScimResponse> DeleteGroup(Uri baseUri, string id, string accessToken = null)
@@ -159,7 +160,8 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
         public RequestBuilder UpdateGroup(string baseUrl, string id, string accessToken = null)
@@ -224,14 +226,14 @@ namespace SimpleIdentityServer.Scim.Client
             return new PatchRequestBuilder((obj) => PartialUpdateGroup(obj, new Uri(url), accessToken));
         }
 
-        public async Task<ScimResponse> SearchGroups(string baseUrl, SearchParameter parameter, string accessToken = null)
+        public Task<ScimResponse> SearchGroups(string baseUrl, SearchParameter parameter, string accessToken = null)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
                 throw new ArgumentNullException(nameof(baseUrl));
             }
 
-            return await SearchGroups(baseUrl.ParseUri(), parameter, accessToken);
+            return SearchGroups(baseUrl.ParseUri(), parameter, accessToken);
         }
 
         public async Task<ScimResponse> SearchGroups(Uri baseUri, SearchParameter parameter, string accessToken = null)
@@ -260,22 +262,23 @@ namespace SimpleIdentityServer.Scim.Client
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
 
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
         }
 
-        private async Task<ScimResponse> AddGroup(JObject jObj, Uri uri, string accessToken = null)
+        private Task<ScimResponse> AddGroup(JObject jObj, Uri uri, string accessToken = null)
         {
-            return await ExecuteRequest(jObj, uri, HttpMethod.Post, accessToken);
+            return ExecuteRequest(jObj, uri, HttpMethod.Post, accessToken);
         }
 
-        private async Task<ScimResponse> UpdateGroup(JObject jObj, Uri uri, string accessToken = null)
+        private Task<ScimResponse> UpdateGroup(JObject jObj, Uri uri, string accessToken = null)
         {
-            return await ExecuteRequest(jObj, uri, HttpMethod.Put, accessToken);
+            return ExecuteRequest(jObj, uri, HttpMethod.Put, accessToken);
         }
 
-        private async Task<ScimResponse> PartialUpdateGroup(JObject jObj, Uri uri, string accessToken = null)
+        private Task<ScimResponse> PartialUpdateGroup(JObject jObj, Uri uri, string accessToken = null)
         {
-            return await ExecuteRequest(jObj, uri, new HttpMethod("PATCH"), accessToken);
+            return ExecuteRequest(jObj, uri, new HttpMethod("PATCH"), accessToken);
         }
 
         private async Task<ScimResponse> ExecuteRequest(JObject jObj, Uri uri, HttpMethod method, string accessToken = null)
@@ -293,7 +296,8 @@ namespace SimpleIdentityServer.Scim.Client
             }
 
             var client = _httpClientFactory.GetHttpClient();
-            return await ParseHttpResponse(await client.SendAsync(request).ConfigureAwait(false));
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            return await ParseHttpResponse(response).ConfigureAwait(false);
         }
         
         private static string FormatUrl(string baseUrl)
