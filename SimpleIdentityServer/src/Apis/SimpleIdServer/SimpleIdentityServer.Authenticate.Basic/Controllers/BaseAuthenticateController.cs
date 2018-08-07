@@ -581,7 +581,8 @@ namespace SimpleIdentityServer.Authenticate.Basic.Controllers
             HttpContext.Response.Cookies.Append(SimpleIdentityServer.Core.Constants.SESSION_ID, sessionId, new CookieOptions
             {
                 HttpOnly = false,
-                Expires = expires
+                Expires = expires,
+                SameSite = SameSiteMode.None
             });
             var identity = new ClaimsIdentity(cls, _authenticateOptions.CookieName);
             var principal = new ClaimsPrincipal(identity);
