@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SimpleBus.InMemory
@@ -6,15 +8,17 @@ namespace SimpleBus.InMemory
     internal class SignalrConnection
     {
         private static SignalrConnection _instance;
+        private InMemoryOptions _options;
         private HubConnection _connection;
 
         private SignalrConnection(InMemoryOptions options)
         {
-            _connection = new HubConnectionBuilder().WithUrl(options.Url).Build();
-            _connection.StartAsync().Wait();
-            _connection.Closed += HandleClosed;
-            IsConnected = true;
+            _options = options;
+            Connect();
         }
+
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
 
         public static SignalrConnection Instance(InMemoryOptions options)
         {
@@ -33,10 +37,49 @@ namespace SimpleBus.InMemory
 
         public bool IsConnected { get; private set; }
 
-        private Task HandleClosed(System.Exception arg)
+        private Task HandleClosed(Exception arg)
         {
             IsConnected = false;
+            if (Disconnected != null)
+            {
+                Disconnected(this, EventArgs.Empty);
+            }
+
+            Retry();
             return Task.FromResult(0);
+        }
+
+        private void Connect()
+        {
+            try
+            {
+                _connection = new HubConnectionBuilder().WithUrl(_options.Url).Build();
+                _connection.StartAsync().Wait();
+                _connection.Closed += HandleClosed;
+                IsConnected = true;
+                if(Connected != null)
+                {
+                    Connected(this, EventArgs.Empty);
+                }
+            }
+            catch(Exception)
+            {
+                Retry();
+            }
+        }
+
+        private void Retry()
+        {
+            if (!_options.IsRetryEnabled)
+            {
+                return;
+            }
+
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(_options.RetryTimestampInMs);
+                Connect();
+            });
         }
     }
 }
