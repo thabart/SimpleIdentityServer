@@ -112,8 +112,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(new[] { new Representation() }, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(null, null, 0));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(new[] { new Representation() }, null, 0));
         }
 
         [Fact]
@@ -183,10 +183,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             };
 
             // ACTS
-            var ascendingResult = _responseParser.Filter(groups, searchOrderAscending);
-            var descendingResult = _responseParser.Filter(groups, searchOrderDescending);
-            var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate);
-            var secondFilteredResult = _responseParser.Filter(groups, searchOrderAscExcludeAttrsPaginate);
+            var ascendingResult = _responseParser.Filter(groups, searchOrderAscending, 0);
+            var descendingResult = _responseParser.Filter(groups, searchOrderDescending, 0);
+            var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate, 0);
+            var secondFilteredResult = _responseParser.Filter(groups, searchOrderAscExcludeAttrsPaginate, 0);
 
             // ASSERTS
             Assert.NotNull(ascendingResult);

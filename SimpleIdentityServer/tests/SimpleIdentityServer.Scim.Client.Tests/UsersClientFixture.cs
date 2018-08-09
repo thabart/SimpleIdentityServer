@@ -157,6 +157,35 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         #endregion
 
+        #region Search users
+
+        [Fact]
+        public async Task When_Insert_Ten_Users_And_Search_Two_Users_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            for(var i = 0; i < 10; i++)
+            {
+                await _usersClient.AddUser(baseUrl)
+                    .SetCommonAttributes("external_id")
+                    .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "username"))
+                    .Execute();
+            }
+            var searchResult = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 2
+            });
+
+            // ASSERTS
+            Assert.True(searchResult.Content["Resources"].Count() == 2);
+        }
+
+        #endregion
+
         [Fact]
         public async Task When_Insert_Complex_Users_Then_Information_Are_Correct()
         {

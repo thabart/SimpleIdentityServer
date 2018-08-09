@@ -49,12 +49,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// Filter the representations and return the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
-        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="representations">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
+        /// <param name="totalNumbers">Total numbers</param>
         /// <returns>Filtered response</returns>
-        FilterResult Filter(
-            IEnumerable<Representation> representations,
-            SearchParameter searchParameter);
+        FilterResult Filter(IEnumerable<Representation> representations, SearchParameter searchParameter, int totalNumbers);
     }
 
     public class FilterResult
@@ -100,11 +99,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
-        public async Task<Response> Parse(
-            Representation representation, 
-            string location,
-            string schemaId,
-            OperationTypes operationType)
+        public async Task<Response> Parse(Representation representation, string location, string schemaId, OperationTypes operationType)
         {
             if (representation == null)
             {
@@ -156,12 +151,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// Filter the representations and return the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
-        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="representations">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
+        /// <param name="totalNumbers">Total number of records</param>
         /// <returns>Filtered response</returns>
-        public FilterResult Filter(
-            IEnumerable<Representation> representations,
-            SearchParameter searchParameter)
+        public FilterResult Filter(IEnumerable<Representation> representations, SearchParameter searchParameter, int totalNumbers)
         {
             if (representations == null)
             {
@@ -281,7 +275,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 filterResult.Values = result;
             }
 
-            filterResult.TotalNumbers = result.Count();
+            filterResult.TotalNumbers = totalNumbers;
             // 3. Paginate the representations.
             return filterResult;
         }

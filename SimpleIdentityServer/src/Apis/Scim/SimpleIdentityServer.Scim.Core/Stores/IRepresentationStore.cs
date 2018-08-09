@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Results;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace SimpleIdentityServer.Scim.Core.Stores
     public interface IRepresentationStore
     {
         Task<IEnumerable<RepresentationAttribute>> SearchValues(string resourceType, Filter filter);
-        Task<IEnumerable<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter);
+        Task<PaginatedResult<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter);
         Task<bool> AddRepresentation(Representation representation);
         Task<Representation> GetRepresentation(string id);
         Task<bool> RemoveRepresentation(Representation representation);

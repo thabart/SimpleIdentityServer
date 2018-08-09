@@ -19,17 +19,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleBus.InMemory;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.SqlServer;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using SimpleIdentityServer.Scim.Startup.Extensions;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
 using SimpleIdentityServer.Scim.Startup.Services;
 using SimpleBus.Core;
+using SimpleIdentityServer.Scim.Db.EF.Postgre;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -88,7 +87,7 @@ namespace SimpleIdentityServer.Scim.Startup
 
         private void ConfigureScimRepository(IServiceCollection services)
         {
-            services.AddScimSqlServerEF("Data Source=.;Initial Catalog=ScimServer;Integrated Security=True;");
+            services.AddScimPostgresqlEF("User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=scim;Pooling=true;");
         }
 
         private void ConfigureCachingInMemory(IServiceCollection services)

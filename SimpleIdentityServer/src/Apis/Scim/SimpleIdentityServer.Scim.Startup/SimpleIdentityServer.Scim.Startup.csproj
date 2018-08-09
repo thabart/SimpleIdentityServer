@@ -15,7 +15,7 @@
     <ProjectReference Include="..\..\..\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.SqlServer\SimpleIdentityServer.Scim.Db.EF.SqlServer.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.Postgre\SimpleIdentityServer.Scim.Db.EF.Postgre.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
   </ItemGroup>
 

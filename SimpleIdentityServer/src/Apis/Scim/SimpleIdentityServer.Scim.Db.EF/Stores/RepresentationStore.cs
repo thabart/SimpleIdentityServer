@@ -17,6 +17,7 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
+using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using SimpleIdentityServer.Scim.Db.EF.Helpers;
@@ -39,7 +40,7 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
             _transformers = transformers;
         }
 
-        public async Task<IEnumerable<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter)
+        public async Task<PaginatedResult<Representation>> SearchRepresentations(string resourceType, SearchParameter searchParameter)
         {
             if (string.IsNullOrWhiteSpace(resourceType))
             {
@@ -62,15 +63,22 @@ namespace SimpleIdentityServer.Scim.Db.EF.Stores
                 representations = (IQueryable<Models.Representation>)lambdaExpression.Compile().DynamicInvoke(representations);
             }
 
+            var totalResults = representations.Count();
             representations = representations.Skip(searchParameter.StartIndex);
             representations = representations.Take(searchParameter.Count);
             var result = await representations.ToListAsync().ConfigureAwait(false);
-            return result.Select(r =>
+            var content = result.Select(r =>
             {
                 var rep = r.ToDomain();
                 rep.Attributes = GetRepresentationAttributes(r);
                 return rep;
-            });
+            }).ToList();
+            return new PaginatedResult<Representation>
+            {
+                Content = content,
+                StartIndex = searchParameter.StartIndex,
+                Count = totalResults
+            };
         }
 
         public async  Task<IEnumerable<RepresentationAttribute>> SearchValues(string resourceType, Filter filter)
