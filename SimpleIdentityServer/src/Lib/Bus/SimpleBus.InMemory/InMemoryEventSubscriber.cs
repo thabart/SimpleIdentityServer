@@ -25,6 +25,7 @@ namespace SimpleBus.InMemory
         {
             _instance = SignalrConnection.Instance(_options);
             _instance.Connected += HandleConnected;
+            _instance.Connect();
         }
 
         private void HandleConnected(object sender, EventArgs e)

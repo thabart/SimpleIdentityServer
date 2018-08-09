@@ -14,7 +14,6 @@ namespace SimpleBus.InMemory
         private SignalrConnection(InMemoryOptions options)
         {
             _options = options;
-            Connect();
         }
 
         public event EventHandler Connected;
@@ -37,19 +36,7 @@ namespace SimpleBus.InMemory
 
         public bool IsConnected { get; private set; }
 
-        private Task HandleClosed(Exception arg)
-        {
-            IsConnected = false;
-            if (Disconnected != null)
-            {
-                Disconnected(this, EventArgs.Empty);
-            }
-
-            Retry();
-            return Task.FromResult(0);
-        }
-
-        private void Connect()
+        public void Connect()
         {
             try
             {
@@ -66,6 +53,18 @@ namespace SimpleBus.InMemory
             {
                 Retry();
             }
+        }
+
+        private Task HandleClosed(Exception arg)
+        {
+            IsConnected = false;
+            if (Disconnected != null)
+            {
+                Disconnected(this, EventArgs.Empty);
+            }
+
+            Retry();
+            return Task.FromResult(0);
         }
 
         private void Retry()
