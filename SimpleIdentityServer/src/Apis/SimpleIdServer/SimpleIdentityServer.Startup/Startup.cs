@@ -25,6 +25,8 @@ using SimpleBus.Core;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.AccountFilter.Basic;
+using SimpleIdentityServer.AccountFilter.Basic.EF;
+using SimpleIdentityServer.AccountFilter.Basic.EF.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Authenticate.SMS;
@@ -84,7 +86,7 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            // ConfigureAccountFilters(services); // Uncomment this code to filter the accounts
+            ConfigureAccountFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
@@ -121,9 +123,9 @@ namespace SimpleIdentityServer.Startup
             var mvcBuilder = services.AddMvc();
             services.AddTwoFactorSmsAuthentication(new TwoFactorTwilioOptions
             {
-                TwilioAccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
-                TwilioAuthToken = "0c006b20fa2459200274229b2b655746",
-                TwilioFromNumber = "+19103562002",
+                TwilioAccountSid = "",
+                TwilioAuthToken = "",
+                TwilioFromNumber = "",
                 TwilioMessage = "The activation code is {0}"
             }); // SMS TWO FACTOR AUTHENTICATION.
             services.AddOpenIdApi(_options); // API
@@ -148,9 +150,9 @@ namespace SimpleIdentityServer.Startup
                 Message = "The activation code is {0}",
                 TwilioSmsCredentials = new Twilio.Client.TwilioSmsCredentials
                 {
-                    AccountSid = "AC093c9783bfa2e70ff29998c2b3d1ba5a",
-                    AuthToken = "0c006b20fa2459200274229b2b655746",
-                    FromNumber = "+19103562002",
+                    AccountSid = "",
+                    AuthToken = "",
+                    FromNumber = "",
                 },
                 IsScimResourceAutomaticallyCreated = false,
                 AuthenticationOptions = new BasicAuthenticationOptions
@@ -180,25 +182,8 @@ namespace SimpleIdentityServer.Startup
 
         private void ConfigureAccountFilters(IServiceCollection services)
         {
-            services.AddAccountFilter(new AccountFilterBasicOptions
-            {
-                Rules = new List<FilterRule>
-                {
-                    new FilterRule
-                    {
-                        Name = "invalid_rule",
-                        Comparisons = new List<FilterComparison>
-                        {
-                            new FilterComparison
-                            {
-                                ClaimKey = "organization",
-                                ClaimValue = "entreprise",
-                                Operation = ComparisonOperations.Equal
-                            }
-                        }
-                    }
-                }
-            });
+            services.AddAccountFilter();
+            services.AddBasicAccountFilterInMemoryEF();
         }
 
         private void ConfigureBus(IServiceCollection services)
@@ -275,6 +260,13 @@ namespace SimpleIdentityServer.Startup
                 var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                 simpleIdentityServerContext.Database.EnsureCreated();
                 simpleIdentityServerContext.EnsureSeedData();
+            }
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var accountFilterContext = serviceScope.ServiceProvider.GetService<AccountFilterBasicServerContext>();
+                accountFilterContext.Database.EnsureCreated();
+                // accountFilterContext.EnsureSeedData();
             }
         }
 

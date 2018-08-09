@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 var isFilterValid = true;
                 foreach(var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = resourceOwnerFilter.Check(newClaims);
+                    var userFilterResult = await resourceOwnerFilter.Check(newClaims);
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;

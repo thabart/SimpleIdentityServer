@@ -5,19 +5,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAccountFilter(this IServiceCollection services, AccountFilterBasicOptions options)
+        public static IServiceCollection AddAccountFilter(this IServiceCollection services)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            services.AddSingleton(options);
             services.AddTransient<IAccountFilter, AccountFilter>();
             return services;
         }

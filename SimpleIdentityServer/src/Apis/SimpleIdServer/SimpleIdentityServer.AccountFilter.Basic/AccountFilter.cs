@@ -1,21 +1,24 @@
-﻿using System;
+﻿using SimpleIdentityServer.AccountFilter.Basic.Aggregates;
+using SimpleIdentityServer.AccountFilter.Basic.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.AccountFilter.Basic
 {
     public class AccountFilter : IAccountFilter
     {
-        private readonly AccountFilterBasicOptions _accountFilterBasicOptions;
+        private readonly IFilterRepository _filterRepository;
 
-        public AccountFilter(AccountFilterBasicOptions accountFilterBasicOptions)
+        public AccountFilter(IFilterRepository filterRepository)
         {
-            _accountFilterBasicOptions = accountFilterBasicOptions;
+            _filterRepository = filterRepository;
         }
 
-        public AccountFilterResult Check(IEnumerable<Claim> claims)
+        public async Task<AccountFilterResult> Check(IEnumerable<Claim> claims)
         {
             if (claims == null)
             {
@@ -23,42 +26,43 @@ namespace SimpleIdentityServer.AccountFilter.Basic
             }
 
             var accountFilterRules = new List<AccountFilterRuleResult>();
-            if(_accountFilterBasicOptions.Rules != null)
+            var filters = await _filterRepository.GetAll();
+            if (filters != null)
             {
-                foreach(var rule in _accountFilterBasicOptions.Rules)
+                foreach(var filter in filters)
                 {
-                    var accountFilterRule = new AccountFilterRuleResult(rule.Name);
+                    var accountFilterRule = new AccountFilterRuleResult(filter.Name);
                     var errorMessages = new List<string>();
-                    if (rule.Comparisons != null)
+                    if (filter.Rules != null)
                     {
-                        foreach(var comparison in rule.Comparisons)
+                        foreach(var rule in filter.Rules)
                         {
-                            var claim = claims.FirstOrDefault(c => c.Type == comparison.ClaimKey);
+                            var claim = claims.FirstOrDefault(c => c.Type == rule.ClaimKey);
                             if (claim == null)
                             {
-                                errorMessages.Add($"the claim '{comparison.ClaimKey}' doesn't exist");
+                                errorMessages.Add($"the claim '{rule.ClaimKey}' doesn't exist");
                                 continue;
                             }
 
-                            switch (comparison.Operation)
+                            switch (rule.Operation)
                             {
                                 case ComparisonOperations.Equal:
-                                    if (comparison.ClaimValue != claim.Value)
+                                    if (rule.ClaimValue != claim.Value)
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] == '{comparison.ClaimValue}' is wrong");
+                                        errorMessages.Add($"the filter claims['{claim.Type}'] == '{rule.ClaimValue}' is wrong");
                                     }
                                     break;
                                 case ComparisonOperations.NotEqual:
-                                    if (comparison.ClaimValue == claim.Value)
+                                    if (rule.ClaimValue == claim.Value)
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] != '{comparison.ClaimValue}' is wrong");
+                                        errorMessages.Add($"the filter claims['{claim.Type}'] != '{rule.ClaimValue}' is wrong");
                                     }
                                     break;
                                 case ComparisonOperations.RegularExpression:
-                                    var regex = new Regex(comparison.ClaimValue);
+                                    var regex = new Regex(rule.ClaimValue);
                                     if (!regex.IsMatch(claim.Value))
                                     {
-                                        errorMessages.Add($"the filter claims['{claim.Type}'] match regular expression {comparison.ClaimValue} is wrong");
+                                        errorMessages.Add($"the filter claims['{claim.Type}'] match regular expression {rule.ClaimValue} is wrong");
                                     }
                                     break;
                             }
