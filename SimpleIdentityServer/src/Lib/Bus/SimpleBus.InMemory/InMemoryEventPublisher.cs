@@ -8,10 +8,13 @@ namespace SimpleBus.InMemory
     public class InMemoryEventPublisher : IEventPublisher
     {
         private readonly InMemoryOptions _options;
+        private readonly SignalrConnection _instance;
 
         public InMemoryEventPublisher(InMemoryOptions options)
         {
             _options = options;
+            _instance = SignalrConnection.Instance(options);
+            _instance.Connect();
         }
 
         public void Publish<T>(T evt) where T : Event
@@ -22,7 +25,7 @@ namespace SimpleBus.InMemory
             }
 
             evt.ServerName = _options.ServerName;
-            var hubConnection = SignalrConnection.Instance(_options).GetHubConnection();
+            var hubConnection = _instance.GetHubConnection();
             var serializedMessage = new SerializedMessage
             {
                 AssemblyQualifiedName = typeof(T).AssemblyQualifiedName,
