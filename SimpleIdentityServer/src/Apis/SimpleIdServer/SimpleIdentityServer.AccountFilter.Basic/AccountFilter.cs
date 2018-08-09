@@ -75,6 +75,14 @@ namespace SimpleIdentityServer.AccountFilter.Basic
                 }
             }
 
+            if (!accountFilterRules.Any())
+            {
+                return new AccountFilterResult
+                {
+                    IsValid = true
+                };
+            }
+
             return new AccountFilterResult
             {
                 AccountFilterRules = accountFilterRules,

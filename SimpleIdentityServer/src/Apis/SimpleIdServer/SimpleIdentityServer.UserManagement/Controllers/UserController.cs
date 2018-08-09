@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SimpleIdentityServer.Core.Api.Profile;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Services;
@@ -281,7 +282,19 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             }
             
             var authenticatedUser = await SetUser();
-            await _profileActions.Unlink(authenticatedUser.GetSubject(), id);
+            try
+            {
+                await _profileActions.Unlink(authenticatedUser.GetSubject(), id);
+            }
+            catch (IdentityServerException ex)
+            {
+                return RedirectToAction("Index", "Error", new { code = ex.Code, message = ex.Message, area = "Shell" });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Error", new { code = ErrorCodes.InternalError, message = ex.Message, area = "Shell" });
+            }
+
             return await Profile();
         }
 
