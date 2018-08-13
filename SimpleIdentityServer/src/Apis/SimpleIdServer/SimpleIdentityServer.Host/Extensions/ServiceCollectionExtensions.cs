@@ -98,6 +98,16 @@ namespace SimpleIdentityServer.Host
                 policy.AddAuthenticationSchemes("OAuth2Introspection");
                 policy.RequireClaim("scope", "register_client");
             });
+            authenticateOptions.AddPolicy("connected_user", policy => // Introsect the identity token.
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                policy.RequireAuthenticatedUser();
+            });
+            authenticateOptions.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile
+            {
+                policy.AddAuthenticationSchemes("OAuth2Introspection");
+                policy.RequireClaim("scope", "manage_profile");
+            });
             return authenticateOptions;
         }
 

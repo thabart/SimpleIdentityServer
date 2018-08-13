@@ -269,6 +269,15 @@ namespace SimpleIdentityServer.Startup.Extensions
                         IsDisplayedInConsent = true,
                         Description = "Register a client",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "manage_profile",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Manage the user's profiles",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }

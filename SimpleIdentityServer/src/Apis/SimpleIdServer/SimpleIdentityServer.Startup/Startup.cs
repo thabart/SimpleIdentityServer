@@ -39,6 +39,7 @@ using SimpleIdentityServer.Startup.Extensions;
 using SimpleIdentityServer.Startup.Services;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
+using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.UserManagement;
 using System;
 using System.Collections.Generic;
@@ -113,6 +114,10 @@ namespace SimpleIdentityServer.Startup
                 {
                     opts.ClientId = "SimpleIdentityServer";
                     opts.ClientSecret = "SimpleIdentityServer";
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
+                })
+                .AddUserInfoIntrospection(opts =>
+                {
                     opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
             services.AddAuthorization(opts =>
