@@ -29,6 +29,7 @@ using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.OAuth.Logging;
 using SimpleIdentityServer.OpenId.Logging;
 using System;
+using System.Linq;
 
 namespace SimpleIdentityServer.Host
 {
@@ -103,10 +104,25 @@ namespace SimpleIdentityServer.Host
                 policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAuthenticatedUser();
             });
-            authenticateOptions.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile
+            authenticateOptions.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile or with role = administrator
             {
-                policy.AddAuthenticationSchemes("OAuth2Introspection");
-                policy.RequireClaim("scope", "manage_profile");
+		policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+		policy.RequireAssertion(p =>
+                {
+                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
+                    if (claimRole == null && claimScope == null)
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "manage_profile";
+                });
             });
             return authenticateOptions;
         }
