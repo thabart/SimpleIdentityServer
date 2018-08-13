@@ -23,7 +23,9 @@ namespace SimpleIdentityServer.EF.Extensions
             {
                 Issuer = profile.Issuer,
                 ResourceOwnerId = profile.ResourceOwnerId,
-                Subject = profile.Subject
+                Subject = profile.Subject,
+                CreateDateTime = profile.CreateDateTime,
+                UpdateTime = profile.UpdateDateTime
             };
         }
 
@@ -253,7 +255,9 @@ namespace SimpleIdentityServer.EF.Extensions
             {
                 Issuer = profile.Issuer,
                 ResourceOwnerId = profile.ResourceOwnerId,
-                Subject = profile.Subject
+                Subject = profile.Subject,
+                UpdateDateTime = profile.UpdateTime,
+                CreateDateTime = profile.CreateDateTime
             };
         }
 

@@ -1,5 +1,7 @@
 ﻿using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,6 +38,20 @@ namespace SimpleIdentityServer.Core.Api.Profile
 
         public Task<bool> Link(string localSubject, string externalSubject, string issuer, bool force = false)
         {
+            if (string.IsNullOrWhiteSpace(externalSubject))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, "user_id"));
+            }
+
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                throw new IdentityServerException(
+                    ErrorCodes.InvalidRequestCode,
+                    string.Format(ErrorDescriptions.MissingParameter, "issuer"));
+            }
+
             return _linkProfileAction.Execute(localSubject, externalSubject, issuer, force);
         }
 

@@ -45,6 +45,7 @@ using SimpleIdentityServer.OpenId.Logging;
 using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Twilio.Client;
+using SimpleIdentityServer.UserManagement.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,6 +115,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 

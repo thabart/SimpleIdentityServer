@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             return GetProfiles(subject);
         }
 
-        [HttpGet]
+        [HttpGet("{subject}")]
         [Authorize("manage_profile")]
         public async Task<IActionResult> GetProfiles(string subject)
         {
@@ -52,14 +52,14 @@ namespace SimpleIdentityServer.UserManagement.Controllers
 
         [HttpPost(".me")]
         [Authorize("connected_user")]
-        public Task<IActionResult> AddProfile(LinkProfileRequest linkProfileRequest)
+        public Task<IActionResult> AddProfile([FromBody] LinkProfileRequest linkProfileRequest)
         {
             return AddProfile(User.GetSubject(), linkProfileRequest);
         }
 
-        [HttpPost]
+        [HttpPost("{subject}")]
         [Authorize("manage_profile")]
-        public async Task<IActionResult> AddProfile(string subject, LinkProfileRequest linkProfileRequest)
+        public async Task<IActionResult> AddProfile(string subject, [FromBody] LinkProfileRequest linkProfileRequest)
         {
             if(string.IsNullOrWhiteSpace(subject))
             {
@@ -75,16 +75,15 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             return new NoContentResult();
         }
         
-        [HttpDelete(".me")]
+        [HttpDelete(".me/{externalId}")]
         [Authorize("connected_user")]
         public Task<IActionResult> RemoveProfile(string externalId)
         {
             return RemoveProfile(User.GetSubject(), externalId);
         }
 
-        #endregion
-
-        [HttpDelete]
+        [HttpDelete("{subject}/{externalId}")]
+        [Authorize("manage_profile")]
         public async Task<IActionResult> RemoveProfile(string subject, string externalId)
         {
             if (string.IsNullOrWhiteSpace(subject))
@@ -100,6 +99,8 @@ namespace SimpleIdentityServer.UserManagement.Controllers
             await _profileActions.Unlink(subject, externalId);
             return new NoContentResult();
         }
+
+        #endregion
 
         private static IActionResult BuildMissingParameter(string parameterName)
         {

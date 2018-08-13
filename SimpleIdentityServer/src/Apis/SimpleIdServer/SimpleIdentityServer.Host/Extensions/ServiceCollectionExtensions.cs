@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Host
                 policy.AddAuthenticationSchemes("OAuth2Introspection");
                 policy.RequireClaim("scope", "register_client");
             });
-            authenticateOptions.AddPolicy("connected_user", policy => // Introsect the identity token.
+            authenticateOptions.AddPolicy("connected_user", policy => // Introspect the identity token.
             {
                 policy.AddAuthenticationSchemes("UserInfoIntrospection");
                 policy.RequireAuthenticatedUser();

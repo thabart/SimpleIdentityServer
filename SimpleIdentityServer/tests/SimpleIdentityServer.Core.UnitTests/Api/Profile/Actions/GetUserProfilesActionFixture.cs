@@ -1,5 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Api.Profile.Actions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Parameters;
 using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
@@ -32,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
         {
             // ARRANGE
             InitializeFakeObjects();
-
+            
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject"));
             Assert.NotNull(ex);
@@ -46,6 +47,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             const string subject = "subject";
             // ARRANGE
             InitializeFakeObjects();
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
             await _getProfileAction.Execute(subject);

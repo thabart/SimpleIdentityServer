@@ -203,6 +203,15 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                         IsDisplayedInConsent = true,
                         Description = "Register a client",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "manage_profile",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Manage the user's profiles",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }
@@ -1058,6 +1067,10 @@ namespace SimpleIdentityServer.Host.Tests.Extensions
                             new ClientScope
                             {
                                 ScopeName = "register_client"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "manage_profile"
                             }
                         },
                         GrantTypes = "3",
