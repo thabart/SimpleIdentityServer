@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Client.Operations
+namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     public interface IUnlinkProfileOperation
     {

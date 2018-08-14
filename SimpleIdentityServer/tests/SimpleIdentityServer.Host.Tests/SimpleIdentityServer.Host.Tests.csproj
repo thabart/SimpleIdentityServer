@@ -26,6 +26,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.AccessToken.Store.InMemory\SimpleIdentityServer.AccessToken.Store.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\Common\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.AccountFilter.Basic.Client\SimpleIdentityServer.AccountFilter.Basic.Client.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.AccountFilter.Basic.EF.InMemory\SimpleIdentityServer.AccountFilter.Basic.EF.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.AccountFilter.Basic\SimpleIdentityServer.AccountFilter.Basic.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.LoginPassword\SimpleIdentityServer.Authenticate.LoginPassword.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.SMS.Client\SimpleIdentityServer.Authenticate.SMS.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Authenticate.SMS\SimpleIdentityServer.Authenticate.SMS.csproj" />
@@ -35,6 +38,7 @@
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.UserManagement.Client\SimpleIdentityServer.UserManagement.Client.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.UserManagement\SimpleIdentityServer.UserManagement.csproj" />
     <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />

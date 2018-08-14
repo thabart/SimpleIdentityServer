@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />		
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter.Basic.Common\SimpleIdentityServer.AccountFilter.Basic.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.AccountFilter\SimpleIdentityServer.AccountFilter.csproj" />
   </ItemGroup>
 </Project>

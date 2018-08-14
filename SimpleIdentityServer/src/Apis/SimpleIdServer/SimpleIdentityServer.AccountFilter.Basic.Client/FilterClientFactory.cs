@@ -1,37 +1,37 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.AccountFilter.Basic.Client.Operations;
 using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Common.Client.Factories;
 using System;
 
-namespace SimpleIdentityServer.Client
+namespace SimpleIdentityServer.AccountFilter.Basic.Client
 {
-    public interface IProfileClientFactory
+    public interface IFilterClientFactory
     {
-        IProfileClient GetProfileClient();
+        IFilterClient GetFilterClient();
     }
 
-    public class ProfileClientFactory
+    public class FilterClientFactory : IFilterClientFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ProfileClientFactory()
+        public FilterClientFactory()
         {
             var services = new ServiceCollection();
             RegisterDependencies(services);
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public ProfileClientFactory(IHttpClientFactory httpClientFactory)
+        public FilterClientFactory(IHttpClientFactory httpClientFactory)
         {
             var services = new ServiceCollection();
             RegisterDependencies(services, httpClientFactory);
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public IProfileClient GetProfileClient()
+        public IFilterClient GetFilterClient()
         {
-            var result = (IProfileClient)_serviceProvider.GetService(typeof(IProfileClient));
+            var result = (IFilterClient)_serviceProvider.GetService(typeof(IFilterClient));
             return result;
         }
 
@@ -46,10 +46,12 @@ namespace SimpleIdentityServer.Client
                 serviceCollection.AddCommonClient();
             }
 
-            serviceCollection.AddTransient<IUnlinkProfileOperation, UnlinkProfileOperation>();
-            serviceCollection.AddTransient<ILinkProfileOperation, LinkProfileOperation>();
-            serviceCollection.AddTransient<IGetProfilesOperation, GetProfilesOperation>();
-            serviceCollection.AddTransient<IProfileClient, ProfileClient>();
+            serviceCollection.AddTransient<IAddFilterOperation, AddFilterOperation>();
+            serviceCollection.AddTransient<IDeleteFilterOperation, DeleteFilterOperation>();
+            serviceCollection.AddTransient<IGetAllFiltersOperation, GetAllFiltersOperation>();
+            serviceCollection.AddTransient<IGetFilterOperation, GetFilterOperation>();
+            serviceCollection.AddTransient<IUpdateFilterOperation, UpdateFilterOperation>();
+            serviceCollection.AddTransient<IFilterClient, FilterClient>();
         }
     }
 }

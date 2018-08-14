@@ -1,10 +1,10 @@
-﻿using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Client.Results;
-using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
+﻿using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.UserManagement.Client.Operations;
+using SimpleIdentityServer.UserManagement.Client.Results;
+using SimpleIdentityServer.UserManagement.Common.Requests;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Client
+namespace SimpleIdentityServer.UserManagement.Client
 {
     public interface IProfileClient
     {

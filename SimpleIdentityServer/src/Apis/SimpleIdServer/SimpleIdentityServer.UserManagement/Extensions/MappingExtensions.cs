@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
+using SimpleIdentityServer.UserManagement.Common.Responses;
 using SimpleIdentityServer.UserManagement.ViewModels;
 using System;
 using System.Collections.Generic;

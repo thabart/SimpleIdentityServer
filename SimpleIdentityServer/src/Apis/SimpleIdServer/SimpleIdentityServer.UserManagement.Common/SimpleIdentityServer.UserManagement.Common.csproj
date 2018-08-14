@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.AccountFilter.Basic.Client Class Library</Description>
+    <Description>SimpleIdentityServer.UserManagement.Common Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.AccountFilter.Basic.Client</AssemblyName>
-    <PackageId>SimpleIdentityServer.AccountFilter.Basic.Client</PackageId>
+    <AssemblyName>SimpleIdentityServer.UserManagement.Common</AssemblyName>
+    <PackageId>SimpleIdentityServer.UserManagement.Common</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Common.Client\SimpleIdentityServer.Common.Client.csproj" />
     <ProjectReference Include="..\..\Common\SimpleIdentityServer.Common.Dtos\SimpleIdentityServer.Common.Dtos.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.AccountFilter.Basic.Common\SimpleIdentityServer.AccountFilter.Basic.Common.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">

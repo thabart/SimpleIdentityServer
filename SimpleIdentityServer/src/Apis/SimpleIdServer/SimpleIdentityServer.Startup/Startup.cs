@@ -87,7 +87,6 @@ namespace SimpleIdentityServer.Startup
             ConfigureOauthRepositorySqlServer(services);
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            ConfigureAccountFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             // 4. Enable logging
             services.AddLogging();
@@ -126,6 +125,7 @@ namespace SimpleIdentityServer.Startup
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
+            ConfigureAccountFilters(services, mvcBuilder);
             services.AddTwoFactorSmsAuthentication(new TwoFactorTwilioOptions
             {
                 TwilioAccountSid = "",
@@ -185,9 +185,9 @@ namespace SimpleIdentityServer.Startup
             });  // USER MANAGEMENT
         }
 
-        private void ConfigureAccountFilters(IServiceCollection services)
+        private void ConfigureAccountFilters(IServiceCollection services, IMvcBuilder mvcBuilder)
         {
-            services.AddAccountFilter();
+            services.AddAccountFilter(mvcBuilder);
             services.AddBasicAccountFilterInMemoryEF();
         }
 

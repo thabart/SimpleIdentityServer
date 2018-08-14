@@ -7,6 +7,7 @@
     <ProjectReference Include="..\..\Scim\SimpleIdentityServer.Scim.Client\SimpleIdentityServer.Scim.Client.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />  
     <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.UserManagement.Common\SimpleIdentityServer.UserManagement.Common.csproj" />  
   </ItemGroup>
   <ItemGroup>  
     <EmbeddedResource Include="Areas\**\*.cshtml" />

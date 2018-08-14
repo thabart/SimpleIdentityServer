@@ -278,6 +278,15 @@ namespace SimpleIdentityServer.Startup.Extensions
                         IsDisplayedInConsent = true,
                         Description = "Manage the user's profiles",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "manage_account_filtering",
+                        IsExposed = false,
+                        IsOpenIdScope = false,
+                        IsDisplayedInConsent = true,
+                        Description = "Manage the account filtering",
+                        Type = ScopeType.ProtectedApi
                     }
                 });
             }

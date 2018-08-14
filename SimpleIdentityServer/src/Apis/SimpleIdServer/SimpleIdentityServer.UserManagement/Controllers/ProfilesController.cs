@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Profile;
-using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.UserManagement.Common.Requests;
 using SimpleIdentityServer.UserManagement.Extensions;
 using System.Linq;
 using System.Net;

@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace SimpleIdentityServer.AccountFilter.Basic.Common.Requests
 {
     [DataContract]
-    public class AddFilterRuleRequest
+    public class UpdateFilterRuleRequest
     {
         [DataMember(Name = Constants.FilterRuleResponseNames.ClaimKey)]
         public string ClaimKey { get; set; }
@@ -18,11 +18,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Common.Requests
     }
 
     [DataContract]
-    public class AddFilterRequest
+    public class UpdateFilterRequest
     {
+        [DataMember(Name = Constants.FilterResponseNames.Id)]
+        public string Id { get; set; }
         [DataMember(Name = Constants.FilterResponseNames.Name)]
         public string Name { get; set; }
         [DataMember(Name = Constants.FilterResponseNames.Rules)]
-        public IEnumerable<AddFilterRuleRequest> Rules { get; set; }
+        public IEnumerable<UpdateFilterRuleRequest> Rules { get; set; }
     }
 }

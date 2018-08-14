@@ -21,6 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.AccountFilter.Basic.Controllers;
+using SimpleIdentityServer.AccountFilter.Basic.EF.InMemory;
 using SimpleIdentityServer.Api.Controllers.Api;
 using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.Authenticate.SMS.Actions;
@@ -104,7 +106,8 @@ namespace SimpleIdentityServer.Host.Tests
                 o.ClientId = "stateless_client";
                 o.ClientSecret = "stateless_client";
                 o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
-            });
+            })
+            .AddFakeUserInfoIntrospection(o => { });
             services.AddAuthorization(opt =>
             {
                 opt.AddOpenIdSecurityPolicy(DefaultSchema);
@@ -116,6 +119,7 @@ namespace SimpleIdentityServer.Host.Tests
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
             parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
@@ -181,7 +185,8 @@ namespace SimpleIdentityServer.Host.Tests
                 .AddOAuthLogging()
                 .AddLogging()
                 .AddOAuthInMemoryEF()
-                .AddInMemoryAccessTokenStore();
+                .AddInMemoryAccessTokenStore()
+                .AddBasicAccountFilterInMemoryEF();
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

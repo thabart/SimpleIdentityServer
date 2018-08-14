@@ -30,5 +30,10 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
         {
             return builder.AddScheme<FakeOAuth2IntrospectionOptions, FakeOauth2IntrospectionHandler>(FakeOAuth2IntrospectionOptions.AuthenticationScheme, configureOptions);
         }
+
+        public static AuthenticationBuilder AddFakeUserInfoIntrospection(this AuthenticationBuilder builder, Action<FakeUserInfoIntrospectionOptions> configureOptions)
+        {
+            return builder.AddScheme<FakeUserInfoIntrospectionOptions, FakeUserInfoIntrospectionHandler>(FakeUserInfoIntrospectionOptions.AuthenticationScheme, configureOptions);
+        }
     }
 }

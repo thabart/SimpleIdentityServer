@@ -1,14 +1,14 @@
 ﻿using Newtonsoft.Json;
-using SimpleIdentityServer.Client.Results;
 using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Common.Dtos.Responses;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.UserManagement.Client.Results;
+using SimpleIdentityServer.UserManagement.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Client.Operations
+namespace SimpleIdentityServer.UserManagement.Client.Operations
 {
     public interface IGetProfilesOperation
     {

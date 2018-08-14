@@ -1,8 +1,8 @@
 ﻿using SimpleIdentityServer.Common.Client;
-using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.UserManagement.Common.Responses;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Client.Results
+namespace SimpleIdentityServer.UserManagement.Client.Results
 {
     public class GetProfilesResult : BaseResponse
     {
