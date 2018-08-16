@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.AccessToken.Store.InMemory
 {
-    internal sealed class InMemoryTokenStore : IAccessTokenStore
+    public sealed class InMemoryTokenStore : IAccessTokenStore
     {
         private class StoredToken
         {
