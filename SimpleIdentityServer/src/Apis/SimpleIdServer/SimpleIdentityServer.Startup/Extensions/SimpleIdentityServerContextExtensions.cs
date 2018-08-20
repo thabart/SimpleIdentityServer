@@ -1377,6 +1377,48 @@ namespace SimpleIdentityServer.Startup.Extensions
                         UpdateDateTime = DateTime.UtcNow,
                         CreateDateTime = DateTime.UtcNow
                     },
+		    // DocumentManagement website
+                    new EF.Models.Client
+                    {
+                        ClientId = "DocumentManagementWebsite",
+                        ClientName = "Document manager website",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "DocumentManagementWebsite"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            }
+                        },
+                        GrantTypes = "1,4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "http://localhost:64951/callback",
+                        PostLogoutRedirectUris = "http://localhost:64951/end_session",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
+                    },
                     // Resource manager website.
                     new EF.Models.Client
                     {
