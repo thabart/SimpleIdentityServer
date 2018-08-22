@@ -4,7 +4,12 @@ using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
 {
-    internal sealed class UserFilterParser
+    public interface IUserFilterParser
+    {
+        string Parse(string filter, Representation representation);
+    }
+
+    internal sealed class UserFilterParser : IUserFilterParser
     {
         public string Parse(string filter, Representation representation)
         {

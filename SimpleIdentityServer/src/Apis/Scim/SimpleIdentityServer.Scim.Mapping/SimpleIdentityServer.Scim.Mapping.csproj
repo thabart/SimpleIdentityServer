@@ -1,17 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>SimpleIdentityServer.Scim.Mapping.Ad Class Library</Description>
+    <Description>SimpleIdentityServer.Scim.Mapping Class Library</Description>
     <Authors>thierry habart</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <AssemblyName>SimpleIdentityServer.Scim.Mapping.Ad</AssemblyName>
-    <PackageId>SimpleIdentityServer.Scim.Mapping.Ad</PackageId>
+    <AssemblyName>SimpleIdentityServer.Scim.Mapping</AssemblyName>
+    <PackageId>SimpleIdentityServer.Scim.Mapping</PackageId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.2" />
-  </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System" />
@@ -22,8 +17,8 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping\SimpleIdentityServer.Scim.Mapping.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />
   </ItemGroup>
 </Project>

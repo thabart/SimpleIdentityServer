@@ -101,6 +101,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.Tests", "tests\SimpleIdentityServer.Scim.Mapping.Ad.Tests\SimpleIdentityServer.Scim.Mapping.Ad.Tests.csproj", "{25D81B3A-9758-47F8-A919-985F346D932D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping\SimpleIdentityServer.Scim.Mapping.csproj", "{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.InMemory", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad.InMemory\SimpleIdentityServer.Scim.Mapping.Ad.InMemory.csproj", "{FE8379F5-CBDF-4169-92CC-6067803EC23B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -263,6 +267,14 @@ Global
 		{25D81B3A-9758-47F8-A919-985F346D932D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25D81B3A-9758-47F8-A919-985F346D932D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25D81B3A-9758-47F8-A919-985F346D932D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE8379F5-CBDF-4169-92CC-6067803EC23B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE8379F5-CBDF-4169-92CC-6067803EC23B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE8379F5-CBDF-4169-92CC-6067803EC23B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE8379F5-CBDF-4169-92CC-6067803EC23B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -312,6 +324,8 @@ Global
 		{28615E63-2AF5-4326-ACD3-6F3FB6B92338} = {E69071DD-4007-4333-950E-0988517E5426}
 		{14DB8DF7-D592-4612-B155-4504B532029C} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
 		{25D81B3A-9758-47F8-A919-985F346D932D} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+		{C1A6DAF1-E30E-459E-8DEF-98B4A73892C8} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
+		{FE8379F5-CBDF-4169-92CC-6067803EC23B} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
