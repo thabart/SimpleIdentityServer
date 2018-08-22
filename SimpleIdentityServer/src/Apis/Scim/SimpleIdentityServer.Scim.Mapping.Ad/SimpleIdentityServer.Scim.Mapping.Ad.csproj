@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SimpleIdentityServer.Scim.Mapping.Ad Class Library</Description>
+    <Authors>thierry habart</Authors>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <AssemblyName>SimpleIdentityServer.Scim.Mapping.Ad</AssemblyName>
+    <PackageId>SimpleIdentityServer.Scim.Mapping.Ad</PackageId>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.DirectoryServices" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -81,9 +81,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         private readonly ISchemaStore _schemasStore;
         private readonly ICommonAttributesFactory _commonAttributesFactory;
 
-        public RepresentationResponseParser(
-            ISchemaStore schemaStore,
-            ICommonAttributesFactory commonAttributeFactory)
+        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory)
         {
             _schemasStore = schemaStore;
             _commonAttributesFactory = commonAttributeFactory;
@@ -124,8 +122,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var attribute in schema.Attributes)
                 {
                     // Ignore the attributes.
-                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) ||
-                        (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
+                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Core Layer", "01. Core Layer", "{E69071DD-4007-4333-950E-0988517E5426}"
 EndProject
@@ -94,6 +94,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Logging", "src\Apis\Common\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj", "{0C80FBFF-D13A-46F9-801C-9BA5900982C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. SimpleIdServer", "03. SimpleIdServer", "{E5F3CC01-5760-4682-AF18-8216DEAE5024}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Mapping", "04. Mapping", "{28615E63-2AF5-4326-ACD3-6F3FB6B92338}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad", "src\Apis\Scim\SimpleIdentityServer.Scim.Mapping.Ad\SimpleIdentityServer.Scim.Mapping.Ad.csproj", "{14DB8DF7-D592-4612-B155-4504B532029C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Mapping.Ad.Tests", "tests\SimpleIdentityServer.Scim.Mapping.Ad.Tests\SimpleIdentityServer.Scim.Mapping.Ad.Tests.csproj", "{25D81B3A-9758-47F8-A919-985F346D932D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,6 +255,14 @@ Global
 		{0C80FBFF-D13A-46F9-801C-9BA5900982C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C80FBFF-D13A-46F9-801C-9BA5900982C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C80FBFF-D13A-46F9-801C-9BA5900982C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14DB8DF7-D592-4612-B155-4504B532029C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14DB8DF7-D592-4612-B155-4504B532029C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14DB8DF7-D592-4612-B155-4504B532029C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14DB8DF7-D592-4612-B155-4504B532029C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25D81B3A-9758-47F8-A919-985F346D932D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25D81B3A-9758-47F8-A919-985F346D932D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25D81B3A-9758-47F8-A919-985F346D932D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25D81B3A-9758-47F8-A919-985F346D932D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -295,6 +309,9 @@ Global
 		{4FAFE756-992B-4D92-9DA6-926F2BAF398B} = {E5F3CC01-5760-4682-AF18-8216DEAE5024}
 		{0C80FBFF-D13A-46F9-801C-9BA5900982C6} = {E5F3CC01-5760-4682-AF18-8216DEAE5024}
 		{E5F3CC01-5760-4682-AF18-8216DEAE5024} = {E69071DD-4007-4333-950E-0988517E5426}
+		{28615E63-2AF5-4326-ACD3-6F3FB6B92338} = {E69071DD-4007-4333-950E-0988517E5426}
+		{14DB8DF7-D592-4612-B155-4504B532029C} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
+		{25D81B3A-9758-47F8-A919-985F346D932D} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
