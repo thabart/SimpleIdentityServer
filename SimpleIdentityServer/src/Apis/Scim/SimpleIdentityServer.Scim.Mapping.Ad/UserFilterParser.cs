@@ -1,6 +1,5 @@
 ﻿using SimpleIdentityServer.Scim.Core.Models;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad

@@ -70,18 +70,19 @@ namespace SimpleIdentityServer.Scim.Core.Models
 
             GetParents(this, parents);
             parents.Reverse();
-            var parentNames = names.Concat(parents.Where(p => p.SchemaAttribute != null).Select(p => p.SchemaAttribute.Name));
-            return string.Join(".", parentNames);
+            var result = parents.Where(p => p.SchemaAttribute != null).Select(p => p.SchemaAttribute.Name).ToList();
+            result.AddRange(names);
+            return string.Join(".", result);
         }
 
-        private IEnumerable<RepresentationAttribute> GetParents(RepresentationAttribute representation, IEnumerable<RepresentationAttribute> parents)
+        private IEnumerable<RepresentationAttribute> GetParents(RepresentationAttribute representation, ICollection<RepresentationAttribute> parents)
         {
             if (representation.Parent == null)
             {
                 return parents;
             }
 
-            parents = parents.Concat(new[] { representation });
+            parents.Add(representation.Parent);
             return GetParents(representation.Parent, parents);
         }
 

@@ -72,15 +72,22 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
                     new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "jobTitle" })
                     {
                         Value = "job"
+                    },
+                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "streetNumber"})
+                    {
+                        Parent = new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "adr" })
+                        {
+                        },
+                        Value = "100"
                     }
                 }
             };
 
             // ACT
-            var filter = filterParser.Parse("&(CN=${userName})(jobTitle=${jobTitle})", representation);
+            var filter = filterParser.Parse("&(CN=${userName})(jobTitle=${jobTitle})(streetNumber=${adr.streetNumber})", representation);
 
             // ASSERT
-            Assert.Equal("&(CN=val)(jobTitle=job)", filter);
+            Assert.Equal("&(CN=val)(jobTitle=job)(streetNumber=100)", filter);
         }
     }
 }
