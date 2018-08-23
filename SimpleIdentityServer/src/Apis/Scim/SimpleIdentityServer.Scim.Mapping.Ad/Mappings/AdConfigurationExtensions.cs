@@ -16,7 +16,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Mappings
             modelBuilder.Entity<AdConfiguration>()
                 .ToTable("configurations");
             modelBuilder.Entity<AdConfiguration>()
-                .HasKey(c => c.Path);
+                .HasKey(c => c.IpAdr);
             return modelBuilder;
         }
     }

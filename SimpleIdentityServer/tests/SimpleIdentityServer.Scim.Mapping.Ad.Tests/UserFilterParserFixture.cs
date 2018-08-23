@@ -1,4 +1,5 @@
-﻿using SimpleIdentityServer.Scim.Core.Models;
+﻿using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Core.Models;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "userName" })
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
                     {
                         Value = "val"
                     }
@@ -38,13 +39,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "userName" })
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
                     {
                         Value = "val"
                     },
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "jobTitle" })
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "jobTitle" })
                     {
-                        Value = "job"
                     }
                 }
             };
@@ -65,17 +65,17 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "userName" })
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
                     {
                         Value = "val"
                     },
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "jobTitle" })
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "jobTitle" })
                     {
                         Value = "job"
                     },
-                    new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "streetNumber"})
+                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "streetNumber"})
                     {
-                        Parent = new RepresentationAttribute(new Common.DTOs.SchemaAttributeResponse { Name = "adr" })
+                        Parent = new RepresentationAttribute(new SchemaAttributeResponse { Name = "adr" })
                         {
                         },
                         Value = "100"

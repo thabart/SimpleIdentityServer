@@ -1,7 +1,7 @@
 ﻿using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System;
-using System.DirectoryServices;
+using System.DirectoryServices.Protocols;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
@@ -19,44 +19,64 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             _userFilterParser = userFilterParser;
         }
 
-        public async Task<string> Map(Representation representation, string attributeId)
+        public async Task<Representation> Map(Representation representation)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
             }
-
-            if(string.IsNullOrWhiteSpace(attributeId))
-            {
-                throw new ArgumentNullException(nameof(attributeId));
-            }
             
             var configuration = await _configurationStore.GetConfiguration().ConfigureAwait(false);
             if (configuration.IsEnabled)
             {
-                return null;
+                return representation;
             }
 
-            var attributeMapping = await _mappingStore.GetMapping(attributeId).ConfigureAwait(false);
-            if (attributeMapping == null)
+            var userFilter = _userFilterParser.Parse(configuration.UserFilter, representation);
+            if(userFilter == null)
             {
-                return null;
+                return representation;
             }
 
-            using (var directoryEntry = new DirectoryEntry(configuration.Path, configuration.Username, configuration.Password))
+            using (var ldapHelper = new LdapHelper())
             {
-                var userFilter = _userFilterParser.Parse(configuration.UserFilter, representation);
-                var directorySearch = new DirectorySearcher(directoryEntry, userFilter);
-                var searchResult = directorySearch.FindOne();
-                if(searchResult == null || searchResult.Properties == null || !searchResult.Properties.Contains(attributeMapping.AdPropertyName))
+                ldapHelper.Connect(configuration.IpAdr, configuration.Port, configuration.Username, configuration.Password);
+                var searchResponse = ldapHelper.Search(configuration.DistinguishedName, userFilter);
+                if (searchResponse.Entries.Count != 1)
                 {
-                    return null;
+                    return representation;
                 }
 
-                return searchResult.Properties[attributeMapping.AdPropertyName][0].ToString();
+                var ldapUser = searchResponse.Entries[0];
+                foreach(var attr in representation.Attributes)
+                {
+                    var attributeId = attr.SchemaAttribute.Id;
+                    var attributeMapping = await _mappingStore.GetMapping(attributeId).ConfigureAwait(false);
+                    if (attributeMapping == null)
+                    {
+                        continue;
+                    }
+
+                    if (ldapUser.Attributes.Contains(attributeMapping.AdPropertyName))
+                    {
+                        var a = ldapUser.Attributes[attributeMapping.AdPropertyName];
+                        attr.Value = TryGetAttributeValueAsString(a);
+                    }
+                }
             }
 
-            return null;
+            return representation;
+        }
+
+        private static string TryGetAttributeValueAsString(DirectoryAttribute attr)
+        {
+            string value = null;
+            if (attr != null && attr.Count > 0)
+            {
+                value = attr[0] as string;
+            }
+
+            return value;
         }
     }
 }
