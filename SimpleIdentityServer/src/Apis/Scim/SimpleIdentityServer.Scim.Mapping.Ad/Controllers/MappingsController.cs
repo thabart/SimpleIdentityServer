@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests;
 using SimpleIdentityServer.Scim.Mapping.Ad.Extensions;
@@ -20,11 +21,22 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
         }
 
         [HttpPost]
+        [Authorize("scim_manage")]
         public async Task<IActionResult> Add([FromBody] AddMappingRequest addMappingRequest)
         {
             if (addMappingRequest == null)
             {
                 return GetError(ErrorCodes.InvalidRequest, ErrorDescriptions.NoRequest, HttpStatusCode.BadRequest);
+            }
+
+            if (string.IsNullOrWhiteSpace(addMappingRequest.AttributeId))
+            {
+                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "attribute_id"), HttpStatusCode.BadRequest);
+            }
+
+            if (string.IsNullOrWhiteSpace(addMappingRequest.AdPropertyName))
+            {
+                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "ad_property_name"), HttpStatusCode.BadRequest);
             }
 
             var parameter = addMappingRequest.ToModel();
@@ -43,6 +55,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
         }
 
         [HttpGet]
+        [Authorize("scim_manage")]
         public async Task<IActionResult> Get()
         {
             var adMappings = await _mappingStore.GetAll();
@@ -50,6 +63,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize("scim_manage")]
         public async Task<IActionResult> Get(string id)
         {
             if(string.IsNullOrWhiteSpace(id))
@@ -67,6 +81,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize("scim_manage")]
         public async Task<IActionResult> Remove(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SimpleIdentityServer.Common.Client;
 using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Scim.Mapping.Ad.Client.Configuration;
 using SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping;
 using System;
 
@@ -51,6 +52,9 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client
             serviceCollection.AddTransient<IGetAdMappingOperation, GetAdMappingOperation>();
             serviceCollection.AddTransient<IGetAllAdMappingsOperation, GetAllAdMappingsOperation>();
             serviceCollection.AddTransient<IAdMappingClient, AdMappingClient>();
+            serviceCollection.AddTransient<IAdConfigurationClient, AdConfigurationClient>();
+            serviceCollection.AddTransient<IGetAdConfigurationOperation, GetAdConfigurationOperation>();
+            serviceCollection.AddTransient<IUpdateAdConfigurationOperation, UpdateAdConfigurationOperation>();
         }
     }
 }

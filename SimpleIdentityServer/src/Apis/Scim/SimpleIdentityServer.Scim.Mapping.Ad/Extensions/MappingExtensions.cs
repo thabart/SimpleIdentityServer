@@ -21,6 +21,25 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
             };
         }
 
+        public static AdConfiguration ToModel(this UpdateAdConfigurationRequest adConfigurationResponse)
+        {
+            if (adConfigurationResponse == null)
+            {
+                throw new ArgumentNullException(nameof(adConfigurationResponse));
+            }
+
+            return new AdConfiguration
+            {
+                DistinguishedName = adConfigurationResponse.DistinguishedName,
+                IpAdr = adConfigurationResponse.IpAdr,
+                IsEnabled = adConfigurationResponse.IsEnabled,
+                Password = adConfigurationResponse.Password,
+                Port = adConfigurationResponse.Port,
+                UserFilter = adConfigurationResponse.UserFilter,
+                Username = adConfigurationResponse.Username
+            };
+        }
+
         public static AdConfigurationResponse ToDto(this AdConfiguration adConfiguration)
         {
             if(adConfiguration == null)

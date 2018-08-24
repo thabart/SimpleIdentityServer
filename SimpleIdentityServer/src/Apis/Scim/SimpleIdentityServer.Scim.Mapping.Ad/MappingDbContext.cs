@@ -10,7 +10,6 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
         public MappingDbContext(DbContextOptions<MappingDbContext> dbContextOptions) : base(dbContextOptions) { }
 
         public virtual DbSet<AdMapping> Mappings { get; set; }
-        public virtual DbSet<AdConfiguration> Configurations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,8 +18,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                 throw new ArgumentNullException(nameof(modelBuilder));
             }
 
-            modelBuilder.AddAdMapping()
-                .AddAdConfigurationMapping();
+            modelBuilder.AddAdMapping();
         }
     }
 }

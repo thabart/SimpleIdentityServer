@@ -8,5 +8,7 @@
         public const string MissingParameter = "the parameter {0} is missing";
         public const string MappingDoesntExist = "the mapping doesn't exist";
         public const string CannotDeleteMapping = "an error occcured while trying to remove the mapping";
+        public const string NotValidIpAddress = "not valid ip address";
+        public const string CannotContactTheAd = "an error occured while trying to contact the AD";
     }
 }

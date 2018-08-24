@@ -1,26 +1,51 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Mapping.Ad.Models;
-using System.Threading.Tasks;
+using System;
+using System.IO;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Stores
 {
     public interface IConfigurationStore
     {
-        Task<AdConfiguration> GetConfiguration();
+        bool UpdateConfiguration(AdConfiguration adConfiguration);
+        AdConfiguration GetConfiguration();
     }
 
     internal sealed class ConfigurationStore : IConfigurationStore
     {
-        private readonly MappingDbContext _context;
+        private static string _fileName = "AdConfiguration.json";
 
-        public ConfigurationStore(MappingDbContext context)
+        public bool UpdateConfiguration(AdConfiguration adConfiguration)
         {
-            _context = context;
+            if(adConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(adConfiguration));
+            }
+
+            var fullPath = GetFullPath();
+            if(File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+
+            File.WriteAllText(fullPath, JsonConvert.SerializeObject(adConfiguration));
+            return true;
         }
 
-        public Task<AdConfiguration> GetConfiguration()
+        public AdConfiguration GetConfiguration()
         {
-            return _context.Configurations.FirstOrDefaultAsync();
+            var fullPath = GetFullPath();
+            if(!File.Exists(fullPath))
+            {
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<AdConfiguration>(File.ReadAllText(fullPath));
+        }
+
+        private static string GetFullPath()
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), _fileName);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(url)
+                RequestUri = new Uri($"{url}/mappings")
             };
             if (!string.IsNullOrWhiteSpace(accessToken))
             {

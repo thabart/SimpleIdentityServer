@@ -7,7 +7,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.InMemory
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBasicAccountFilterInMemoryEF(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddScimMappingInMemoryEF(this IServiceCollection serviceCollection)
         {
             if (serviceCollection == null)
             {

@@ -5,7 +5,6 @@ using SimpleIdentityServer.Scim.Mapping.Ad.Models;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 {
@@ -29,7 +28,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             };
             var configurationStore = new Mock<IConfigurationStore>();
             var mappingStore = new Mock<IMappingStore>();
-            configurationStore.Setup(s => s.GetConfiguration()).Returns(Task.FromResult(new AdConfiguration
+            configurationStore.Setup(s => s.GetConfiguration()).Returns(new AdConfiguration
             {
                 IpAdr = "127.0.0.1",
                 Port = 10389,
@@ -37,7 +36,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
                 DistinguishedName = "ou=system",
                 Username = "uid=admin,ou=system",
                 Password = "secret"
-            }));
+            });
             mappingStore.Setup(m => m.GetMapping(It.IsAny<string>())).Returns(Task.FromResult(new AdMapping
             {
                 AdPropertyName = "sn",

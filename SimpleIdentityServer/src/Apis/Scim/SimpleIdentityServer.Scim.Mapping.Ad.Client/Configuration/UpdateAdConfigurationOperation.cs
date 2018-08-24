@@ -8,44 +8,41 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
+namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Configuration
 {
-    public interface IAddAdMappingOperation
+    public interface IUpdateAdConfigurationOperation
     {
-        Task<BaseResponse> Execute(AddMappingRequest addMappingRequest, string url, string accessToken = null);
+        Task<BaseResponse> Execute(UpdateAdConfigurationRequest request, string baseUrl, string accessToken = null);
     }
 
-    internal sealed class AddAdMappingOperation : IAddAdMappingOperation
+    internal sealed class UpdateAdConfigurationOperation : IUpdateAdConfigurationOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public AddAdMappingOperation(IHttpClientFactory httpClientFactory)
+        public UpdateAdConfigurationOperation(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<BaseResponse> Execute(AddMappingRequest addMappingRequest, string url, string accessToken = null)
+        public async Task<BaseResponse> Execute(UpdateAdConfigurationRequest updateAdConfigurationRequest, string baseUrl, string accessToken = null)
         {
-            if(addMappingRequest == null)
+            if (updateAdConfigurationRequest == null)
             {
-                throw new ArgumentNullException(nameof(addMappingRequest));
+                throw new ArgumentNullException(nameof(updateAdConfigurationRequest));
             }
 
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(baseUrl))
             {
-                throw new ArgumentNullException(nameof(url));
+                throw new ArgumentNullException(nameof(baseUrl));
             }
-            
+
             var httpClient = _httpClientFactory.GetHttpClient();
-            var json = JsonConvert.SerializeObject(addMappingRequest, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+            var json = JsonConvert.SerializeObject(updateAdConfigurationRequest);
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
+                Method = HttpMethod.Put,
                 Content = new StringContent(json),
-                RequestUri = new Uri($"{url}/mappings")
+                RequestUri = new Uri($"{baseUrl}/adconfiguration")
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrWhiteSpace(accessToken))
@@ -59,7 +56,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
             {
                 result.EnsureSuccessStatusCode();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return new BaseResponse
                 {

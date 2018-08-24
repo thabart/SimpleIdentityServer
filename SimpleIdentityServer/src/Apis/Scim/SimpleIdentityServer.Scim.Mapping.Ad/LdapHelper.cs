@@ -8,7 +8,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
     {
         private LdapConnection _connection;
 
-        public void Connect(string server, int port, string userName, string password, string domain = null)
+        public bool Connect(string server, int port, string userName, string password, string domain = null)
         {
             var ldapDirectoryIdentifier = new LdapDirectoryIdentifier(server, port);
             var networkCredential = new NetworkCredential(userName, password, domain);
@@ -18,11 +18,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                 _connection.AuthType = AuthType.Basic;
                 _connection.SessionOptions.ProtocolVersion = 3;
                 _connection.Bind(networkCredential);
+                return true;
             }
             catch(Exception)
             {
                 _connection = null;
-                // TODO : THROW AN EXCEPTION.
+                return false;
             }
         }
 

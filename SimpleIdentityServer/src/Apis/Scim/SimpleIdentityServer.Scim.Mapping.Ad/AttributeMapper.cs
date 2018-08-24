@@ -25,9 +25,9 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             {
                 throw new ArgumentNullException(nameof(representation));
             }
-            
-            var configuration = await _configurationStore.GetConfiguration().ConfigureAwait(false);
-            if (configuration.IsEnabled)
+
+            var configuration = _configurationStore.GetConfiguration();
+            if (configuration == null || configuration.IsEnabled)
             {
                 return representation;
             }
