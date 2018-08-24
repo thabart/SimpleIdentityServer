@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_maange");
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_manage");
                 });
             });
             options.AddPolicy("scim_read", policy =>
