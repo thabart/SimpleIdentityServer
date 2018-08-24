@@ -2,6 +2,7 @@
 using SimpleIdentityServer.Scim.Mapping.Ad.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System;
+using System.DirectoryServices.Protocols;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
@@ -60,9 +61,50 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                     if (ldapUser.Attributes.Contains(attributeMapping.AdPropertyName))
                     {
                         var ldapAttr = ldapUser.Attributes[attributeMapping.AdPropertyName];
-                        attr.Value = ldapAttr.TryGetAttributeValueAsString();
+                        SetValue(attr, ldapAttr);
                     }
                 }
+            }
+        }
+
+        private static void SetValue(RepresentationAttribute representationAttr, DirectoryAttribute ldapAttr)
+        {
+            if (representationAttr.SchemaAttribute == null)
+            {
+                return;
+            }
+
+            var ldapAttrValue = ldapAttr.TryGetAttributeValueAsString();
+            switch (representationAttr.SchemaAttribute.Type)
+            {
+                case Scim.Common.Constants.SchemaAttributeTypes.String:
+                    var tmp = (SingularRepresentationAttribute<string>)representationAttr;
+                    tmp.Value = ldapAttrValue;
+                    break;
+                case Scim.Common.Constants.SchemaAttributeTypes.Boolean:
+                    var b = false;
+                    bool.TryParse(ldapAttrValue, out b);
+                    var tmp1 = (SingularRepresentationAttribute<bool>)representationAttr;
+                    tmp1.Value = b;
+                    break;
+                case Scim.Common.Constants.SchemaAttributeTypes.DateTime:
+                    DateTime d = default(DateTime);
+                    DateTime.TryParse(ldapAttrValue, out d);
+                    var tmp2 = (SingularRepresentationAttribute<DateTime>)representationAttr;
+                    tmp2.Value = d;
+                    break;
+                case Scim.Common.Constants.SchemaAttributeTypes.Decimal:
+                    decimal dec;
+                    decimal.TryParse(ldapAttrValue, out dec);
+                    var tmp3 = (SingularRepresentationAttribute<decimal>)representationAttr;
+                    tmp3.Value = dec;
+                    break;
+                case Scim.Common.Constants.SchemaAttributeTypes.Integer:
+                    int i;
+                    int.TryParse(ldapAttrValue, out i);
+                    var tmp4 = (SingularRepresentationAttribute<int>)representationAttr;
+                    tmp4.Value = i;
+                    break;
             }
         }
     }

@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
-    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.EF.SqlServer\SimpleIdentityServer.EF.SqlServer.csproj" />
+    <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.EF.Postgre\SimpleIdentityServer.EF.Postgre.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.OAuth2Introspection\SimpleIdentityServer.OAuth2Introspection.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.Store.InMemory\SimpleIdentityServer.Store.InMemory.csproj" />

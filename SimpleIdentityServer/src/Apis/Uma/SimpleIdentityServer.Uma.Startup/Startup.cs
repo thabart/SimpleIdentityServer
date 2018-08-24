@@ -23,7 +23,7 @@ using Serilog;
 using Serilog.Events;
 using SimpleBus.Core;
 using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.SqlServer;
+using SimpleIdentityServer.EF.Postgre;
 using SimpleIdentityServer.OAuth2Introspection;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.Uma.EF;
@@ -105,8 +105,8 @@ namespace SimpleIdentityServer.Uma.Startup
 
         private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
         {
-            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddOAuthSqlServerEF(connectionString, null);
+            var connectionString = "User ID=rocheidserver;Password=password;Host=localhost;Port=5432;Database=uma;Pooling=true;";
+            services.AddOAuthPostgresqlEF(connectionString, null);
         }
 
         private void ConfigureUmaInMemoryEF(IServiceCollection services)

@@ -176,7 +176,7 @@ namespace SimpleIdentityServer.Host.Tests
             services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
             services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
-            services.AddSingleton<ITokenStore>(new InMemoryTokenStore());
+            services.AddSingleton<ITokenStore>(new Store.InMemory.InMemoryTokenStore());
             services.AddHostIdentityServer(_options)
                 .AddSimpleIdentityServerCore(_context.HttpClientFactory)
                 .AddSimpleIdentityServerJwt()

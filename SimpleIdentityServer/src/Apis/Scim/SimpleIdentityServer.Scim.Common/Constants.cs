@@ -246,6 +246,7 @@ namespace SimpleIdentityServer.Scim.Common
 
         public static class SchemaAttributeResponseNames
         {
+            public const string Id = "id";
             public const string Name = "name";
             public const string Type = "type";
             public const string MultiValued = "multiValued";
