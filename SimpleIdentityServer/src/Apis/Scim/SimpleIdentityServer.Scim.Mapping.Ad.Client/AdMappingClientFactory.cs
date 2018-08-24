@@ -10,6 +10,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client
     public interface IAdMappingClientFactory
     {
         IAdMappingClient GetAdMappingClient();
+        IAdConfigurationClient GetAdConfigurationClient();
     }
 
     public class AdMappingClientFactory : IAdMappingClientFactory
@@ -33,6 +34,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client
         public IAdMappingClient GetAdMappingClient()
         {
             var result = (IAdMappingClient)_serviceProvider.GetService(typeof(IAdMappingClient));
+            return result;
+        }
+
+        public IAdConfigurationClient GetAdConfigurationClient()
+        {
+            var result = (IAdConfigurationClient)_serviceProvider.GetService(typeof(IAdConfigurationClient));
             return result;
         }
 

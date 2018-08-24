@@ -69,6 +69,7 @@ namespace SimpleIdentityServer.Scim.Startup
             ConfigureBus(services);
             ConfigureScimRepository(services);
             ConfigureCachingInMemory(services);
+            ConfigureScimAdMappingRepository(services);
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));

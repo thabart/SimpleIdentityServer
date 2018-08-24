@@ -5,6 +5,7 @@ using SimpleIdentityServer.Scim.Mapping.Ad.Models;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 {
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 
             var attributeMapper = new AttributeMapper(configurationStore.Object, mappingStore.Object, new UserFilterParser());
 
-            var result = await attributeMapper.Map(representation);
+            await attributeMapper.Map(representation);
 
             string s2 = "";
         }

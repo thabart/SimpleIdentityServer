@@ -29,9 +29,9 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
         private static string _externalId = Guid.NewGuid().ToString();
         private static string _adrId = Guid.NewGuid().ToString();
         private static string _localeId = Guid.NewGuid().ToString();
-        private static string _ageId = Guid.NewGuid().ToString();
+        private static string _ageId = "314b9eb0-7b2a-46eb-8d7f-5b3d58421a99";
         private static string _genderId = Guid.NewGuid().ToString();
-        private static string _ethnicityId = Guid.NewGuid().ToString();
+        private static string _ethnicityId = "8c5f01ca-cd5a-4a87-b503-9c9977074947";
         private static string _birthDateId = Guid.NewGuid().ToString();
         private static string _locationId = Guid.NewGuid().ToString();
 
@@ -87,7 +87,8 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = Common.Constants.SchemaAttributeTypes.String,
-                                SchemaAttributeId = _externalId
+                                SchemaAttributeId = _externalId,
+                                Value = "administrator"
                             },
                             new RepresentationAttribute
                             {
@@ -146,7 +147,8 @@ namespace SimpleIdentityServer.Scim.Startup.Extensions
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = Common.Constants.SchemaAttributeTypes.String,
-                                SchemaAttributeId = _externalId
+                                SchemaAttributeId = _externalId,
+                                Value = "patient"
                             },
                             new RepresentationAttribute
                             {

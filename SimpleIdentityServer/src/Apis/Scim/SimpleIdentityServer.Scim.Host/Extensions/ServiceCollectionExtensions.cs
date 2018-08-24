@@ -37,13 +37,13 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                    if (claimRole == null && claimScope == null)
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "scim_manage";
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_maange");
                 });
             });
             options.AddPolicy("scim_read", policy =>
@@ -57,13 +57,13 @@ namespace SimpleIdentityServer.Scim.Host.Extensions
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                    if (claimRole == null && claimScope == null)
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "scim_read";
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(c => c.Value == "scim_read");
                 });
             });
             options.AddPolicy("authenticated", policy =>
