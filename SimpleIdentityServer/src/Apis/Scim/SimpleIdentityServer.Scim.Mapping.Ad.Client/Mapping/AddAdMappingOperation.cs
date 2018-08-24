@@ -10,7 +10,12 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
 {
-    internal sealed class AddAdMappingOperation
+    public interface IAddAdMappingOperation
+    {
+        Task<BaseResponse> Execute(AddMappingRequest addMappingRequest, string url, string accessToken = null);
+    }
+
+    internal sealed class AddAdMappingOperation : IAddAdMappingOperation
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
