@@ -18,10 +18,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
-                    {
-                        Value = "thabart"
-                    },
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName" }, "thabart"),
                     new RepresentationAttribute(new SchemaAttributeResponse { Name = "lastName", Id = "1" })
                     {
                     }

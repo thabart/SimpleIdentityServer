@@ -203,7 +203,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             _commonAttributesFactoryStub = new Mock<ICommonAttributesFactory>();
             _filterParser = new FilterParser();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
-            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
+            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object, null);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                     throw new InvalidOperationException($"the attribute {fullPath} doesn't exist");
                 }
 
-                filter = filter.Replace("${" + fullPath + "}", attribute.Value);
+                filter = filter.Replace("${" + fullPath + "}", attribute.GetValue());
             }
 
             return filter;

@@ -16,10 +16,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
-                    {
-                        Value = "val"
-                    }
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName" }, "val")
                 }
             };
 
@@ -39,11 +36,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
-                    {
-                        Value = "val"
-                    },
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "jobTitle" })
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName" }, "val"),
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "jobTitle" }, "job")
                     {
                         Value = "job"
                     }
@@ -66,20 +60,13 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 Attributes = new List<RepresentationAttribute>
                 {
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "userName" })
-                    {
-                        Value = "val"
-                    },
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "jobTitle" })
-                    {
-                        Value = "job"
-                    },
-                    new RepresentationAttribute(new SchemaAttributeResponse { Name = "streetNumber"})
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "userName" }, "val"),
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "jobTitle" }, "job"),
+                    new SingularRepresentationAttribute<string>(new SchemaAttributeResponse { Name = "streetNumber"}, "100")
                     {
                         Parent = new RepresentationAttribute(new SchemaAttributeResponse { Name = "adr" })
                         {
-                        },
-                        Value = "100"
+                        }
                     }
                 }
             };
