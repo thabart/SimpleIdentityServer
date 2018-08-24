@@ -15,7 +15,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using SimpleIdentityServer.Scim.Core.Stores;

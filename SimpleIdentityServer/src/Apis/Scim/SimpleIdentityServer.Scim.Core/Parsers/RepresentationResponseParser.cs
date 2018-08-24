@@ -16,10 +16,11 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
-using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,11 +81,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     {
         private readonly ISchemaStore _schemasStore;
         private readonly ICommonAttributesFactory _commonAttributesFactory;
+        private readonly IEnumerable<IAttributeMapper> _attributeMappers;
 
-        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory)
+        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory, IEnumerable<IAttributeMapper> attributeMappers)
         {
             _schemasStore = schemaStore;
             _commonAttributesFactory = commonAttributeFactory;
+            _attributeMappers = attributeMappers;
         }
 
         /// <summary>
@@ -113,6 +116,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
+            }
+
+            if (_attributeMappers != null && _attributeMappers.Any())
+            {
+                await _attributeMappers.First().Map(representation);
             }
 
             JObject result = new JObject();

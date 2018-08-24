@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleIdentityServer.Scim.Core.Models
+namespace SimpleIdentityServer.Scim.Common.Models
 {
     public class RepresentationAttribute : ICloneable, IComparable
     {

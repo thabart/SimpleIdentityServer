@@ -18,7 +18,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace SimpleIdentityServer.Scim.Core.Models
+namespace SimpleIdentityServer.Scim.Common.Models
 {
     public class BulkOperationResult
     {

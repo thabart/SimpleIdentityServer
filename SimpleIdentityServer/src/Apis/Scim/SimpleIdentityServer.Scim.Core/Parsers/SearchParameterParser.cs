@@ -18,8 +18,8 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Core.Errors;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {

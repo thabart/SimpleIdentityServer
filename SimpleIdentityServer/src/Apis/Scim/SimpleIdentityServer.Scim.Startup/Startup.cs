@@ -19,16 +19,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleBus.Core;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.UserInfoIntrospection;
 using SimpleIdentityServer.Scim.Db.EF;
+using SimpleIdentityServer.Scim.Db.EF.Postgre;
 using SimpleIdentityServer.Scim.Host.Extensions;
+using SimpleIdentityServer.Scim.Mapping.Ad;
+using SimpleIdentityServer.Scim.Mapping.Ad.InMemory;
 using SimpleIdentityServer.Scim.Startup.Extensions;
+using SimpleIdentityServer.Scim.Startup.Services;
+using SimpleIdentityServer.UserInfoIntrospection;
 using WebApiContrib.Core.Concurrency;
 using WebApiContrib.Core.Storage.InMemory;
-using SimpleIdentityServer.Scim.Startup.Services;
-using SimpleBus.Core;
-using SimpleIdentityServer.Scim.Db.EF.Postgre;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -72,6 +74,7 @@ namespace SimpleIdentityServer.Scim.Startup
                 .AllowAnyHeader()));
             services.AddMvc();
             services.AddScimHost();
+            services.AddScimMapping();
         }
 
         private void ConfigureBus(IServiceCollection services)
@@ -93,6 +96,11 @@ namespace SimpleIdentityServer.Scim.Startup
         private void ConfigureCachingInMemory(IServiceCollection services)
         {
             services.AddConcurrency(opt => opt.UseInMemory());
+        }
+
+        private void ConfigureScimAdMappingRepository(IServiceCollection services)
+        {
+            services.AddScimMappingInMemoryEF();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

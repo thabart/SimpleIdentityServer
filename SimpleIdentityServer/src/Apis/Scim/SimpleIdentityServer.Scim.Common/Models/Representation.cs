@@ -18,7 +18,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace SimpleIdentityServer.Scim.Core.Models
+namespace SimpleIdentityServer.Scim.Common.Models
 {
     public class Representation : ICloneable
     {

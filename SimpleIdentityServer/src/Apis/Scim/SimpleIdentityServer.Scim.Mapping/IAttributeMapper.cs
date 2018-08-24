@@ -1,10 +1,10 @@
-﻿using SimpleIdentityServer.Scim.Core.Models;
+﻿using SimpleIdentityServer.Scim.Common.Models;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping
 {
     public interface IAttributeMapper
     {
-        Task<Representation> Map(Representation representation);
+        Task Map(Representation representation);
     }
 }

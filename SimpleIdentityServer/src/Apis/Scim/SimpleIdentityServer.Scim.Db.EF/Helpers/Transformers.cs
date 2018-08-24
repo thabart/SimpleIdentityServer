@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json;
 using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Db.EF.Extensions;
 using System;
 using System.Collections.Generic;

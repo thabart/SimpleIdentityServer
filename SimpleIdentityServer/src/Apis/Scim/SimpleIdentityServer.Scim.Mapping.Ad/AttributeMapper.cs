@@ -1,7 +1,7 @@
-﻿using SimpleIdentityServer.Scim.Core.Models;
+﻿using SimpleIdentityServer.Scim.Common.Models;
+using SimpleIdentityServer.Scim.Mapping.Ad.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System;
-using System.DirectoryServices.Protocols;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             _userFilterParser = userFilterParser;
         }
 
-        public async Task<Representation> Map(Representation representation)
+        public async Task Map(Representation representation)
         {
             if (representation == null)
             {
@@ -29,13 +29,13 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             var configuration = _configurationStore.GetConfiguration();
             if (configuration == null || configuration.IsEnabled)
             {
-                return representation;
+                return;
             }
 
             var userFilter = _userFilterParser.Parse(configuration.UserFilter, representation);
             if(userFilter == null)
             {
-                return representation;
+                return;
             }
 
             using (var ldapHelper = new LdapHelper())
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                 var searchResponse = ldapHelper.Search(configuration.DistinguishedName, userFilter);
                 if (searchResponse.Entries.Count != 1)
                 {
-                    return representation;
+                    return;
                 }
 
                 var ldapUser = searchResponse.Entries[0];
@@ -59,24 +59,11 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
 
                     if (ldapUser.Attributes.Contains(attributeMapping.AdPropertyName))
                     {
-                        var a = ldapUser.Attributes[attributeMapping.AdPropertyName];
-                        attr.Value = TryGetAttributeValueAsString(a);
+                        var ldapAttr = ldapUser.Attributes[attributeMapping.AdPropertyName];
+                        attr.Value = ldapAttr.TryGetAttributeValueAsString();
                     }
                 }
             }
-
-            return representation;
-        }
-
-        private static string TryGetAttributeValueAsString(DirectoryAttribute attr)
-        {
-            string value = null;
-            if (attr != null && attr.Count > 0)
-            {
-                value = attr[0] as string;
-            }
-
-            return value;
         }
     }
 }

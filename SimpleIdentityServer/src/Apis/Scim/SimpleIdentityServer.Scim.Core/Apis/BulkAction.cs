@@ -15,10 +15,9 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
-using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
 using System;

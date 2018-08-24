@@ -17,6 +17,8 @@
     <ProjectReference Include="..\..\SimpleIdServer\SimpleIdentityServer.UserInfoIntrospection\SimpleIdentityServer.UserInfoIntrospection.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Db.EF.Postgre\SimpleIdentityServer.Scim.Db.EF.Postgre.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Host\SimpleIdentityServer.Scim.Host.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping.Ad.InMemory\SimpleIdentityServer.Scim.Mapping.Ad.InMemory.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping.Ad\SimpleIdentityServer.Scim.Mapping.Ad.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using Moq;
 using SimpleIdentityServer.Scim.Common.DTOs;
-using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Mapping.Ad.Models;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System.Collections.Generic;

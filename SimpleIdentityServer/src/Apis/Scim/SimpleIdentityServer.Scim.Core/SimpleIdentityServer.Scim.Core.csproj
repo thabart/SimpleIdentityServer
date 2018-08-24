@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\..\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Common\SimpleIdentityServer.Scim.Common.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Scim.Events\SimpleIdentityServer.Scim.Events.csproj" />
+    <ProjectReference Include="..\SimpleIdentityServer.Scim.Mapping\SimpleIdentityServer.Scim.Mapping.csproj" />
   </ItemGroup>
 
   <ItemGroup>

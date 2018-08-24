@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
-using Model = SimpleIdentityServer.Scim.Db.EF.Models;
-using Domain = SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Common.DTOs;
 using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Scim.Common.DTOs;
+using Domain = SimpleIdentityServer.Scim.Common.Models;
+using Model = SimpleIdentityServer.Scim.Db.EF.Models;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Extensions
 {

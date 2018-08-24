@@ -16,7 +16,7 @@
 
 using Newtonsoft.Json.Linq;
 
-namespace SimpleIdentityServer.Scim.Core.Models
+namespace SimpleIdentityServer.Scim.Common.Models
 {
     public enum PatchOperations
     {

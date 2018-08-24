@@ -1,4 +1,4 @@
-﻿using SimpleIdentityServer.Scim.Core.Models;
+﻿using SimpleIdentityServer.Scim.Common.Models;
 using System;
 using System.Text.RegularExpressions;
 
