@@ -1,6 +1,7 @@
 ﻿using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Scim.Mapping.Ad.Client;
 using SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
 {
     public class ScimResourceFixture
     {
-        // [Fact]
+        [Fact]
         public async Task When_Add_Mapping_Then_Attributes_Are_Correctly_Returned()
         {
             const string scimBaseUrl = "http://localhost:60001";
@@ -25,11 +26,19 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
             {
                 IpAdr = "127.0.0.1",
                 Port = 10389,
-                UserFilter = "(uid=${externalId})",
+                Schemas = new List<UpdateAdConfigurationSchemaRequest>
+                {
+                    new UpdateAdConfigurationSchemaRequest
+                    {
+                        Filter = "(uid=${externalId})",
+                        FilterClass = "(objectClass=person)",
+                        SchemaId = "urn:ietf:params:scim:schemas:core:2.0:User"
+                    }
+                },
                 DistinguishedName = "ou=system",
                 Username = "uid=admin,ou=system",
                 Password = "secret",
-                UserFilterClass = "(objectClass=person)"
+                IsEnabled = true
             }, scimBaseUrl, tokenResponse.Content.AccessToken);
             await adMappingClient.AddMapping(new AddMappingRequest
             {
@@ -59,13 +68,21 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
             {
                 IpAdr = "127.0.0.1",
                 Port = 10389,
-                UserFilter = "(uid=${externalId})",
+                IsEnabled = true,
+                Schemas = new List<UpdateAdConfigurationSchemaRequest>
+                {
+                    new UpdateAdConfigurationSchemaRequest
+                    {
+                        Filter = "(uid=${externalId})",
+                        FilterClass = "(objectClass=person)",
+                        SchemaId = "urn:ietf:params:scim:schemas:core:2.0:User"
+                    }
+                },
                 DistinguishedName = "ou=system",
                 Username = "uid=admin,ou=system",
-                Password = "secret",
-                UserFilterClass = "(objectClass=person)"
+                Password = "secret"
             }, scimBaseUrl, tokenResponse.Content.AccessToken);
-            var result = await adMappingClient.GetAllProperties(scimBaseUrl, tokenResponse.Content.AccessToken);
+            var result = await adMappingClient.GetAllProperties("urn:ietf:params:scim:schemas:core:2.0:User", scimBaseUrl, tokenResponse.Content.AccessToken);
             string s = "";
         }
     }

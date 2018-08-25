@@ -1,1 +1,1 @@
-{"IpAdr":"127.0.0.1","Port":10389,"Username":"uid=admin,ou=system","Password":"secret","DistinguishedName":"ou=system","UserFilter":"(uid=${externalId})","UserFilterClass":"(objectClass=person)","IsEnabled":false}
+{"IpAdr":"127.0.0.1","Port":10389,"Username":"uid=admin,ou=system","Password":"secret","DistinguishedName":"ou=system","AdConfigurationSchemas":[{"SchemaId":"urn:ietf:params:scim:schemas:core:2.0:User","Filter":"(uid=${externalId})","FilterClass":"(objectClass=person)"}],"IsEnabled":true}

@@ -54,6 +54,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
                 return actResult;
             }
 
+            _configurationStore.UpdateConfiguration(request);
             return new NoContentResult();
         }
 
@@ -88,16 +89,6 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
             if (string.IsNullOrWhiteSpace(adConfiguration.DistinguishedName))
             {
                 return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "distinguished_name"), HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(adConfiguration.UserFilter))
-            {
-                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "user_filter"), HttpStatusCode.BadRequest);
-            }
-
-            if (string.IsNullOrWhiteSpace(adConfiguration.UserFilterClass))
-            {
-                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "user_filter_class"), HttpStatusCode.BadRequest);
             }
 
             using (var ldapHelper = new LdapHelper())

@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
 {
     public interface IGetAdPropertiesOperation
     {
-        Task<GetAdPropertiesResult> Execute(string url, string accessToken = null);
+        Task<GetAdPropertiesResult> Execute(string schemaId, string url, string accessToken = null);
     }
 
     internal sealed class GetAdPropertiesOperation : IGetAdPropertiesOperation
@@ -23,8 +23,13 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<GetAdPropertiesResult> Execute(string url, string accessToken = null)
+        public async Task<GetAdPropertiesResult> Execute(string schemaId, string url, string accessToken = null)
         {
+            if (string.IsNullOrWhiteSpace(schemaId))
+            {
+                throw new ArgumentNullException(nameof(schemaId));
+            }
+
             if (string.IsNullOrWhiteSpace(url))
             {
                 throw new ArgumentNullException(nameof(url));

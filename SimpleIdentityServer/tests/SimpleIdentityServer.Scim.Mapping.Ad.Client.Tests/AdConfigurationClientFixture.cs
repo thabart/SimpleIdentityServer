@@ -123,40 +123,6 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             Assert.Equal("the parameter distinguished_name is missing", result.Error.ErrorDescription);
         }
 
-        [Fact]
-        public async Task When_Update_Configuration_And_UserFilter_Is_Not_Passed_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
-
-            // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass", DistinguishedName = "dn" }, "http://localhost:5000", null);
-
-            // ASSERT
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the parameter user_filter is missing", result.Error.ErrorDescription);
-        }
-
-        [Fact]
-        public async Task When_Update_Configuration_And_UserFilterClass_Is_Not_Passed_Then_Error_Is_Returned()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
-
-            // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass", DistinguishedName = "dn", UserFilter = "userfilter" }, "http://localhost:5000", null);
-
-            // ASSERT
-            Assert.NotNull(result);
-            Assert.True(result.ContainsError);
-            Assert.Equal("invalid_request", result.Error.Error);
-            Assert.Equal("the parameter user_filter_class is missing", result.Error.ErrorDescription);
-        }
-
         #endregion
 
         #endregion

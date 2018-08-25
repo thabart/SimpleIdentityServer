@@ -3,6 +3,7 @@ using SimpleIdentityServer.Scim.Mapping.Ad.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
 using System;
 using System.DirectoryServices.Protocols;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad
@@ -33,12 +34,18 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             }
 
             var configuration = _configurationStore.GetConfiguration();
-            if (configuration == null || configuration.IsEnabled)
+            if (configuration == null || !configuration.IsEnabled || configuration.AdConfigurationSchemas == null)
             {
                 return;
             }
 
-            var userFilter = _userFilterParser.Parse(configuration.UserFilter, representation);
+            var schemaConfiguration = configuration.AdConfigurationSchemas.FirstOrDefault(s => s.SchemaId == schemaId);
+            if (schemaConfiguration == null)
+            {
+                return;
+            }
+
+            var userFilter = _userFilterParser.Parse(schemaConfiguration.Filter, representation);
             if(userFilter == null)
             {
                 return;
@@ -58,7 +65,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                 {
                     var attributeId = attr.SchemaAttribute.Id;
                     var attributeMapping = await _mappingStore.GetMapping(attributeId).ConfigureAwait(false);
-                    if (attributeMapping == null && attributeMapping.SchemaId != schemaId)
+                    if (attributeMapping == null || attributeMapping.SchemaId != schemaId)
                     {
                         continue;
                     }

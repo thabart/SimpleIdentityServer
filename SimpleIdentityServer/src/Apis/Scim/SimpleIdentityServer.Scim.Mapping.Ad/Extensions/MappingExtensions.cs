@@ -2,6 +2,8 @@
 using SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Responses;
 using SimpleIdentityServer.Scim.Mapping.Ad.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
 {
@@ -36,9 +38,14 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
                 IsEnabled = adConfigurationResponse.IsEnabled,
                 Password = adConfigurationResponse.Password,
                 Port = adConfigurationResponse.Port,
-                UserFilter = adConfigurationResponse.UserFilter,
                 Username = adConfigurationResponse.Username,
-                UserFilterClass = adConfigurationResponse.UserFilterClass
+                AdConfigurationSchemas = adConfigurationResponse.Schemas == null ? new List<AdConfigurationSchema>() : 
+                    adConfigurationResponse.Schemas.Select(s => new AdConfigurationSchema
+                    {
+                        Filter = s.Filter,
+                        FilterClass = s.FilterClass,
+                        SchemaId = s.SchemaId
+                    })
             };
         }
 
@@ -56,9 +63,14 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
                 IsEnabled = adConfiguration.IsEnabled,
                 Password = adConfiguration.Password,
                 Port = adConfiguration.Port,
-                UserFilter = adConfiguration.UserFilter,
                 Username = adConfiguration.Username,
-                UserFilterClass = adConfiguration.UserFilterClass
+                Schemas = adConfiguration.AdConfigurationSchemas == null ? new List<AdConfigurationSchemaResponse>() :
+                    adConfiguration.AdConfigurationSchemas.Select(s => new AdConfigurationSchemaResponse
+                    {
+                        Filter = s.Filter,
+                        FilterClass = s.FilterClass,
+                        SchemaId = s.SchemaId
+                    })
             };
         }
 

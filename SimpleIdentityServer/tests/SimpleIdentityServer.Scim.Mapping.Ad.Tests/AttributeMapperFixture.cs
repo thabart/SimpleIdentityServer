@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 {
     public class AttributeMapperFixture
     {
-        // [Fact]
+        [Fact]
         public async Task When_Get_Representation_Attribute_Then_Ok_Is_Returned()
         {
             var representation = new Representation
@@ -30,21 +30,29 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             {
                 IpAdr = "127.0.0.1",
                 Port = 10389,
-                UserFilter = "(uid=${userName})",
+                AdConfigurationSchemas = new List<AdConfigurationSchema>
+                {
+                    new AdConfigurationSchema
+                    {
+                        Filter = "(uid=${userName})",
+                        SchemaId = "urn:ietf:params:scim:schemas:core:2.0:User"
+                    }
+                },
                 DistinguishedName = "ou=system",
                 Username = "uid=admin,ou=system",
-                Password = "secret"
+                Password = "secret",
+                IsEnabled = true
             });
             mappingStore.Setup(m => m.GetMapping(It.IsAny<string>())).Returns(Task.FromResult(new AdMapping
             {
                 AdPropertyName = "sn",
                 AttributeId = "1",
-                SchemaId = "schemaid"
+                SchemaId = "urn:ietf:params:scim:schemas:core:2.0:User"
             }));
 
             var attributeMapper = new AttributeMapper(configurationStore.Object, mappingStore.Object, new UserFilterParser());
 
-            await attributeMapper.Map(representation, "schemaid");
+            await attributeMapper.Map(representation, "urn:ietf:params:scim:schemas:core:2.0:User");
 
             string s2 = "";
         }

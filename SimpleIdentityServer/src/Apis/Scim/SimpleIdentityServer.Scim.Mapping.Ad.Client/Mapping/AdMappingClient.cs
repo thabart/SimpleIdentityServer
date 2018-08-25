@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
         Task<BaseResponse> DeleteMapping(string attributeId, string baseUrl, string accessToken = null);
         Task<GetAdMappingResult> GetAdMapping(string attributeId, string baseUrl, string accessToken = null);
         Task<GetAllAdMappingResult> GetAllMappings(string baseUrl, string accessToken);
-        Task<GetAdPropertiesResult> GetAllProperties(string baseUrl, string accessToken);
+        Task<GetAdPropertiesResult> GetAllProperties(string schemaId, string baseUrl, string accessToken);
     }
 
     internal class AdMappingClient : IAdMappingClient
@@ -53,9 +53,9 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
             return _getAllAdMappingsOperation.Execute(baseUrl, accessToken);
         }
 
-        public Task<GetAdPropertiesResult> GetAllProperties(string baseUrl, string accessToken)
+        public Task<GetAdPropertiesResult> GetAllProperties(string schemaId, string baseUrl, string accessToken)
         {
-            return _getAdPropertiesOperation.Execute(baseUrl, accessToken);
+            return _getAdPropertiesOperation.Execute(schemaId, baseUrl, accessToken);
         }
     }
 }

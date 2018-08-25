@@ -12,5 +12,6 @@
         public const string CannotContactTheAd = "an error occured while trying to contact the AD";
         public const string CannotConnectToAdServer = "an error occured while trying to connect to the AD server";
         public const string CannotRetrieveProperties = "an error occured while trying to retrieve the properties";
+        public const string NoConfigurationForSchema = "no configuration for the schema";
     }
 }

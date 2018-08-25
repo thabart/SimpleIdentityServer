@@ -25,14 +25,25 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
             _configurationStore = configurationStore;
         }
 
-        [HttpGet("properties")]
+        [HttpGet("properties/{id}")]
         [Authorize("scim_manage")]
-        public IActionResult GetProperties()
+        public IActionResult GetProperties(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "id"), HttpStatusCode.BadRequest);
+            }
+
             var configuration = _configurationStore.GetConfiguration();
-            if (configuration.IsEnabled)
+            if (!configuration.IsEnabled || configuration.AdConfigurationSchemas == null)
             {
                 return new NoContentResult();
+            }
+
+            var configurationSchema = configuration.AdConfigurationSchemas.FirstOrDefault(f => f.SchemaId == id);
+            if (configurationSchema == null)
+            {
+                return GetError(ErrorCodes.InternalError, ErrorDescriptions.NoConfigurationForSchema, HttpStatusCode.InternalServerError);
             }
 
             using (var ldapHelper = new LdapHelper())
@@ -43,7 +54,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
                     return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotConnectToAdServer, HttpStatusCode.InternalServerError);
                 }
                 
-                var searchResult = ldapHelper.Search(configuration.DistinguishedName, configuration.UserFilterClass);
+                var searchResult = ldapHelper.Search(configuration.DistinguishedName, configurationSchema.FilterClass);
                 if(searchResult == null || searchResult.Entries.Count == 0)
                 {
                     return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotRetrieveProperties, HttpStatusCode.InternalServerError);
