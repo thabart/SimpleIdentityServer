@@ -95,6 +95,11 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
                 return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "user_filter"), HttpStatusCode.BadRequest);
             }
 
+            if (string.IsNullOrWhiteSpace(adConfiguration.UserFilterClass))
+            {
+                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "user_filter_class"), HttpStatusCode.BadRequest);
+            }
+
             using (var ldapHelper = new LdapHelper())
             {
                 if (!ldapHelper.Connect(adConfiguration.IpAdr, adConfiguration.Port, adConfiguration.Username, adConfiguration.Password))

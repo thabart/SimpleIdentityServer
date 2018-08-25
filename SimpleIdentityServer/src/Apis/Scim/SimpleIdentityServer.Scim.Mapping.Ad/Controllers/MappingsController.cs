@@ -4,6 +4,9 @@ using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests;
 using SimpleIdentityServer.Scim.Mapping.Ad.Extensions;
 using SimpleIdentityServer.Scim.Mapping.Ad.Stores;
+using System.Collections;
+using System.Collections.Generic;
+using System.DirectoryServices.Protocols;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,10 +17,47 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
     public class MappingsController : Controller
     {
         private readonly IMappingStore _mappingStore;
+        private readonly IConfigurationStore _configurationStore;
 
-        public MappingsController(IMappingStore mappingStore)
+        public MappingsController(IMappingStore mappingStore, IConfigurationStore configurationStore)
         {
             _mappingStore = mappingStore;
+            _configurationStore = configurationStore;
+        }
+
+        [HttpGet("properties")]
+        [Authorize("scim_manage")]
+        public IActionResult GetProperties()
+        {
+            var configuration = _configurationStore.GetConfiguration();
+            if (configuration.IsEnabled)
+            {
+                return new NoContentResult();
+            }
+
+            using (var ldapHelper = new LdapHelper())
+            {
+                var isConnected = ldapHelper.Connect(configuration.IpAdr, configuration.Port, configuration.Username, configuration.Password);
+                if(!isConnected)
+                {
+                    return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotConnectToAdServer, HttpStatusCode.InternalServerError);
+                }
+                
+                var searchResult = ldapHelper.Search(configuration.DistinguishedName, configuration.UserFilterClass);
+                if(searchResult == null || searchResult.Entries.Count == 0)
+                {
+                    return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotRetrieveProperties, HttpStatusCode.InternalServerError);
+                }
+
+                var attrs = searchResult.Entries[0].Attributes;
+                var result = new List<string>();
+                foreach(DictionaryEntry attr in attrs)
+                {
+                    result.Add(attr.Key.ToString());
+                }
+
+                return new OkObjectResult(result);
+            }
         }
 
         [HttpPost]
@@ -37,6 +77,11 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
             if (string.IsNullOrWhiteSpace(addMappingRequest.AdPropertyName))
             {
                 return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "ad_property_name"), HttpStatusCode.BadRequest);
+            }
+
+            if (string.IsNullOrWhiteSpace(addMappingRequest.SchemaId))
+            {
+                return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "schema_id"), HttpStatusCode.BadRequest);
             }
 
             var parameter = addMappingRequest.ToModel();

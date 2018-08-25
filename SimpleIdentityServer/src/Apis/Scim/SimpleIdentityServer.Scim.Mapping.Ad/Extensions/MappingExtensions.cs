@@ -17,7 +17,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
             return new AdMapping
             {
                 AdPropertyName = addMappingRequest.AdPropertyName,
-                AttributeId = addMappingRequest.AttributeId
+                AttributeId = addMappingRequest.AttributeId,
+                SchemaId = addMappingRequest.SchemaId
             };
         }
 
@@ -36,7 +37,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
                 Password = adConfigurationResponse.Password,
                 Port = adConfigurationResponse.Port,
                 UserFilter = adConfigurationResponse.UserFilter,
-                Username = adConfigurationResponse.Username
+                Username = adConfigurationResponse.Username,
+                UserFilterClass = adConfigurationResponse.UserFilterClass
             };
         }
 
@@ -55,7 +57,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
                 Password = adConfiguration.Password,
                 Port = adConfiguration.Port,
                 UserFilter = adConfiguration.UserFilter,
-                Username = adConfiguration.Username
+                Username = adConfiguration.Username,
+                UserFilterClass = adConfiguration.UserFilterClass
             };
         }
 
@@ -69,7 +72,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Extensions
             return new AddMappingRequest
             {
                 AdPropertyName = adMapping.AdPropertyName,
-                AttributeId = adMapping.AttributeId
+                AttributeId = adMapping.AttributeId,
+                SchemaId = adMapping.SchemaId
             };
         }
     }

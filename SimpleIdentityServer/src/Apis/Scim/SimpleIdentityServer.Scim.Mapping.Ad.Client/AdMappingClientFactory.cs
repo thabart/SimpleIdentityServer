@@ -62,6 +62,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client
             serviceCollection.AddTransient<IAdConfigurationClient, AdConfigurationClient>();
             serviceCollection.AddTransient<IGetAdConfigurationOperation, GetAdConfigurationOperation>();
             serviceCollection.AddTransient<IUpdateAdConfigurationOperation, UpdateAdConfigurationOperation>();
+            serviceCollection.AddTransient<IGetAdPropertiesOperation, GetAdPropertiesOperation>();
         }
     }
 }

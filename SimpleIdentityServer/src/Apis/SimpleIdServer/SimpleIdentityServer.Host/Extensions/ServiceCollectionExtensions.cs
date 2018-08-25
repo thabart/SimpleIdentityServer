@@ -115,13 +115,13 @@ namespace SimpleIdentityServer.Host
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                    if (claimRole == null && claimScope == null)
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "manage_profile";
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_profile");
                 });
             });
             authenticateOptions.AddPolicy("manage_account_filtering", policy => // Access token with scope = manage_account_filtering or role = administrator
@@ -135,13 +135,13 @@ namespace SimpleIdentityServer.Host
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                    if (claimRole == null && claimScope == null)
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "manage_account_filtering";
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_account_filtering");
                 });
             });
             return authenticateOptions;

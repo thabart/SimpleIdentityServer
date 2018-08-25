@@ -60,6 +60,27 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
         }
 
         [Fact]
+        public async Task When_Add_Mapping_And_No_SchemaId_Is_Passed_Then_Error_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
+
+            // ACT
+            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            {
+                AttributeId = "att",
+                AdPropertyName = "adpropertyname"
+            }, "http://localhost:5000", null);
+
+            // ASSERTS
+            Assert.NotNull(result);
+            Assert.True(result.ContainsError);
+            Assert.Equal("invalid_request", result.Error.Error);
+            Assert.Equal("the parameter schema_id is missing", result.Error.ErrorDescription);
+        }
+
+        [Fact]
         public async Task When_Add_Mapping_And_There_Is_Already_One_Then_Error_Is_Returned()
         {
             // ARRANGE
@@ -70,6 +91,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
             {
                 AttributeId = "attributeid",
+                SchemaId = "schema",
                 AdPropertyName = "prop"
             }, "http://localhost:5000", null);
 
@@ -141,7 +163,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
             {
                 AttributeId = "newattribute",
-                AdPropertyName = "prop"
+                AdPropertyName = "prop",
+                SchemaId = "schemaid",
             }, "http://localhost:5000", null);
 
             // ASSERTS
@@ -163,7 +186,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
             {
                 AttributeId = attrId,
-                AdPropertyName = "prop"
+                AdPropertyName = "prop",
+                SchemaId = "schemaid"
             }, "http://localhost:5000", null);
 
             // ACT
@@ -223,8 +247,9 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             var deleteMappingOperation = new DeleteAdMappingOperation(_httpClientFactoryStub.Object);
             var getAdMappingOperation = new GetAdMappingOperation(_httpClientFactoryStub.Object);
             var getAllAdMappingsOperation = new GetAllAdMappingsOperation(_httpClientFactoryStub.Object);
+            var getAllPropertiesOperation = new GetAdPropertiesOperation(_httpClientFactoryStub.Object);
             _adMappingClient = new AdMappingClient(addAdMappingOperation, deleteMappingOperation,
-                getAdMappingOperation, getAllAdMappingsOperation);
+                getAdMappingOperation, getAllAdMappingsOperation, getAllPropertiesOperation);
         }
     }
 }

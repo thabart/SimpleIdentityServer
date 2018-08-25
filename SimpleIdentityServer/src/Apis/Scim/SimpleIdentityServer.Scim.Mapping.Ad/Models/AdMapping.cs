@@ -6,6 +6,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Models
     {
         public string AttributeId { get; set; }
         public string AdPropertyName { get; set; }
+        public string SchemaId { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
     }

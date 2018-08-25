@@ -1,1 +1,1 @@
-{"IpAdr":"127.0.0.1","Port":10389,"Username":"uid=admin,ou=system","Password":"secret","DistinguishedName":"ou=system","UserFilter":"(uid=${externalId})","IsEnabled":false}
+{"IpAdr":"127.0.0.1","Port":10389,"Username":"uid=admin,ou=system","Password":"secret","DistinguishedName":"ou=system","UserFilter":"(uid=${externalId})","UserFilterClass":"(objectClass=person)","IsEnabled":false}

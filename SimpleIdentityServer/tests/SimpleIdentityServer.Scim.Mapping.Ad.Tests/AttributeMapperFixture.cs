@@ -38,14 +38,25 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
             mappingStore.Setup(m => m.GetMapping(It.IsAny<string>())).Returns(Task.FromResult(new AdMapping
             {
                 AdPropertyName = "sn",
-                AttributeId = "1"
+                AttributeId = "1",
+                SchemaId = "schemaid"
             }));
 
             var attributeMapper = new AttributeMapper(configurationStore.Object, mappingStore.Object, new UserFilterParser());
 
-            await attributeMapper.Map(representation);
+            await attributeMapper.Map(representation, "schemaid");
 
             string s2 = "";
+        }
+
+        // [Fact]
+        public void When_Get_All_User_Properties_Then_List_Is_Returned()
+        {
+            var ldapHelper = new LdapHelper();
+            ldapHelper.Connect("127.0.0.1", 10389, "uid=admin,ou=system", "secret");
+            var search = ldapHelper.Search("ou=system", "(objectClass=person)");
+            var attrs = search.Entries[0].Attributes;
+            // TODO : RETURN THE ATTRIBUTES
         }
     }
 }

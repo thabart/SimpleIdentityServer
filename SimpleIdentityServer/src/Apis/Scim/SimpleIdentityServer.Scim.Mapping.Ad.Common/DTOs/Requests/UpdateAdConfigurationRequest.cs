@@ -17,6 +17,8 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests
         public string DistinguishedName { get; set; }
         [DataMember(Name = "user_filter")]
         public string UserFilter { get; set; }
+        [DataMember(Name = "user_filter_class")]
+        public string UserFilterClass { get; set; }
         [DataMember(Name = "is_enabled")]
         public bool IsEnabled { get; set; }
     }

@@ -5,6 +5,6 @@ namespace SimpleIdentityServer.Scim.Mapping
 {
     public interface IAttributeMapper
     {
-        Task Map(Representation representation);
+        Task Map(Representation representation, string schemaId);
     }
 }

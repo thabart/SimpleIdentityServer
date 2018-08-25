@@ -71,13 +71,13 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                     }
 
                     var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
-                    var claimScope = p.User.Claims.FirstOrDefault(c => c.Type == "scope");
-                    if (claimRole == null && claimScope == null)
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
                     {
                         return false;
                     }
 
-                    return claimRole != null && claimRole.Value == "administrator" || claimScope != null && claimScope.Value == "uma_protection";
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "uma_protection");
                 });
             });
             return authorizationOptions;

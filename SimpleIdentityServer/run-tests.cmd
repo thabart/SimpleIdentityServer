@@ -11,6 +11,7 @@ REM SCIM
 dotnet test tests\SimpleIdentityServer.Scim.Core.Tests
 dotnet test tests\SimpleIdentityServer.Scim.Client.Tests
 dotnet test tests\SimpleIdentityServer.Scim.Mapping.Ad.Tests
+dotnet test tests\SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
 
 REM UI
 dotnet test tests\SimpleIdentityServer.Authenticate.SMS.Tests

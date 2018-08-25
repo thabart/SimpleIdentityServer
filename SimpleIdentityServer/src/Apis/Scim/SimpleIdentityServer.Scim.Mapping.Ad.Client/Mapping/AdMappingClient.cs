@@ -11,6 +11,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
         Task<BaseResponse> DeleteMapping(string attributeId, string baseUrl, string accessToken = null);
         Task<GetAdMappingResult> GetAdMapping(string attributeId, string baseUrl, string accessToken = null);
         Task<GetAllAdMappingResult> GetAllMappings(string baseUrl, string accessToken);
+        Task<GetAdPropertiesResult> GetAllProperties(string baseUrl, string accessToken);
     }
 
     internal class AdMappingClient : IAdMappingClient
@@ -19,14 +20,17 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
         private readonly IDeleteAdMappingOperation _deleteAdMappingOperation;
         private readonly IGetAdMappingOperation _getAdMappingOperation;
         private readonly IGetAllAdMappingsOperation _getAllAdMappingsOperation;
+        private readonly IGetAdPropertiesOperation _getAdPropertiesOperation;
 
         public AdMappingClient(IAddAdMappingOperation addAdMappingOperation, IDeleteAdMappingOperation deleteAdMappingOperation,
-            IGetAdMappingOperation getAdMappingOperation, IGetAllAdMappingsOperation getAllAdMappingsOperation)
+            IGetAdMappingOperation getAdMappingOperation, IGetAllAdMappingsOperation getAllAdMappingsOperation,
+            IGetAdPropertiesOperation getAdPropertiesOperation)
         {
             _addAdMappingOperation = addAdMappingOperation;
             _deleteAdMappingOperation = deleteAdMappingOperation;
             _getAdMappingOperation = getAdMappingOperation;
             _getAllAdMappingsOperation = getAllAdMappingsOperation;
+            _getAdPropertiesOperation = getAdPropertiesOperation;
         }
 
         public Task<BaseResponse> AddMapping(AddMappingRequest addMappingRequest, string baseUrl, string accessToken = null)
@@ -47,6 +51,11 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Mapping
         public Task<GetAllAdMappingResult> GetAllMappings(string baseUrl, string accessToken)
         {
             return _getAllAdMappingsOperation.Execute(baseUrl, accessToken);
+        }
+
+        public Task<GetAdPropertiesResult> GetAllProperties(string baseUrl, string accessToken)
+        {
+            return _getAdPropertiesOperation.Execute(baseUrl, accessToken);
         }
     }
 }

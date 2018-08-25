@@ -20,11 +20,16 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             _userFilterParser = userFilterParser;
         }
 
-        public async Task Map(Representation representation)
+        public async Task Map(Representation representation, string schemaId)
         {
             if (representation == null)
             {
                 throw new ArgumentNullException(nameof(representation));
+            }
+
+            if (string.IsNullOrWhiteSpace(schemaId))
+            {
+                throw new ArgumentNullException(nameof(schemaId));
             }
 
             var configuration = _configurationStore.GetConfiguration();
@@ -53,7 +58,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
                 {
                     var attributeId = attr.SchemaAttribute.Id;
                     var attributeMapping = await _mappingStore.GetMapping(attributeId).ConfigureAwait(false);
-                    if (attributeMapping == null)
+                    if (attributeMapping == null && attributeMapping.SchemaId != schemaId)
                     {
                         continue;
                     }

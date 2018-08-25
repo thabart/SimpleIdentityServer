@@ -10,5 +10,7 @@
         public const string CannotDeleteMapping = "an error occcured while trying to remove the mapping";
         public const string NotValidIpAddress = "not valid ip address";
         public const string CannotContactTheAd = "an error occured while trying to contact the AD";
+        public const string CannotConnectToAdServer = "an error occured while trying to connect to the AD server";
+        public const string CannotRetrieveProperties = "an error occured while trying to retrieve the properties";
     }
 }

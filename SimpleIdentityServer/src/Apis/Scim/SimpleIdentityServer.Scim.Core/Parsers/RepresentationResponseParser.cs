@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (_attributeMappers != null && _attributeMappers.Any())
             {
-                await _attributeMappers.First().Map(representation);
+                await _attributeMappers.First().Map(representation, schemaId);
             }
 
             JObject result = new JObject();

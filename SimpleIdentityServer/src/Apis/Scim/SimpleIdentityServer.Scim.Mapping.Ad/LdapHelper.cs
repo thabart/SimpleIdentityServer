@@ -39,6 +39,14 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad
             return _connection.SendRequest(searchRequest) as SearchResponse;
         }
 
+        public LdapConnection Connection
+        {
+            get
+            {
+                return _connection;
+            }
+        }
+
         public void Dispose()
         {
             if(_connection != null)

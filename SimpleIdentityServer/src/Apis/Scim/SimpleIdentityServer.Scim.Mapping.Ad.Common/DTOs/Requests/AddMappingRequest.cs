@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests
 {
@@ -10,5 +9,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Common.DTOs.Requests
         public string AttributeId { get; set; }
         [DataMember(Name = "ad_property_name")]
         public string AdPropertyName { get; set; }
+        [DataMember(Name = "schema_id")]
+        public string SchemaId { get; set; }
     }
 }

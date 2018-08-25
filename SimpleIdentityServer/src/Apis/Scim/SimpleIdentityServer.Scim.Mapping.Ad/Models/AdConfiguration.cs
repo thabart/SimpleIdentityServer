@@ -8,6 +8,7 @@
         public string Password { get; set; }
         public string DistinguishedName { get; set; }
         public string UserFilter { get; set; }
+        public string UserFilterClass { get; set; }
         public bool IsEnabled { get; set; }
     }
 }
