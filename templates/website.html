@@ -6,295 +6,203 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
-		<style>	
-			/* RED */
-			.red .cover {
-				background-color: rgb(247,178,181);
-			}
-			
-			.red .cover a.nav-link {
-				color: white;
-			}
-			
-			.red .navbar-toggler,
-			.red .navbar a.nav-link,
-			.red .secondary-menu a.nav-link{
-				color: #444;
-			}
-			
-			.red .navbar-toggler:hover,
-			.red .navbar a.nav-link:hover,
-			.red .secondary-menu a.nav-link:hover,
-			.red .cover a.nav-link:hover {
-				color: #e7272d!important;
-			}
-			
-			.red .secondary-menu {
-				background-color: #fff;
-			}	
-			
-			.red .sid-btn-primary {
-				background-color: rgba(231,39,45,.7) !important;
-				color: white;
-				border-bottom: 3px solid #e7272d !important;
-			}
-			
-			.red .sid-btn-primary:hover,
-			.red .sid-btn-primary:active {
-				outline: 2px solid #808080b0 !important;
-			}
-			
-			.red .selectable-list .element {
-				cursor: pointer;
-			}
-			
-			.red .selectable-list .element.active {
-				border: 1px solid #e7272d;
-			}
-			
-			.red .sid-btn.with-icon .icon {
-				border-right: 1px solid #e7272d;
-			}
-			
-			/* ORANGE */	
-			.orange .cover {
-				background-color: rgba(247, 147, 30, 0.6);
-			}
-			
-			.orange .cover a.nav-link {
-				color: white;
-			}
-			
-			.orange .navbar-toggler,
-			.orange .navbar a.nav-link,
-			.orange .secondary-menu a.nav-link{
-				color: #444;
-			}
-			
-			.orange .navbar-toggler:hover,
-			.orange .navbar a.nav-link:hover,
-			.orange .secondary-menu a.nav-link:hover,
-			.orange .cover a.nav-link:hover {
-				color: rgb(247,147,30) !important;
-			}
-			
-			.orange .secondary-menu {
-				background-color: #fff;
-			}	
-			
-			.orange .sid-btn-primary {
-				background-color: rgba(247, 147, 30, 0.6) !important;
-				color: white;
-				border-bottom: 3px solid rgb(247,147,30) !important;
-			}
-			
-			.orange .sid-btn-primary:hover,
-			.orange .sid-btn-primary:active {
-				outline: 2px solid #808080b0 !important;
-			}
-			
-			.orange .selectable-list .element {
-				cursor: pointer;
-			}
-			
-			.orange .selectable-list .element.active {
-				border: 1px solid rgb(247,147,30);
-			}
-			
-			.orange sid-btn.with-icon .icon {
-				border-right: 1px solid #f7931e;
-			}
-			
-			/* PRINCIPAL */			
-			.sid-btn  {
-				border-left: none;
-				border-top: none;
-				border-right: none;
-				border-radius: 0;
-				padding: 5px 10px 5px 10px;
-			}
-			
-			.sid-btn.with-icon {
-				position: relative;
-			}
-			
-			.sid-btn.with-icon .icon {
-				position:absolute;
-				top:0;
-				left:0;
-				height:100%; 
-				width: 50px; 
-				border-right: 1px solid #f7931e;
-			}
-			
-			a.nav-link {
-				text-transform: uppercase;
-				font-weight: 700;
-			}
-			
-			.navbar {
-				height: 100px;
-			}
-			
-			.secondary-menu {
-				position: fixed;
-				top: 100px;
-				left: 0px;
-				width: 100%;
-				z-index: 2;
-			}
-			
-			@media (min-width: 1200px) {
-				.navbar {
-					background-image: url('https://shopingamewebsite.azurewebsites.net/images/sketch-header.png');
-					background-size: auto 100%;
-					background-position: bottom;
-				}
-				
-				.navbar {
-					transition: all .5s ease; 
-				}
-				
-				.secondary-menu {
-					display: none;
-				}
-			}
-			
-			@media (max-width: 1200px) {
-				.navbar {
-					background-color: #fff;
-				}
-			}
-			
-			.container {
-				margin-top: 100px;
-			}
-			
-			.cover {
-				height: 200px;
-				position: relative;
-			}
-			
-			.cover .cover-banner {
-				
-			}
-			
-			.cover .profile-img {
-				position: absolute;
-				bottom: -10px;
-				left: 10px;
-			}
-			
-			.cover .profile-img img {
-				width: 150px;
-				height: 150px;
-			}
-			
-			.section {
-				box-shadow: 0 6px 12px rgba(0,0,0,.175);
-				border: 1px solid #ddd;
-				padding: 10px;
-			}
-			
-			.table td.comp {
-				text-align:center;
-				font-size:20pt;
-			}
-		</style>
 	</head>
-	<body class="orange">
-		<nav class="navbar navbar-expand-lg fixed-top">
-			<a class="navbar-brand">SimpleIdentityServer</a>
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav ml-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="#">Features</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Documentation<a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Contact us<a>						
-					</li>
-				</ul>
-			</div>
-			<button class="navbar-toggler" type="button"  id="collapseBtn" data-target="#secondaryMenu" data-toggle="collapse">
-				<span class="fas fa-bars"></span>
-			</button>
-		</nav>
-		<ul class="list-group secondary-menu collapse" id="secondaryMenu">
-			<li class="nav-item">
-				<a class="nav-link" href="#">Features</a>
-			</li>
-			<li class="list-group-item">					
-				<a class="nav-link" href="#">Documentation<a>
-			</li>
-			<li class="list-group-item">
-				<a class="nav-link" href="#">Contact us</a>
-			</li>
-		</ul>
-		<div class="container">
-			<!-- Banner -->
-			<div>
-				<h1>SimpleIdServer</h1>
-				<p>[short_description]</p>
-			</div>
-			<!-- What's SimpleIdServer ? -->
-			<div>
-				<h3 style="text-align:center;">What's SimpleIdServer ?</h3>
-				<div>
-					<h2>Thinks for the developers</h2>
-					<div>
-						<ul>
-							<li>Protect your website, api or mobile application</li>
-							<li>Manage the end-user identities</li>
-							<li>Manage the permissions of the resources owned by your end-users</li>
-							<li>And more ...</li>
-						</ul>
-					</div>
-				</div>
-				<div>
-					<h2>Advantages</h2>
-					<ul>
-						<li>Open source solution</li>
-						<li>Advanced features such as : administration UI, streaming API and more ...</li>
+	<style>
+		.jumbotron {
+			margin-bottom: 0;
+		}
+		
+		.carousel-indicators .active {
+			background-color:#b8bdc1;
+		}
+		
+		.carousel-indicators li {
+			background-color: rgb(233, 236, 239);
+		}
+
+		.card-img {
+			text-align: center;
+			height:100px;
+			line-height: 100px;
+		}
+		
+		.card-img img {
+			width: 100px;
+			vertical-align: middle;
+		}
+		
+		footer {
+			padding-top: 3rem;
+			padding-bottom: 3rem;
+		}
+	</style>
+	<body>
+		<header>
+			<div class="navbar navbar-dark bg-dark shadow-sm">
+				<div class="container d-flex justify-content-between">
+					<a href="#" class="navbar-brand"><strong>SimpleIdServer</strong></a>
+					<ul class="navbar-nav" style="display:inline-block;">
+						<li class="nav-item" style="display:inline-block;">
+							<a class="nav-link" href="#">Documentation</a>
+						</li>
+						<li class="nav-item" style="display:inline-block;">
+							<a class="nav-link" href="#">Contact us</a>
+						</li>
 					</ul>
 				</div>
 			</div>
-			<div>
-				<h3>Standards</h3>
-				<div class="row">
-					<div class="col-md-4">
-						<div>
-							<h3>OPENID</h3>
+		</header>
+		<div>
+			<!-- Banner -->
+			<section class="jumbotron text-center">
+				<div class="container">
+					<h1 class="jumbotron-heading">SimpleIdServer</h1>
+					<p class="lead text-muted">
+						[short_description]
+					</p>
+					<p>
+						<a href="#" class="btn btn-primary my-2">Download</a>
+					</p>
+				</div>
+			</section>
+			<main class="album py-5 bg-light ">
+				<!-- What's SimpleIdServer ? -->
+				<div class="container">
+					<h1>What's SimpleIdServer ?</h1>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="card mb-4">
+								<h5 class="card-header">Authenticate your end-users</h5>
+								<div class="card-body">
+									<ul class="list-group">
+										<li class="list-group-item">Authenticate the end-user in a website / api or mobile application</li>
+										<li class="list-group-item">Use Two factor authentication</li>
+										<li class="list-group-item">Use passwordless authentication</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="card mb-4">
+								<h5 class="card-header">Manage the authorization</h5>
+								<div class="card-body">
+									<ul class="list-group">
+										<li class="list-group-item">Protect your APIs from unauthorized applications</li>
+										<li class="list-group-item">Protect the resources owned by your end-users</li>
+										<li class="list-group-item">Share protected resources to other end-users</li>
+									</ul>
+								</div>					
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="card mb-4">
+								<h5 class="card-header">Manage the end-users identities</h5>
+								<div class="card-body">
+									<ul class="list-group">
+										<li class="list-group-item">Manage the identities of your end-users</li>
+										<li class="list-group-item">Provision the end-users identities from externals sources such as Active directory</li>
+									</ul>
+								</div>					
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div>
-							<h3>OAUTH2.0</h3>
+					<h1>Advantages</h1>					
+					<div class="row">
+						<div class="col-md-6">												
+							<div class="card mb-4 shadow-sm">
+								<div class="card-body">
+									<div style="padding:10px; text-align: center;"><i style="font-size:40pt;" class="fab fa-github card-img-top"></i></div>
+									<div class="card-title">
+										<h5>Open source</h5>
+									</div>
+									<p class="card-text">[open-source-description]</p>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="col-md-4">
-						<div>
-							<h3>SCIM2.0</h3>
+						<div class="col-md-6">												
+							<div class="card mb-4 shadow-sm">
+								<div class="card-body">
+									<div style="padding:10px; text-align: center;"><i style="font-size:40pt;" class="fas fa-list-ul card-img-top"></i></div>
+									<div class="card-title">
+										<h5>Advanced features</h5>
+									</div>
+									<p class="card-text">[advanced-fatures-description]</p>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="col-md-4">
-						<div>
-							<h3>UMA2.0</h3>
+					</div>		
+					<button type="button" class="btn btn-secondary">More ...</button>
+				<!-- Standards & Certifications -->
+				<div class="container">
+					<h1>Standards & Certifications</h1>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="card mb-4 shadow-sm">
+								<div class="card-img"><img src="http://openid.net/logo-graphics/openid-icon-1000x1000.png" /></div>
+								<div class="card-body">
+									<div class="card-title"><h5>OPENID</h5></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card mb-4 shadow-sm">
+								<div class="card-img"><img src="https://oauth.net/images/oauth-2-sm.png" /></div>
+								<div class="card-body">
+									<div class="card-title"><h5>OAUTH2.0</h5></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card mb-4 shadow-sm">
+								<div class="card-img"><img src="http://www.simplecloud.info/img/logo/SCIM_B-and-W_400x136.png" /></div>
+								<div class="card-body">
+									<div class="card-title"><h5>SCIM2.0</h5></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card mb-4 shadow-sm">
+								<div class="card-body">								
+									<div class="card-img"><img src="http://kantarainitiative.org/confluence/download/attachments/17760302/UMA-logo.png" /></div>
+									<div class="card-title"><h5>UMA2.0</h5></div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div>
-				<h3>Getting started</h3>
-				<ul>
-					<li>Install and launch the MSI</li>
-					<li>Execute the command</li>
-					<li>Start all the modules</li>
-					<li>Browse the url http://localhost:6495 and connect with the credentials "administrator" and "password"</li>
-				</ul>
-			</div>
+				</div>
+				<!-- Getting started -->
+				<div class="container">
+					<h1>Getting started</h1>
+					<div class="row">
+						<div class="col-3">
+							<div class="nav flex-column nav-pills">
+								<a class="nav-link active" data-toggle="pill" href="#installMsi">Install and launch the MSI</a>
+								<a class="nav-link" data-toggle="pill" href="#launchApplication">Launch the application</a>
+								<a class="nav-link" data-toggle="pill" href="#browseWebsite">Browse the website</a>
+							</div>						
+						</div>
+						<div class="col-9">
+							<div class="tab-content">
+								<div class="tab-pane fade show active" id="installMsi">
+									[install]
+								</div>
+								<div class="tab-pane fade" id="launchApplication">
+									[launch]
+								</div>
+								<div class="tab-pane fade" id="browseWebsite">
+									[browse]
+								</div>
+							</div>							
+						</div>
+					</div>
+				</div>
+			</main>
+			<footer class="text-muted">
+				<div class="container">
+					@Copyright Advance ICT
+				</div>
+			</footer>
 		</div>
 	</body>
 </html>
