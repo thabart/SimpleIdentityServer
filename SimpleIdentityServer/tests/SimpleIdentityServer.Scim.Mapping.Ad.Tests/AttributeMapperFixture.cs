@@ -11,7 +11,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 {
     public class AttributeMapperFixture
     {
-        [Fact]
+        // [Fact]
         public async Task When_Get_Representation_Attribute_Then_Ok_Is_Returned()
         {
             var representation = new Representation
