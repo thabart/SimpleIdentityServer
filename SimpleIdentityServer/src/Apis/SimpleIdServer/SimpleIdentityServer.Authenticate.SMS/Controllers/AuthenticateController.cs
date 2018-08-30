@@ -283,7 +283,6 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
                     await SetPasswordLessCookie(claims);
                     try
                     {
-                        var code = await _generateAndSendSmsCodeOperation.Execute(viewModel.PhoneNumber);
                         return RedirectToAction("ConfirmCode", new { code = viewModel.Code });
                     }
                     catch (Exception ex)
