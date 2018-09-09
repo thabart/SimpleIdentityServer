@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 }
             }
 
-            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue).ConfigureAwait(false);
             return new OkObjectResult(result.ToDto());
         }
 

@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Client.Configuration
             }
 
             var httpClient = _httpClientFactory.GetHttpClient();
-            var result = await httpClient.GetStringAsync(configurationUri);
+            var result = await httpClient.GetStringAsync(configurationUri).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<ConfigurationResponse>(result);
         }
     }

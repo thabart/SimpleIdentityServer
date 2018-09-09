@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.EF.Repositories
             }
 
             var profile = await _context.Profiles.FirstOrDefaultAsync(c => c.Subject == subject).ConfigureAwait(false);
-            return profile == null ? null : profile.ToDomain();
+            return profile?.ToDomain();
         }
 
         /// <summary>

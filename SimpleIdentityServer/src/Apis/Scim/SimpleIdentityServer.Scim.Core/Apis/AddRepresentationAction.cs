@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 1. Check resource exists.
-            if (await _representationStore.GetRepresentation(id) != null)
+            if (await _representationStore.GetRepresentation(id).ConfigureAwait(false) != null)
             {
                 return _apiResponseFactory.CreateError(
                     HttpStatusCode.InternalServerError,
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Parse the request
-            var result = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, schemaId, CheckStrategies.Strong).ConfigureAwait(false);
             if (!result.IsParsed)
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
@@ -102,10 +102,10 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             result.Representation.Version = Guid.NewGuid().ToString();
 
             // 4. Save the request
-            await _representationStore.AddRepresentation(result.Representation);
+            await _representationStore.AddRepresentation(result.Representation).ConfigureAwait(false);
 
             // 5. Transform and returns the representation.
-            var response = await _responseParser.Parse(result.Representation, locationPattern.Replace("{id}", result.Representation.Id), schemaId, OperationTypes.Modification);
+            var response = await _responseParser.Parse(result.Representation, locationPattern.Replace("{id}", result.Representation.Id), schemaId, OperationTypes.Modification).ConfigureAwait(false);
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.Created, response.Object, response.Location, result.Representation.Version, result.Representation.Id);
         }
 

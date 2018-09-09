@@ -49,7 +49,7 @@ namespace WsFederation
         {
             if (Options.CallbackPath == Request.Path)
             {
-                return await HandleRemoveCallbackAsync();
+                return await HandleRemoveCallbackAsync().ConfigureAwait(false);
             }
 
             return false;
@@ -77,12 +77,12 @@ namespace WsFederation
                     {
                         // Buffer in case this body was not meant for us.
                         var memoryStream = new MemoryStream();
-                        await Request.Body.CopyToAsync(memoryStream);
+                        await Request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
                         memoryStream.Seek(0, SeekOrigin.Begin);
                         Request.Body = memoryStream;
                     }
 
-                    var form = await Request.ReadFormAsync();
+                    var form = await Request.ReadFormAsync().ConfigureAwait(false);
                     var collection = new Dictionary<string, StringValues>();
                     foreach (var tuple in form)
                     {
@@ -176,7 +176,7 @@ namespace WsFederation
                     await Context.Authentication.SignInAsync(
                         Options.SignInScheme,
                         principal,
-                        new AuthenticationProperties());
+                        new AuthenticationProperties()).ConfigureAwait(false);
 
                     var redirectPath = Options.RedirectPath;
                     if (string.IsNullOrWhiteSpace(redirectPath))
@@ -202,7 +202,7 @@ namespace WsFederation
             if (PriorHandler != null)
             {
                 var authenticateContext = new AuthenticateContext(Options.SignInScheme);
-                await PriorHandler.AuthenticateAsync(authenticateContext);
+                await PriorHandler.AuthenticateAsync(authenticateContext).ConfigureAwait(false);
                 if (authenticateContext.Accepted)
                 {
                     if (authenticateContext.Error != null)

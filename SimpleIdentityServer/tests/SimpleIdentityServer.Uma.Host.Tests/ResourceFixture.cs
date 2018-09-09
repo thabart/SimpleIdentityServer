@@ -55,10 +55,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = string.Empty
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Name = string.Empty
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -76,10 +76,10 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Name = "name"
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -97,15 +97,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    },
+                    IconUri = "invalid"
                 },
-                IconUri = "invalid"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.GetByResolution("unknown",
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.DeleteByResolution("unknown",
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -170,7 +170,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header");
+            var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet(), baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -188,11 +188,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = string.Empty
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Id = "invalid",
+                    Name = string.Empty
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -210,11 +210,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    Id = "invalid",
+                    Name = "name"
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -232,16 +232,16 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
+                    Id = "invalid",
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    },
+                    IconUri = "invalid"
                 },
-                IconUri = "invalid"
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -259,15 +259,15 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = "invalid",
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Id = "invalid",
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -293,7 +293,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "token");
+                baseUrl + "/.well-known/uma2-configuration", "token").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resources.Content);
@@ -313,9 +313,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -334,11 +334,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resources = await _resourceSetClient.GetAllByResolution(
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var resource = await _resourceSetClient.DeleteByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var information = await _resourceSetClient.GetByResolution(resources.Content.First(),
-                baseUrl + "/.well-known/uma2-configuration", "header");
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.False(resource.ContainsError);
@@ -359,14 +359,14 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(resource);
@@ -385,11 +385,11 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var resource = await _resourceSetClient.ResolveSearch(baseUrl + "/.well-known/uma2-configuration", new SearchResourceSet
-            {
-                StartIndex = 0,
-                TotalResults = 100
-            },
-            "header");
+                {
+                    StartIndex = 0,
+                    TotalResults = 100
+                },
+                "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(resource);
@@ -408,27 +408,27 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "name",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                },
+                baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var updateResult = await _resourceSetClient.UpdateByResolution(new PutResourceSet
-            {
-                Id = resource.Content.Id,
-                Name = "name2",
-                Type = "type",
-                Scopes = new List<string>
                 {
-                    "scope2"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
-            var information = await _resourceSetClient.GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Id = resource.Content.Id,
+                    Name = "name2",
+                    Type = "type",
+                    Scopes = new List<string>
+                    {
+                        "scope2"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
+            var information = await _resourceSetClient.GetByResolution(updateResult.Content.Id, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(information);

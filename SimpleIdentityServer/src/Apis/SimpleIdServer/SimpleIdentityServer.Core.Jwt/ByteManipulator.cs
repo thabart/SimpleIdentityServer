@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Jwt
 
         public static byte[] Concat(params byte[][] arrays)
         {
-            byte[] result = new byte[arrays.Sum(a => (a == null) ? 0 : a.Length)];
+            byte[] result = new byte[arrays.Sum(a => a?.Length ?? 0)];
             int offset = 0;
 
             foreach (byte[] array in arrays)

@@ -17,6 +17,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Client = Core.Common.Models.Client;
+
     public sealed class GetAuthorizationCodeOperationFixture
     {
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
@@ -32,8 +34,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +55,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(false);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client()));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client())).ConfigureAwait(false);
 
             Assert.NotNull(exception);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
@@ -83,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client()));
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client())).ConfigureAwait(false);
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
                           ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
@@ -120,7 +122,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 .Returns(true);
 
             // ACT
-            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client);
+            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));

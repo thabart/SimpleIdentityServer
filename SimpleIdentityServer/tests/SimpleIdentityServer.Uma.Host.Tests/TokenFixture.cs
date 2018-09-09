@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
                 .UseTicketId("ticket_id", "")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(token);
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server")
                 .UseClientCredentials("uma_protection", "uma_authorization")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -97,55 +97,55 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Get PAT.
                 .UseClientCredentials("uma_protection", "uma_authorization")
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet // Add ressource.
-            {
-                Name = "name",
-                Scopes = new List<string>
                 {
-                    "read",
-                    "write",
-                    "execute"
-                }
-            },
-            baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
-            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
-            {
-                Rules = new List<PostPolicyRule>
-                {
-                    new PostPolicyRule
+                    Name = "name",
+                    Scopes = new List<string>
                     {
-                        IsResourceOwnerConsentNeeded = false,
-                        Scopes = new List<string>
-                        {
-                            "read"
-                        },
-                        ClientIdsAllowed = new List<string>
-                        {
-                            "resource_server"
-                        },
-                        Claims = new List<PostClaim>
-                        {
-                            new PostClaim { Type = "sub", Value = "248289761001" }
-                        }
+                        "read",
+                        "write",
+                        "execute"
                     }
                 },
-                ResourceSetIds = new List<string>
+                baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
+            var addPolicy = await _policyClient.AddByResolution(new PostPolicy // Add an authorization policy.
                 {
-                    resource.Content.Id
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken);
+                    Rules = new List<PostPolicyRule>
+                    {
+                        new PostPolicyRule
+                        {
+                            IsResourceOwnerConsentNeeded = false,
+                            Scopes = new List<string>
+                            {
+                                "read"
+                            },
+                            ClientIdsAllowed = new List<string>
+                            {
+                                "resource_server"
+                            },
+                            Claims = new List<PostClaim>
+                            {
+                                new PostClaim { Type = "sub", Value = "248289761001" }
+                            }
+                        }
+                    },
+                    ResourceSetIds = new List<string>
+                    {
+                        resource.Content.Id
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", result.Content.AccessToken).ConfigureAwait(false);
             var ticket = await _permissionClient.AddByResolution(new PostPermission // Add permission & retrieve a ticket id.
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = resource.Content.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var token = await _clientAuthSelector.UseClientSecretPostAuth("resource_server", "resource_server") // Try to get the access token via "ticket_id" grant-type.
                 .UseTicketId(ticket.Content.TicketId, jwt)
-                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/uma2-configuration").ConfigureAwait(false);
 
             // ASSERTS.
             Assert.NotNull(token);            

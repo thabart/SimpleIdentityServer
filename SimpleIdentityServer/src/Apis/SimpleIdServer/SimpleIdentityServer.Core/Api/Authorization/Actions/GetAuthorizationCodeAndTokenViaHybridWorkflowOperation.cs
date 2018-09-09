@@ -74,13 +74,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                     authorizationParameter.State);
             }
 
-            var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
+            var claimsPrincipal = principal as ClaimsPrincipal;
 
             _oauthEventSource.StartHybridFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.@implicit, GrantType.authorization_code))
             {
                 throw new IdentityServerExceptionWithState(
@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

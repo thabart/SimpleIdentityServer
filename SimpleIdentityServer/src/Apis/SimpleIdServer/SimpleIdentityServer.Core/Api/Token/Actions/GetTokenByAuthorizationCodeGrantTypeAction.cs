@@ -97,16 +97,16 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 throw new ArgumentNullException(nameof(authorizationCodeGrantTypeParameter));
             }
 
-            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
-            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code); // 1. Invalidate the authorization code by removing it !
+            var result = await ValidateParameter(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
+            await _authorizationCodeStore.RemoveAuthorizationCode(result.AuthCode.Code).ConfigureAwait(false); // 1. Invalidate the authorization code by removing it !
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(
                 result.AuthCode.Scopes,
                 result.AuthCode.ClientId,
                 result.AuthCode.IdTokenPayload,
-                result.AuthCode.UserInfoPayLoad);
+                result.AuthCode.UserInfoPayLoad).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(result.Client, result.AuthCode.Scopes, result.AuthCode.UserInfoPayLoad, result.AuthCode.IdTokenPayload).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(
                     result.AuthCode.ClientId,
                     grantedToken.AccessToken,
@@ -114,11 +114,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                 // Fill-in the id-token
                 if (grantedToken.IdTokenPayLoad != null)
                 {
-                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad);
-                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad);
+                    await _jwtGenerator.UpdatePayloadDate(grantedToken.IdTokenPayLoad).ConfigureAwait(false);
+                    grantedToken.IdToken = await _clientHelper.GenerateIdTokenAsync(result.Client, grantedToken.IdTokenPayLoad).ConfigureAwait(false);
                 }
 
-                await _tokenStore.AddToken(grantedToken);
+                await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
             }
 
             return grantedToken;
@@ -141,7 +141,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         {
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -161,7 +161,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.code));
             }
 
-            var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code);
+            var authorizationCode = await _authorizationCodeStore.GetAuthorizationCode(authorizationCodeGrantTypeParameter.Code).ConfigureAwait(false);
             // 2. Check if the authorization code is valid
             if (authorizationCode == null)
             {
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 5. Ensure the authorization code is still valid.
-            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync();
+            var authCodeValidity = await _configurationService.GetAuthorizationCodeValidityPeriodInSecondsAsync().ConfigureAwait(false);
             var expirationDateTime = authorizationCode.CreateDateTime.AddSeconds(authCodeValidity);
             var currentDateTime = DateTime.UtcNow;
             if (currentDateTime > expirationDateTime)

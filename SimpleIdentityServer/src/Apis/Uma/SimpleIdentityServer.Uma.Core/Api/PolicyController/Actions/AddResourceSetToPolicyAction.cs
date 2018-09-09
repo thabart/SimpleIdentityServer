@@ -70,8 +70,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             _umaServerEventSource.StartAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
             var policy = await _repositoryExceptionHelper.HandleException(
-                    string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
-                    () => _policyRepository.Get(addResourceSetParameter.PolicyId));
+                string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
+                () => _policyRepository.Get(addResourceSetParameter.PolicyId)).ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             {
                 var resourceSet = await _repositoryExceptionHelper.HandleException(
                     string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceSetId),
-                    () => _resourceSetRepository.Get(resourceSetId));
+                    () => _resourceSetRepository.Get(resourceSetId)).ConfigureAwait(false);
                 if (resourceSet == null)
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidResourceSetId, string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             policy.ResourceSetIds.AddRange(addResourceSetParameter.ResourceSets);
             var result = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeUpdated,
-                () => _policyRepository.Update(policy));
+                () => _policyRepository.Update(policy)).ConfigureAwait(false);
             _umaServerEventSource.FinishAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
             return result;
         }

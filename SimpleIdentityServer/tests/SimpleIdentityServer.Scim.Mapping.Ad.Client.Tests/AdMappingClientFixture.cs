@@ -7,6 +7,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
 {
+    using Common.DTOs.Requests;
+
     public class AdMappingClientFixture : IClassFixture<TestAdMappingServerFixture>
     {
         private readonly TestAdMappingServerFixture _testAdMappingServerFixture;
@@ -30,7 +32,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest(), "http://localhost:5000", null);
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest(), "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -47,10 +49,10 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest
             {
                 AttributeId = "att"
-            }, "http://localhost:5000", null);
+            }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -67,11 +69,11 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest
             {
                 AttributeId = "att",
                 AdPropertyName = "adpropertyname"
-            }, "http://localhost:5000", null);
+            }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -88,12 +90,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest
             {
                 AttributeId = "attributeid",
                 SchemaId = "schema",
                 AdPropertyName = "prop"
-            }, "http://localhost:5000", null);
+            }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -114,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.DeleteMapping("invalidattributeid", "http://localhost:5000", null);
+            var result = await _adMappingClient.DeleteMapping("invalidattributeid", "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -135,7 +137,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.GetAdMapping("invalidattributeid", "http://localhost:5000", null);
+            var result = await _adMappingClient.GetAdMapping("invalidattributeid", "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -160,12 +162,12 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest
             {
                 AttributeId = "newattribute",
                 AdPropertyName = "prop",
                 SchemaId = "schemaid",
-            }, "http://localhost:5000", null);
+            }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -183,15 +185,15 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             var attrId = Guid.NewGuid().ToString();
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
-            var result = await _adMappingClient.AddMapping(new Common.DTOs.Requests.AddMappingRequest
+            var result = await _adMappingClient.AddMapping(new AddMappingRequest
             {
                 AttributeId = attrId,
                 AdPropertyName = "prop",
                 SchemaId = "schemaid"
-            }, "http://localhost:5000", null);
+            }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ACT
-            await _adMappingClient.DeleteMapping(attrId, "http://localhost:5000", null);
+            await _adMappingClient.DeleteMapping(attrId, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -210,7 +212,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.GetAdMapping("attributeid", "http://localhost:5000", null);
+            var result = await _adMappingClient.GetAdMapping("attributeid", "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -229,7 +231,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adMappingClient.GetAllMappings("http://localhost:5000", null);
+            var result = await _adMappingClient.GetAllMappings("http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

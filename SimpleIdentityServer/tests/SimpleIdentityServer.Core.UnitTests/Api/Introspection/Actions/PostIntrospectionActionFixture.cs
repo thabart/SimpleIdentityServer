@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
         
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -201,7 +201,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

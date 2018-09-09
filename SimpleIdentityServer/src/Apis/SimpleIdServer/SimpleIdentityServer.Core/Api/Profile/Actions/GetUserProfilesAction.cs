@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
             }
 
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
             return await _profileRepository.Search(new SearchProfileParameter
             {
                 ResourceOwnerIds = new[] { subject }
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

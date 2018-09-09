@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Twilio
                 AccountSid = _options.TwilioAccountSid,
                 AuthToken = _options.TwilioAuthToken,
                 FromNumber = _options.TwilioFromNumber,
-            }, phoneNumberClaim.Value, string.Format(_options.TwilioMessage, code));
+            }, phoneNumberClaim.Value, string.Format(_options.TwilioMessage, code)).ConfigureAwait(false);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _introspectionActions.PostIntrospection(null, null)).ConfigureAwait(false);
         }
 
         #endregion

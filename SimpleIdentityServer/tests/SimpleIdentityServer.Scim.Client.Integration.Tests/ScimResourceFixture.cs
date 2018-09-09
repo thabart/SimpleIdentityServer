@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
             var tokenResponse = await identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretPostAuth("ResourceServer", "LW46am54neU/[=Su")
                 .UseClientCredentials("scim_manage", "scim_read")
-                .ResolveAsync("http://localhost:60004/.well-known/uma2-configuration");
+                .ResolveAsync("http://localhost:60004/.well-known/uma2-configuration").ConfigureAwait(false);
             var r = await adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest
             {
                 IpAdr = "127.0.0.1",
@@ -39,14 +39,14 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
                 Username = "uid=admin,ou=system",
                 Password = "secret",
                 IsEnabled = true
-            }, scimBaseUrl, tokenResponse.Content.AccessToken);
+            }, scimBaseUrl, tokenResponse.Content.AccessToken).ConfigureAwait(false);
             await adMappingClient.AddMapping(new AddMappingRequest
             {
                 AdPropertyName = "cn",
                 AttributeId = "8c5f01ca-cd5a-4a87-b503-9c9977074947",
                 SchemaId = "urn:ietf:params:scim:schemas:core:2.0:User"
-            }, scimBaseUrl, tokenResponse.Content.AccessToken);
-            var user = await scimClientFactory.GetUserClient().GetUser(scimBaseUrl, "7d79392f-8a02-494c-949e-723a4db8ed16", tokenResponse.Content.AccessToken);
+            }, scimBaseUrl, tokenResponse.Content.AccessToken).ConfigureAwait(false);
+            var user = await scimClientFactory.GetUserClient().GetUser(scimBaseUrl, "7d79392f-8a02-494c-949e-723a4db8ed16", tokenResponse.Content.AccessToken).ConfigureAwait(false);
 
             string s = "";
         }
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
             var tokenResponse = await identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretPostAuth("ResourceServer", "LW46am54neU/[=Su")
                 .UseClientCredentials("scim_manage", "scim_read")
-                .ResolveAsync("http://localhost:60004/.well-known/uma2-configuration");
+                .ResolveAsync("http://localhost:60004/.well-known/uma2-configuration").ConfigureAwait(false);
             var r = await adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest
             {
                 IpAdr = "127.0.0.1",
@@ -81,8 +81,8 @@ namespace SimpleIdentityServer.Scim.Client.Integration.Tests
                 DistinguishedName = "ou=system",
                 Username = "uid=admin,ou=system",
                 Password = "secret"
-            }, scimBaseUrl, tokenResponse.Content.AccessToken);
-            var result = await adMappingClient.GetAllProperties("urn:ietf:params:scim:schemas:core:2.0:User", scimBaseUrl, tokenResponse.Content.AccessToken);
+            }, scimBaseUrl, tokenResponse.Content.AccessToken).ConfigureAwait(false);
+            var result = await adMappingClient.GetAllProperties("urn:ietf:params:scim:schemas:core:2.0:User", scimBaseUrl, tokenResponse.Content.AccessToken).ConfigureAwait(false);
             string s = "";
         }
     }

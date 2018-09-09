@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Uma.Client.Policy
                 request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             }
 
-            var httpResult = await httpClient.SendAsync(request);
+            var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

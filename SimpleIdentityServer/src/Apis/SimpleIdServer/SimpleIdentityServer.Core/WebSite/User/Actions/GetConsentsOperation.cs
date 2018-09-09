@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            return await _consentRepository.GetConsentsForGivenUserAsync(subject);
+            return await _consentRepository.GetConsentsForGivenUserAsync(subject).ConfigureAwait(false);
         }
     }
 }

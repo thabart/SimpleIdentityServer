@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using Common;
+
     public interface IGroupsAction
     {
         Task<ApiActionResult> AddGroup(JObject jObj, string locationPattern);
@@ -74,7 +76,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new AddGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.Group, Common.Constants.ResourceTypes.Group);
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.Group, Constants.ResourceTypes.Group).ConfigureAwait(false);
                 _eventPublisher.Publish(new AddGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -99,7 +101,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 var jObj = new JObject();
                 jObj.Add("id", id);
                 _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _deleteRepresentationAction.Execute(id);
+                var result = await _deleteRepresentationAction.Execute(id).ConfigureAwait(false);
                 _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -116,7 +118,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new RemoveGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern, Common.Constants.ResourceTypes.Group);
+                var result = await _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern, Constants.ResourceTypes.Group).ConfigureAwait(false);
                 _eventPublisher.Publish(new RemoveGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -133,7 +135,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new PatchGroupReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.Group, locationPattern);
+                var result = await _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.Group, locationPattern).ConfigureAwait(false);
                 _eventPublisher.Publish(new PatchGroupFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }

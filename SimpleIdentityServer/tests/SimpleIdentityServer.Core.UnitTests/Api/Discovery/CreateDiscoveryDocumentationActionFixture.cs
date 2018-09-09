@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Discovery
                 .Returns(() => Task.FromResult(claims));
 
             // ACT
-            var discoveryInformation = await _createDiscoveryDocumentationAction.Execute();
+            var discoveryInformation = await _createDiscoveryDocumentationAction.Execute().ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(discoveryInformation);

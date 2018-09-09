@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection
             {
                 _eventPublisher.Publish(new IntrospectionRequestReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(introspectionParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _introspectionParameterValidator.Validate(introspectionParameter);
-                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue);
+                var result = await _postIntrospectionAction.Execute(introspectionParameter, authenticationHeaderValue).ConfigureAwait(false);
                 _eventPublisher.Publish(new IntrospectionResultReturned(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }

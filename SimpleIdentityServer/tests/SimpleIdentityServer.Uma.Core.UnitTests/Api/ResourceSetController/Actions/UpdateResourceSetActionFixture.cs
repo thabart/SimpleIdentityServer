@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(() => Task.FromResult(false));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updateResourceSetAction.Execute(udpateResourceSetParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeUpdated, udpateResourceSetParameter.Id));
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter);
+            var result = await _updateResourceSetAction.Execute(udpateResourceSetParameter).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

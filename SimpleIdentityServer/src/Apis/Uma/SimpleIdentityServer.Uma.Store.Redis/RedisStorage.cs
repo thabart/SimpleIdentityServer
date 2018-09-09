@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Store.Redis
 
         public async Task<T> TryGetValueAsync<T>(string key) where T : class, new()
         {
-            var result = await GetValue(key);
+            var result = await GetValue(key).ConfigureAwait(false);
             if (result == null)
             {
                 return null;
@@ -65,7 +65,7 @@ namespace SimpleIdentityServer.Uma.Store.Redis
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var bytes = await _distributedCache.GetAsync(key.ToString());
+            var bytes = await _distributedCache.GetAsync(key.ToString()).ConfigureAwait(false);
             if (bytes == null)
             {
                 return null;
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Uma.Store.Redis
                 throw new ArgumentNullException(nameof(key));
             }
 
-            await _distributedCache.RemoveAsync(key);
+            await _distributedCache.RemoveAsync(key).ConfigureAwait(false);
         }
 
         public void Set(string key, object value, int slidingExpirationTime)
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Uma.Store.Redis
             await _distributedCache.SetAsync(key.ToString(), Encoding.UTF8.GetBytes(serializedObject), new DistributedCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromSeconds(slidingExpirationTime)
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task SetAsync(string key, string value, int slidingExpirationTime)
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Uma.Store.Redis
             await _distributedCache.SetAsync(key.ToString(), Encoding.UTF8.GetBytes(value), new DistributedCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromSeconds(slidingExpirationTime)
-            });
+            }).ConfigureAwait(false);
         }
 
         private void Initialize(IDistributedCache distributedCache)

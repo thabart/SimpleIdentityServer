@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Host.Tests
                     string json = JsonConvert.SerializeObject(result);
                     var data = Encoding.UTF8.GetBytes(json);
                     ctx.Response.ContentType = "application/json";
-                    await ctx.Response.Body.WriteAsync(data, 0, data.Length);
+                    await ctx.Response.Body.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
                 });
             });
             // 5. Use MVC.

@@ -22,6 +22,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
+    using Core.Common.Models;
+
     public sealed class ProcessAuthorizationRequestFixture
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
@@ -38,8 +40,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null)).ConfigureAwait(false);
         }
         
         [Fact]
@@ -60,7 +62,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Core.Common.Models.Client()));
+                () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Client())).ConfigureAwait(false);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));

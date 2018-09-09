@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
                 var introspectionResult = await Options.IdentityServerClientFactory.CreateAuthSelector()
                     .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
                     .Introspect(token, TokenType.AccessToken)
-                    .ResolveAsync(Options.WellKnownConfigurationUrl);
+                    .ResolveAsync(Options.WellKnownConfigurationUrl).ConfigureAwait(false);
                 if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();

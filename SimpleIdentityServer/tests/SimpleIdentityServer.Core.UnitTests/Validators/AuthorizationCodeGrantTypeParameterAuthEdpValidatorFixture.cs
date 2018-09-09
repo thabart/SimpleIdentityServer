@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ScopeName));
             Assert.True(exception.State == state);
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ClientIdName));
             Assert.True(exception.State == state);
@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.RedirectUriName));
             Assert.True(exception.State == state);
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.MissingParameter, Constants.StandardAuthorizationRequestParameterNames.ResponseTypeName));
             Assert.True(exception.State == state);
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
             };
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.AtLeastOneResponseTypeIsNotSupported);
             Assert.True(exception.State == state);
@@ -142,7 +142,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.AtLeastOnePromptIsNotSupported);
             Assert.True(exception.State == state);
@@ -172,7 +172,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.PromptParameterShouldHaveOnlyNoneValue);
             Assert.True(exception.State == state);
@@ -202,7 +202,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+                () => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheRedirectionUriIsNotWellFormed);
             Assert.True(exception.State == state);
@@ -233,7 +233,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
             Assert.True(exception.State == state);
@@ -268,7 +268,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 .Returns(() => new string[0]);
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter)).ConfigureAwait(false);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUri));
             Assert.True(exception.State == state);

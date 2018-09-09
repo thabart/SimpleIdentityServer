@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Controllers
             IActionResult result = null;
             try
             {
-                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber);
+                await _smsAuthenticationOperation.Execute(confirmationCodeRequest.PhoneNumber).ConfigureAwait(false);
                 result = new OkResult();
             }
             catch(IdentityServerException ex)

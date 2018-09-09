@@ -25,8 +25,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserClaimsOperation.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserClaimsOperation.Execute("subject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserClaimsOperation.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserClaimsOperation.Execute("subject", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>()));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserClaimsOperation.Execute("subject", new List<ClaimAggregate>())).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             await _updateUserClaimsOperation.Execute("subjet", new List<ClaimAggregate>
             {
                 new ClaimAggregate("type", "value1")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(p => p.UpdateAsync(It.Is<ResourceOwner>(r => r.Claims.Any(c => c.Type == "type" && c.Value == "value1"))));

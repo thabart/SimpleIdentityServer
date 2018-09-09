@@ -14,6 +14,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests.Apis
 {
+    using AccountFilter.Basic.Common;
+
     public class AccountFilterClientFixture : IClassFixture<TestOauthServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
@@ -43,7 +45,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Get(baseUrl + "/filters", "filter_id", grantedToken.Content.AccessToken);
+            var result = await _filterClient.Get(baseUrl + "/filters", "filter_id", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -66,7 +68,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Delete(baseUrl + "/filters", "filter_id", grantedToken.Content.AccessToken);
+            var result = await _filterClient.Delete(baseUrl + "/filters", "filter_id", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -88,10 +90,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Add(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.AddFilterRequest
+            var result = await _filterClient.Add(baseUrl + "/filters", new AddFilterRequest
             {
                 Name = null
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -114,9 +116,9 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Update(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.UpdateFilterRequest
+            var result = await _filterClient.Update(baseUrl + "/filters", new UpdateFilterRequest
             {
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -135,10 +137,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Update(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.UpdateFilterRequest
+            var result = await _filterClient.Update(baseUrl + "/filters", new UpdateFilterRequest
             {
                 Id = "invalid_filter"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -157,11 +159,11 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _filterClient.Update(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.UpdateFilterRequest
+            var result = await _filterClient.Update(baseUrl + "/filters", new UpdateFilterRequest
             {
                 Id = "invalid_filter",
                 Name = "name"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(result.ContainsError);
@@ -186,7 +188,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("manage_account_filtering")
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var addResult = await _filterClient.Add(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.AddFilterRequest
+            var addResult = await _filterClient.Add(baseUrl + "/filters", new AddFilterRequest
             {
                 Name = "filter1",
                 Rules = new List<AddFilterRuleRequest>
@@ -195,13 +197,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     {
                         ClaimKey = "claim",
                         ClaimValue = "value",
-                        Operation = AccountFilter.Basic.Common.ComparisonOperationsDto.RegularExpression
+                        Operation = ComparisonOperationsDto.RegularExpression
                     }
                 }
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ACT
-            var getResult = await _filterClient.Get(baseUrl + "/filters", addResult.Content.Id, grantedToken.Content.AccessToken);
+            var getResult = await _filterClient.Get(baseUrl + "/filters", addResult.Content.Id, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(getResult.ContainsError);
@@ -226,7 +228,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("manage_account_filtering")
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var addResult = await _filterClient.Add(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.AddFilterRequest
+            var addResult = await _filterClient.Add(baseUrl + "/filters", new AddFilterRequest
             {
                 Name = "filter1",
                 Rules = new List<AddFilterRuleRequest>
@@ -235,13 +237,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     {
                         ClaimKey = "claim",
                         ClaimValue = "value",
-                        Operation = AccountFilter.Basic.Common.ComparisonOperationsDto.RegularExpression
+                        Operation = ComparisonOperationsDto.RegularExpression
                     }
                 }
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ACT
-            var deleteResult = await _filterClient.Delete(baseUrl + "/filters", addResult.Content.Id, grantedToken.Content.AccessToken);
+            var deleteResult = await _filterClient.Delete(baseUrl + "/filters", addResult.Content.Id, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(deleteResult.ContainsError);
@@ -262,7 +264,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var grantedToken = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("manage_account_filtering")
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
-            var addResult = await _filterClient.Add(baseUrl + "/filters", new AccountFilter.Basic.Common.Requests.AddFilterRequest
+            var addResult = await _filterClient.Add(baseUrl + "/filters", new AddFilterRequest
             {
                 Name = "filter1",
                 Rules = new List<AddFilterRuleRequest>
@@ -271,13 +273,13 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                     {
                         ClaimKey = "claim",
                         ClaimValue = "value",
-                        Operation = AccountFilter.Basic.Common.ComparisonOperationsDto.RegularExpression
+                        Operation = ComparisonOperationsDto.RegularExpression
                     }
                 }
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ACT
-            var getAllResults = await _filterClient.GetAll(baseUrl + "/filters", grantedToken.Content.AccessToken);
+            var getAllResults = await _filterClient.GetAll(baseUrl + "/filters", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.False(getAllResults.ContainsError);

@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 1. Check the client credentials
             var errorMessage = string.Empty;
             var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -81,11 +81,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Retrieve the granted token & check if it exists
-            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token);
+            GrantedToken grantedToken = await _tokenStore.GetAccessToken(revokeTokenParameter.Token).ConfigureAwait(false);
             bool isAccessToken = true;
             if (grantedToken == null)
             {
-                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token);
+                grantedToken = await _tokenStore.GetRefreshToken(revokeTokenParameter.Token).ConfigureAwait(false);
                 isAccessToken = false;
             }
 
@@ -103,10 +103,10 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             // 4. Invalid the granted token
             if (isAccessToken)
             {
-                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken);
+                return await _tokenStore.RemoveAccessToken(grantedToken.AccessToken).ConfigureAwait(false);
             }
 
-            return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken);
+            return await _tokenStore.RemoveRefreshToken(grantedToken.RefreshToken).ConfigureAwait(false);
         }
 
         #endregion

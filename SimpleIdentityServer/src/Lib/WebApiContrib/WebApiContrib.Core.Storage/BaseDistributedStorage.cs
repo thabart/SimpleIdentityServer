@@ -18,7 +18,7 @@ namespace WebApiContrib.Core.Storage
 
         public async Task<object> TryGetValueAsync(string key)
         {
-            var result = await GetValue(key);
+            var result = await GetValue(key).ConfigureAwait(false);
             if (result == null)
             {
                 return null;
@@ -41,7 +41,7 @@ namespace WebApiContrib.Core.Storage
 
         public async Task<T> TryGetValueAsync<T>(string key) where T : class, new()
         {
-            var result = await GetValue(key);
+            var result = await GetValue(key).ConfigureAwait(false);
             if (result == null)
             {
                 return null;
@@ -79,7 +79,7 @@ namespace WebApiContrib.Core.Storage
             await _distributedCache.SetAsync(key.ToString(), Encoding.UTF8.GetBytes(serializedObject), new DistributedCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromSeconds(300)
-            });
+            }).ConfigureAwait(false);
         }
 
         public void Remove(string key)
@@ -94,7 +94,7 @@ namespace WebApiContrib.Core.Storage
                 throw new ArgumentNullException(nameof(key));
             }
 
-            await _distributedCache.RemoveAsync(key);
+            await _distributedCache.RemoveAsync(key).ConfigureAwait(false);
         }
 
         public abstract IEnumerable<Record> GetAll();
@@ -115,7 +115,7 @@ namespace WebApiContrib.Core.Storage
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var bytes = await _distributedCache.GetAsync(key.ToString());
+            var bytes = await _distributedCache.GetAsync(key.ToString()).ConfigureAwait(false);
             if (bytes == null)
             {
                 return null;

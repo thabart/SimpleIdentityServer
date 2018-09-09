@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(() => Task.FromResult((ICollection<ResourceSet>)null));
 
             // ACT & ASSERTS
-            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute());
+            var exception  = await Assert.ThrowsAsync<BaseUmaException>(() => _getAllResourceSetAction.Execute()).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == ErrorDescriptions.TheResourceSetsCannotBeRetrieved);
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(resourceSets));
 
             // ACT
-            var result = await _getAllResourceSetAction.Execute();
+            var result = await _getAllResourceSetAction.Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

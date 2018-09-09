@@ -27,14 +27,14 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheRoDoesntExist);
             }
 
             resourceOwner.TwoFactorAuthentication = twoFactorAuth;
-            return await _resourceOwnerRepository.UpdateAsync(resourceOwner);
+            return await _resourceOwnerRepository.UpdateAsync(resourceOwner).ConfigureAwait(false);
         }
     }
 }

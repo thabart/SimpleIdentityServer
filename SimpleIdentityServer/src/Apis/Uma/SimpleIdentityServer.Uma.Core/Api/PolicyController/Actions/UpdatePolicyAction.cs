@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             // Check the authorization policy exists.
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Get(updatePolicyParameter.PolicyId));
+                () => _policyRepository.Get(updatePolicyParameter.PolicyId)).ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             // Check all the scopes are valid.
             foreach (var resourceSetId in policy.ResourceSetIds)
             {
-                var resourceSet = await _resourceSetRepository.Get(resourceSetId);
+                var resourceSet = await _resourceSetRepository.Get(resourceSetId).ConfigureAwait(false);
                 if (updatePolicyParameter.Rules.Any(r => r.Scopes != null && !r.Scopes.All(s => resourceSet.Scopes.Contains(s))))
                 {
                     throw new BaseUmaException(ErrorCodes.InvalidScope, ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             var result = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, updatePolicyParameter.PolicyId),
-                () => _policyRepository.Update(policy));
+                () => _policyRepository.Update(policy)).ConfigureAwait(false);
             _umaServerEventSource.FinishUpdateAuhthorizationPolicy(JsonConvert.SerializeObject(updatePolicyParameter));
             return result;
         }

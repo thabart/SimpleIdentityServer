@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
             {
 
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             var result = await _profileClient.LinkProfile(baseUrl + "/profiles", "currentSubject", new LinkProfileRequest
             {
                 UserId = "user_id"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -91,7 +91,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             {
                 UserId = "user_id",
                 Issuer = "issuer"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -115,7 +115,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "externalSubject", "currentSubject", grantedToken.Content.AccessToken);
+            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "externalSubject", "currentSubject", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -135,7 +135,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "invalid_external_subject", "administrator", grantedToken.Content.AccessToken);
+            var result = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "invalid_external_subject", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -159,7 +159,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var result = await _profileClient.GetProfiles(baseUrl + "/profiles", "notvalid", grantedToken.Content.AccessToken);
+            var result = await _profileClient.GetProfiles(baseUrl + "/profiles", "notvalid", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result.ContainsError);
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             {
                 UserId = "user_id_1",
                 Issuer = "issuer"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result.ContainsError);
@@ -216,10 +216,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             {
                 UserId = "user_id",
                 Issuer = "issuer"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ACT
-            var unlinkResult = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "user_id", "administrator", grantedToken.Content.AccessToken);
+            var unlinkResult = await _profileClient.UnlinkProfile(baseUrl + "/profiles", "user_id", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(unlinkResult.ContainsError);
@@ -243,10 +243,10 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             {
                 UserId = "user_id",
                 Issuer = "issuer"
-            }, grantedToken.Content.AccessToken);
+            }, grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ACT
-            var getProfilesResult = await _profileClient.GetProfiles(baseUrl + "/profiles", "administrator", grantedToken.Content.AccessToken);
+            var getProfilesResult = await _profileClient.GetProfiles(baseUrl + "/profiles", "administrator", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(getProfilesResult.ContainsError);

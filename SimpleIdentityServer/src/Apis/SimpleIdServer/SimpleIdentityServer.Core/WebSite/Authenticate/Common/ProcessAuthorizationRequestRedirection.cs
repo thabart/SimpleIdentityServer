@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId);
+            var client = await _clientRepository.GetClientByIdAsync(authorizationParameter.ClientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.TheClientIdDoesntExist,
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 return result;
             }
 
-            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            var assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter).ConfigureAwait(false);
 
             // If there's already one consent then redirect to the callback
             if (assignedConsent != null)
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Common
                 result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
                 var claimsIdentity = new ClaimsIdentity(claims, "simpleIdentityServer");
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

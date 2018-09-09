@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Client.Permission
         public async Task<AddPermissionResult> AddByResolution(PostPermission request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
-            return await Add(request, configuration.PermissionEndpoint, token);
+            return await Add(request, configuration.PermissionEndpoint, token).ConfigureAwait(false);
         }
 
         public Task<AddPermissionResult> Add(IEnumerable<PostPermission> request, string url, string token)
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Client.Permission
         public async Task<AddPermissionResult> AddByResolution(IEnumerable<PostPermission> request, string url, string token)
         {
             var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
-            return await Add(request, configuration.PermissionEndpoint, token);
+            return await Add(request, configuration.PermissionEndpoint, token).ConfigureAwait(false);
         }
     }
 }

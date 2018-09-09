@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(() => Task.FromResult((ResourceSet)null));
 
             // ACT
-            var result = await _deleteResourceSetAction.Execute(resourceSetId);
+            var result = await _deleteResourceSetAction.Execute(resourceSetId).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(false));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _deleteResourceSetAction.Execute(resourceSetId)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InternalError);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetCannotBeRemoved, resourceSetId));
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                .Returns(Task.FromResult(true));
 
             // ACT
-            var result = await _deleteResourceSetAction.Execute(resourceSetId);
+            var result = await _deleteResourceSetAction.Execute(resourceSetId).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result);

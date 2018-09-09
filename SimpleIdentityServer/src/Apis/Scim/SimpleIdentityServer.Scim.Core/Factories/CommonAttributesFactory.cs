@@ -101,7 +101,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(representation));
             }
 
-            var commonAttrs = await _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes().ConfigureAwait(false);
             var idAttr = commonAttrs.First(n => n.Name == Common.Constants.IdentifiedScimResourceNames.Id);
             return new SingularRepresentationAttribute<string>(idAttr, representation.Id);
         }
@@ -118,7 +118,7 @@ namespace SimpleIdentityServer.Scim.Core.Factories
                 throw new ArgumentNullException(nameof(location));
             }
 
-            var commonAttrs = await _schemaStore.GetCommonAttributes();
+            var commonAttrs = await _schemaStore.GetCommonAttributes().ConfigureAwait(false);
             var metaAttr = commonAttrs.First(m => m.Name == Common.Constants.ScimResourceNames.Meta) as ComplexSchemaAttributeResponse;
             return new ComplexRepresentationAttribute(metaAttr)
             {

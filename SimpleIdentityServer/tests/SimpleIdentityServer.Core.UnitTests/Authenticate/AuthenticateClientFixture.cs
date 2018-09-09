@@ -28,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateClient.AuthenticateAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateClient.AuthenticateAsync(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(string.Empty);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction).ConfigureAwait(false);
 
             // ASSERTS
             Assert.Null(result.Client);
@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction).ConfigureAwait(false);
 
             // ASSERTS
             Assert.Null(result.Client);
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(client);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result.Client);
@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => null);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction).ConfigureAwait(false);
             
             // ASSERTS
             Assert.Null(result.Client);

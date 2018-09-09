@@ -175,7 +175,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 return Constants.MappingRoutePathsToResourceTypes[subPath];
             };
 
-            var schemas = await _schemaStore.GetSchemas();
+            var schemas = await _schemaStore.GetSchemas().ConfigureAwait(false);
             var resourceTypes = schemas.Select(s => s.Name);
 
             // 3. Check operation parameters are correct.

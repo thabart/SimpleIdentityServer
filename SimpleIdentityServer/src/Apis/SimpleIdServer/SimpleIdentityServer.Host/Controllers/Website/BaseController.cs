@@ -20,7 +20,7 @@ namespace SimpleIdentityServer.Host.Controllers.Website
 
         public async Task<ClaimsPrincipal> SetUser()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName).ConfigureAwait(false);
             var isAuthenticed = authenticatedUser != null && authenticatedUser.Identity != null && authenticatedUser.Identity.IsAuthenticated;
             ViewBag.IsAuthenticated = isAuthenticed;
             if (isAuthenticed)

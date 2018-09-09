@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = searchResourceSet.ToParameter();
-            var result = await _resourceSetActions.Search(parameter);
+            var result = await _resourceSetActions.Search(parameter).ConfigureAwait(false);
             return new OkObjectResult(result.ToResponse());
         }
 
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetResourceSets()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -69,8 +69,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var resourceSetIds = await _resourceSetActions.GetAllResourceSet();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
+            var resourceSetIds = await _resourceSetActions.GetAllResourceSet().ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName).ConfigureAwait(false);
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id))
+            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id).ConfigureAwait(false))
             {
                 return new ContentResult
                 {
@@ -91,14 +91,14 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 };
             }
 
-            var result = await _resourceSetActions.GetResourceSet(id);
+            var result = await _resourceSetActions.GetResourceSet(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetNotFoundResourceSet();
             }
 
             var content = result.ToResponse();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id).ConfigureAwait(false);
             return new OkObjectResult(content);
         }
 
@@ -112,12 +112,12 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = postResourceSet.ToParameter();
-            var result = await _resourceSetActions.AddResourceSet(parameter);
+            var result = await _resourceSetActions.AddResourceSet(parameter).ConfigureAwait(false);
             var response = new AddResourceSetResponse
             {
                 Id = result
             };
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false).ConfigureAwait(false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             var parameter = putResourceSet.ToParameter();
-            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter);
+            var resourceSetExists = await _resourceSetActions.UpdateResourceSet(parameter).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 Id = putResourceSet.Id
             };
 
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + putResourceSet.Id, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + putResourceSet.Id, false).ConfigureAwait(false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.OK
@@ -161,19 +161,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
-            var policyIds = await _resourceSetActions.GetPolicies(id);
-            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id);
+            var policyIds = await _resourceSetActions.GetPolicies(id).ConfigureAwait(false);
+            var resourceSetExists = await _resourceSetActions.RemoveResourceSet(id).ConfigureAwait(false);
             if (!resourceSetExists)
             {
                 return GetNotFoundResourceSet();
             }
 
             // Update all the representations include the authorization policies
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false).ConfigureAwait(false);
+            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false).ConfigureAwait(false);
             foreach (var policyId in policyIds)
             {
-                await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false);
+                await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false).ConfigureAwait(false);
             }
 
             return new StatusCodeResult((int)HttpStatusCode.NoContent);

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Authenticate.SMS.Actions
 {
+    using Core.Jwt;
+
     public interface ISmsAuthenticationOperation
     {
         Task<ResourceOwner> Execute(string phoneNumber);
@@ -37,9 +39,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             }
 
             // 1. Send the confirmation code (SMS).
-            await _generateAndSendSmsCodeOperation.Execute(phoneNumber);
+            await _generateAndSendSmsCodeOperation.Execute(phoneNumber).ConfigureAwait(false);
             // 2. Try to get the resource owner.
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber);
+            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber).ConfigureAwait(false);
             if (resourceOwner != null)
             {
                 return resourceOwner;
@@ -61,15 +63,15 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
                     ClientId = _smsAuthenticationOptions.AuthenticationOptions.ClientId,
                     ClientSecret = _smsAuthenticationOptions.AuthenticationOptions.ClientSecret,
                     WellKnownAuthorizationUrl = _smsAuthenticationOptions.AuthenticationOptions.AuthorizationWellKnownConfiguration
-                }, _smsAuthenticationOptions.ScimBaseUrl, true);
+                }, _smsAuthenticationOptions.ScimBaseUrl, true).ConfigureAwait(false);
             }
             else
             {
                 // 3.2 Add user.
-                await _userActions.AddUser(record, null, null, false);
+                await _userActions.AddUser(record, null, null, false).ConfigureAwait(false);
             }
             
-            return await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber);
+            return await _resourceOwnerRepository.GetResourceOwnerByClaim(Constants.StandardResourceOwnerClaimNames.PhoneNumber, phoneNumber).ConfigureAwait(false);
         }
     }
 }

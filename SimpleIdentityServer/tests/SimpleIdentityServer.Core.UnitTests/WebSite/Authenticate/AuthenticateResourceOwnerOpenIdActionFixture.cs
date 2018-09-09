@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerOpenIdAction.Execute(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT
-            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null);
+            await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, null, null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter, 
                 claimsPrincipal, 
-                null);
+                null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
-                null);
+                null).ConfigureAwait(false);
 
             // ASSERT
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithNoEffect());
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ACT
             await _authenticateResourceOwnerOpenIdAction.Execute(authorizationParameter,
                 claimsPrincipal,
-                code);
+                code).ConfigureAwait(false);
 
             // ASSERT
             _authenticateHelperFake.Verify(a => a.ProcessRedirection(authorizationParameter, 

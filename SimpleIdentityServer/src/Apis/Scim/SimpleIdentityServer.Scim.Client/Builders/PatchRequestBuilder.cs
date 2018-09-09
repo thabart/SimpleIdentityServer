@@ -153,7 +153,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
             }
 
             _obj.Add(new JProperty(Common.Constants.PatchOperationsRequestNames.Operations, arr));
-            return await _callback(_obj);
+            return await _callback(_obj).ConfigureAwait(false);
         }
 
         private void Initialize(IEnumerable<string> schemas)

@@ -40,6 +40,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Authenticate.SMS.Common.Requests;
+
     public class TokenClientFixture : IClassFixture<TestOauthServerFixture>
     {
         private const string baseUrl = "http://localhost:5000";
@@ -77,7 +79,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -105,7 +107,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -134,7 +136,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -164,7 +166,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -196,7 +198,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -228,7 +230,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -261,7 +263,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -294,7 +296,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -326,7 +328,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -357,7 +359,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -388,7 +390,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -419,7 +421,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -451,7 +453,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -481,7 +483,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -512,7 +514,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -532,10 +534,10 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("openid")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var refreshToken = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UseRefreshToken(result.Content.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.Equal(HttpStatusCode.BadRequest, refreshToken.Status);
@@ -565,7 +567,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -594,7 +596,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -625,7 +627,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -657,7 +659,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -689,7 +691,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -721,7 +723,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -747,7 +749,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("openid")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             // ASSERTS
@@ -766,7 +768,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             // var claims = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.AccessToken);
 
             // ASSERTS
@@ -796,14 +798,14 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 return Task.FromResult(true);
             });
-            await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(Task.FromResult(confirmationCode));
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("phone", confirmationCode.Value, new List<string> { "sms" }, new List<string> { "scim" })
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -822,7 +824,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientCertificate("certificate_client", certificate)
                 .UsePassword("administrator", "password", "openid")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -840,10 +842,10 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var refreshToken = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UseRefreshToken(result.Content.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -865,7 +867,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var token = await _clientAuthSelector.UseClientSecretBasicAuth("basic_client", "basic_client")
                 .UseClientCredentials("api1")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(token);
@@ -884,7 +886,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var firstToken = await _clientAuthSelector.UseClientSecretBasicAuth("basic_client", "basic_client")
                 .UseClientCredentials("api1")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(firstToken);
@@ -922,7 +924,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var token = await _clientAuthSelector.UseClientSecretJwtAuth(jwe, "jwt_client")
                 .UseClientCredentials("api1")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
 
             // ASSERTS
@@ -959,7 +961,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var token = await _clientAuthSelector.UseClientPrivateKeyAuth(jws, "private_key_client")
                 .UseClientCredentials("api1")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(token);

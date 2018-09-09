@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
         {
             var policies = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved,
-                () => _policyRepository.GetAll());
+                () => _policyRepository.GetAll()).ConfigureAwait(false);
             if (policies == null
                 || !policies.Any())
             {

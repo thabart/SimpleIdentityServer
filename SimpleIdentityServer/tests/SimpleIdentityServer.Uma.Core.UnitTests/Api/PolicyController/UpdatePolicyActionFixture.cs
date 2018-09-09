@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updatePolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, "id"));
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 It.IsAny<Func<Task<Policy>>>())).Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(result);
@@ -148,7 +148,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             }));
 
             // ACT
-            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter));
+            var result = await Assert.ThrowsAsync<BaseUmaException>(() => _updatePolicyAction.Execute(updatePolicyParameter)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -205,7 +205,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             }));
 
             // ACT
-            var result = await _updatePolicyAction.Execute(updatePolicyParameter);
+            var result = await _updatePolicyAction.Execute(updatePolicyParameter).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(result);

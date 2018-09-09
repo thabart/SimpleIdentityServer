@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             }
 
             // 1. Check the resource owner already exists.
-            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login) != null)
+            if (await _resourceOwnerRepository.GetAsync(addUserParameter.Login).ConfigureAwait(false) != null)
             {
                 throw new IdentityServerException(
                     Errors.ErrorCodes.UnhandledExceptionCode,
@@ -119,7 +119,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             };
 
             // 2. Populate the claims.
-            var existedClaims = await _claimRepository.GetAllAsync();
+            var existedClaims = await _claimRepository.GetAllAsync().ConfigureAwait(false);
             if (addUserParameter.Claims != null)
             {
                 foreach (var claim in addUserParameter.Claims)
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 var isFilterValid = true;
                 foreach(var resourceOwnerFilter in _accountFilters)
                 {
-                    var userFilterResult = await resourceOwnerFilter.Check(newClaims);
+                    var userFilterResult = await resourceOwnerFilter.Check(newClaims).ConfigureAwait(false);
                     if (!userFilterResult.IsValid)
                     {
                         isFilterValid = false;
@@ -166,7 +166,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             // 3. Add the scim resource.
             if (addScimResource)
             {
-                var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login);
+                var scimResource = await AddScimResource(authenticationParameter, scimBaseUrl, addUserParameter.Login).ConfigureAwait(false);
                 var scimUrl = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimId);
                 var scimLocation = newClaims.FirstOrDefault(c => c.Type == Jwt.Constants.StandardResourceOwnerClaimNames.ScimLocation);
                 if (scimUrl != null)
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 IsLocalAccount = true,
                 Password = PasswordHelper.ComputeHash(addUserParameter.Password)
             };                        
-            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner))
+            if (!await _resourceOwnerRepository.InsertAsync(newResourceOwner).ConfigureAwait(false))
             {
                 throw new IdentityServerException(Errors.ErrorCodes.UnhandledExceptionCode,
                     Errors.ErrorDescriptions.TheResourceOwnerCannotBeAdded);
@@ -201,7 +201,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             // 5. Link to a profile.
             if (!string.IsNullOrWhiteSpace(issuer))
             {
-                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.Login, issuer);
+                await _linkProfileAction.Execute(addUserParameter.Login, addUserParameter.Login, issuer).ConfigureAwait(false);
             }
 
             _openidEventSource.AddResourceOwner(newResourceOwner.Id);
@@ -218,11 +218,11 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
             var grantedToken = await _tokenStore.GetToken(scimOpts.WellKnownAuthorizationUrl, scimOpts.ClientId, scimOpts.ClientSecret, new[]
             {
                 "scim_manage"
-            });
+            }).ConfigureAwait(false);
 
             var scimResponse = await _scimClientFactory.GetUserClient().AddUser(scimBaseUrl, grantedToken.AccessToken)
                 .SetCommonAttributes(subject)
-                .Execute();
+                .Execute().ConfigureAwait(false);
             var scimId = scimResponse.Content["id"].ToString();
             return new ScimUser(scimId, $"{scimBaseUrl}/Users/{scimId}");
         }

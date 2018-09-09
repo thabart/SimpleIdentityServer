@@ -25,12 +25,12 @@ namespace SimpleIdentityServer.Store.Redis
             }            
 
             var id = Guid.NewGuid().ToString();
-            await _storage.SetAsync(id, grantedToken, grantedToken.ExpiresIn); // 1. Store tokens.
-            await _storage.SetAsync("access_token_" + grantedToken.AccessToken, id, grantedToken.ExpiresIn);
-            await _storage.SetAsync("refresh_token_" + grantedToken.RefreshToken, id, grantedToken.ExpiresIn);
+            await _storage.SetAsync(id, grantedToken, grantedToken.ExpiresIn).ConfigureAwait(false); // 1. Store tokens.
+            await _storage.SetAsync("access_token_" + grantedToken.AccessToken, id, grantedToken.ExpiresIn).ConfigureAwait(false);
+            await _storage.SetAsync("refresh_token_" + grantedToken.RefreshToken, id, grantedToken.ExpiresIn).ConfigureAwait(false);
 
             var searchKey = GetSearchKey(grantedToken);
-            var grantedTokens = await _storage.GetValue(searchKey);
+            var grantedTokens = await _storage.GetValue(searchKey).ConfigureAwait(false);
             var values = new JArray();
             if (!string.IsNullOrWhiteSpace(grantedTokens))
             {
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Store.Redis
             }
 
             values.Add(id);
-            await _storage.SetAsync(searchKey, values.ToString(), grantedToken.ExpiresIn); // 2. Store search key.
+            await _storage.SetAsync(searchKey, values.ToString(), grantedToken.ExpiresIn).ConfigureAwait(false); // 2. Store search key.
             return true;
         }
 
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Store.Redis
                 tasks.Add(_storage.TryGetValueAsync<GrantedToken>(tokenId));
             }
 
-            var result = await Task.WhenAll(tasks);
+            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
             return result.Where(r => r != null);
         }
 
@@ -66,13 +66,13 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var tokenId = await _storage.GetValue("access_token_" + accessToken);
+            var tokenId = await _storage.GetValue("access_token_" + accessToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(tokenId))
             {
                 return null;
             }
 
-            return await _storage.TryGetValueAsync<GrantedToken>(tokenId);
+            return await _storage.TryGetValueAsync<GrantedToken>(tokenId).ConfigureAwait(false);
         }
 
         public async Task<GrantedToken> GetRefreshToken(string refreshToken)
@@ -82,18 +82,18 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(refreshToken));
             }
 
-            var tokenId = await _storage.GetValue("refresh_token_" + refreshToken);
+            var tokenId = await _storage.GetValue("refresh_token_" + refreshToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(tokenId))
             {
                 return null;
             }
 
-            return await _storage.TryGetValueAsync<GrantedToken>(tokenId);
+            return await _storage.TryGetValueAsync<GrantedToken>(tokenId).ConfigureAwait(false);
         }
 
         public async Task<GrantedToken> GetToken(string scopes, string clientId, JwsPayload idTokenJwsPayload, JwsPayload userInfoJwsPayload)
         {
-            var tokenIds = await _storage.GetValue(scopes + "_" + clientId);
+            var tokenIds = await _storage.GetValue(scopes + "_" + clientId).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(tokenIds))
             {
                 return null;
@@ -106,7 +106,7 @@ namespace SimpleIdentityServer.Store.Redis
                 lstTokenId.Add(record.ToString());
             }
 
-            var grantedTokens = await GetTokens(lstTokenId);
+            var grantedTokens = await GetTokens(lstTokenId).ConfigureAwait(false);
             foreach (var grantedToken in grantedTokens)
             {
                 if (grantedToken.IdTokenPayLoad != null || idTokenJwsPayload != null)
@@ -148,13 +148,13 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var tokenId = await _storage.GetValue("access_token_" + accessToken);
+            var tokenId = await _storage.GetValue("access_token_" + accessToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(tokenId))
             {
                 return false;
             }
 
-            await _storage.RemoveAsync("access_token_" + accessToken);
+            await _storage.RemoveAsync("access_token_" + accessToken).ConfigureAwait(false);
             return true;
         }
 
@@ -165,13 +165,13 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(refreshToken));
             }
             
-            var tokenId = await _storage.GetValue("refresh_token_" + refreshToken);
+            var tokenId = await _storage.GetValue("refresh_token_" + refreshToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(tokenId))
             {
                 return false;
             }
 
-            await _storage.RemoveAsync("refresh_token_" + refreshToken);
+            await _storage.RemoveAsync("refresh_token_" + refreshToken).ConfigureAwait(false);
             return true;
         }
 

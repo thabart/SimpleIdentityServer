@@ -42,24 +42,24 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            return await ProcessRequest();
+            return await ProcessRequest().ConfigureAwait(false);
         }
 
         [HttpPost]
         public async Task<ActionResult> Post()
         {
-            return await ProcessRequest();
+            return await ProcessRequest().ConfigureAwait(false);
         }
 
         private async Task<ActionResult> ProcessRequest()
         {
-            var accessToken = await TryToGetTheAccessToken();
+            var accessToken = await TryToGetTheAccessToken().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new AuthorizationException(ErrorCodes.InvalidToken, string.Empty);
             }
 
-            var result = await _userInfoActions.GetUserInformation(accessToken);
+            var result = await _userInfoActions.GetUserInformation(accessToken).ConfigureAwait(false);
             return result.Content;
         }
 
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return accessToken;
             }
 
-            accessToken = await GetAccessTokenFromBodyParameter();
+            accessToken = await GetAccessTokenFromBodyParameter().ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 return accessToken;
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return emptyResult;
             }
 
-            var content = await Request.ReadAsStringAsync();
+            var content = await Request.ReadAsStringAsync().ConfigureAwait(false);
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(content);
             if (!queryString.Keys.Contains(accessTokenName))
             {

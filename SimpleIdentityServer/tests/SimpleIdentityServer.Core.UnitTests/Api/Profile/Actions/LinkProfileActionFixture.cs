@@ -24,9 +24,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute(null, null, null, false));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", null, null, false));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", null, false));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute(null, null, null, false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", null, null, false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", null, false)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -57,7 +57,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<ProfileAssignedAnotherAccountException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false));
+            var exception = await Assert.ThrowsAsync<ProfileAssignedAnotherAccountException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwnerProfile)null));
 
             // ACT
-            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false);
+            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", false).ConfigureAwait(false);
 
             // ASSERT
             _profileRepositoryStub.Verify(p => p.Add(It.Is<IEnumerable<ResourceOwnerProfile>>(r => r.First().ResourceOwnerId == "localSubject" && r.First().Subject == "externalSubject" && r.First().Issuer == "issuer")));
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", true);
+            await _linkProfileAction.Execute("localSubject", "externalSubject", "issuer", true).ConfigureAwait(false);
 
             // ASSERT
             _profileRepositoryStub.Verify(p => p.Remove(It.Is<IEnumerable<string>>(r => r.Contains("externalSubject"))));

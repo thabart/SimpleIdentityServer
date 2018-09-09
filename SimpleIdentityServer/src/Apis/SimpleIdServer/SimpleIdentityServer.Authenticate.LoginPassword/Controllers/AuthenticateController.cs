@@ -67,14 +67,14 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var authenticatedUser = await SetUser();
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser == null ||
                 authenticatedUser.Identity == null ||
                 !authenticatedUser.Identity.IsAuthenticated)
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
-                await SetIdProviders(viewModel);
+                await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View(viewModel);
             }
 
@@ -84,7 +84,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
         [HttpPost]
         public async Task<ActionResult> LocalLogin(LocalAuthenticationViewModel authorizeViewModel)
         {
-            var authenticatedUser = await SetUser();
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
             if (authenticatedUser != null &&
                 authenticatedUser.Identity != null &&
                 authenticatedUser.Identity.IsAuthenticated)
@@ -99,15 +99,15 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
 
             if (!ModelState.IsValid)
             {
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 var viewModel = new AuthorizeViewModel();
-                await SetIdProviders(viewModel);
+                await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View("Index", viewModel);
             }
 
             try
             {
-                var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(authorizeViewModel.Login, authorizeViewModel.Password, new[] { Constants.AMR });
+                var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(authorizeViewModel.Login, authorizeViewModel.Password, new[] { Constants.AMR }).ConfigureAwait(false);
                 var claims = resourceOwner.Claims;
                 claims.Add(new Claim(ClaimTypes.AuthenticationInstant,
                     DateTimeOffset.UtcNow.ConvertToUnixTimestamp().ToString(CultureInfo.InvariantCulture),
@@ -115,17 +115,17 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 var subject = claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
                 if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
                 {
-                    await SetLocalCookie(claims, Guid.NewGuid().ToString());
+                    await SetLocalCookie(claims, Guid.NewGuid().ToString()).ConfigureAwait(false);
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
                     return RedirectToAction("Index", "User", new { area = "UserManagement" });
                 }
 
                 // 2.1 Store temporary information in cookie
-                await SetTwoFactorCookie(claims);
+                await SetTwoFactorCookie(claims).ConfigureAwait(false);
                 // 2.2. Send confirmation code
                 try
                 {
-                    var code = await _authenticateActions.GenerateAndSendCode(subject);
+                    var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
                     _simpleIdentityServerEventSource.GetConfirmationCode(code);
                     return RedirectToAction("SendCode");
                 }
@@ -141,10 +141,10 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
             catch (Exception exception)
             {
                 _simpleIdentityServerEventSource.Failure(exception.Message);
-                await TranslateView(DefaultLanguage);
+                await TranslateView(DefaultLanguage).ConfigureAwait(false);
                 ModelState.AddModelError("invalid_credentials", exception.Message);
                 var viewModel = new AuthorizeViewModel();
-                await SetIdProviders(viewModel);
+                await SetIdProviders(viewModel).ConfigureAwait(false);
                 return View("Index", viewModel);
             }
         }
@@ -162,7 +162,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 throw new ArgumentNullException(nameof(viewModel.Code));
             }
 
-            await SetUser();
+            await SetUser().ConfigureAwait(false);
             var uiLocales = DefaultLanguage;
             try
             {
@@ -175,8 +175,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 // 3. Check the state of the view model
                 if (!ModelState.IsValid)
                 {
-                    await TranslateView(uiLocales);
-                    await SetIdProviders(viewModel);
+                    await TranslateView(uiLocales).ConfigureAwait(false);
+                    await SetIdProviders(viewModel).ConfigureAwait(false);
                     return View("OpenId", viewModel);
                 }
 
@@ -187,7 +187,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                         Password = viewModel.Password
                     },
                     request.ToParameter(),
-                    viewModel.Code);
+                    viewModel.Code).ConfigureAwait(false);
                 var subject = actionResult.Claims.First(c => c.Type == Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject).Value;
 
                 // 5. Two factor authentication.
@@ -195,8 +195,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 {
 					try
 					{
-						await SetTwoFactorCookie(actionResult.Claims);
-						var code = await _authenticateActions.GenerateAndSendCode(subject);
+						await SetTwoFactorCookie(actionResult.Claims).ConfigureAwait(false);
+						var code = await _authenticateActions.GenerateAndSendCode(subject).ConfigureAwait(false);
 						_simpleIdentityServerEventSource.GetConfirmationCode(code);
 						return RedirectToAction("SendCode", new { code = viewModel.Code });
 					}
@@ -212,7 +212,7 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 else
                 {
                     // 6. Authenticate the user by adding a cookie
-                    await SetLocalCookie(actionResult.Claims, request.SessionId);
+                    await SetLocalCookie(actionResult.Claims, request.SessionId).ConfigureAwait(false);
                     _simpleIdentityServerEventSource.AuthenticateResourceOwner(subject);
 
                     // 7. Redirect the user agent
@@ -231,8 +231,8 @@ namespace SimpleIdentityServer.Authenticate.LoginPassword.Controllers
                 ModelState.AddModelError("invalid_credentials", ex.Message);
             }
 
-            await TranslateView(uiLocales);
-            await SetIdProviders(viewModel);
+            await TranslateView(uiLocales).ConfigureAwait(false);
+            await SetIdProviders(viewModel).ConfigureAwait(false);
             return View("OpenId", viewModel);
         }
     }

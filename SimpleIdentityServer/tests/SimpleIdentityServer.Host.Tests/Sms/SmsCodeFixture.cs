@@ -12,6 +12,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Authenticate.SMS.Common.Requests;
+
     public class SmsCodeFixture : IClassFixture<TestOauthServerFixture>
     {
         private Mock<IHttpClientFactory> _httpClientFactoryStub;
@@ -32,10 +34,10 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT : NO PHONE NUMBER
-            var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var noPhoneNumberResult = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = string.Empty
-            });
+            }).ConfigureAwait(false);
             // ACT : TWILIO NO CONFIGURED
             ConfirmationCode confirmationCode = new ConfirmationCode();
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
@@ -54,10 +56,10 @@ namespace SimpleIdentityServer.Host.Tests
                 {
                     throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, "the twilio account is not properly configured");
                 });
-            var twilioNotConfigured = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var twilioNotConfigured = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
             // ACT : NO CONFIRMATION CODE
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
             {
@@ -72,10 +74,10 @@ namespace SimpleIdentityServer.Host.Tests
             });
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { }).Returns(Task.FromResult(true));
-            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var cannotInsertConfirmationCode = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
             // ACT : UNHANDLED EXCEPTION
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
             {
@@ -88,10 +90,10 @@ namespace SimpleIdentityServer.Host.Tests
             {
                 return Task.FromResult(false);
             });
-            var unhandledException = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var unhandledException = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
             // ACT : HAPPY PATH
             _server.SharedCtx.ConfirmationCodeStore.Setup(c => c.Get(It.IsAny<string>())).Returns(() =>
             {
@@ -106,10 +108,10 @@ namespace SimpleIdentityServer.Host.Tests
             });
             _server.SharedCtx.TwilioClient.Setup(h => h.SendMessage(It.IsAny<TwilioSmsCredentials>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(() => { }).Returns(Task.FromResult(true));
-            var happyPath = await _sidSmsAuthenticateClient.Send(baseUrl, new Authenticate.SMS.Common.Requests.ConfirmationCodeRequest
+            var happyPath = await _sidSmsAuthenticateClient.Send(baseUrl, new ConfirmationCodeRequest
             {
                 PhoneNumber = "phone"
-            });
+            }).ConfigureAwait(false);
 
 
             // ASSERT : NO PHONE NUMBER

@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, policyId),
-                () => _policyRepository.Get(policyId));
+                () => _policyRepository.Get(policyId)).ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -62,7 +62,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeUpdated, policyId),
-                () => _policyRepository.Delete(policyId));
+                () => _policyRepository.Delete(policyId)).ConfigureAwait(false);
             _umaServerEventSource.FinishToRemoveAuthorizationPolicy(policyId);
             return true;
         }

@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
                 RequestUri = new Uri(url)
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
-            var httpResult = await httpClient.SendAsync(httpRequest);
+            var httpResult = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {

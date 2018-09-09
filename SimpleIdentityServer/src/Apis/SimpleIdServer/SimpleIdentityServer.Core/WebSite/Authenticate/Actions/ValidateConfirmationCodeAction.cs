@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(code);
+            var confirmationCode = await _confirmationCodeStore.Get(code).ConfigureAwait(false);
             if (confirmationCode == null)
             {
                 return false;

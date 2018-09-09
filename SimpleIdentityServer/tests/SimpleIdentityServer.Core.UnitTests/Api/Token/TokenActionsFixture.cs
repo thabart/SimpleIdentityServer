@@ -40,7 +40,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null);
+            await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(parameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartGetTokenByResourceOwnerCredentials(clientId, userName, password));
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByAuthorizationCodeGrantType(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -110,7 +110,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null);
+            await _tokenActions.GetTokenByAuthorizationCodeGrantType(parameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartGetTokenByAuthorizationCode(clientId, code));
@@ -124,7 +124,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByRefreshTokenGrantType(null, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null);
+            await _tokenActions.GetTokenByRefreshTokenGrantType(parameter, null, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartGetTokenByRefreshToken(refreshToken));
@@ -163,7 +163,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.GetTokenByClientCredentialsGrantType(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null);
+            var result = await _tokenActions.GetTokenByClientCredentialsGrantType(parameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.StartGetTokenByClientCredentials(scope));
@@ -201,7 +201,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenActions.RevokeToken(null, null)).ConfigureAwait(false);
         }
 
         [Fact]

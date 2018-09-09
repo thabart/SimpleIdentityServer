@@ -43,8 +43,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -55,8 +55,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var localAuthenticationParameter = new LocalAuthenticationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateActions.LocalOpenIdUserAuthentication(localAuthenticationParameter, null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var claimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null);
+            await _authenticateActions.AuthenticateResourceOwnerOpenId(authorizationParameter, claimsPrincipal, null).ConfigureAwait(false);
 
             // ASSERT
             _authenticateResourceOwnerActionFake.Verify(a => a.Execute(authorizationParameter, claimsPrincipal, null));
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
 
             // ACT
-            await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null);
+            await _authenticateActions.LocalOpenIdUserAuthentication(localUserAuthentication, authorizationParameter, null).ConfigureAwait(false);
 
             // ASSERT
             _localOpenIdUserAuthenticationActionFake.Verify(a => a.Execute(localUserAuthentication, 

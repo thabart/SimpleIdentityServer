@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var resourceIds = validTicket.Lines.Select(l => l.ResourceSetId);
-            var resources = await _resourceSetRepository.Get(resourceIds);
+            var resources = await _resourceSetRepository.Get(resourceIds).ConfigureAwait(false);
             if (resources == null || !resources.Any() || resources.Count() != resourceIds.Count())
             {
                 throw new BaseUmaException(ErrorCodes.InternalError, ErrorDescriptions.SomeResourcesDontExist);
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             {
                 var ticketLineParameter = new TicketLineParameter(clientId, ticketLine.Scopes, validTicket.IsAuthorizedByRo);
                 var resource = resources.First(r => r.Id == ticketLine.ResourceSetId);
-                validationResult = await Validate(ticketLineParameter, resource, claimTokenParameter);
+                validationResult = await Validate(ticketLineParameter, resource, claimTokenParameter).ConfigureAwait(false);
                 if (validationResult.Type != AuthorizationPolicyResultEnum.Authorized)
                 {
                     _umaServerEventSource.AuthorizationPoliciesFailed(validTicket.Id);
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             
             foreach (var authorizationPolicy in resource.Policies)
             {
-                var result = await _basicAuthorizationPolicy.Execute(ticketLineParameter, authorizationPolicy, claimTokenParameter);
+                var result = await _basicAuthorizationPolicy.Execute(ticketLineParameter, authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
                 if (result.Type == AuthorizationPolicyResultEnum.Authorized)
                 {
                     return result;

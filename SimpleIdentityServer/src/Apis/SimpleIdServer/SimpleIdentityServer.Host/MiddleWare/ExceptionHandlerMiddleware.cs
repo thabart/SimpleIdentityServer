@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     context.Response.ContentType = "application/json";
                     var serializedError = errorResponseWithState.SerializeWithDataContract();
-                    await context.Response.WriteAsync(serializedError);
+                    await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace SimpleIdentityServer.Host.MiddleWare
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     context.Response.ContentType = "application/json";
                     var serializedError = error.SerializeWithDataContract();
-                    await context.Response.WriteAsync(serializedError);
+                    await context.Response.WriteAsync(serializedError).ConfigureAwait(false);
                 }
             }
         }

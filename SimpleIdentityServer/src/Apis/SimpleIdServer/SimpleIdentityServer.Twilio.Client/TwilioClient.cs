@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Twilio.Client
             }
             catch(Exception)
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 throw new TwilioException(json);
             }
 

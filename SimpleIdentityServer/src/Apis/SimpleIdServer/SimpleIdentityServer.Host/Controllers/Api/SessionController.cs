@@ -35,16 +35,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.CheckSession.html", (html) =>
             {
                 return html.Replace("{cookieName}", Core.Constants.SESSION_ID);
-            });
+            }).ConfigureAwait(false);
         }
 
         [HttpGet(Constants.EndPoints.EndSession)]
         public async Task RevokeSession()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
+                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html").ConfigureAwait(false);
                 return;
             }
 
@@ -57,16 +57,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.RevokeSession.html", (html) =>
             {
                 return html.Replace("{endSessionCallbackUrl}", url);
-            });
+            }).ConfigureAwait(false);
         }
 
         [HttpGet(Constants.EndPoints.EndSessionCallback)]
         public async Task RevokeSessionCallback()
         {
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName).ConfigureAwait(false);
             if (authenticatedUser == null || !authenticatedUser.Identity.IsAuthenticated)
             {
-                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html");
+                await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.UserNotConnected.html").ConfigureAwait(false);
                 return;
             }
 
@@ -79,16 +79,16 @@ namespace SimpleIdentityServer.Host.Controllers.Api
             }
             
             Response.Cookies.Delete(Core.Constants.SESSION_ID);
-            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new Microsoft.AspNetCore.Authentication.AuthenticationProperties());
+            await _authenticationService.SignOutAsync(HttpContext, _authenticateOptions.CookieName, new AuthenticationProperties()).ConfigureAwait(false);
             if (request != null && !string.IsNullOrWhiteSpace(request.PostLogoutRedirectUri) && !string.IsNullOrWhiteSpace(request.IdTokenHint))
             {
-                var jws = await _jwtParser.UnSignAsync(request.IdTokenHint);
+                var jws = await _jwtParser.UnSignAsync(request.IdTokenHint).ConfigureAwait(false);
                 if (jws != null)
                 {
                     var claim = jws.FirstOrDefault(c => c.Key == StandardClaimNames.Azp);
                     if (!claim.Equals(default(KeyValuePair<string, object>)) && claim.Value != null)
                     {
-                        var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString());
+                        var client = await _clientRepository.GetClientByIdAsync(claim.Value.ToString()).ConfigureAwait(false);
                         if (client != null)
                         {
                             if (client.PostLogoutRedirectUris != null && client.PostLogoutRedirectUris.Contains(request.PostLogoutRedirectUri))
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Host.Controllers.Api
                 }
             }
 
-            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.RevokeSessionCallback.html");
+            await this.DisplayInternalHtml("SimpleIdentityServer.Host.Views.RevokeSessionCallback.html").ConfigureAwait(false);
         }
     }
 }

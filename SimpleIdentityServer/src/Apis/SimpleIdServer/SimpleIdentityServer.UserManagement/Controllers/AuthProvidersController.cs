@@ -19,7 +19,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var schemes = (await _authenticationSchemeProvider.GetAllSchemesAsync()).Where(p => !string.IsNullOrWhiteSpace(p.DisplayName));
+            var schemes = (await _authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false)).Where(p => !string.IsNullOrWhiteSpace(p.DisplayName));
             var result = schemes.ToDtos();
             return new OkObjectResult(result);
         }

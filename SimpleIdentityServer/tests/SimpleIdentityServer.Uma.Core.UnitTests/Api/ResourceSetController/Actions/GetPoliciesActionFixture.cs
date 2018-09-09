@@ -38,8 +38,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getPoliciesAction.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(policies));
 
             // ACT
-            var result = await _getPoliciesAction.Execute("resource_id");
+            var result = await _getPoliciesAction.Execute("resource_id").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

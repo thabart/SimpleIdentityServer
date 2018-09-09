@@ -6,6 +6,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
 {
+    using Common.DTOs.Requests;
+
     public class AdConfigurationClientFixture : IClassFixture<TestAdMappingServerFixture>
     {
         private readonly TestAdMappingServerFixture _testAdMappingServerFixture;
@@ -29,7 +31,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -46,7 +48,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "invalidip" }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "invalidip" }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -63,7 +65,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1" }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1" }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -80,7 +82,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000 }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000 }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -97,7 +99,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username" }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username" }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -114,7 +116,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
 
             // ACT
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass" }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = true, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass" }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -135,10 +137,10 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Client.Tests
             // ARRANGE
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testAdMappingServerFixture.Client);
-            var result = await _adConfigurationClient.UpdateConfiguration(new Common.DTOs.Requests.UpdateAdConfigurationRequest { IsEnabled = false, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass", DistinguishedName = "dn" }, "http://localhost:5000", null);
+            var result = await _adConfigurationClient.UpdateConfiguration(new UpdateAdConfigurationRequest { IsEnabled = false, IpAdr = "127.0.0.1", Port = 1000, Username = "username", Password = "pass", DistinguishedName = "dn" }, "http://localhost:5000", null).ConfigureAwait(false);
 
             // ACT
-            var getResult = await _adConfigurationClient.GetConfiguration("http://localhost:5000", null);
+            var getResult = await _adConfigurationClient.GetConfiguration("http://localhost:5000", null).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

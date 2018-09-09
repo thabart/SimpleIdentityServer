@@ -18,7 +18,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            await SetUser();
+            await SetUser().ConfigureAwait(false);
             return View();
         }
 

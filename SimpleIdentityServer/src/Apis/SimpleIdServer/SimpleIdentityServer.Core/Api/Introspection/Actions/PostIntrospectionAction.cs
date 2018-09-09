@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
             // 2. Authenticate the client
             var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             if (authResult.Client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
@@ -93,18 +93,18 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             GrantedToken grantedToken = null;
             if (tokenTypeHint == Constants.StandardTokenTypeHintNames.AccessToken)
             {
-                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token);
+                grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token);
+                    grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
                 }
             }
             else
             {
-                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token);
+                grantedToken = await _tokenStore.GetRefreshToken(introspectionParameter.Token).ConfigureAwait(false);
                 if (grantedToken == null)
                 {
-                    grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token);
+                    grantedToken = await _tokenStore.GetAccessToken(introspectionParameter.Token).ConfigureAwait(false);
                 }
             }
 

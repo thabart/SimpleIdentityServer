@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Uma.Store.InMemory
 
             foreach (var ticket in tickets)
             {
-                if (!await AddAsync(ticket))
+                if (!await AddAsync(ticket).ConfigureAwait(false))
                 {
                     return false;
                 }

@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 return BuildMissingParameter(nameof(subject));
             }
 
-            var profiles = await _profileActions.GetProfiles(subject);
+            var profiles = await _profileActions.GetProfiles(subject).ConfigureAwait(false);
             return new OkObjectResult(profiles.Select(p => p.ToDto()));
         }
 
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 return BuildMissingParameter(nameof(linkProfileRequest));
             }
 
-            await _profileActions.Link(subject, linkProfileRequest.UserId, linkProfileRequest.Issuer, linkProfileRequest.Force);
+            await _profileActions.Link(subject, linkProfileRequest.UserId, linkProfileRequest.Issuer, linkProfileRequest.Force).ConfigureAwait(false);
             return new NoContentResult();
         }
         
@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.UserManagement.Controllers
                 return BuildMissingParameter(nameof(externalId));
             }
 
-            await _profileActions.Unlink(subject, externalId);
+            await _profileActions.Unlink(subject, externalId).ConfigureAwait(false);
             return new NoContentResult();
         }
 

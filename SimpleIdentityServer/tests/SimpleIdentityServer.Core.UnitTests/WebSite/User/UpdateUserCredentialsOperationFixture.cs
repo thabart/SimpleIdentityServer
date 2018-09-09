@@ -37,8 +37,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute("subject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserCredentialsOperation.Execute("subject", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserCredentialsOperation.Execute("subject", "password"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserCredentialsOperation.Execute("subject", "password")).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _updateUserCredentialsOperation.Execute("subject", "password");
+            await _updateUserCredentialsOperation.Execute("subject", "password").ConfigureAwait(false);
 
             // ASSERTS
             _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));

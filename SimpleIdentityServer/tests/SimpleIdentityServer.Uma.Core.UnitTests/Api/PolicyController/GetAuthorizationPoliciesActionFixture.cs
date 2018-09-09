@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(policies));
 
             // ACT
-            var result = await _getAuthorizationPoliciesAction.Execute();
+            var result = await _getAuthorizationPoliciesAction.Execute().ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

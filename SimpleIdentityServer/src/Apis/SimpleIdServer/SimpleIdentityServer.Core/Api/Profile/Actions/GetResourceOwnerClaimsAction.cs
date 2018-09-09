@@ -28,13 +28,13 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new ArgumentNullException(nameof(externalSubject));
             }
 
-            var profile = await _profileRepository.Get(externalSubject);
+            var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile == null)
             {
                 return null;
             }
 
-            return await _resourceOwnerRepository.GetAsync(profile.ResourceOwnerId);
+            return await _resourceOwnerRepository.GetAsync(profile.ResourceOwnerId).ConfigureAwait(false);
         }
     }
 }

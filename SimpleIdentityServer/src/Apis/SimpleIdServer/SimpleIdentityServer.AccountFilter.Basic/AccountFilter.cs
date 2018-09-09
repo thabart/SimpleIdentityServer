@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic
             }
 
             var accountFilterRules = new List<AccountFilterRuleResult>();
-            var filters = await _filterRepository.GetAll();
+            var filters = await _filterRepository.GetAll().ConfigureAwait(false);
             if (filters != null)
             {
                 foreach(var filter in filters)

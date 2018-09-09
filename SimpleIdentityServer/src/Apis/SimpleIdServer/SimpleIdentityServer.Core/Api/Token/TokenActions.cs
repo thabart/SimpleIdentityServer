@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                     resourceOwnerGrantTypeParameter.Password);
                 _resourceOwnerGrantTypeParameterValidator.Validate(resourceOwnerGrantTypeParameter);
                 var result = await _getTokenByResourceOwnerCredentialsGrantType.Execute(resourceOwnerGrantTypeParameter,
-                    authenticationHeaderValue, certificate);
+                    authenticationHeaderValue, certificate).ConfigureAwait(false);
                 var accessToken = result != null ? result.AccessToken : string.Empty;
                 var identityToken = result != null ? result.IdToken : string.Empty;
                 _oauthEventSource.EndGetTokenByResourceOwnerCredentials(accessToken, identityToken);
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                     authorizationCodeGrantTypeParameter.ClientId,
                     authorizationCodeGrantTypeParameter.Code);
                 _authorizationCodeGrantTypeParameterTokenEdpValidator.Validate(authorizationCodeGrantTypeParameter);
-                var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByAuthorizationCodeGrantTypeAction.Execute(authorizationCodeGrantTypeParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByAuthorizationCode(
                     result.AccessToken,
                     result.IdToken);
@@ -158,7 +158,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _eventPublisher.Publish(new GrantTokenViaRefreshTokenReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(refreshTokenGrantTypeParameter), 0));
                 _oauthEventSource.StartGetTokenByRefreshToken(refreshTokenGrantTypeParameter.RefreshToken);
                 _refreshTokenGrantTypeParameterValidator.Validate(refreshTokenGrantTypeParameter);
-                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByRefreshTokenGrantTypeAction.Execute(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByRefreshToken(result.AccessToken, result.IdToken);
                 _eventPublisher.Publish(new TokenGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
@@ -186,7 +186,7 @@ namespace SimpleIdentityServer.Core.Api.Token
                 _eventPublisher.Publish(new GrantTokenViaClientCredentialsReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(clientCredentialsGrantTypeParameter, authenticationHeaderValue), authenticationHeaderValue, 0));
                 _oauthEventSource.StartGetTokenByClientCredentials(clientCredentialsGrantTypeParameter.Scope);
                 _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
-                var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
+                var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                 _oauthEventSource.EndGetTokenByClientCredentials(
                     result.ClientId,
                     clientCredentialsGrantTypeParameter.Scope);

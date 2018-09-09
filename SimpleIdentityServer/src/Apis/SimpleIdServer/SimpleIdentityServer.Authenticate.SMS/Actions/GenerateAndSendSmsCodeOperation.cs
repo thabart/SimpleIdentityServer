@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Value = await GetCode(),
+                Value = await GetCode().ConfigureAwait(false),
                 IssueAt = DateTime.UtcNow,
                 ExpiresIn = 300,
                 Subject = phoneNumber
@@ -47,7 +47,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
             var message = string.Format(_smsAuthenticationOptions.Message, confirmationCode.Value);
             try
             {
-                await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message);
+                await _twilioClient.SendMessage(_smsAuthenticationOptions.TwilioSmsCredentials, phoneNumber, message).ConfigureAwait(false);
             }
             catch(Exception ex)
             {
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, "the twilio account is not properly configured");
             }
 
-            if (!await _confirmationCodeStore.Add(confirmationCode))
+            if (!await _confirmationCodeStore.Add(confirmationCode).ConfigureAwait(false))
             {
                 throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
             }
@@ -68,9 +68,9 @@ namespace SimpleIdentityServer.Authenticate.SMS.Actions
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeStore.Get(number.ToString()) != null)
+            if (await _confirmationCodeStore.Get(number.ToString()).ConfigureAwait(false) != null)
             {
-                return await GetCode();
+                return await GetCode().ConfigureAwait(false);
             }
 
             return number.ToString();

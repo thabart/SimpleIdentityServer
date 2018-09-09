@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
                 return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
             
-            var result = await _registerActions.PostRegistration(client.ToParameter());
+            var result = await _registerActions.PostRegistration(client.ToParameter()).ConfigureAwait(false);
             return new OkObjectResult(result);
         }
 

@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             IntializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _deleteAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(() => Task.FromResult((Policy)null));
 
             // ACT
-            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId);
+            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             // ASSERT
             Assert.False(isUpdated);
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(policy));
 
             // ACT
-            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId);
+            var isUpdated = await _deleteAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             // ASSERT
             Assert.True(isUpdated);

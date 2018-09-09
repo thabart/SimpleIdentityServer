@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.EF.Repositories
         public async Task<ClaimAggregate> GetAsync(string name)
         {
             var result = await _context.Claims.FirstOrDefaultAsync(c => c.Code == name).ConfigureAwait(false);
-            return result == null ? null : result.ToDomain();
+            return result?.ToDomain();
         }
 
         public async Task<bool> InsertAsync(AddClaimParameter claim)

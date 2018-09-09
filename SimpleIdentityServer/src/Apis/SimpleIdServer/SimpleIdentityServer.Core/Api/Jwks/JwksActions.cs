@@ -49,8 +49,8 @@ namespace SimpleIdentityServer.Core.Api.Jwks
 
         public async Task<JsonWebKeySet> GetJwks()
         {
-            var publicKeysUsedToValidateSignature = await _getSetOfPublicKeysUsedToValidateJwsAction.Execute();
-            var publicKeysUsedForClientEncryption = await _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute();
+            var publicKeysUsedToValidateSignature = await _getSetOfPublicKeysUsedToValidateJwsAction.Execute().ConfigureAwait(false);
+            var publicKeysUsedForClientEncryption = await _getSetOfPublicKeysUsedByTheClientToEncryptJwsTokenAction.Execute().ConfigureAwait(false);
             var result = new JsonWebKeySet
             {
                 Keys = new List<Dictionary<string, object>>()
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks
 
         public async Task<bool> RotateJwks()
         {
-            return await _rotateJsonWebKeysOperation.Execute();
+            return await _rotateJsonWebKeysOperation.Execute().ConfigureAwait(false);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getUserOperation.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getUserOperation.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var emptyClaimsPrincipal = new ClaimsPrincipal();
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(emptyClaimsPrincipal)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             // ACT
-            var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal));
+            var exception = await  Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal)).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);

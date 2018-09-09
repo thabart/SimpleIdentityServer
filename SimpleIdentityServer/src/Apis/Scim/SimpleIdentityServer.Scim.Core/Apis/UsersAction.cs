@@ -26,6 +26,8 @@ using Newtonsoft.Json;
 
 namespace SimpleIdentityServer.Scim.Core.Apis
 {
+    using Common;
+
     public interface IUsersAction
     {
         Task<ApiActionResult> AddUser(JObject jObj, string locationPattern);
@@ -74,7 +76,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new AddUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Common.Constants.SchemaUrns.User, Common.Constants.ResourceTypes.User);
+                var result = await _addRepresentationAction.Execute(jObj, locationPattern, Constants.SchemaUrns.User, Constants.ResourceTypes.User).ConfigureAwait(false);
                 _eventPublisher.Publish(new AddUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -91,7 +93,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new UpdateUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _updateRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern, Common.Constants.ResourceTypes.User);
+                var result = await _updateRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern, Constants.ResourceTypes.User).ConfigureAwait(false);
                 _eventPublisher.Publish(new UpdateUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -108,7 +110,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             try
             {
                 _eventPublisher.Publish(new PatchUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _patchRepresentationAction.Execute(id, jObj, Common.Constants.SchemaUrns.User, locationPattern);
+                var result = await _patchRepresentationAction.Execute(id, jObj, Constants.SchemaUrns.User, locationPattern).ConfigureAwait(false);
                 _eventPublisher.Publish(new PatchUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }
@@ -127,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
                 var jObj = new JObject();
                 jObj.Add("id", id);
                 _eventPublisher.Publish(new RemoveUserReceived(Guid.NewGuid().ToString(), processId, jObj.ToString(), 0));
-                var result = await _deleteRepresentationAction.Execute(id);
+                var result = await _deleteRepresentationAction.Execute(id).ConfigureAwait(false);
                 _eventPublisher.Publish(new RemoveUserFinished(Guid.NewGuid().ToString(), processId, JsonConvert.SerializeObject(result).ToString(), 1));
                 return result;
             }

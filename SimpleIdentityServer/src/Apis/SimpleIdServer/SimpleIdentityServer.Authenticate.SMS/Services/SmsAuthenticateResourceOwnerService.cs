@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var confirmationCode = await _confirmationCodeStore.Get(password);
+            var confirmationCode = await _confirmationCodeStore.Get(password).ConfigureAwait(false);
             if (confirmationCode == null || confirmationCode.Subject != login)
             {
                 return null;
@@ -49,10 +49,10 @@ namespace SimpleIdentityServer.Authenticate.SMS.Services
                 return null;
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login);
+            var resourceOwner = await _resourceOwnerRepository.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login).ConfigureAwait(false);
             if (resourceOwner != null)
             {
-                await _confirmationCodeStore.Remove(password);
+                await _confirmationCodeStore.Remove(password).ConfigureAwait(false);
             }
 
             return resourceOwner;

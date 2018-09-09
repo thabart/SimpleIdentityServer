@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Host.Tests.Services
                 throw new ArgumentNullException(nameof(password));
             }
 
-            return await _resourceOwnerRepository.GetAsync(login, GetHashedPassword(password));
+            return await _resourceOwnerRepository.GetAsync(login, GetHashedPassword(password)).ConfigureAwait(false);
         }
 
         public string GetHashedPassword(string password)

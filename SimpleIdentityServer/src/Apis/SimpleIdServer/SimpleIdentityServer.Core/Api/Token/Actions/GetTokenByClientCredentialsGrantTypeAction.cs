@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             // 1. Authenticate the client
             var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction).ConfigureAwait(false);
             var client = authResult.Client;
             if (client == null)
             {
@@ -129,11 +129,11 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 4. Generate the JWT access token on the fly.
-            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
+            var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId).ConfigureAwait(false);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes);
-                await _tokenStore.AddToken(grantedToken);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes).ConfigureAwait(false);
+                await _tokenStore.AddToken(grantedToken).ConfigureAwait(false);
                 _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 

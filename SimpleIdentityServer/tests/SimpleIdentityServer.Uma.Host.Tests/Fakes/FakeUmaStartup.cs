@@ -134,7 +134,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests.Fakes
                     new Claim("client_id", "resource_server")
                 }, "fakests");
                 context.User = new ClaimsPrincipal(claimsIdentity);
-                await next.Invoke();
+                await next.Invoke().ConfigureAwait(false);
             });
 
             // 3. Enable CORS

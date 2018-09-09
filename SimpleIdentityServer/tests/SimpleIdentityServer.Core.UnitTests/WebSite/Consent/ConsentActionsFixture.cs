@@ -23,9 +23,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _consentActions.DisplayConsent(null, null));
+                () => _consentActions.DisplayConsent(null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _consentActions.DisplayConsent(authorizationParameter, null));
+                () => _consentActions.DisplayConsent(authorizationParameter, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -37,9 +37,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
 
             // ACT & ASSERT
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _consentActions.ConfirmConsent(null, null));
+                () => _consentActions.ConfirmConsent(null, null)).ConfigureAwait(false);
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => _consentActions.ConfirmConsent(authorizationParameter, null));
+                () => _consentActions.ConfirmConsent(authorizationParameter, null)).ConfigureAwait(false);
         }
 
         private void InitializeFakeObjects()

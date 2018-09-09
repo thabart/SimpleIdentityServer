@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code);
+                code).ConfigureAwait(false);
         }
 
         public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code)
@@ -89,22 +89,22 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 
             return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
                 claimsPrincipal, 
-                code);
+                code).ConfigureAwait(false);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)
         {
-            return await _generateAndSendCodeAction.ExecuteAsync(subject);
+            return await _generateAndSendCodeAction.ExecuteAsync(subject).ConfigureAwait(false);
         }
 
         public async Task<bool> ValidateCode(string code)
         {
-            return await _validateConfirmationCodeAction.Execute(code);
+            return await _validateConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
 
         public async Task<bool> RemoveCode(string code)
         {
-            return await _removeConfirmationCodeAction.Execute(code);
+            return await _removeConfirmationCodeAction.Execute(code).ConfigureAwait(false);
         }
     }
 }

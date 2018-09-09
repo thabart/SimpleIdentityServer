@@ -67,7 +67,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientRepository.GetClientByIdAsync(clientId);
+                client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             }
 
             if (client == null)
@@ -103,9 +103,9 @@ namespace SimpleIdentityServer.Core.Authenticate
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
                     client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)

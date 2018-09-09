@@ -20,14 +20,14 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(authorizationCode));
             }
 
-            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(authorizationCode.Code);
+            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(authorizationCode.Code).ConfigureAwait(false);
             if (authCode != null)
             {
                 return false;
             }
 
             // TH : Externalize the date.
-            await _storage.SetAsync(authorizationCode.Code, authorizationCode, 3600);
+            await _storage.SetAsync(authorizationCode.Code, authorizationCode, 3600).ConfigureAwait(false);
             return true;
         }
 
@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(code);
+            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(code).ConfigureAwait(false);
             if (authCode == null)
             {
                 return null;
@@ -54,13 +54,13 @@ namespace SimpleIdentityServer.Store.Redis
                 throw new ArgumentNullException(code);
             }
             
-            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(code);
+            var authCode = await _storage.TryGetValueAsync<AuthorizationCode>(code).ConfigureAwait(false);
             if (authCode == null)
             {
                 return false;
             }
 
-            await _storage.RemoveAsync(code);
+            await _storage.RemoveAsync(code).ConfigureAwait(false);
             return true;
         }
     }

@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 2. Check representation exists.
-            var representation = await _representationStore.GetRepresentation(identifier);
+            var representation = await _representationStore.GetRepresentation(identifier).ConfigureAwait(false);
             if (representation == null)
             {
                 return _apiResponseFactory.CreateError(
@@ -90,7 +90,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Parse the result and returns the representation.
-            var result = await _responseParser.Parse(representation, locationPattern.Replace("{id}", representation.Id), schemaId, OperationTypes.Query);
+            var result = await _responseParser.Parse(representation, locationPattern.Replace("{id}", representation.Id), schemaId, OperationTypes.Query).ConfigureAwait(false);
             
             return _apiResponseFactory.CreateResultWithContent(HttpStatusCode.OK, result.Object, result.Location, representation.Version, representation.Id);
         }

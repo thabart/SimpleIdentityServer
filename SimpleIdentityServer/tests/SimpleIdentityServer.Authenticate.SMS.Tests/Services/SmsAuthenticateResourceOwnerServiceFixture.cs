@@ -23,8 +23,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>())).Returns(() => Task.FromResult((ConfirmationCode)null));
 
             // ACT
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", "password");
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", "password").ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             }));
 
             // ACT
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", "password");
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync("login", "password").ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -72,7 +72,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             }));
 
             // ACT
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password");
+            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password").ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Services
             _resourceOwnerRepositoryStub.Setup(r => r.GetResourceOwnerByClaim(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password");
+            await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(login, "password").ConfigureAwait(false);
 
             // ASSERT
             _resourceOwnerRepositoryStub.Verify(r => r.GetResourceOwnerByClaim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.PhoneNumber, login));

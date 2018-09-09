@@ -132,19 +132,19 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
             }
 
             client.ClientId = result.ClientId;
-            await _clientRepository.InsertAsync(client);
+            await _clientRepository.InsertAsync(client).ConfigureAwait(false);
             _oauthEventSource.EndRegistration(result.ClientId, client.ClientName);
             return result;
         }
 
         private static string GetDefaultValue(string value)
         {
-            return value == null ? string.Empty : value;
+            return value ?? string.Empty;
         }
 
         private static IEnumerable<string> GetDefaultValues(IEnumerable<string> value)
         {
-            return value == null ? new string[0] : value;
+            return value ?? new string[0];
         }
     }
 }

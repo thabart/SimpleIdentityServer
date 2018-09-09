@@ -89,19 +89,19 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             {
                 case Core.Common.DTOs.Requests.GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter,authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter,authenticationHeaderValue, certificate).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                     break;
                 case Core.Common.DTOs.Requests.GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate).ConfigureAwait(false);
                     break;
             }
 
@@ -147,7 +147,7 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             // 2. Revoke the token
-            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue).ConfigureAwait(false);
             return new OkResult();
         }
 

@@ -96,13 +96,13 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
             }
 
             var parameter = addMappingRequest.ToModel();
-            var mapping = await _mappingStore.GetMapping(addMappingRequest.AttributeId);
+            var mapping = await _mappingStore.GetMapping(addMappingRequest.AttributeId).ConfigureAwait(false);
             if(mapping != null)
             {
                 return GetError(ErrorCodes.InvalidRequest, ErrorDescriptions.MappingAlreadyAssigned, HttpStatusCode.BadRequest);
             }
 
-            if(!await _mappingStore.AddMapping(addMappingRequest.ToModel()))
+            if(!await _mappingStore.AddMapping(addMappingRequest.ToModel()).ConfigureAwait(false))
             {
                 return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotInsertMapping, HttpStatusCode.InternalServerError);
             }
@@ -114,7 +114,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
         [Authorize("scim_manage")]
         public async Task<IActionResult> Get()
         {
-            var adMappings = await _mappingStore.GetAll();
+            var adMappings = await _mappingStore.GetAll().ConfigureAwait(false);
             return new OkObjectResult(adMappings.Select(m => m.ToDto()));
         }
 
@@ -127,7 +127,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
                 return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "id"));
             }
 
-            var result = await _mappingStore.GetMapping(id);
+            var result = await _mappingStore.GetMapping(id).ConfigureAwait(false);
             if(result == null)
             {
                 return GetError(ErrorCodes.InvalidRequest, ErrorDescriptions.MappingDoesntExist, HttpStatusCode.NotFound);
@@ -145,13 +145,13 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Controllers
                 return GetError(ErrorCodes.InvalidRequest, string.Format(ErrorDescriptions.MissingParameter, "id"));
             }
 
-            var result = await _mappingStore.GetMapping(id);
+            var result = await _mappingStore.GetMapping(id).ConfigureAwait(false);
             if (result == null)
             {
                 return GetError(ErrorCodes.InvalidRequest, ErrorDescriptions.MappingDoesntExist, HttpStatusCode.NotFound);
             }
 
-            if(!await _mappingStore.Remove(id))
+            if(!await _mappingStore.Remove(id).ConfigureAwait(false))
             {
                 return GetError(ErrorCodes.InternalError, ErrorDescriptions.CannotDeleteMapping, HttpStatusCode.InternalServerError);
             }

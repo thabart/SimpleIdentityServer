@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload);
+            var token = await _tokenStore.GetToken(scopes, clientId, idTokenJwsPayload, userInfoJwsPayload).ConfigureAwait(false);
             if (token == null)
             {
                 return null;
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Helpers
 
             if (!_grantedTokenValidator.CheckGrantedToken(token).IsValid)
             {
-                await _tokenStore.RemoveAccessToken(token.AccessToken);
+                await _tokenStore.RemoveAccessToken(token.AccessToken).ConfigureAwait(false);
                 return null;
             }
 

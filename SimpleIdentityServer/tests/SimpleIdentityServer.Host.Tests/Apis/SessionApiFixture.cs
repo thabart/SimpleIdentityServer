@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var html = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT

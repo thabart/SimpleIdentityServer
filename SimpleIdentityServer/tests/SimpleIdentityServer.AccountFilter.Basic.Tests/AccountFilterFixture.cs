@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _accountFilter.Check(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _accountFilter.Check(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("keyv", "valv")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("key", "valv")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("key", "val")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -156,7 +156,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("key", "111")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("key", "val")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -236,7 +236,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Tests
             var result = await _accountFilter.Check(new List<Claim>
             {
                 new Claim("key", "val")
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

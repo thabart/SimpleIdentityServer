@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
         
         [Fact]
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(policy));
 
             // ACT
-            var result = await _getAuthorizationPolicyAction.Execute(policyId);
+            var result = await _getAuthorizationPolicyAction.Execute(policyId).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

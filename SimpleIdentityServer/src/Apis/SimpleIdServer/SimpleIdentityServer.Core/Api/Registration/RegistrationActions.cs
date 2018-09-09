@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Core.Api.Registration
             try
             {
                 _eventPublisher.Publish(new RegistrationReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(registrationParameter), 0));
-                var result = await _registerClientAction.Execute(registrationParameter);
+                var result = await _registerClientAction.Execute(registrationParameter).ConfigureAwait(false);
                 _eventPublisher.Publish(new RegistrationResultReceived(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(result), 1));
                 return result;
             }

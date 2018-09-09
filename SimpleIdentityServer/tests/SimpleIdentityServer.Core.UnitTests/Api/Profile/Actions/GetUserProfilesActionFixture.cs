@@ -24,8 +24,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getProfileAction.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
             
             // ACT & ASSERT
-            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject"));
+            var ex = await Assert.ThrowsAsync<IdentityServerException>(() => _getProfileAction.Execute("subject")).ConfigureAwait(false);
             Assert.NotNull(ex);
             Assert.Equal("internal_error", ex.Code);
             Assert.Equal("the resource owner doesn't exist", ex.Message);
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _getProfileAction.Execute(subject);
+            await _getProfileAction.Execute(subject).ConfigureAwait(false);
 
             // ASSERT
             _profileRepositoryStub.Verify(p => p.Search(It.Is<SearchProfileParameter>(r => r.ResourceOwnerIds.Contains(subject))));

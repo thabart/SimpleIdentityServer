@@ -111,13 +111,13 @@ namespace SimpleIdentityServer.Core.Authenticate
             }
 
             var clientId = jwsPayload.Issuer;
-            var payload = await _jwtParser.UnSignAsync(jws, clientId);
+            var payload = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
             if (payload == null)
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect);
             }
 
-            return await ValidateJwsPayLoad(payload);
+            return await ValidateJwsPayLoad(payload).ConfigureAwait(false);
         }
         
         public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret)
@@ -136,7 +136,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             var jwe = instruction.ClientAssertion;
             var clientId = instruction.ClientIdFromHttpRequestBody;
-            var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret);
+            var jws = await _jwtParser.DecryptWithPasswordAsync(jwe, clientId, clientSecret).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(jws))
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheJweTokenCannotBeDecrypted);
@@ -148,19 +148,19 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return new AuthenticationResult(null, ErrorDescriptions.TheClientAssertionIsNotAJwsToken);
             }
 
-            var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId);
+            var jwsPayload = await _jwtParser.UnSignAsync(jws, clientId).ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
             }
 
-            return await ValidateJwsPayLoad(jwsPayload);
+            return await ValidateJwsPayLoad(jwsPayload).ConfigureAwait(false);
         }
         
         private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload)
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
-            var expectedIssuer = await _configurationService.GetIssuerNameAsync();
+            var expectedIssuer = await _configurationService.GetIssuerNameAsync().ConfigureAwait(false);
             var jwsIssuer = jwsPayload.Issuer;
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
@@ -169,7 +169,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {
-                client = await _clientRepository.GetClientByIdAsync(jwsIssuer);
+                client = await _clientRepository.GetClientByIdAsync(jwsIssuer).ConfigureAwait(false);
             }
 
             // 2. Check the client is correct.

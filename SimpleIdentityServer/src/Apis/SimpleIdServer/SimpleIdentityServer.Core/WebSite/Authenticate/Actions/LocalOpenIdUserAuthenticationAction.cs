@@ -96,7 +96,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues);
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
@@ -109,9 +109,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
             return new LocalOpenIdAuthenticationResult
             {
                 ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
-                                code,
-                                resourceOwner.Id,
-                                claims),
+                    code,
+                    resourceOwner.Id,
+                    claims).ConfigureAwait(false),
                 Claims = claims,
                 TwoFactor = resourceOwner.TwoFactorAuthentication
             };

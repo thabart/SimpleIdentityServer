@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Core.Api.Jwks.Actions
         public async Task<List<Dictionary<string, object>>> Execute()
         {
             var result = new List<Dictionary<string, object>>();
-            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync();
+            var jsonWebKeys = await _jsonWebKeyRepository.GetAllAsync().ConfigureAwait(false);
             // Retrieve all the JWK used by the client to encrypt the JWS
             var jsonWebKeysUsedForEncryption =
                 jsonWebKeys.Where(jwk => jwk.Use == Use.Enc && jwk.KeyOps.Contains(KeyOperations.Encrypt));

@@ -56,13 +56,13 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient, ErrorDescriptions.TheClientIdDoesntExist);
             }
 
-            return await GenerateTokenAsync(client, scope, userInformationPayload, idTokenPayload);
+            return await GenerateTokenAsync(client, scope, userInformationPayload, idTokenPayload).ConfigureAwait(false);
         }
 
         public async Task<GrantedToken> GenerateTokenAsync(Core.Common.Models.Client client, string scope, JwsPayload userInformationPayload = null, JwsPayload idTokenPayload = null)
@@ -77,9 +77,9 @@ namespace SimpleIdentityServer.Core.Helpers
                 throw new ArgumentNullException(nameof(scope));
             }
 
-            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync(); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')); // 2. Construct the JWT token (client).
-            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload);
+            var expiresIn = (int) await _configurationService.GetTokenValidityPeriodInSecondsAsync().ConfigureAwait(false); // 1. Retrieve the expiration time of the granted token.
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')).ConfigureAwait(false); // 2. Construct the JWT token (client).
+            var accessToken = await _clientHelper.GenerateIdTokenAsync(client, jwsPayload).ConfigureAwait(false);
             var refreshTokenId = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()); // 3. Construct the refresh token.
             return new GrantedToken
             {

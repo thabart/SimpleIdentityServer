@@ -7,7 +7,7 @@ namespace SimpleBus.Signalr.Hubs
     {
         public async Task BroadCastMessages(string request)
         {
-            await Clients.All.SendAsync("Event", request);
+            await Clients.All.SendAsync("Event", request).ConfigureAwait(false);
         }
     }
 }

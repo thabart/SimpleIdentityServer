@@ -39,13 +39,13 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new ArgumentNullException(nameof(issuer));
             }
 
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(localSubject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);
             }
 
-            var profile = await _profileRepository.Get(externalSubject);
+            var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile != null && profile.ResourceOwnerId != localSubject)
             {
                 if (!force)
@@ -54,10 +54,10 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 }
                 else
                 {
-                    await _profileRepository.Remove(new[] { externalSubject });
+                    await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
                     if (profile.ResourceOwnerId == profile.Subject)
                     {
-                        await _resourceOwnerRepository.DeleteAsync(profile.ResourceOwnerId);
+                        await _resourceOwnerRepository.DeleteAsync(profile.ResourceOwnerId).ConfigureAwait(false);
                     }
 
                     profile = null;
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                     CreateDateTime = DateTime.UtcNow,
                     UpdateTime = DateTime.UtcNow
                 }
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

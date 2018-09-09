@@ -60,7 +60,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(() => Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.Client.ClientId, GrantType.client_credentials));
@@ -140,7 +140,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(client));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.Client.ClientId, ResponseType.token));
@@ -180,7 +180,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 });
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == messageDescription);
@@ -238,7 +238,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 .Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));
@@ -299,7 +299,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Token
                 It.IsAny<JwsPayload>())).Returns(Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null);
+            var result = await _getTokenByClientCredentialsGrantTypeAction.Execute(clientCredentialsGrantTypeParameter, null).ConfigureAwait(false);
 
             // ASSERTS
             _oauthEventSource.Verify(s => s.GrantAccessToClient(clientId, accessToken, scope));

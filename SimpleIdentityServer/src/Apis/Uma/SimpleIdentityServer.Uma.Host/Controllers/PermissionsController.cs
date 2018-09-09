@@ -55,7 +55,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Add(parameter, clientId);
+            var ticketId = await _permissionControllerActions.Add(parameter, clientId).ConfigureAwait(false);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId
@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 return BuildError(ErrorCodes.InvalidRequestCode, "the client_id cannot be extracted", HttpStatusCode.BadRequest);
             }
 
-            var ticketId = await _permissionControllerActions.Add(parameters, clientId);
+            var ticketId = await _permissionControllerActions.Add(parameters, clientId).ConfigureAwait(false);
             var result = new AddPermissionResponse
             {
                 TicketId = ticketId

@@ -44,7 +44,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
                 throw new ArgumentNullException(nameof(jObj));
             }
 
-            var result = await _bulkAction.Execute(jObj, GetLocationPattern());
+            var result = await _bulkAction.Execute(jObj, GetLocationPattern()).ConfigureAwait(false);
             return this.GetActionResult(result);
         }
 

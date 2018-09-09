@@ -20,7 +20,7 @@ namespace WebApiContrib.Core.Storage
 
         public async Task<DatedRecord<T>> GetAsync<T>(string key)
         {
-            return await _storage.TryGetValueAsync<DatedRecord<T>>(key);
+            return await _storage.TryGetValueAsync<DatedRecord<T>>(key).ConfigureAwait(false);
         }
 
         public async Task SetAsync<T>(string key, T obj)
@@ -30,7 +30,7 @@ namespace WebApiContrib.Core.Storage
                 CreateDate = DateTime.UtcNow,
                 Obj = obj
             };
-            await _storage.SetAsync(key, record);
+            await _storage.SetAsync(key, record).ConfigureAwait(false);
         }
     }
 }

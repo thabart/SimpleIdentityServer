@@ -50,8 +50,8 @@ namespace SimpleIdentityServer.Authenticate.SMS.Client
                 req.Headers.Add("Authorization", "Basic " + authorizationValue);
             }
 
-            var result = await httpClient.SendAsync(req);
-            var content = await result.Content.ReadAsStringAsync();
+            var result = await httpClient.SendAsync(req).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             try
             {
                 result.EnsureSuccessStatusCode();

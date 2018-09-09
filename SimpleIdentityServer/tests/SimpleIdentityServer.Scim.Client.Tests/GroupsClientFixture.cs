@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 .Build();
 
             // ACT : Create group
-            var firstResult = await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
+            var firstResult = await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(firstResult);
@@ -69,7 +69,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var id = firstResult.Content["id"].ToString();
 
             // ACT : Get group
-            var secondResult = await _groupsClient.GetGroup(baseUrl, id);
+            var secondResult = await _groupsClient.GetGroup(baseUrl, id).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(secondResult);
@@ -80,7 +80,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             var thirdResult = await _groupsClient.UpdateGroup(baseUrl, id)
                 .SetCommonAttributes("other_id")
                 .AddAttribute(new JProperty(Common.Constants.GroupResourceResponseNames.DisplayName, "display_name"))
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(thirdResult);
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Partial update group
             var fourthResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
                 .AddOperation(patchOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(fourthResult);
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Remove group2
             var fifthResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
                 .AddOperation(removeGroupOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             Assert.NotNull(fifthResult != null);
             Assert.True(fifthResult.Content[Common.Constants.GroupResourceResponseNames.Members].Count() == 1);
@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Add group3
             var sixResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
                 .AddOperation(addGroupOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             Assert.NotNull(sixResult);
             Assert.True(sixResult.Content[Common.Constants.GroupResourceResponseNames.Members].Count() == 2);
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Update the group3 type (immutable property)
             var sevenResult = await _groupsClient.PartialUpdateGroup(baseUrl, id)
                 .AddOperation(updateGroupOperation)
-                .Execute();
+                .Execute().ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(sevenResult);
@@ -129,7 +129,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             // ACT : Add ten groups
             for(var i = 0; i < 10; i++)
             {
-                await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute();
+                await _groupsClient.AddGroup(baseUrl).SetCommonAttributes("external_id").Execute().ConfigureAwait(false);
             }
 
             // ACT : Get 10 groups
@@ -137,7 +137,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             {
                 StartIndex = 0,
                 Count = 10
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(eightResult);
@@ -149,13 +149,13 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             {
                 Filter = "members[type pr]",
                 Attributes = new[] { "members.type" }
-            });
+            }).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(nineResult);
 
             // ACT : Remove group
-            var thenResult = await _groupsClient.DeleteGroup(baseUrl, id);
+            var thenResult = await _groupsClient.DeleteGroup(baseUrl, id).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(thenResult);

@@ -21,7 +21,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute(null, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor")).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
-            await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor");
+            await _updateUserTwoFactorAuthenticatorOperation.Execute("subject", "two_factor").ConfigureAwait(false);
 
             // ASSERTS
             _resourceOwnerRepositoryStub.Setup(r => r.UpdateAsync(It.IsAny<ResourceOwner>()));

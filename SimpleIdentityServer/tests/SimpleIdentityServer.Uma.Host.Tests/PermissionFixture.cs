@@ -54,24 +54,24 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             UserStore.Instance().ClientId = null;
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = resource.Content.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             UserStore.Instance().ClientId = "client";
 
             // ASSERTS
@@ -89,9 +89,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = string.Empty
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    ResourceSetId = string.Empty
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -108,9 +108,9 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = "resource"
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                {
+                    ResourceSetId = "resource"
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -127,13 +127,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = "resource",
-                Scopes = new List<string>
                 {
-                    "scope"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = "resource",
+                    Scopes = new List<string>
+                    {
+                        "scope"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -148,23 +148,23 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                 {
-                    "scopescopescope"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = resource.Content.Id,
+                    Scopes = new List<string>
+                    {
+                        "scopescopescope"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERTS
             Assert.True(ticket.ContainsError);
@@ -183,23 +183,23 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ACT
             var ticket = await _permissionClient.AddByResolution(new PostPermission
-            {
-                ResourceSetId = resource.Content.Id,
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    ResourceSetId = resource.Content.Id,
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(ticket);
@@ -214,13 +214,13 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             InitializeFakeObjects();
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
             var resource = await _resourceSetClient.AddByResolution(new PostResourceSet
-            {
-                Name = "picture",
-                Scopes = new List<string>
                 {
-                    "read"
-                }
-            }, baseUrl + "/.well-known/uma2-configuration", "header");
+                    Name = "picture",
+                    Scopes = new List<string>
+                    {
+                        "read"
+                    }
+                }, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
             var permissions = new List<PostPermission>
             {
                 new PostPermission
@@ -242,7 +242,7 @@ namespace SimpleIdentityServer.Uma.Host.Tests
             };
 
             // ACT
-            var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma2-configuration", "header");
+            var ticket = await _permissionClient.AddByResolution(permissions, baseUrl + "/.well-known/uma2-configuration", "header").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(ticket);

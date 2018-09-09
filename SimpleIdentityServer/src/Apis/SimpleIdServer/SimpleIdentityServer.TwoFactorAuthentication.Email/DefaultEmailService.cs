@@ -104,11 +104,11 @@ namespace SimpleIdentityServer.TwoFactorAuthentication.Email
                 client.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => {
                     return true;
                 };
-                await client.ConnectAsync(_options.EmailSmtpHost, _options.EmailSmtpPort, _options.EmailSmtpUseSsl);
+                await client.ConnectAsync(_options.EmailSmtpHost, _options.EmailSmtpPort, _options.EmailSmtpUseSsl).ConfigureAwait(false);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(_options.EmailUserName, _options.EmailPassword);
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
+                await client.AuthenticateAsync(_options.EmailUserName, _options.EmailPassword).ConfigureAwait(false);
+                await client.SendAsync(message).ConfigureAwait(false);
+                await client.DisconnectAsync(true).ConfigureAwait(false);
             }
         }
     }

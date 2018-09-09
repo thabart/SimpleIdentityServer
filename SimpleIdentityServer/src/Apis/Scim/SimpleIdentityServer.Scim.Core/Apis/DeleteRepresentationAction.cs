@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 1. Get the representation
-            var representation = await _representationStore.GetRepresentation(id);
+            var representation = await _representationStore.GetRepresentation(id).ConfigureAwait(false);
 
             // 2. If the representation doesn't exist then 404 is returned
             if (representation == null)
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Remove the representation
-            if (!await _representationStore.RemoveRepresentation(representation))
+            if (!await _representationStore.RemoveRepresentation(representation).ConfigureAwait(false))
             {
                 return _apiResponseFactory.CreateError(HttpStatusCode.InternalServerError,
                     ErrorMessages.TheRepresentationCannotBeRemoved);

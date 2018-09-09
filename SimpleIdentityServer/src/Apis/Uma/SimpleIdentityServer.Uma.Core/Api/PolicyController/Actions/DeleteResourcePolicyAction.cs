@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             _umaServerEventSource.StartRemoveResourceFromAuthorizationPolicy(id, resourceId);
             var policy = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, id),
-                () => _policyRepository.Get(id));
+                () => _policyRepository.Get(id)).ConfigureAwait(false);
             if (policy == null)
             {
                 return false;
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             var resourceSet = await _repositoryExceptionHelper.HandleException(
                 string.Format(ErrorDescriptions.TheResourceSetCannotBeRetrieved, resourceId),
-                () => _resourceSetRepository.Get(resourceId));
+                () => _resourceSetRepository.Get(resourceId)).ConfigureAwait(false);
             if (resourceSet == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
@@ -86,7 +86,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
             }
 
             policy.ResourceSetIds.Remove(resourceId);
-            var result = await _policyRepository.Update(policy);
+            var result = await _policyRepository.Update(policy).ConfigureAwait(false);
             _umaServerEventSource.FinishRemoveResourceFromAuthorizationPolicy(id, resourceId);
             return result;
         }

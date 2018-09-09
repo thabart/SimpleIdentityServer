@@ -112,7 +112,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new ArgumentNullException(nameof(schemaId));
             }
 
-            var schema = await _schemasStore.GetSchema(schemaId);
+            var schema = await _schemasStore.GetSchema(schemaId).ConfigureAwait(false);
             if (schema == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
@@ -120,7 +120,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
 
             if (_attributeMappers != null && _attributeMappers.Any())
             {
-                await _attributeMappers.First().Map(representation, schemaId);
+                await _attributeMappers.First().Map(representation, schemaId).ConfigureAwait(false);
             }
 
             JObject result = new JObject();

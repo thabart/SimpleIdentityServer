@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _addAuthorizationPolicyAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _addAuthorizationPolicyAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             var addPolicyParameter = new AddPolicyParameter();
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.ResourceSetIds));
@@ -79,7 +79,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult((ResourceSet)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddPolicyParameterNames.Rules));
@@ -116,7 +116,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult((ResourceSet)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidResourceSetId);
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
@@ -160,7 +160,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(resourceSet));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter));
+            var exception = await Assert.ThrowsAsync<BaseUmaException>(() => _addAuthorizationPolicyAction.Execute(addPolicyParameter)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidScope);
             Assert.True(exception.Message == ErrorDescriptions.OneOrMoreScopesDontBelongToAResourceSet);
@@ -213,7 +213,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
                 .Returns(Task.FromResult(resourceSet));
 
             // ACT
-            var result = await _addAuthorizationPolicyAction.Execute(addPolicyParameter);
+            var result = await _addAuthorizationPolicyAction.Execute(addPolicyParameter).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);

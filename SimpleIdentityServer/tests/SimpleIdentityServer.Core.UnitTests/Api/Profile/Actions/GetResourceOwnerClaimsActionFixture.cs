@@ -21,8 +21,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceOwnerClaimsAction.Execute(string.Empty)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             _profileRepositoryStub.Setup(p => p.Get(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwnerProfile)null));
 
             // ACT
-            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject");
+            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
 
             // ASSERT
             Assert.Null(result);
@@ -51,7 +51,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject");
+            var result = await _getResourceOwnerClaimsAction.Execute("externalSubject").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

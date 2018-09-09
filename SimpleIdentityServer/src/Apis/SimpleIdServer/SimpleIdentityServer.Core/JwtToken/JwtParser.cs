@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return string.Empty;
             }
 
-            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -100,7 +100,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<string> DecryptAsync(string jwe, string clientId)
         {
-            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId);
+            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -111,7 +111,7 @@ namespace SimpleIdentityServer.Core.JwtToken
 
         public async Task<string> DecryptWithPasswordAsync(string jwe, string clientId, string password)
         {
-            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId);
+            var jsonWebKey = await GetJsonWebKeyToDecrypt(jwe, clientId).ConfigureAwait(false);
             if (jsonWebKey == null)
             {
                 return string.Empty;
@@ -133,7 +133,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid);
+            var jsonWebKey = await _jsonWebKeyRepository.GetByKidAsync(protectedHeader.Kid).ConfigureAwait(false);
             return UnSignWithJsonWebKey(jsonWebKey, protectedHeader, jws);
         }
 
@@ -149,7 +149,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -161,7 +161,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid);
+            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid).ConfigureAwait(false);
             return UnSignWithJsonWebKey(jsonWebKey, protectedHeader, jws);
         }
 
@@ -195,7 +195,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            var client = await _clientRepository.GetClientByIdAsync(clientId);
+            var client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             if (client == null)
             {
                 throw new InvalidOperationException(string.Format(ErrorDescriptions.ClientIsNotValid, clientId));
@@ -207,7 +207,7 @@ namespace SimpleIdentityServer.Core.JwtToken
                 return null;
             }
 
-            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid);
+            var jsonWebKey = await GetJsonWebKeyFromClient(client, protectedHeader.Kid).ConfigureAwait(false);
             return jsonWebKey;
         }
         

@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 });
 
             // ACT
-            var result = await _deleteRepresentationAction.Execute(identifier);
+            var result = await _deleteRepresentationAction.Execute(identifier).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Apis
                 .Returns(Task.FromResult(false));
 
             // ACT
-            var result = await _deleteRepresentationAction.Execute(identifier);
+            var result = await _deleteRepresentationAction.Execute(identifier).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);

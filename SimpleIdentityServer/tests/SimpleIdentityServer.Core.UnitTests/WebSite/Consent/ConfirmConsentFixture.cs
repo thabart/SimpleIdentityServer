@@ -42,8 +42,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal)).ConfigureAwait(false);
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -164,7 +164,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(Task.FromResult(new Core.Common.Models.Consent()));
 
             // ACT
-            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(insertedConsent);
@@ -226,7 +226,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<ResponseType> {  ResponseType.code });
 
             // ACT
-            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal).ConfigureAwait(false);
 
             // ASSERT
             _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Consent>()));

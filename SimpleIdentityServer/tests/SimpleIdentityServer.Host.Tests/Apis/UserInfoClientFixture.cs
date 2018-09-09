@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", "invalid_access_token");
+            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", "invalid_access_token").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(getUserInfoResult);
@@ -48,8 +48,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("stateless_client", "stateless_client")
                 .UseClientCredentials("openid")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(getUserInfoResult);
@@ -68,8 +68,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(getUserInfoResult);
@@ -85,8 +85,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_sig_rs256", "client_userinfo_sig_rs256")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(getUserInfoResult);
@@ -103,8 +103,8 @@ namespace SimpleIdentityServer.Host.Tests.Apis
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client_userinfo_enc_rsa15", "client_userinfo_enc_rsa15")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
-            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken);
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
+            var getUserInfoResult = await _userInfoClient.Resolve(baseUrl + "/.well-known/openid-configuration", result.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(getUserInfoResult);

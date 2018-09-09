@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
         [Authorize("manage_account_filtering")]
         public async Task<IActionResult> GetFilters()
         {
-            var filters = await _filterRepository.GetAll();
+            var filters = await _filterRepository.GetAll().ConfigureAwait(false);
             return new OkObjectResult(filters.ToDtos());
         }
 
@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
                 return BuildMissingParameter("id");
             }
 
-            var filter = await _filterRepository.Get(id);
+            var filter = await _filterRepository.Get(id).ConfigureAwait(false);
             if (filter == null)
             {
                 return new StatusCodeResult((int)HttpStatusCode.NotFound);
@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
                 return errorResult;
             }
 
-            var id = await _filterRepository.Add(addFilterRequest.ToParameter());
+            var id = await _filterRepository.Add(addFilterRequest.ToParameter()).ConfigureAwait(false);
             return new OkObjectResult(new AddFilterResponse
             {
                 Id = id
@@ -79,13 +79,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
                 return BuildMissingParameter("id");
             }
 
-            var filter = await _filterRepository.Get(id);
+            var filter = await _filterRepository.Get(id).ConfigureAwait(false);
             if (filter == null)
             {
                 return new StatusCodeResult((int)HttpStatusCode.NotFound);
             }
 
-            await _filterRepository.Delete(id);
+            await _filterRepository.Delete(id).ConfigureAwait(false);
             return new NoContentResult();
         }
 
@@ -104,13 +104,13 @@ namespace SimpleIdentityServer.AccountFilter.Basic.Controllers
                 return errorResult;
             }
 
-            var filter = await _filterRepository.Get(updateFilterRequest.Id);
+            var filter = await _filterRepository.Get(updateFilterRequest.Id).ConfigureAwait(false);
             if (filter == null)
             {
                 return new StatusCodeResult((int)HttpStatusCode.NotFound);
             }
 
-            await _filterRepository.Update(updateFilterRequest.ToParameter());
+            await _filterRepository.Update(updateFilterRequest.ToParameter()).ConfigureAwait(false);
             return new NoContentResult();
         }
 

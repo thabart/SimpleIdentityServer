@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -87,7 +87,7 @@ namespace SimpleIdentityServer.Host.Tests
             };
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("invalid_client", "invalid_client")
                 .Introspect("invalid_token", TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
@@ -126,7 +126,7 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect("invalid_token", TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
@@ -149,10 +149,10 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.Content.AccessToken, TokenType.AccessToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);
@@ -170,10 +170,10 @@ namespace SimpleIdentityServer.Host.Tests
             // ACT
             var result = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .UsePassword("administrator", "password", "scim")
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
             var introspection = await _clientAuthSelector.UseClientSecretPostAuth("client", "client")
                 .Introspect(result.Content.AccessToken, TokenType.RefreshToken)
-                .ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+                .ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(introspection);

@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _removeConfirmationCodeAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
 
             // ACT
-            await _removeConfirmationCodeAction.Execute("code");
+            await _removeConfirmationCodeAction.Execute("code").ConfigureAwait(false);
 
             // ASSERT
             _confirmationCodeStoreStub.Verify(c => c.Remove("code"));

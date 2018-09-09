@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Scim.Client.Builders
 
         public async Task<ScimResponse> Execute()
         {
-            return await _callback(_obj);
+            return await _callback(_obj).ConfigureAwait(false);
         }
 
         private void Initialize(IEnumerable<string> schemas)

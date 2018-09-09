@@ -82,7 +82,7 @@ namespace SimpleIdentityServer.Core.Services
                 return false;
             }
 
-            await service.SendAsync(code, user);
+            await service.SendAsync(code, user).ConfigureAwait(false);
             return true;
         }
     }

@@ -33,13 +33,13 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new ArgumentNullException(nameof(externalSubject));
             }
             
-            var resourceOwner = await _resourceOwnerRepository.GetAsync(localSubject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(localSubject).ConfigureAwait(false);
             if (resourceOwner == null)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheResourceOwnerDoesntExist);
             }
             
-            var profile = await _profileRepository.Get(externalSubject);
+            var profile = await _profileRepository.Get(externalSubject).ConfigureAwait(false);
             if (profile == null || profile.ResourceOwnerId != localSubject)
             {
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.NotAuthorizedToRemoveTheProfile);
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.Api.Profile.Actions
                 throw new IdentityServerException(Errors.ErrorCodes.InternalError, Errors.ErrorDescriptions.TheExternalAccountAccountCannotBeUnlinked);
             }
 
-            return await _profileRepository.Remove(new[] { externalSubject });
+            return await _profileRepository.Remove(new[] { externalSubject }).ConfigureAwait(false);
         }
     }
 }

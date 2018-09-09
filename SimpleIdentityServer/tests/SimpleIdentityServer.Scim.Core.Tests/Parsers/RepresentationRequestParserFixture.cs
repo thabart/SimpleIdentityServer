@@ -63,7 +63,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
                 .Returns(Task.FromResult((SchemaResponse)null));
 
             // ACT
-            var result = await _requestParser.Parse(new JObject(), "invalid", CheckStrategies.Strong);
+            var result = await _requestParser.Parse(new JObject(), "invalid", CheckStrategies.Strong).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -83,7 +83,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
            "}");
 
             // ACT
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(result);
@@ -107,7 +107,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             "'active': 'active'}");
 
             // ACT
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -131,7 +131,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
            "]}");
 
             // ACT
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -178,7 +178,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
            "]}");
 
             // ACT
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.Group, CheckStrategies.Strong).ConfigureAwait(false);
 
 
             // ASSERTS
@@ -217,7 +217,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             "}}");
 
             // ACT
-            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong);
+            var result = await _requestParser.Parse(jObj, Common.Constants.SchemaUrns.User, CheckStrategies.Strong).ConfigureAwait(false);
 
 
             // ASSERTS

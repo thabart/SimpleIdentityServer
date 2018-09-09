@@ -37,6 +37,8 @@ using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Shell.Controllers
 {
+    using Constants = Core.Constants;
+
     [Area("Shell")]
     [Authorize("Connected")]
     public class ConsentController : BaseController
@@ -68,9 +70,9 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var client = new Core.Common.Models.Client();
-            var authenticatedUser = await SetUser();
+            var authenticatedUser = await SetUser().ConfigureAwait(false);
             var actionResult = await _consentActions.DisplayConsent(request.ToParameter(),
-                authenticatedUser);
+                authenticatedUser).ConfigureAwait(false);
 
             var result = this.CreateRedirectionFromActionResult(actionResult.ActionResult, request);
             if (result != null)
@@ -78,12 +80,12 @@ namespace SimpleIdentityServer.Shell.Controllers
                 return result;
             }
 
-            await TranslateConsentScreen(request.UiLocales);
+            await TranslateConsentScreen(request.UiLocales).ConfigureAwait(false);
             var viewModel = new ConsentViewModel
             {
                 ClientDisplayName = client.ClientName,
                 AllowedScopeDescriptions = actionResult.Scopes == null ? new List<string>() : actionResult.Scopes.Select(s => s.Description).ToList(),
-                AllowedIndividualClaims = actionResult.AllowedClaims == null ? new List<string>() : actionResult.AllowedClaims,
+                AllowedIndividualClaims = actionResult.AllowedClaims ?? new List<string>(),
                 LogoUri = client.LogoUri,
                 PolicyUri = client.PolicyUri,
                 TosUri = client.TosUri,
@@ -96,10 +98,10 @@ namespace SimpleIdentityServer.Shell.Controllers
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
             var parameter = request.ToParameter();
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName).ConfigureAwait(false);
             var actionResult = await _consentActions.ConfirmConsent(parameter,
-                authenticatedUser);
-            await LogConsentAccepted(actionResult, parameter.ProcessId);
+                authenticatedUser).ConfigureAwait(false);
+            await LogConsentAccepted(actionResult, parameter.ProcessId).ConfigureAwait(false);
             return this.CreateRedirectionFromActionResult(actionResult,
                 request);
         }
@@ -113,7 +115,7 @@ namespace SimpleIdentityServer.Shell.Controllers
         public async Task<ActionResult> Cancel(string code)
         {
             var request = _dataProtector.Unprotect<AuthorizationRequest>(code);
-            await LogConsentRejected(request.ProcessId);
+            await LogConsentRejected(request.ProcessId).ConfigureAwait(false);
             return Redirect(request.RedirectUri);
         }
 
@@ -122,14 +124,14 @@ namespace SimpleIdentityServer.Shell.Controllers
             // Retrieve the translation and store them in a ViewBag
             var translations = await _translationManager.GetTranslationsAsync(uiLocales, new List<string>
             {
-                Core.Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
-                Core.Constants.StandardTranslationCodes.IndividualClaimsCode,
-                Core.Constants.StandardTranslationCodes.ScopesCode,
-                Core.Constants.StandardTranslationCodes.CancelCode,
-                Core.Constants.StandardTranslationCodes.ConfirmCode,
-                Core.Constants.StandardTranslationCodes.LinkToThePolicy,
-                Core.Constants.StandardTranslationCodes.Tos
-            });
+                Constants.StandardTranslationCodes.ApplicationWouldLikeToCode,
+                Constants.StandardTranslationCodes.IndividualClaimsCode,
+                Constants.StandardTranslationCodes.ScopesCode,
+                Constants.StandardTranslationCodes.CancelCode,
+                Constants.StandardTranslationCodes.ConfirmCode,
+                Constants.StandardTranslationCodes.LinkToThePolicy,
+                Constants.StandardTranslationCodes.Tos
+            }).ConfigureAwait(false);
             ViewBag.Translations = translations;
         }
 

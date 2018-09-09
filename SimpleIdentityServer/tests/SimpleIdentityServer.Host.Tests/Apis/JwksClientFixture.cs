@@ -43,7 +43,7 @@ namespace SimpleIdentityServer.Host.Tests
             _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_server.Client);
 
             // ACT 
-           var jwks = await  _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration");
+           var jwks = await  _jwksClient.ResolveAsync(baseUrl + "/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(jwks);

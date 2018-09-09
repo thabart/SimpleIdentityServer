@@ -233,10 +233,10 @@ namespace SimpleIdentityServer.EF.Extensions
             return new Domain.Consent
             {
                 Id = consent.Id,
-                Client = consent.Client == null ? null : consent.Client.ToDomain(),
-                Claims = consent.ConsentClaims == null ? null : consent.ConsentClaims.Select(c => c.ClaimCode).ToList(),
-                ResourceOwner = consent.ResourceOwner == null ? null : consent.ResourceOwner.ToDomain(),
-                GrantedScopes = consent.ConsentScopes == null ? null : consent.ConsentScopes.Select(consentScope => consentScope.Scope.ToDomain()).ToList()
+                Client = consent.Client?.ToDomain(),
+                Claims = consent.ConsentClaims?.Select(c => c.ClaimCode).ToList(),
+                ResourceOwner = consent.ResourceOwner?.ToDomain(),
+                GrantedScopes = consent.ConsentScopes?.Select(consentScope => consentScope.Scope.ToDomain()).ToList()
             };
         }
 

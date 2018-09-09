@@ -30,6 +30,8 @@ using Xunit;
 
 namespace SimpleIdentityServer.Host.Tests
 {
+    using Core.Common.DTOs.Requests;
+
     public class RegisterClientFixture : IClassFixture<TestOauthServerFixture>
     {
         const string baseUrl = "http://localhost:5000";
@@ -70,7 +72,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -105,7 +107,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -139,7 +141,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -173,7 +175,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -207,7 +209,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -241,7 +243,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -275,7 +277,7 @@ namespace SimpleIdentityServer.Host.Tests
             httpRequest.Headers.Add("Authorization", "Bearer " + grantedToken.Content.AccessToken);
 
             // ACT
-            var httpResult = await _server.Client.SendAsync(httpRequest);
+            var httpResult = await _server.Client.SendAsync(httpRequest).ConfigureAwait(false);
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
             var error = JsonConvert.DeserializeObject<ErrorResponseWithState>(json);
 
@@ -298,14 +300,14 @@ namespace SimpleIdentityServer.Host.Tests
                 .ResolveAsync($"{baseUrl}/.well-known/openid-configuration").ConfigureAwait(false);
 
             // ACT
-            var client = await _registrationClient.ResolveAsync(new Core.Common.DTOs.Requests.ClientRequest
-            {
-                RedirectUris = new []
+            var client = await _registrationClient.ResolveAsync(new ClientRequest
                 {
-                    "https://localhost"
-                },
-                ScimProfile = true
-            }, baseUrl + "/.well-known/openid-configuration", grantedToken.Content.AccessToken);
+                    RedirectUris = new []
+                    {
+                        "https://localhost"
+                    },
+                    ScimProfile = true
+                }, baseUrl + "/.well-known/openid-configuration", grantedToken.Content.AccessToken).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(client);

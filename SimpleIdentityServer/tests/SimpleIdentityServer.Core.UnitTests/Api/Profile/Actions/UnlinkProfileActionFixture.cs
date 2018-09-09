@@ -24,8 +24,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute("localSubject", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute(null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _unlinkProfileAction.Execute("localSubject", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute("localSubject", "externalSubject"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute("localSubject", "externalSubject")).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -56,7 +56,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute("localSubject", "externalSubject"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _unlinkProfileAction.Execute("localSubject", "externalSubject")).ConfigureAwait(false);
 
             // ASSERT
             Assert.NotNull(exception);
@@ -77,7 +77,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Profile.Actions
             }));
 
             // ACT
-            await _unlinkProfileAction.Execute("localSubject", "externalSubject");
+            await _unlinkProfileAction.Execute("localSubject", "externalSubject").ConfigureAwait(false);
 
             // ASSERT
             _profileRepositoryStub.Verify(p => p.Remove(It.Is<IEnumerable<string>>(r => r.Contains("externalSubject"))));

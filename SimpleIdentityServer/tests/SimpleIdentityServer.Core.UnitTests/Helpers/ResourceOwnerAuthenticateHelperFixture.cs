@@ -18,8 +18,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate("login", null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate(null, null, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _resourceOwnerAuthenticateHelper.Authenticate("login", null, null)).ConfigureAwait(false);
         }
 
         private void InitializeFakeObjects()

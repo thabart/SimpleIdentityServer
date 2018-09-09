@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
             InitializeFakeObjects();
 
             // ACT && ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getResourceSetAction.Execute(null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.ResourceSetController.Acti
                 .Returns(Task.FromResult(resourceSet));
 
             // ACT
-            var result = await _getResourceSetAction.Execute(resourceSet.Id);
+            var result = await _getResourceSetAction.Execute(resourceSet.Id).ConfigureAwait(false);
         
             // ASSERTS
             Assert.NotNull(result);

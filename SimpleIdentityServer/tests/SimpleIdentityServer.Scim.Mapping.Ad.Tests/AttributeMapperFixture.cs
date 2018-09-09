@@ -52,7 +52,7 @@ namespace SimpleIdentityServer.Scim.Mapping.Ad.Tests
 
             var attributeMapper = new AttributeMapper(configurationStore.Object, mappingStore.Object, new UserFilterParser());
 
-            await attributeMapper.Map(representation, "urn:ietf:params:scim:schemas:core:2.0:User");
+            await attributeMapper.Map(representation, "urn:ietf:params:scim:schemas:core:2.0:User").ConfigureAwait(false);
 
             string s2 = "";
         }

@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)) // 1. Check the client is authorized to use the authorization_code flow.
             {
                 throw new IdentityServerExceptionWithState(
@@ -92,7 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client).ConfigureAwait(false);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);

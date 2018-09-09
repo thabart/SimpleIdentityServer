@@ -169,7 +169,7 @@ namespace SimpleIdentityServer.Client.Policy
                 throw new ArgumentNullException(nameof(configurationUri));
             }
 
-            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri);
+            var configuration = await _getConfigurationOperation.ExecuteAsync(configurationUri).ConfigureAwait(false);
             return configuration.PoliciesEndpoint;
         }
     }

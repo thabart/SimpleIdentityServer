@@ -39,7 +39,7 @@ namespace SimpleIdentityServer.Host.Extensions
             request.Body.Position = 0;
             using (var reader = new StreamReader(request.Body)) 
             {
-                return await reader.ReadToEndAsync();
+                return await reader.ReadToEndAsync().ConfigureAwait(false);
             }
         }
     }

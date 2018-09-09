@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Stores
 
             foreach(var ticket in tickets)
             {
-                if (!await AddAsync(ticket))
+                if (!await AddAsync(ticket).ConfigureAwait(false))
                 {
                     return false;
                 }
@@ -39,13 +39,13 @@ namespace SimpleIdentityServer.Uma.Core.Stores
                 throw new ArgumentNullException(nameof(ticket));
             }
 
-            var record = await _storage.TryGetValueAsync<Ticket>(ticket.Id);
+            var record = await _storage.TryGetValueAsync<Ticket>(ticket.Id).ConfigureAwait(false);
             if (record != null)
             {
                 return false;
             }
 
-            await _storage.SetAsync(ticket.Id, ticket, ticket.ExpiresIn);
+            await _storage.SetAsync(ticket.Id, ticket, ticket.ExpiresIn).ConfigureAwait(false);
             return true;
         }
 
@@ -56,13 +56,13 @@ namespace SimpleIdentityServer.Uma.Core.Stores
                 throw new ArgumentNullException(nameof(ticketId));
             }
 
-            var record = await _storage.TryGetValueAsync<Ticket>(ticketId);
+            var record = await _storage.TryGetValueAsync<Ticket>(ticketId).ConfigureAwait(false);
             if (record == null)
             {
                 return false;
             }
 
-            await _storage.RemoveAsync(ticketId);
+            await _storage.RemoveAsync(ticketId).ConfigureAwait(false);
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Uma.Core.Stores
                 throw new ArgumentNullException(nameof(ticketId));
             }
 
-            return await _storage.TryGetValueAsync<Ticket>(ticketId);
+            return await _storage.TryGetValueAsync<Ticket>(ticketId).ConfigureAwait(false);
         }
     }
 }

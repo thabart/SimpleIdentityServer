@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null));
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _generateAndSendSmsCodeOperation.Execute(null)).ConfigureAwait(false);
             Assert.NotNull(exception);
         }
 
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
                 });
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
             // ACT
             _eventSourceStub.Verify(e => e.Failure(It.Is<Exception>((f) => f.Message == "problem")));
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>())).Returns(() => Task.FromResult(false));
 
             // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber"));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendSmsCodeOperation.Execute("phoneNumber")).ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(exception);
@@ -75,7 +75,7 @@ namespace SimpleIdentityServer.Authenticate.SMS.Tests.Actions
             _confirmationCodeStoreStub.Setup(c => c.Add(It.IsAny<ConfirmationCode>())).Returns(() => Task.FromResult(true));
 
             // ACT
-            var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber");
+            var confirmationCode = await _generateAndSendSmsCodeOperation.Execute("phoneNumber").ConfigureAwait(false);
 
             // ASSERTS
             Assert.NotNull(confirmationCode);

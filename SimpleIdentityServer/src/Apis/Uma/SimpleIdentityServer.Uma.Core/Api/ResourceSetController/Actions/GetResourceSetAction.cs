@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await _resourceSetRepository.Get(id);
+            return await _resourceSetRepository.Get(id).ConfigureAwait(false);
         }
     }
 }

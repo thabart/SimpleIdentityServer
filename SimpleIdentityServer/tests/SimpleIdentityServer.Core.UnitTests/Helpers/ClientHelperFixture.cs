@@ -39,8 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
             InitializeFakeObjects();
 
             // ACT & ASSERTS
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync(string.Empty, null)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientHelper.GenerateIdTokenAsync("client_id", null)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
@@ -73,7 +73,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
@@ -95,7 +95,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
                 .Returns(Task.FromResult(client));
 
             // ACT
-            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload());
+            await _clientHelper.GenerateIdTokenAsync("client_id", new JwsPayload()).ConfigureAwait(false);
 
             // ASSERT
             _jwtGeneratorStub.Verify(j => j.SignAsync(It.IsAny<JwsPayload>(), JwsAlg.RS256));
