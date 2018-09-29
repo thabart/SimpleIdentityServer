@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>SimpleIdentityServer.Scim.Common Class Library</Description>
@@ -21,7 +21,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>
