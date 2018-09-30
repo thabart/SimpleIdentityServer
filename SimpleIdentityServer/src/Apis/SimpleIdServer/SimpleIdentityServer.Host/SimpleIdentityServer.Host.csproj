@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>Simple identity server host</Description>
     <Copyright>Copyrigth Thierry Habart</Copyright>
     <AssemblyTitle>Simple identity server host</AssemblyTitle>
     <Authors>Thierry Habart</Authors>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>SimpleIdentityServer.Host</AssemblyName>
     <PackageId>SimpleIdentityServer.Host</PackageId>

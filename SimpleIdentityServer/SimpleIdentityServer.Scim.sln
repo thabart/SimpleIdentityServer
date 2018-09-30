@@ -113,6 +113,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.Scim.Client.Integration.Tests", "tests\SimpleIdentityServer.Scim.Client.Integration.Tests\SimpleIdentityServer.Scim.Client.Integration.Tests.csproj", "{099B0A49-9EC0-4714-A2F5-C86C851385A0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIdentityServer.AccessToken.Store", "src\Apis\Common\SimpleIdentityServer.AccessToken.Store\SimpleIdentityServer.AccessToken.Store.csproj", "{7BD4F0DE-53E5-4487-A772-A55B8BC291A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -299,6 +301,10 @@ Global
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BD4F0DE-53E5-4487-A772-A55B8BC291A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BD4F0DE-53E5-4487-A772-A55B8BC291A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BD4F0DE-53E5-4487-A772-A55B8BC291A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BD4F0DE-53E5-4487-A772-A55B8BC291A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -354,6 +360,7 @@ Global
 		{76E5CAF1-C6C3-412F-A3A5-ADDA8F91DF2F} = {28615E63-2AF5-4326-ACD3-6F3FB6B92338}
 		{1BEA3E01-B004-465C-B4C2-2CA04AA8B21C} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
 		{099B0A49-9EC0-4714-A2F5-C86C851385A0} = {A2E898A8-D676-4552-A03A-03CC27C0ECDC}
+		{7BD4F0DE-53E5-4487-A772-A55B8BC291A5} = {E5F3CC01-5760-4682-AF18-8216DEAE5024}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D95F7CB4-F4B5-45C1-9004-B60F8C5673FA}
