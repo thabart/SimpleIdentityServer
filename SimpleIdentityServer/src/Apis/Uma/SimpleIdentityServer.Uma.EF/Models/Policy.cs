@@ -20,10 +20,8 @@ namespace SimpleIdentityServer.Uma.EF.Models
 {
     public class Policy
     {
-        public string Id { get; set; }
-        
+        public string Id { get; set; }        
         public virtual ICollection<PolicyResource> PolicyResources{ get; set; }
-
         public virtual ICollection<PolicyRule> Rules { get; set; }
     }
 }

@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using System.Collections.Generic;
+
 namespace SimpleIdentityServer.Core.Parameters
 {
     public sealed class ResourceOwnerGrantTypeParameter
@@ -25,5 +27,6 @@ namespace SimpleIdentityServer.Core.Parameters
         public string ClientAssertion { get; set; }
         public string ClientAssertionType { get; set; }
         public string ClientSecret { get; set; }
+        public IEnumerable<string> AmrValues { get; set; }
     }
 }

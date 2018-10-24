@@ -14,9 +14,10 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Common.DTOs;
+using System;
 
 namespace SimpleIdentityServer.Core.Jwt.Signature
 {
@@ -33,8 +34,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         private const string JwsType = "JWT";
         private readonly ICreateJwsSignature _createJwsSignature;
 
-        public JwsGenerator(
-            ICreateJwsSignature createJwsSignature)
+        public JwsGenerator(ICreateJwsSignature createJwsSignature)
         {
             _createJwsSignature = createJwsSignature;
         }

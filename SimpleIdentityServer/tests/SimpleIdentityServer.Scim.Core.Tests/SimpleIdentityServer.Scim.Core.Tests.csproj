@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Core\SimpleIdentityServer.Scim.Core.csproj" />
-    <ProjectReference Include="..\..\src\Apis\Scim\SimpleIdentityServer.Scim.Db.EF\SimpleIdentityServer.Scim.Db.EF.csproj" />
   </ItemGroup>  
 
   <ItemGroup>

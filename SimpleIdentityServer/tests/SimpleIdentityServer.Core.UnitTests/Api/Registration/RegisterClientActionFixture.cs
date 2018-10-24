@@ -17,13 +17,12 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,10 +32,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 {
     public sealed class RegisterClientActionFixture
     {
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IClientRepository> _clientRepositoryFake;
         private Mock<IGenerateClientFromRegistrationRequest> _generateClientFromRegistrationRequest;
-        private Mock<IPasswordService> _encryptedPasswordFactoryStub;
+        private Mock<IClientPasswordService> _encryptedPasswordFactoryStub;
         private IRegisterClientAction _registerClientAction;
 
         #region Exceptions
@@ -117,7 +116,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
                     Kid = kid
                 }
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 ClientName = clientName,
                 ResponseTypes = new List<ResponseType>
@@ -157,17 +156,17 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
             };
             _generateClientFromRegistrationRequest.Setup(g => g.Execute(It.IsAny<RegistrationParameter>()))
                 .Returns(client);                
-            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Models.Client>()))
-                .Callback<Models.Client>(c => client = c)
+            _clientRepositoryFake.Setup(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()))
+                .Callback<Core.Common.Models.Client>(c => client = c)
                 .Returns(Task.FromResult(true));
 
             // ACT
             var result = await _registerClientAction.Execute(registrationParameter);
 
             // ASSERT
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartRegistration(clientName));
-            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Models.Client>()));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
+            _oauthEventSource.Verify(s => s.StartRegistration(clientName));
+            _clientRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Client>()));
+            _oauthEventSource.Verify(s => s.EndRegistration(It.IsAny<string>(), clientName));
             Assert.NotEmpty(result.ClientSecret);
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.OpenId));
             Assert.True(client.AllowedScopes.Contains(Constants.StandardScopes.Address));
@@ -180,12 +179,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Registration
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _clientRepositoryFake = new Mock<IClientRepository>();
             _generateClientFromRegistrationRequest = new Mock<IGenerateClientFromRegistrationRequest>();
-            _encryptedPasswordFactoryStub = new Mock<IPasswordService>();
+            _encryptedPasswordFactoryStub = new Mock<IClientPasswordService>();
             _registerClientAction = new RegisterClientAction(
-                _simpleIdentityServerEventSourceFake.Object,
+                _oauthEventSource.Object,
                 _clientRepositoryFake.Object,
                 _generateClientFromRegistrationRequest.Object,
                 _encryptedPasswordFactoryStub.Object);

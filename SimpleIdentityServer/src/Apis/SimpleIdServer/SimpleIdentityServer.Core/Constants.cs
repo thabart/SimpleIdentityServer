@@ -14,16 +14,17 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core
 {
     public static class Constants
     {
         public const string SESSION_ID = "session_id";
+        public const string DEFAULT_AMR = "pwd";
 
         #region Standard definitions
         
@@ -297,6 +298,18 @@ namespace SimpleIdentityServer.Core
             public const string SendConfirmationCode = "send_confirmation_code";
             public const string Phone = "phone";
             public const string HashedPassword = "hashed_password";
+            public const string CreateResourceOwner = "create_resource_owner";
+            public const string Credentials = "credentials";
+            public const string RepeatPassword = "repeat_password";
+            public const string Claims = "claims";
+            public const string UserIsCreated = "user_is_created";
+            public const string TwoFactor = "two_factor";
+            public const string UpdateClaim = "update_claim";
+            public const string ConfirmationCode = "confirmation_code";
+            public const string ResetConfirmationCode = "resend_confirmation_code";
+            public const string ValidateConfirmationCode = "validate_confirmation_code";
+            public const string NoTwoFactorAuthenticator = "no_two_factor_authenticator";
+            public const string NoTwoFactorAuthenticatorSelected = "no_two_factor_authenticator_selected";
         }
 
         public static readonly Dictionary<List<ResponseType>, AuthorizationFlow> MappingResponseTypesToAuthorizationFlows = new Dictionary<List<ResponseType>, AuthorizationFlow>

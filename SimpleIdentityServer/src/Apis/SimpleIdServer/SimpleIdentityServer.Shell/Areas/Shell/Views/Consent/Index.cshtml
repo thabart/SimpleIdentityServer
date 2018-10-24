@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Consent";
+    Layout = "~/Areas/Shell/Views/Shared/_Layout.cshtml";
+}
+
+@model SimpleIdentityServer.Shell.ViewModels.ConsentViewModel
+
+@{
+    var accessToCode = ViewBag.Translations["application_would_like_to"];
+    var accessToValue = string.Format(accessToCode, Model.ClientDisplayName);
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-center">
+            @if (string.IsNullOrWhiteSpace(Model.LogoUri))
+            {
+                <img src="@Url.Content("~/img/OAuth2.png")" width="150" height="150" />
+            }
+            else
+            {
+                <img src="@Url.Content(Model.LogoUri)" width="150" height="150" />
+            }
+        </div>
+        <div>
+            <h2>
+                @accessToValue
+            </h2>
+        </div>
+        @if (Model.AllowedScopeDescriptions.Any())
+        {
+            <div>
+                <h4>@ViewBag.Translations["scopes"]</h4>
+            </div>
+            <div>
+                <ul class="list-group">
+                    @foreach (var scope in Model.AllowedScopeDescriptions)
+                    {
+                        <li class="list-group-item">
+                            @scope
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        @if (Model.AllowedIndividualClaims.Any())
+        {
+            <div class="row">
+                <h4>@ViewBag.Translations["individual_claims"]</h4>
+            </div>
+            <div class="row">
+                <ul class="list-group">
+                    @foreach (var claim in Model.AllowedIndividualClaims)
+                    {
+                        <li class="list-group-item">
+                            @claim
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        @if (!string.IsNullOrWhiteSpace(Model.PolicyUri) ||
+            !string.IsNullOrWhiteSpace(Model.TosUri))
+        {
+            <div style="padding-bottom: 10px;">
+                @if (!string.IsNullOrWhiteSpace(Model.PolicyUri))
+                {
+                    <a href="@Model.PolicyUri" target="_blank">@ViewBag.Translations["policy"] &nbsp;</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.TosUri))
+                {
+                    <a href="@Model.TosUri" target="_blank">@ViewBag.Translations["tos"]</a>
+                }
+            </div>
+        }
+        
+        <div>
+            <a href="@Url.Action("Cancel", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["cancel"]</a>
+            <a href="@Url.Action("Confirm", new { code = Model.Code })" class="btn btn-default">@ViewBag.Translations["confirm"]</a>
+        </div>
+    </div>
+</div>

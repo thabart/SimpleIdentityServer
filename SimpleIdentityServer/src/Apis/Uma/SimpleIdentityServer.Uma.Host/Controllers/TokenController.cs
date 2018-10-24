@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Token;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Common.Serializers;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Api.Token;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -29,12 +33,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<TokenResponse> PostToken()
+        public async Task<IActionResult> PostToken()
         {
             var certificate = GetCertificate();
-            if (Request.Form == null)
+            try
             {
-                throw new ArgumentNullException(nameof(Request.Form));
+                if (Request.Form == null)
+                {
+                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var serializer = new ParamSerializer();
@@ -54,33 +65,32 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 }
             }
 
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
             switch (tokenRequest.GrantType)
             {
                 case GrantTypes.password:
                     var resourceOwnerParameter = tokenRequest.ToResourceOwnerGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate);
+                    result = await _tokenActions.GetTokenByResourceOwnerCredentialsGrantType(resourceOwnerParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.authorization_code:
                     var authCodeParameter = tokenRequest.ToAuthorizationCodeGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(
-                        authCodeParameter,
-                        authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByAuthorizationCodeGrantType(authCodeParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.refresh_token:
                     var refreshTokenParameter = tokenRequest.ToRefreshTokenGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter);
+                    result = await _tokenActions.GetTokenByRefreshTokenGrantType(refreshTokenParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.client_credentials:
                     var clientCredentialsParameter = tokenRequest.ToClientCredentialsGrantTypeParameter();
-                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue);
+                    result = await _tokenActions.GetTokenByClientCredentialsGrantType(clientCredentialsParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
                 case GrantTypes.uma_ticket:
                     var tokenIdParameter = tokenRequest.ToTokenIdGrantTypeParameter();
-                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue);
+                    result = await _umaTokenActions.GetTokenByTicketId(tokenIdParameter, authenticationHeaderValue, certificate, issuerName);
                     break;
             }
 
-            return result.ToDto();
+            return new OkObjectResult(result.ToDto());
         }
 
         [HttpPost("revoke")]
@@ -109,7 +119,8 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             // 2. Revoke the token
-            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            await _tokenActions.RevokeToken(revocationRequest.ToParameter(), authenticationHeaderValue, GetCertificate(), issuerName);
             return new OkResult();
         }
 
@@ -131,6 +142,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 return null;
             }
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

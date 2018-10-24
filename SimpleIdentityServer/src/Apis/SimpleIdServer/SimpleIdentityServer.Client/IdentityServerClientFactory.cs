@@ -15,9 +15,10 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client.Factories;
 using SimpleIdentityServer.Client.Operations;
 using SimpleIdentityServer.Client.Selectors;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
 
 namespace SimpleIdentityServer.Client
@@ -43,6 +44,13 @@ namespace SimpleIdentityServer.Client
         {
             var services = new ServiceCollection();
             RegisterDependencies(services);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
+        public IdentityServerClientFactory(IHttpClientFactory httpClientFactory)
+        {
+            var services = new ServiceCollection();
+            RegisterDependencies(services, httpClientFactory);
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -116,9 +124,16 @@ namespace SimpleIdentityServer.Client
 
         #region Private static methods
 
-        private static void RegisterDependencies(IServiceCollection serviceCollection)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, IHttpClientFactory httpClientFactory = null)
         {
-            serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            if (httpClientFactory != null)
+            {
+                serviceCollection.AddSingleton(httpClientFactory);
+            }
+            else
+            {
+                serviceCollection.AddCommonClient();
+            }
 
             // Register clients
             serviceCollection.AddTransient<ITokenClient, TokenClient>();

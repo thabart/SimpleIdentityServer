@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
-using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Errors;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             InitializeFakeObjects();
             
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateHelper.ProcessRedirection(null, null, null, null, null));
         }
 
         [Fact]
@@ -42,14 +42,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             // ARRANGE
             InitializeFakeObjects();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((Client)null));
+                .Returns(Task.FromResult((Core.Common.Models.Client)null));
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = "client_id"
             };
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _authenticateHelper.ProcessRedirection(authorizationParameter, null, null, null, null));
             Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, authorizationParameter.ClientId));
         }
 
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
@@ -81,7 +81,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims, null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);
@@ -103,14 +103,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             {
                 RedirectInstruction = new RedirectInstruction()
             };
-            var consent = new Core.Models.Consent();
+            var consent = new Core.Common.Models.Consent();
             var authorizationParameter = new AuthorizationParameter
             {
                 ResponseMode = ResponseMode.form_post
             };
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
@@ -123,7 +123,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims, null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.ResponseMode == ResponseMode.form_post);
@@ -147,19 +147,19 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var authorizationParameter = new AuthorizationParameter();
             var claims = new List<Claim>();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new Client()));
+                .Returns(Task.FromResult(new Core.Common.Models.Client()));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirection())
                 .Returns(actionResult);
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(prompts);
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
-                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Models.Consent)null));
+                It.IsAny<AuthorizationParameter>())).Returns(() => Task.FromResult((Core.Common.Models.Consent)null));
 
             // ACT
             actionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                 code,
                 subject,
-                claims);
+                claims, null);
 
             // ASSERTS
             Assert.True(actionResult.RedirectInstruction.Action == IdentityServerEndPoints.ConsentIndex);

@@ -14,15 +14,14 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Services
 {
     public interface IAuthenticateResourceOwnerService
     {
-        string GetHashedPassword(string password);
-        Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login);
         Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password);
+        string Amr { get; }
     }
 }

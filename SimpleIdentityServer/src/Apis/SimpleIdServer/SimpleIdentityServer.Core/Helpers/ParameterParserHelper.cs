@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {

@@ -14,12 +14,13 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Store;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
@@ -32,20 +33,17 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
     internal class GenerateAndSendCodeAction : IGenerateAndSendCodeAction
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IConfirmationCodeRepository _confirmationCodeRepository;
+        private readonly IConfirmationCodeStore _confirmationCodeStore;
         private readonly ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
         public GenerateAndSendCodeAction(
             IResourceOwnerRepository resourceOwnerRepository,
-            IConfirmationCodeRepository confirmationCodeRepository,
-            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+            IConfirmationCodeStore confirmationCodeStore,
+            ITwoFactorAuthenticationHandler twoFactorAuthenticationHandler)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _confirmationCodeRepository = confirmationCodeRepository;
+            _confirmationCodeStore = confirmationCodeStore;
             _twoFactorAuthenticationHandler = twoFactorAuthenticationHandler;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
 
@@ -56,15 +54,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(subject));
             }
             
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
+            var resourceOwner = await _resourceOwnerRepository.GetAsync(subject);
             if (resourceOwner == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheRoDoesntExist);
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheRoDoesntExist);
             }
 
-            if (resourceOwner.TwoFactorAuthentication ==  TwoFactorAuthentications.NONE)
+            if (string.IsNullOrWhiteSpace(resourceOwner.TwoFactorAuthentication))
             {
                 throw new IdentityServerException(
                     ErrorCodes.UnhandledExceptionCode,
@@ -73,28 +69,31 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
             var confirmationCode = new ConfirmationCode
             {
-                Code = await GetCode(),
-                CreateDateTime = DateTime.UtcNow,
-                ExpiresIn = 300,
-                IsConfirmed = false
+                Value = await GetCode(),
+                IssueAt = DateTime.UtcNow,
+                ExpiresIn = 300
             };
 
-            if (!await _confirmationCodeRepository.AddAsync(confirmationCode))
+            var service = _twoFactorAuthenticationHandler.Get(resourceOwner.TwoFactorAuthentication);
+            if (!resourceOwner.Claims.Any(c => c.Type == service.RequiredClaim))
             {
-                throw new IdentityServerException(
-                    ErrorCodes.UnhandledExceptionCode,
-                    ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
+                throw new ClaimRequiredException(service.RequiredClaim);
             }
 
-            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Code, (int)resourceOwner.TwoFactorAuthentication, resourceOwner);
-            return confirmationCode.Code;
+            if (!await _confirmationCodeStore.Add(confirmationCode))
+            {
+                throw new IdentityServerException(ErrorCodes.UnhandledExceptionCode, ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
+            }
+
+            await _twoFactorAuthenticationHandler.SendCode(confirmationCode.Value, resourceOwner.TwoFactorAuthentication, resourceOwner);
+            return confirmationCode.Value;
         }
         
         private async Task<string> GetCode()
         {
             var random = new Random();
             var number = random.Next(100000, 999999);
-            if (await _confirmationCodeRepository.GetAsync(number.ToString()) != null)
+            if (await _confirmationCodeStore.Get(number.ToString()) != null)
             {
                 return await GetCode();
             }

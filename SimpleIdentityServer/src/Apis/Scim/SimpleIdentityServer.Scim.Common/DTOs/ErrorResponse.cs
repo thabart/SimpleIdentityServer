@@ -24,10 +24,8 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
     {
         [DataMember(Name = Constants.ScimResourceNames.Schemas)]
         public IEnumerable<string> Schemas { get; set; }
-
         [DataMember(Name = Constants.ErrorResponseNames.Detail)]
         public string Detail { get; set; }
-
         [DataMember(Name = Constants.ErrorResponseNames.Status)]
         public int Status { get; set; }
     }

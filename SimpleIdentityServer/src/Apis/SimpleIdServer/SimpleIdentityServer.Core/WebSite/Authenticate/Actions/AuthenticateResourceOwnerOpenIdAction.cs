@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
-            string code);
+            string code, string issuerName);
     }
 
     public class AuthenticateResourceOwnerOpenIdAction : IAuthenticateResourceOwnerOpenIdAction
@@ -74,7 +74,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
             ClaimsPrincipal resourceOwnerPrincipal,
-            string code)
+            string code, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 return await _authenticateHelper.ProcessRedirection(authorizationParameter,
                     code,
                     subject,
-                    claims);
+                    claims, issuerName);
             }
 
             // 2).

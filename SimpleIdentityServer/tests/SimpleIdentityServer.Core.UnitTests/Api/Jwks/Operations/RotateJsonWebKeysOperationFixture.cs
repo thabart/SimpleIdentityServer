@@ -16,8 +16,9 @@
 
 using Moq;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Store;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,6 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
     public sealed class RotateJsonWebKeysOperationFixture
     {
         private Mock<IJsonWebKeyRepository> _jsonWebKeyRepositoryStub;
+        private Mock<ITokenStore> _tokenStoreStub;
         private IRotateJsonWebKeysOperation _rotateJsonWebKeysOperation;
 
         [Fact]
@@ -78,7 +80,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Jwks.Operations
         private void InitializeFakeObjects()
         {
             _jsonWebKeyRepositoryStub = new Mock<IJsonWebKeyRepository>();
-            _rotateJsonWebKeysOperation = new RotateJsonWebKeysOperation(_jsonWebKeyRepositoryStub.Object);
+            _tokenStoreStub = new Mock<ITokenStore>();
+            _rotateJsonWebKeysOperation = new RotateJsonWebKeysOperation(_jsonWebKeyRepositoryStub.Object, _tokenStoreStub.Object);
         }
     }
 }

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleIdentityServer.Rfid.Website": {
-      "commandName": "Project",
-      "commandLineArgs": "http://*:5100"
-    }
-  }
-}

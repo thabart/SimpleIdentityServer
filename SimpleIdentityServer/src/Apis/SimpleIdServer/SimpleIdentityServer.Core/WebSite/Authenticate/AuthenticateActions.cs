@@ -14,15 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleBus.Core;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdServer.Bus;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
-using SimpleIdentityServer.EventStore.Core.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -30,11 +27,8 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
 {
     public interface IAuthenticateActions
     {
-        Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code);
-        Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter);
-        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code);
-        Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(List<Claim> claims, AuthorizationParameter authorizationParameter, string code);
-        Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal);
+        Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName);
+        Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName);
         Task<string> GenerateAndSendCode(string subject);
         Task<bool> ValidateCode(string code);
         Task<bool> RemoveCode(string code);
@@ -44,66 +38,26 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
     {
         private readonly IAuthenticateResourceOwnerOpenIdAction _authenticateResourceOwnerOpenIdAction;
         private readonly ILocalOpenIdUserAuthenticationAction _localOpenIdUserAuthenticationAction;
-        private readonly IExternalOpenIdUserAuthenticationAction _externalOpenIdUserAuthenticationAction;
-        private readonly ILocalUserAuthenticationAction _localUserAuthenticationAction;
-        private readonly ILoginCallbackAction _loginCallbackAction;
         private readonly IGenerateAndSendCodeAction _generateAndSendCodeAction;
         private readonly IValidateConfirmationCodeAction _validateConfirmationCodeAction;
         private readonly IRemoveConfirmationCodeAction _removeConfirmationCodeAction;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IEventAggregateRepository _eventAggregateRepository;
 
         public AuthenticateActions(
             IAuthenticateResourceOwnerOpenIdAction authenticateResourceOwnerOpenIdAction,
             ILocalOpenIdUserAuthenticationAction localOpenIdUserAuthenticationAction,
-            IExternalOpenIdUserAuthenticationAction externalOpenIdUserAuthenticationAction,
-            ILocalUserAuthenticationAction localUserAuthenticationAction,
-            ILoginCallbackAction loginCallbackAction,
             IGenerateAndSendCodeAction generateAndSendCodeAction,
             IValidateConfirmationCodeAction validateConfirmationCodeAction,
             IRemoveConfirmationCodeAction removeConfirmationCodeAction)
         {
             _authenticateResourceOwnerOpenIdAction = authenticateResourceOwnerOpenIdAction;
             _localOpenIdUserAuthenticationAction = localOpenIdUserAuthenticationAction;
-            _externalOpenIdUserAuthenticationAction = externalOpenIdUserAuthenticationAction;
-            _localUserAuthenticationAction = localUserAuthenticationAction;
-            _loginCallbackAction = loginCallbackAction;
             _generateAndSendCodeAction = generateAndSendCodeAction;
             _validateConfirmationCodeAction = validateConfirmationCodeAction;
             _removeConfirmationCodeAction = removeConfirmationCodeAction;
         }
 
-        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code)
-        {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            if (claimsPrincipal == null)
-            {
-                throw new ArgumentNullException(nameof(claimsPrincipal));
-            }
-
-            return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
-                claimsPrincipal, 
-                code);
-        }
-
-        public async Task<ResourceOwner> LocalUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter)
-        {
-            if (localAuthenticationParameter == null)
-            {
-                throw new ArgumentNullException("localAuthenticationParameter");
-            }
-
-            return await _localUserAuthenticationAction.Execute(localAuthenticationParameter);
-        }
-
-        public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(
-            LocalAuthenticationParameter localAuthenticationParameter,
-            AuthorizationParameter authorizationParameter,
-            string code)
+        public async Task<LocalOpenIdAuthenticationResult> LocalOpenIdUserAuthentication(LocalAuthenticationParameter localAuthenticationParameter, AuthorizationParameter authorizationParameter, string code, string issuerName)
         {
             if (localAuthenticationParameter == null)
             {
@@ -118,38 +72,24 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate
             return await _localOpenIdUserAuthenticationAction.Execute(
                 localAuthenticationParameter,
                 authorizationParameter,
-                code);
+                code, issuerName);
         }
 
-
-        public async Task<ExternalOpenIdAuthenticationResult> ExternalOpenIdUserAuthentication(
-            List<Claim> claims, 
-            AuthorizationParameter authorizationParameter, 
-            string code)
+        public async Task<ActionResult> AuthenticateResourceOwnerOpenId(AuthorizationParameter parameter, ClaimsPrincipal claimsPrincipal, string code, string issuerName)
         {
-            if (claims == null || !claims.Any())
+            if (parameter == null)
             {
-                throw new ArgumentNullException("claims");
+                throw new ArgumentNullException(nameof(parameter));
             }
 
-            if (authorizationParameter == null)
+            if (claimsPrincipal == null)
             {
-                throw new ArgumentNullException("authorizationParameter");
+                throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException("code");
-            }
-
-            return await _externalOpenIdUserAuthenticationAction.Execute(claims,
-                authorizationParameter,
-                code);
-        }
-
-        public async Task<IEnumerable<Claim>> LoginCallback(ClaimsPrincipal claimsPrincipal)
-        {
-            return await _loginCallbackAction.Execute(claimsPrincipal);
+            return await _authenticateResourceOwnerOpenIdAction.Execute(parameter, 
+                claimsPrincipal, 
+                code, issuerName);
         }
 
         public async Task<string> GenerateAndSendCode(string subject)

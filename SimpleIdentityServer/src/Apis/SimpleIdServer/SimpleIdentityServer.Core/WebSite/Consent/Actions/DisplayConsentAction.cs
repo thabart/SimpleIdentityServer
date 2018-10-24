@@ -16,14 +16,14 @@
 
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using System;
 using System.Collections.Generic;
@@ -45,12 +45,12 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Action result.</returns>
         Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal);
+            ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 
     public class DisplayContentResult
     {
-        public Client Client { get; set; }
+        public Core.Common.Models.Client Client { get; set; }
         public ICollection<Scope> Scopes { get; set; }
         public ICollection<string> AllowedClaims { get; set; }
         public ActionResult ActionResult { get; set; }
@@ -93,7 +93,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Action result.</returns>
         public async Task<DisplayContentResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -121,7 +121,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             if (assignedConsent != null)
             {
                 actionResult = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(actionResult, authorizationParameter, claimsPrincipal, client, issuerName);
                 var responseMode = authorizationParameter.ResponseMode;
                 if (responseMode == ResponseMode.None)
                 {

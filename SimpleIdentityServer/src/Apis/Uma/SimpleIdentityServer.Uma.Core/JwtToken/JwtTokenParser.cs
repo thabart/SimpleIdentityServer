@@ -14,47 +14,47 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Core.Jwt;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Uma.Core.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.JwtToken
 {
     public interface IJwtTokenParser
     {
-        Task<JwsPayload> UnSign(string jws, string openidUrl);
+        /// <summary>
+        /// Unsign the JWS
+        /// </summary>
+        /// <param name="jws"></param>
+        /// <param name="policyRule"></param>
+        /// <returns></returns>
+        Task<JwsPayload> UnSign(string jws, PolicyRule policyRule);
     }
 
     internal class JwtTokenParser : IJwtTokenParser
     {
         private readonly IJwsParser _jwsParser;
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
-        public JwtTokenParser(
-            IJwsParser jwsParser,
-            IIdentityServerClientFactory identityServerClientFactory,
-            IJsonWebKeyConverter jsonWebKeyConverter)
+        public JwtTokenParser(IJwsParser jwsParser, IJsonWebKeyConverter jsonWebKeyConverter)
         {
             _jwsParser = jwsParser;
-            _identityServerClientFactory = identityServerClientFactory;
             _jsonWebKeyConverter = jsonWebKeyConverter;
         }
 
-        public async Task<JwsPayload> UnSign(string jws, string openidUrl)
+        public Task<JwsPayload> UnSign(string jws, PolicyRule policyRule)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
                 throw new ArgumentNullException(nameof(jws));
             }
 
-            if (string.IsNullOrWhiteSpace(openidUrl))
+            if (policyRule == null)
             {
-                throw new ArgumentNullException(nameof(openidUrl));
+                throw new ArgumentNullException(nameof(policyRule));
             }
 
             var protectedHeader = _jwsParser.GetHeader(jws);
@@ -62,24 +62,19 @@ namespace SimpleIdentityServer.Uma.Core.JwtToken
             {
                 return null;
             }
-
-            var jsonWebKeySet = await _identityServerClientFactory.CreateJwksClient()
-                .ResolveAsync(openidUrl)
-                .ConfigureAwait(false);
-            var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
-            if (jsonWebKeys == null ||
-                !jsonWebKeys.Any(j => j.Kid == protectedHeader.Kid))
-            {
-                return null;
-            }
-
-            var jsonWebKey = jsonWebKeys.First(j => j.Kid == protectedHeader.Kid);
+            
             if (protectedHeader.Alg == SimpleIdentityServer.Core.Jwt.Constants.JwsAlgNames.NONE)
             {
-                return _jwsParser.GetPayload(jws);
+                return Task.FromResult(_jwsParser.GetPayload(jws));
             }
 
-            return _jwsParser.ValidateSignature(jws, jsonWebKey);
+            var jsonWebKey = new JsonWebKey
+            {
+                Kty = KeyType.RSA,
+                Kid = protectedHeader.Kid,
+                SerializedKey = policyRule.SerializedCertificate
+            };
+            return Task.FromResult(_jwsParser.ValidateSignature(jws, jsonWebKey));
         }
     }
 }

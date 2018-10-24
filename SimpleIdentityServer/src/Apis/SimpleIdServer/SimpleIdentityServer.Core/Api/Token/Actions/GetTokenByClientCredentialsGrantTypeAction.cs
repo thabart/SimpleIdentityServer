@@ -15,26 +15,25 @@
 #endregion
 
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByClientCredentialsGrantTypeAction
     {
-        Task<GrantedToken> Execute(
-               ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-               AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal class GetTokenByClientCredentialsGrantTypeAction : IGetTokenByClientCredentialsGrantTypeAction
@@ -44,7 +43,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
         private readonly IClientValidator _clientValidator;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly IScopeValidator _scopeValidator;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IClientCredentialsGrantTypeParameterValidator _clientCredentialsGrantTypeParameterValidator;
         private readonly IClientHelper _clientHelper;
         private readonly IJwtGenerator _jwtGenerator;
@@ -59,7 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             IClientValidator clientValidator,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             IScopeValidator scopeValidator,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IClientCredentialsGrantTypeParameterValidator clientCredentialsGrantTypeParameterValidator,
             IClientHelper clientHelper,
             IJwtGenerator jwtGenerator,
@@ -71,7 +70,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientValidator = clientValidator;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _scopeValidator = scopeValidator;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _clientCredentialsGrantTypeParameterValidator = clientCredentialsGrantTypeParameterValidator;
             _clientHelper = clientHelper;
             _jwtGenerator = jwtGenerator;
@@ -83,9 +82,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<GrantedToken> Execute(
-            ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (clientCredentialsGrantTypeParameter == null)
             {
@@ -95,9 +92,8 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             _clientCredentialsGrantTypeParameterValidator.Validate(clientCredentialsGrantTypeParameter);
 
             // 1. Authenticate the client
-            var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter,
-                authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var instruction = CreateAuthenticateInstruction(clientCredentialsGrantTypeParameter, authenticationHeaderValue, certificate);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {
@@ -105,15 +101,13 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             // 2. Check client
-            if (client.GrantTypes == null ||
-                !client.GrantTypes.Contains(GrantType.client_credentials))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.client_credentials))
             {
-                throw new IdentityServerException(ErrorCodes.InvalidGrant,
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.client_credentials));
             }
 
-            if (client.ResponseTypes == null ||
-                !client.ResponseTypes.Contains(ResponseType.token))
+            if (client.ResponseTypes == null || !client.ResponseTypes.Contains(ResponseType.token))
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient,
                     string.Format(ErrorDescriptions.TheClientDoesntSupportTheResponseType, client.ClientId, ResponseType.token));
@@ -138,9 +132,9 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             var grantedToken = await _grantedTokenHelper.GetValidGrantedTokenAsync(allowedTokenScopes, client.ClientId);
             if (grantedToken == null)
             {
-                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes);
+                grantedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(client, allowedTokenScopes, issuerName);
                 await _tokenStore.AddToken(grantedToken);
-                _simpleIdentityServerEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
+                _oauthEventSource.GrantAccessToClient(client.ClientId, grantedToken.AccessToken, allowedTokenScopes);
             }
 
             return grantedToken;
@@ -152,13 +146,15 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             ClientCredentialsGrantTypeParameter clientCredentialsGrantTypeParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue,
+            X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = clientCredentialsGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = clientCredentialsGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = clientCredentialsGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 

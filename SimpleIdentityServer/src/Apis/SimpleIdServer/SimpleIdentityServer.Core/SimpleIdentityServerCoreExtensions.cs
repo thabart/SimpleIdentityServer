@@ -15,6 +15,8 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.AccountFilter;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
@@ -24,6 +26,8 @@ using SimpleIdentityServer.Core.Api.Introspection;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Api.Jwks;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
+using SimpleIdentityServer.Core.Api.Profile;
+using SimpleIdentityServer.Core.Api.Profile.Actions;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Api.Token;
@@ -32,17 +36,17 @@ using SimpleIdentityServer.Core.Api.UserInfo;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Authenticate;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Protector;
+using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Translation;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.WebSite.Account;
-using SimpleIdentityServer.Core.WebSite.Account.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
@@ -52,30 +56,20 @@ using SimpleIdentityServer.Core.WebSite.User;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
+using SimpleIdentityServer.Common.Client;
 
 namespace SimpleIdentityServer.Core
 {
     public static class SimpleIdentityServerCoreExtensions
     {
-        public static IServiceCollection AddInMemoryStorage(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, OAuthConfigurationOptions configurationOptions = null, List<ClaimAggregate> claims = null, List<Common.Models.Client> clients = null, List<Consent> consents = null, List<JsonWebKey> jsonWebKeys = null,
+            List<ResourceOwnerProfile> profiles = null, List<ResourceOwner> resourceOwners = null, List<Scope> scopes = null, List<Common.Models.Translation> translations = null)
         {
             if (serviceCollection == null)
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
-
-            serviceCollection.AddSingleton<IAuthorizationCodeStore>(new InMemoryAuthorizationCodeStore());
-            serviceCollection.AddSingleton<ITokenStore>(new InMemoryTokenStore());
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddSimpleIdentityServerCore(this IServiceCollection serviceCollection, IHttpClientFactory factory = null)
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException("serviceCollection");
-            }
-
+            
 			serviceCollection.AddTransient<IGrantedTokenGeneratorHelper, GrantedTokenGeneratorHelper>();
             serviceCollection.AddTransient<IConsentHelper, ConsentHelper>();
             serviceCollection.AddTransient<IClientHelper, ClientHelper>();
@@ -114,9 +108,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IAuthenticateActions, AuthenticateActions>();
             serviceCollection.AddTransient<IAuthenticateResourceOwnerOpenIdAction, AuthenticateResourceOwnerOpenIdAction>();
             serviceCollection.AddTransient<ILocalOpenIdUserAuthenticationAction, LocalOpenIdUserAuthenticationAction>();
-            serviceCollection.AddTransient<IExternalOpenIdUserAuthenticationAction, ExternalOpenIdUserAuthenticationAction>();
             serviceCollection.AddTransient<IAuthenticateHelper, AuthenticateHelper>();
-            serviceCollection.AddTransient<ILocalUserAuthenticationAction, LocalUserAuthenticationAction>();
             serviceCollection.AddTransient<IDiscoveryActions, DiscoveryActions>();
             serviceCollection.AddTransient<ICreateDiscoveryDocumentationAction, CreateDiscoveryDocumentationAction>();
             serviceCollection.AddTransient<IProcessAuthorizationRequest, ProcessAuthorizationRequest>();
@@ -133,15 +125,7 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IRefreshTokenGrantTypeParameterValidator, RefreshTokenGrantTypeParameterValidator>();
             serviceCollection.AddTransient<ITranslationManager, TranslationManager>();
             serviceCollection.AddTransient<IGrantedTokenHelper, GrantedTokenHelper>();
-            if (factory != null)
-            {
-                serviceCollection.AddSingleton(factory);
-            }
-            else
-            {
-                serviceCollection.AddTransient<IHttpClientFactory, HttpClientFactory>();
-            }
-
+            serviceCollection.AddCommonClient();
             serviceCollection.AddTransient<IIntrospectionActions, IntrospectionActions>();
             serviceCollection.AddTransient<IPostIntrospectionAction, PostIntrospectionAction>();
             serviceCollection.AddTransient<IIntrospectionParameterValidator, IntrospectionParameterValidator>();
@@ -152,17 +136,37 @@ namespace SimpleIdentityServer.Core
             serviceCollection.AddTransient<IUserActions, UserActions>();
             serviceCollection.AddTransient<IRemoveConsentOperation, RemoveConsentOperation>();
             serviceCollection.AddTransient<IRevokeTokenAction, RevokeTokenAction>();
-            serviceCollection.AddTransient<ILoginCallbackAction, LoginCallbackAction>();
             serviceCollection.AddTransient<IGetUserOperation, GetUserOperation>();
-            serviceCollection.AddTransient<IUpdateUserOperation, UpdateUserOperation>();
-            serviceCollection.AddTransient<IAccountActions, AccountActions>();
-            serviceCollection.AddTransient<IAddResourceOwnerAction, AddResourceOwnerAction>();
-            serviceCollection.AddTransient<IConfirmUserOperation, ConfirmUserOperation>();
+            serviceCollection.AddTransient<IUpdateUserCredentialsOperation, UpdateUserCredentialsOperation>();
+            serviceCollection.AddTransient<IUpdateUserClaimsOperation, UpdateUserClaimsOperation>();
+            serviceCollection.AddTransient<IAddUserOperation, AddUserOperation>();
             serviceCollection.AddTransient<IGenerateAndSendCodeAction, GenerateAndSendCodeAction>();
             serviceCollection.AddTransient<IValidateConfirmationCodeAction, ValidateConfirmationCodeAction>();
             serviceCollection.AddTransient<IRemoveConfirmationCodeAction, RemoveConfirmationCodeAction>();
             serviceCollection.AddTransient<ITwoFactorAuthenticationHandler, TwoFactorAuthenticationHandler>();
             serviceCollection.AddTransient<IPayloadSerializer, PayloadSerializer>();
+            serviceCollection.AddTransient<IProfileActions, ProfileActions>();
+            serviceCollection.AddTransient<ILinkProfileAction, LinkProfileAction>();
+            serviceCollection.AddTransient<IUnlinkProfileAction, UnlinkProfileAction>();
+            serviceCollection.AddTransient<IGetUserProfilesAction, GetUserProfilesAction>();
+            serviceCollection.AddTransient<IGetResourceOwnerClaimsAction, GetResourceOwnerClaimsAction>();
+            serviceCollection.AddTransient<IUpdateUserTwoFactorAuthenticatorOperation, UpdateUserTwoFactorAuthenticatorOperation>();
+            serviceCollection.AddTransient<IResourceOwnerAuthenticateHelper, ResourceOwnerAuthenticateHelper>();
+            serviceCollection.AddTransient<IAmrHelper, AmrHelper>();
+            serviceCollection.AddTransient<IRevokeTokenParameterValidator, RevokeTokenParameterValidator>();
+            serviceCollection.AddSingleton<IClientPasswordService, DefaultClientPasswordService>();
+            serviceCollection.AddSingleton<IConfigurationService>(new DefaultConfigurationService(configurationOptions));
+            serviceCollection.AddSingleton<IClaimRepository>(new DefaultClaimRepository(claims));
+            serviceCollection.AddSingleton<IClientRepository>(new DefaultClientRepository(clients));
+            serviceCollection.AddSingleton<IConsentRepository>(new DefaultConsentRepository(consents));
+            serviceCollection.AddSingleton<IJsonWebKeyRepository>(new DefaultJsonWebKeyRepository(jsonWebKeys));
+            serviceCollection.AddSingleton<IProfileRepository>(new DefaultProfileRepository(profiles));
+            serviceCollection.AddSingleton<IResourceOwnerRepository>(new DefaultResourceOwnerRepository(resourceOwners));
+            serviceCollection.AddSingleton<IScopeRepository>(new DefaultScopeRepository(scopes));
+            serviceCollection.AddSingleton<ITranslationRepository>(new DefaultTranslationRepository(translations));
+            serviceCollection.AddSingleton<ISubjectBuilder>(new DefaultSubjectBuilder());
+            serviceCollection.AddSingleton<IAccountFilter>(new DefaultAccountFilter());
+            serviceCollection.AddSingleton<IUserClaimsEnricher>(new DefaultUserClaimsEnricher());
             return serviceCollection;
         }
     }

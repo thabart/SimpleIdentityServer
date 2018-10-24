@@ -16,14 +16,14 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
+using SimpleIdentityServer.Common.Client.Factories;
 using SimpleIdentityServer.Scim.Client.Builders;
-using SimpleIdentityServer.Scim.Client.Factories;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
+using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
+using SimpleIdentityServer.Scim.Core.EF.Extensions;
 using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using Xunit;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
@@ -40,8 +40,154 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             _testScimServerFixture = testScimServerFixture;
         }
 
+        #region Happy paths
+
+        #region Add authenticated user
+
         [Fact]
-        public async Task When_Inset_Complex_Users_Then_Information_Are_Correct()
+        public async Task When_Add_Authenticated_User_Then_ScimIdentifier_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token");
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.Created, scimResponse.StatusCode);
+        }
+
+        #endregion
+
+        #region Update authenticated user
+
+        [Fact]
+        public async Task When_Update_Current_User_Then_Ok_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token");
+            var scimId = scimResponse.Content["id"].ToString();
+            UserStore.Instance().ScimId = scimId;
+            var thirdResult = await _usersClient.UpdateAuthenticatedUser(baseUrl, scimId)
+                .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "other_username"))
+                .Execute();
+            UserStore.Instance().ScimId = null;
+
+            // ASSERT
+            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+        }
+
+        #endregion
+
+        #region Partially update authenticated user
+
+        [Fact]
+        public async Task When_Partially_Update_Current_User_Then_Ok_Is_Returned()
+        {
+            // ARRANGE
+            var patchOperation = new PatchOperationBuilder().SetType(PatchOperations.replace)
+                .SetPath(Common.Constants.UserResourceResponseNames.UserName)
+                .SetContent("new_username")
+                .Build();
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token");
+            var scimId = scimResponse.Content["id"].ToString();
+            UserStore.Instance().ScimId = scimId;
+            var thirdResult = await _usersClient.PartialUpdateAuthenticatedUser(baseUrl, scimId)
+                .AddOperation(patchOperation)
+                .Execute();
+            UserStore.Instance().ScimId = null;
+
+            // ASSERT
+            Assert.Equal(HttpStatusCode.OK, thirdResult.StatusCode);
+        }
+
+        #endregion
+
+        #region Remove authenticated user
+
+        [Fact]
+        public async Task When_Remove_Current_User_Then_NoContent_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token");
+            var scimId = scimResponse.Content["id"].ToString();
+            UserStore.Instance().ScimId = scimId;
+            var removeResponse = await _usersClient.DeleteAuthenticatedUser(baseUrl, "token");
+            UserStore.Instance().ScimId = null;
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.NoContent, removeResponse.StatusCode);
+        }
+
+        #endregion
+
+        #region Get authenticated user
+
+        [Fact]
+        public async Task When_Get_Authenticated_User_Then_Ok_Is_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            var scimResponse = await _usersClient.AddAuthenticatedUser(baseUrl, "token");
+            var scimId = scimResponse.Content["id"].ToString();
+            UserStore.Instance().ScimId = scimId;
+            var userResponse = await _usersClient.GetAuthenticatedUser(baseUrl, "token");
+            UserStore.Instance().ScimId = null;
+
+
+            // ASSERTS
+            Assert.Equal(HttpStatusCode.OK, userResponse.StatusCode);
+        }
+
+        #endregion
+
+        #region Search users
+
+        [Fact]
+        public async Task When_Insert_Ten_Users_And_Search_Two_Users_Are_Returned()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _httpClientFactoryStub.Setup(h => h.GetHttpClient()).Returns(_testScimServerFixture.Client);
+
+            // ACT
+            for(var i = 0; i < 10; i++)
+            {
+                await _usersClient.AddUser(baseUrl)
+                    .SetCommonAttributes("external_id")
+                    .AddAttribute(new JProperty(Common.Constants.UserResourceResponseNames.UserName, "username"))
+                    .Execute();
+            }
+            var searchResult = await _usersClient.SearchUsers(baseUrl, new SearchParameter
+            {
+                StartIndex = 0,
+                Count = 2
+            });
+
+            // ASSERTS
+            Assert.True(searchResult.Content["Resources"].Count() == 2);
+        }
+
+        #endregion
+
+        [Fact]
+        public async Task When_Insert_Complex_Users_Then_Information_Are_Correct()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -101,7 +247,7 @@ namespace SimpleIdentityServer.Scim.Client.Tests
         }
 
         [Fact]
-        public async Task When_Executing_Operations_On_Users_Then_No_Exceptions_Are_Thrown()
+        public async Task When_Execute_Operations_On_Users_Then_No_Exceptions_Are_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
@@ -163,7 +309,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.True(fourthResult.StatusCode == HttpStatusCode.OK);
             Assert.True(fourthResult.Content[Common.Constants.UserResourceResponseNames.Emails].Count() == 2);
 
-            /*
             // ACT : Remove emails of the user
             var fifthResult = await _usersClient.PartialUpdateUser(baseUrl, id)
                 .AddOperation(removeEmailOperation)
@@ -173,7 +318,6 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.NotNull(fifthResult);
             Assert.True(fifthResult.StatusCode == HttpStatusCode.OK);
             Assert.True(fifthResult.Content[Common.Constants.UserResourceResponseNames.Emails].Count() == 1);
-            */
 
             // ACT : Add 10 users
             for (int i = 0; i < 10; i++)
@@ -213,6 +357,8 @@ namespace SimpleIdentityServer.Scim.Client.Tests
             Assert.NotNull(eightResult);
             Assert.True(eightResult.StatusCode == HttpStatusCode.NoContent);
         }
+
+        #endregion
 
         private void InitializeFakeObjects()
         {

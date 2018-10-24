@@ -15,7 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Core.Api.Discovery.Actions;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Discovery

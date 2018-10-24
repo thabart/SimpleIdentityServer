@@ -17,12 +17,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Common.Extensions;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Handler.Events;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -167,11 +166,29 @@ namespace SimpleIdentityServer.Core
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var result = new Payload
+            var contentResult = parameter.Content as ContentResult;
+            var objResult = parameter.Content as ObjectResult;
+            if (contentResult != null)
             {
-                Content = ((ObjectResult)parameter.Content).Value
-            };
-            return JsonConvert.SerializeObject(result);
+                var result = new Payload
+                {
+                    Content = contentResult.Content
+                };
+                return JsonConvert.SerializeObject(result);
+            }
+
+            if (objResult != null)
+            {
+                var result = new Payload
+                {
+                    Content = objResult.Value
+                };
+
+                return JsonConvert.SerializeObject(result);
+            }
+
+            return null;
+
         }
 
         public string GetPayload(AuthorizationCodeGrantTypeParameter parameter, AuthenticationHeaderValue authenticationHeaderValue)

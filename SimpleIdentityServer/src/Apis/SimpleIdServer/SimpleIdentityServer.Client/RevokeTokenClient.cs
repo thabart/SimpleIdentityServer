@@ -17,6 +17,7 @@
 using SimpleIdentityServer.Client.Builders;
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
+using SimpleIdentityServer.Client.Results;
 using System;
 using System.Threading.Tasks;
 
@@ -24,9 +25,9 @@ namespace SimpleIdentityServer.Client
 {
     public interface IRevokeTokenClient
     {
-        Task<bool> ExecuteAsync(string tokenUrl);
-        Task<bool> ExecuteAsync(Uri tokenUri);
-        Task<bool> ResolveAsync(string discoveryDocumentationUrl);
+        Task<GetRevokeTokenResult> ExecuteAsync(string tokenUrl);
+        Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri);
+        Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl);
     }
 
     internal class RevokeTokenClient : IRevokeTokenClient
@@ -45,17 +46,17 @@ namespace SimpleIdentityServer.Client
             _getDiscoveryOperation = getDiscoveryOperation;
         }
 
-        public async Task<bool> ExecuteAsync(Uri tokenUri)
+        public Task<GetRevokeTokenResult> ExecuteAsync(Uri tokenUri)
         {
             if (tokenUri == null)
             {
                 throw new ArgumentNullException(nameof(tokenUri));
             }
 
-            return await _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
+            return _revokeTokenOperation.ExecuteAsync(_requestBuilder.Content, tokenUri, _requestBuilder.AuthorizationHeaderValue);
         }
 
-        public async Task<bool> ExecuteAsync(string revokeUrl)
+        public Task<GetRevokeTokenResult> ExecuteAsync(string revokeUrl)
         {
             if (string.IsNullOrWhiteSpace(revokeUrl))
             {
@@ -68,10 +69,10 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, revokeUrl));
             }
 
-            return await ExecuteAsync(uri);
+            return ExecuteAsync(uri);
         }
 
-        public async Task<bool> ResolveAsync(string discoveryDocumentationUrl)
+        public async Task<GetRevokeTokenResult> ResolveAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {
@@ -84,8 +85,8 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri);
-            return await ExecuteAsync(discoveryDocument.RevocationEndPoint);
+            var discoveryDocument = await _getDiscoveryOperation.ExecuteAsync(uri).ConfigureAwait(false);
+            return await ExecuteAsync(discoveryDocument.RevocationEndPoint).ConfigureAwait(false);
         }
     }
 }

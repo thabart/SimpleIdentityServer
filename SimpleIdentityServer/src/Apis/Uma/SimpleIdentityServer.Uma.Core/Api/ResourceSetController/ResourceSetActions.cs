@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController.Actions;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
@@ -31,6 +30,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         Task<bool> RemoveResourceSet(string resourceSetId);
         Task<IEnumerable<string>> GetAllResourceSet();
         Task<IEnumerable<string>> GetPolicies(string resourceId);
+        Task<SearchResourceSetResult> Search(SearchResourceSetParameter parameter);
     }
 
     internal class ResourceSetActions : IResourceSetActions
@@ -41,6 +41,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
         private readonly IDeleteResourceSetAction _deleteResourceSetAction;
         private readonly IGetAllResourceSetAction _getAllResourceSetAction;
         private readonly IGetPoliciesAction _getPoliciesAction;
+        private readonly ISearchResourceSetOperation _searchResourceSetOperation;
 
         public ResourceSetActions(
             IAddResourceSetAction addResourceSetAction,
@@ -48,7 +49,8 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             IUpdateResourceSetAction updateResourceSetAction,
             IDeleteResourceSetAction deleteResourceSetAction,
             IGetAllResourceSetAction getAllResourceSetAction,
-            IGetPoliciesAction getPoliciesAction)
+            IGetPoliciesAction getPoliciesAction,
+            ISearchResourceSetOperation searchResourceSetOperation)
         {
             _addResourceSetAction = addResourceSetAction;
             _getResourceSetAction = getResourceSetAction;
@@ -56,8 +58,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.ResourceSetController
             _deleteResourceSetAction = deleteResourceSetAction;
             _getAllResourceSetAction = getAllResourceSetAction;
             _getPoliciesAction = getPoliciesAction;
+            _searchResourceSetOperation = searchResourceSetOperation;
         }
-        
+
+        public Task<SearchResourceSetResult> Search(SearchResourceSetParameter parameter)
+        {
+            return _searchResourceSetOperation.Execute(parameter);
+        }
+
         public Task<string> AddResourceSet(AddResouceSetParameter addResouceSetParameter)
         {
             return _addResourceSetAction.Execute(addResouceSetParameter);

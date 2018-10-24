@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using SimpleBus.Core;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.OAuth.Events;
 using System;
 using System.Threading.Tasks;
 
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Registration
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

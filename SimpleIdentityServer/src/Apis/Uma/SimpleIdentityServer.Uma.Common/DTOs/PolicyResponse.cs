@@ -45,5 +45,7 @@ namespace SimpleIdentityServer.Uma.Common.DTOs
         public bool IsResourceOwnerConsentNeeded { get; set; }
         [DataMember(Name = PolicyRuleNames.Script)]
         public string Script { get; set; }
+        [DataMember(Name = PolicyRuleNames.OpenIdProvider)]
+        public string OpenIdProvider { get; set; }
     }
 }

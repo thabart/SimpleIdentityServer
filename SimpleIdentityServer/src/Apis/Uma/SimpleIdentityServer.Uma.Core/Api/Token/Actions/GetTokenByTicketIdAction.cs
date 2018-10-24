@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Common;
 using SimpleIdentityServer.Uma.Core.Errors;
 using SimpleIdentityServer.Uma.Core.Exceptions;
@@ -18,6 +17,7 @@ using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,15 +25,14 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 {
     public interface IGetTokenByTicketIdAction
     {
-        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal sealed class GetTokenByTicketIdAction : IGetTokenByTicketIdAction
     {
         private readonly ITicketStore _ticketStore;
-        private readonly IConfigurationService _configurationService;
+        private readonly IUmaConfigurationService _configurationService;
         private readonly IUmaServerEventSource _umaServerEventSource;
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IAuthorizationPolicyValidator _authorizationPolicyValidator;
         private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
         private readonly IAuthenticateClient _authenticateClient;
@@ -41,15 +40,13 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
         private readonly IClientHelper _clientHelper;
         private readonly ITokenStore _tokenStore;
 
-        public GetTokenByTicketIdAction(ITicketStore ticketStore, IConfigurationService configurationService,
-            IUmaServerEventSource umaServerEventSource, IIdentityServerClientFactory identityServerClientFactory,
-            IAuthorizationPolicyValidator authorizationPolicyValidator, IAuthenticateInstructionGenerator authenticateInstructionGenerator,
+        public GetTokenByTicketIdAction(ITicketStore ticketStore, IUmaConfigurationService configurationService,
+            IUmaServerEventSource umaServerEventSource, IAuthorizationPolicyValidator authorizationPolicyValidator, IAuthenticateInstructionGenerator authenticateInstructionGenerator,
             IAuthenticateClient authenticateClient, IJwtGenerator jwtGenerator, IClientHelper clientHelper, ITokenStore tokenStore)
         {
             _ticketStore = ticketStore;
             _configurationService = configurationService;
             _umaServerEventSource = umaServerEventSource;
-            _identityServerClientFactory = identityServerClientFactory;
             _authorizationPolicyValidator = authorizationPolicyValidator;
             _authenticateInstructionGenerator = authenticateInstructionGenerator;
             _authenticateClient = authenticateClient;
@@ -58,7 +55,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             _tokenStore = tokenStore;
         }
 
-        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<GrantedToken> Execute(GetTokenViaTicketIdParameter parameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             // 1. Check parameters.
             if (parameter == null)
@@ -68,8 +65,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, PostAuthorizationNames.TicketId));
             }
 
             if (string.IsNullOrWhiteSpace(parameter.Ticket))
@@ -78,19 +74,17 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 2. Try to authenticate the client.
-            var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var instruction = CreateAuthenticateInstruction(parameter, authenticationHeaderValue, certificate);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {
                 throw new BaseUmaException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
-            if (client.GrantTypes == null ||
-                !client.GrantTypes.Contains(GrantType.uma_ticket))
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.uma_ticket))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidGrant,
-                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.uma_ticket));
+                throw new BaseUmaException(ErrorCodes.InvalidGrant, string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.uma_ticket));
             }
 
             // 3. Retrieve the ticket.
@@ -99,8 +93,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             var ticket = await _ticketStore.GetAsync(parameter.Ticket);
             if (ticket == null)
             {
-                throw new BaseUmaException(ErrorCodes.InvalidTicket,
-                    string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
+                throw new BaseUmaException(ErrorCodes.InvalidTicket, string.Format(ErrorDescriptions.TheTicketDoesntExist, parameter.Ticket));
             }
 
             // 4. Check the ticket.
@@ -125,23 +118,24 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             // 5. Generate a granted token.
-            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid");
+            var grantedToken = await GenerateTokenAsync(client, ticket.Lines, "openid", issuerName);
             await _tokenStore.AddToken(grantedToken);
             await _ticketStore.RemoveAsync(ticket.Id);
             return grantedToken;
         }
 
-        private AuthenticateInstruction CreateAuthenticateInstruction(GetTokenViaTicketIdParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        private AuthenticateInstruction CreateAuthenticateInstruction(GetTokenViaTicketIdParameter authorizationCodeGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = authorizationCodeGrantTypeParameter.ClientAssertion;
             result.ClientAssertionType = authorizationCodeGrantTypeParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = authorizationCodeGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
 
-        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope)
+        public async Task<GrantedToken> GenerateTokenAsync(SimpleIdentityServer.Core.Common.Models.Client client, IEnumerable<TicketLine> ticketLines, string scope, string issuerName)
         {
             if (client == null)
             {
@@ -159,7 +153,7 @@ namespace SimpleIdentityServer.Uma.Core.Api.Token.Actions
             }
 
             var expiresIn = await _configurationService.GetRptLifeTime(); // 1. Retrieve the expiration time of the granted token.
-            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' ')); // 2. Construct the JWT token (client).
+            var jwsPayload = await _jwtGenerator.GenerateAccessToken(client, scope.Split(' '), issuerName); // 2. Construct the JWT token (client).
             var jArr = new JArray();
             foreach (var ticketLine in ticketLines)
             {

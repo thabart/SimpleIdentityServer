@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
 using SimpleIdentityServer.Core.Common.DTOs;
 using System.Threading.Tasks;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 
 namespace SimpleIdentityServer.Core.Api.Jwks
 {

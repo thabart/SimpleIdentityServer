@@ -14,11 +14,10 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Services;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,15 +32,13 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
     internal class GetUserOperation : IGetUserOperation
     {
         private readonly IResourceOwnerRepository _resourceOwnerRepository;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
 
-        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository, IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+        public GetUserOperation(IResourceOwnerRepository resourceOwnerRepository)
         {
             _resourceOwnerRepository = resourceOwnerRepository;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
         }
         
-        public async Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
+        public Task<ResourceOwner> Execute(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
             {
@@ -65,15 +62,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                     Errors.ErrorDescriptions.TheSubjectCannotBeRetrieved);
             }
             
-            var result = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject);
-            if (result == null)
-            {
-                throw new IdentityServerException(
-                    Errors.ErrorCodes.UnhandledExceptionCode,
-                    Errors.ErrorDescriptions.TheRoDoesntExist);
-            }
-
-            return result;
+            return _resourceOwnerRepository.GetAsync(subject);
         }
     }
 }

@@ -17,9 +17,9 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
-using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Stores;
 using SimpleIdentityServer.Scim.Core.Tests.Fixture;
@@ -112,8 +112,8 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(null, null));
-            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(new[] { new Representation() }, null));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(null, null, 0));
+            Assert.Throws<ArgumentNullException>(() => _responseParser.Filter(new[] { new Representation() }, null, 0));
         }
 
         [Fact]
@@ -183,10 +183,10 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             };
 
             // ACTS
-            var ascendingResult = _responseParser.Filter(groups, searchOrderAscending);
-            var descendingResult = _responseParser.Filter(groups, searchOrderDescending);
-            var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate);
-            var secondFilteredResult = _responseParser.Filter(groups, searchOrderAscExcludeAttrsPaginate);
+            var ascendingResult = _responseParser.Filter(groups, searchOrderAscending, 0);
+            var descendingResult = _responseParser.Filter(groups, searchOrderDescending, 0);
+            var filteredResult = _responseParser.Filter(groups, searchOrderAscFilterPaginate, 0);
+            var secondFilteredResult = _responseParser.Filter(groups, searchOrderAscExcludeAttrsPaginate, 0);
 
             // ASSERTS
             Assert.NotNull(ascendingResult);
@@ -203,7 +203,7 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Parsers
             _commonAttributesFactoryStub = new Mock<ICommonAttributesFactory>();
             _filterParser = new FilterParser();
             _requestParser = new RepresentationRequestParser(_schemaStoreStub.Object);
-            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object);
+            _responseParser = new RepresentationResponseParser(_schemaStoreStub.Object, _commonAttributesFactoryStub.Object, null);
         }
     }
 }

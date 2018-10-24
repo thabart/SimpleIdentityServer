@@ -19,16 +19,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Host.MiddleWare;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 
 namespace SimpleIdentityServer.Host
 {
     public static class ApplicationBuilderExtensions 
     {        
-        public static void UseOpenIdApi(this IApplicationBuilder app,
-            Action<IdentityServerOptions> optionsCallback,
-            ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, Action<IdentityServerOptions> optionsCallback, ILoggerFactory loggerFactory) 
         {
             if (optionsCallback == null) 
             {
@@ -41,31 +39,24 @@ namespace SimpleIdentityServer.Host
                 loggerFactory);
         }
 
-        public static void UseOpenIdApi(
-            this IApplicationBuilder app,
-            IdentityServerOptions options,
-            ILoggerFactory loggerFactory) 
+        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options, ILoggerFactory loggerFactory) 
         {
             UseOpenIdApi(app, options);
         }
 
-        public static void UseOpenIdApi(
-            this IApplicationBuilder app,
-            IdentityServerOptions options)
+        public static void UseOpenIdApi(this IApplicationBuilder app, IdentityServerOptions options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            app.UseAuthentication();
             app.UseSimpleIdentityServerExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<ISimpleIdentityServerEventSource>()
+                SimpleIdentityServerEventSource = app.ApplicationServices.GetService<IOpenIdEventSource>()
             });
             var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
             Extensions.UriHelperExtensions.Configure(httpContextAccessor);
-            // app.UseXFrame();
         }
     }
 }

@@ -14,25 +14,25 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Security.Claims;
-using System.Security.Principal;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Errors;
+using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Authorization.Actions
 {
     public interface IGetAuthorizationCodeOperation
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName);
     }
 
     public class GetAuthorizationCodeOperation : IGetAuthorizationCodeOperation
@@ -40,21 +40,21 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
         private readonly IProcessAuthorizationRequest _processAuthorizationRequest;
         private readonly IClientValidator _clientValidator;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oAuthEventSource;
 
         public GetAuthorizationCodeOperation(
             IProcessAuthorizationRequest processAuthorizationRequest,
             IClientValidator clientValidator,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oAuthEventSource)
         {
             _processAuthorizationRequest = processAuthorizationRequest;
             _clientValidator = clientValidator;
             _generateAuthorizationResponse = generateAuthorizationResponse;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oAuthEventSource = oAuthEventSource;
         }
 
-        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Client client)
+        public async Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, IPrincipal principal, Core.Common.Models.Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -67,11 +67,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
             }
 
             var claimsPrincipal = principal == null ? null : principal as ClaimsPrincipal;
-            _simpleIdentityServerEventSource.StartAuthorizationCodeFlow(
+            _oAuthEventSource.StartAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 authorizationParameter.Scope,
                 authorizationParameter.Claims == null ? string.Empty : authorizationParameter.Claims.ToString());
-            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client);
+            var result = await _processAuthorizationRequest.ProcessAsync(authorizationParameter, claimsPrincipal, client, issuerName);
             if (!_clientValidator.CheckGrantTypes(client, GrantType.authorization_code)) // 1. Check the client is authorized to use the authorization_code flow.
             {
                 throw new IdentityServerExceptionWithState(
@@ -92,11 +92,11 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Actions
                         authorizationParameter.State);
                 }
 
-                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+                await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
-            _simpleIdentityServerEventSource.EndAuthorizationCodeFlow(
+            _oAuthEventSource.EndAuthorizationCodeFlow(
                 authorizationParameter.ClientId,
                 actionTypeName,
                 result.RedirectInstruction == null ? string.Empty : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action));

@@ -15,13 +15,13 @@
 #endregion
 
 using SimpleIdentityServer.Core.Common;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -37,18 +37,18 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
     public class RegisterClientAction : IRegisterClientAction
     {
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IClientRepository _clientRepository;
         private readonly IGenerateClientFromRegistrationRequest _generateClientFromRegistrationRequest;
-        private readonly IPasswordService _encryptedPasswordFactory;
+        private readonly IClientPasswordService _encryptedPasswordFactory;
 
         public RegisterClientAction(
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IClientRepository clientRepository,
             IGenerateClientFromRegistrationRequest generateClientFromRegistrationRequest,
-            IPasswordService encryptedPasswordFactory)
+            IClientPasswordService encryptedPasswordFactory)
         {
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _clientRepository = clientRepository;
             _generateClientFromRegistrationRequest = generateClientFromRegistrationRequest;
             _encryptedPasswordFactory = encryptedPasswordFactory;
@@ -61,7 +61,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
                 throw new ArgumentNullException(nameof(registrationParameter));
             }
 
-            _simpleIdentityServerEventSource.StartRegistration(registrationParameter.ClientName);
+            _oauthEventSource.StartRegistration(registrationParameter.ClientName);
             var client = _generateClientFromRegistrationRequest.Execute(registrationParameter);
             client.AllowedScopes = new List<Scope>
             {
@@ -133,10 +133,7 @@ namespace SimpleIdentityServer.Core.Api.Registration.Actions
 
             client.ClientId = result.ClientId;
             await _clientRepository.InsertAsync(client);
-
-            _simpleIdentityServerEventSource.EndRegistration(result.ClientId, 
-                client.ClientName);
-
+            _oauthEventSource.EndRegistration(result.ClientId, client.ClientName);
             return result;
         }
 

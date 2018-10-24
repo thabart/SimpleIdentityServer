@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IGetPoliciesOperation
     {
-        Task<IEnumerable<string>> ExecuteAsync(string url, string token);
+        Task<GetPoliciesResult> ExecuteAsync(string url, string token);
     }
 
     internal class GetPoliciesOperation : IGetPoliciesOperation
@@ -37,7 +39,7 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IEnumerable<string>> ExecuteAsync(string url, string token)
+        public async Task<GetPoliciesResult> ExecuteAsync(string url, string token)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -57,9 +59,25 @@ namespace SimpleIdentityServer.Client.Policy
             request.Headers.Add("Authorization", "Bearer " + token);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<IEnumerable<string>>(content);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new GetPoliciesResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new GetPoliciesResult
+            {
+                Content = JsonConvert.DeserializeObject<IEnumerable<string>>(content)
+            };
         }
     }
 }

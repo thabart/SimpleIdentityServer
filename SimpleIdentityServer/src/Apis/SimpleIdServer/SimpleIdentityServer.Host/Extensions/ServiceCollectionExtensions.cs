@@ -14,30 +14,27 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using SimpleIdentityServer.Client;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Services;
-using SimpleIdentityServer.Host.Configuration;
-using SimpleIdentityServer.Host.Controllers.Website;
 using SimpleIdentityServer.Host.Parsers;
-using SimpleIdentityServer.Host.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.OpenId.Logging;
+using SimpleIdentityServer.Store;
 using System;
+using System.Linq;
+using SimpleIdServer.Storage;
 
 namespace SimpleIdentityServer.Host
 {
     public static class ServiceCollectionExtensions 
     {
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            Action<IdentityServerOptions> optionsCallback)
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, Action<IdentityServerOptions> optionsCallback)
         {
             if (serviceCollection == null)
             {
@@ -51,14 +48,17 @@ namespace SimpleIdentityServer.Host
             
             var options = new IdentityServerOptions();
             optionsCallback(options);
-            serviceCollection.AddOpenIdApi(
-                options);
+            serviceCollection.AddOpenIdApi(options);
             return serviceCollection;
         }
         
-        public static IServiceCollection AddOpenIdApi(
-            this IServiceCollection serviceCollection,
-            IdentityServerOptions options)
+        /// <summary>
+        /// Add the OPENID API.
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddOpenIdApi(this IServiceCollection serviceCollection, IdentityServerOptions options)
         {
             if (serviceCollection == null)
             {
@@ -68,53 +68,96 @@ namespace SimpleIdentityServer.Host
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
-            }   
-
+            }
+            
             ConfigureSimpleIdentityServer(
                 serviceCollection, 
                 options);
             return serviceCollection;
         }
-   
-        public static IServiceCollection AddAuthenticationWebsite(this IServiceCollection services, IHostingEnvironment hosting, IdentityServerOptions idOpts)
+
+        public static AuthorizationOptions AddOpenIdSecurityPolicy(this AuthorizationOptions authenticateOptions, string cookieName)
         {
-            if (services == null)
+            if (authenticateOptions == null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new ArgumentNullException(nameof(authenticateOptions));
             }
 
-            if (hosting == null)
+            authenticateOptions.AddPolicy("Connected", policy => // User is connected
             {
-                throw new ArgumentNullException(nameof(hosting));
-            }
-
-            if (idOpts == null)
-            {
-                throw new ArgumentNullException(nameof(idOpts));
-            }
-
-            var assembly = typeof(AuthenticateController).Assembly;
-            var embeddedFileProvider = new EmbeddedFileProvider(assembly);
-            var compositeProvider = new CompositeFileProvider(hosting.ContentRootFileProvider, embeddedFileProvider);
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.FileProviders.Add(compositeProvider);
+                policy.AddAuthenticationSchemes(cookieName);
+                policy.RequireAuthenticatedUser();
             });
+            authenticateOptions.AddPolicy("registration", policy => // Access token with scope = register_client
+            {
+                policy.AddAuthenticationSchemes("OAuth2Introspection");
+                policy.RequireClaim("scope", "register_client");
+            });
+            authenticateOptions.AddPolicy("connected_user", policy => // Introspect the identity token.
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection");
+                policy.RequireAuthenticatedUser();
+            });
+            authenticateOptions.AddPolicy("manage_profile", policy => // Access token with scope = manage_profile or with role = administrator
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
 
-            services.AddSingleton<IFileProvider>(compositeProvider);
-            services.AddMvc().AddApplicationPart(assembly);
-            return services;
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_profile");
+                });
+            });
+            authenticateOptions.AddPolicy("manage_account_filtering", policy => // Access token with scope = manage_account_filtering or role = administrator
+            {
+                policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "manage_account_filtering");
+                });
+            });
+            return authenticateOptions;
         }
 
         private static void ConfigureSimpleIdentityServer(
             IServiceCollection services,
             IdentityServerOptions options)
         {
-            services.AddSimpleIdentityServerCore()
+            services.AddSimpleIdentityServerCore(options.OAuthConfigurationOptions, 
+                clients: options.Configuration == null ? null : options.Configuration.Clients,
+                resourceOwners: options.Configuration == null ? null : options.Configuration.Users,
+                translations:options.Configuration == null ? null : options.Configuration.Translations,
+                jsonWebKeys: options.Configuration == null ? null : options.Configuration.JsonWebKeys)
                 .AddSimpleIdentityServerJwt()
                 .AddHostIdentityServer(options)
-                .AddIdServerClient()
-                .AddIdServerLogging()
+                .AddDefaultTokenStore()
+                .AddDefaultSimpleBus()
+                .AddTechnicalLogging()
+                .AddOpenidLogging()
+                .AddOAuthLogging()
+                .AddStorage(o => o.UseInMemoryStorage())
                 .AddDataProtection();
         }
 
@@ -130,62 +173,13 @@ namespace SimpleIdentityServer.Host
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.AuthenticateResourceOwner == null)
-            {
-                serviceCollection.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IAuthenticateResourceOwnerService), options.AuthenticateResourceOwner);
-            }
-
-            if (options.ConfigurationService == null)
-            {
-                serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IConfigurationService), options.ConfigurationService);
-            }
-
-            if (options.PasswordService == null)
-            {
-                serviceCollection.AddTransient<IPasswordService, DefaultPasswordService>();
-            }
-            else
-            {
-                serviceCollection.AddTransient(typeof(IPasswordService), options.PasswordService);
-            }
-
-            var twoFactorServiceStore = new TwoFactorServiceStore();
-            if (options.TwoFactorAuthentications != null)
-            {
-                foreach (var twoFactorAuthentication in options.TwoFactorAuthentications)
-                {
-                    if (twoFactorAuthentication.TwoFactorAuthType != Core.Models.TwoFactorAuthentications.NONE && twoFactorAuthentication.TwoFactorAuthenticationService != null)
-                    {
-                        twoFactorServiceStore.Add(twoFactorAuthentication.TwoFactorAuthenticationService);
-                    }
-                }
-            }
-
-            serviceCollection.AddSingleton<ITwoFactorServiceStore>(twoFactorServiceStore);
             serviceCollection
-                .AddSingleton(options.Authenticate)
                 .AddSingleton(options.Scim)
                 .AddTransient<IRedirectInstructionParser, RedirectInstructionParser>()
                 .AddTransient<IActionResultParser, ActionResultParser>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddDataProtection();
-
-            serviceCollection.AddAuthorization(opts =>
-            {
-                opts.AddPolicy("Connected", policy => policy.RequireAssertion((ctx) => {
-                    return ctx.User.Identity != null && ctx.User.Identity.AuthenticationType == options.Authenticate.CookieName;
-                }));
-            });
-
             return serviceCollection;
         }
     }

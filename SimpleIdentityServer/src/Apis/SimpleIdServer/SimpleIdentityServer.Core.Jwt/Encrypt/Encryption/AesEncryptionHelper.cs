@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Encryption

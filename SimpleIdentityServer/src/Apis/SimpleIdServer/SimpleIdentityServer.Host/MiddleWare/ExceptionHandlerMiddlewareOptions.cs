@@ -15,11 +15,12 @@
 #endregion
 
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 
 namespace SimpleIdentityServer.Host.MiddleWare
 {
     public class ExceptionHandlerMiddlewareOptions
     {
-        public ISimpleIdentityServerEventSource SimpleIdentityServerEventSource { get; set; }
+        public IOpenIdEventSource SimpleIdentityServerEventSource { get; set; }
     }
 }

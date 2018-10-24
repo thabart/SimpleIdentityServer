@@ -14,8 +14,10 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Jwt.Converter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,22 +26,21 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
 {
     public interface IJwsParser
     {
-        JwsPayload ValidateSignature(
-            string jws,
-            JsonWebKey jsonWebKey);
-
+        JwsPayload ValidateSignature(string jws, JsonWebKey jsonWebKey);
+        JwsPayload ValidateSignature(string jws, JsonWebKeySet jsonWebKeySet);
         JwsProtectedHeader GetHeader(string jws);
-
         JwsPayload GetPayload(string jws);
     }
 
     public class JwsParser : IJwsParser
     {
         private readonly ICreateJwsSignature _createJwsSignature;
+        private readonly IJsonWebKeyConverter _jsonWebKeyConverter;
 
         public JwsParser(ICreateJwsSignature createJwsSignature)
         {
             _createJwsSignature = createJwsSignature;
+            _jsonWebKeyConverter = new JsonWebKeyConverter();
         }
 
         /// <summary>
@@ -48,9 +49,7 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
         /// <param name="jws"></param>
         /// <param name="jsonWebKey"></param>
         /// <returns></returns>
-        public JwsPayload ValidateSignature(
-            string jws,
-            JsonWebKey jsonWebKey)
+        public JwsPayload ValidateSignature(string jws, JsonWebKey jsonWebKey)
         {
             if (string.IsNullOrWhiteSpace(jws))
             {
@@ -109,6 +108,45 @@ namespace SimpleIdentityServer.Core.Jwt.Signature
             }
             
             return serializedPayload.DeserializeWithJavascript<JwsPayload>();
+        }
+
+        /// <summary>
+        /// Validate the signature and returns the JWSPayload.
+        /// </summary>
+        /// <param name="jws"></param>
+        /// <param name="jsonWebKeySet"></param>
+        /// <returns></returns>
+        public JwsPayload ValidateSignature(string jws, JsonWebKeySet jsonWebKeySet)
+        {
+            if (string.IsNullOrWhiteSpace(jws))
+            {
+                throw new ArgumentNullException(nameof(jws));
+            }
+
+            if (jsonWebKeySet == null)
+            {
+                throw new ArgumentNullException(nameof(jsonWebKeySet));
+            }
+
+            if (jsonWebKeySet.Keys == null)
+            {
+                throw new ArgumentNullException(nameof(jsonWebKeySet.Keys));
+            }
+
+            var jsonWebKeys = _jsonWebKeyConverter.ExtractSerializedKeys(jsonWebKeySet);
+            if (!jsonWebKeys.Any())
+            {
+                return null;
+            }
+
+            var header = GetHeader(jws);
+            var jsonWebKey = jsonWebKeys.FirstOrDefault(s => s.Kid == header.Kid);
+            if (jsonWebKey == null)
+            {
+                return null;
+            }
+
+            return ValidateSignature(jws, jsonWebKey);
         }
 
         public JwsProtectedHeader GetHeader(string jws)

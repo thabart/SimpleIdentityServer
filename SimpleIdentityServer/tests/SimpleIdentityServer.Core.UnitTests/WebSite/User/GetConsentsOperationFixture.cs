@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
 using System.Collections.Generic;
@@ -50,9 +50,9 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             {
                 new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, subject)
             };
-            IEnumerable<Models.Consent> consents = new List<Models.Consent>
+            IEnumerable<Core.Common.Models.Consent> consents = new List<Core.Common.Models.Consent>
             {
-                new Models.Consent
+                new Core.Common.Models.Consent
                 {
                     Id = "consent_id"
                 }

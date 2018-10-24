@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EF.Models
@@ -35,7 +36,7 @@ namespace SimpleIdentityServer.EF.Models
         /// <summary>
         /// Gets or sets the two factor authentication
         /// </summary>
-        public int TwoFactorAuthentication { get; set; }
+        public string TwoFactorAuthentication { get; set; }
         /// <summary>
         /// Gets or sets the list of claims.
         /// </summary>
@@ -44,5 +45,17 @@ namespace SimpleIdentityServer.EF.Models
         /// Gets or sets the list of consents
         /// </summary>
         public virtual List<Consent> Consents { get; set; } 
+        /// <summary>
+        /// Gets or sets the profiles.
+        /// </summary>
+        public virtual ICollection<Profile> Profiles { get; set; }
+        /// <summary>
+        /// Gets or sets the create datetime.
+        /// </summary>
+        public DateTime CreateDateTime { get; set; }
+        /// <summary>
+        /// Gets or sets the update datetime.
+        /// </summary>
+        public DateTime UpdateDateTime { get; set; }
     }
 }

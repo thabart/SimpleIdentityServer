@@ -17,14 +17,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -62,22 +62,41 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
         }
 
         [Fact]
-        public async Task When_Anonymous_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
+        public async Task When_Client_Doesnt_Exist_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
             _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
             _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
-                .Returns(Task.FromResult(new GrantedToken()));
+                .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));
             Assert.NotNull(exception);
-            Assert.True(exception.Code == ErrorCodes.InternalError);
-            Assert.True(exception.Message == string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
+            Assert.True(exception.Code == ErrorCodes.InvalidToken);
+            Assert.True(exception.Message == string.Format(ErrorDescriptions.TheClientIdDoesntExist, "client_id"));
+        }
+
+        [Fact]
+        public async Task When_Not_ResourceOwner_Token_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _grantedTokenValidatorFake.Setup(g => g.CheckAccessTokenAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedTokenValidationResult { IsValid = true }));
+            _tokenStoreFake.Setup(g => g.GetAccessToken(It.IsAny<string>()))
+                .Returns(Task.FromResult(new GrantedToken { ClientId = "client_id" }));
+            _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(() => Task.FromResult(new Core.Common.Models.Client()));
+
+            // ACT & ASSERT
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getJwsPayload.Execute("access_token"));
+            Assert.NotNull(exception);
+            Assert.True(exception.Code == ErrorCodes.InvalidToken);
+            Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
         }
 
         [Fact]
@@ -87,9 +106,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.NONE
             };
@@ -114,9 +133,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             InitializeFakeObjects();
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = string.Empty
             };
@@ -142,9 +161,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.UserInfo
             const string jwt = "jwt";
             var grantedToken = new GrantedToken
             {
-                UserInfoPayLoad = new Jwt.JwsPayload()
+                UserInfoPayLoad = new JwsPayload()
             };
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 UserInfoSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 UserInfoEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5

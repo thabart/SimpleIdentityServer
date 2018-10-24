@@ -14,10 +14,10 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IAuthenticateClient
     {
-        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction);
+        Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName, bool isAuthorizationCodeGrantType = false);
     }
 
     public class AuthenticateClient : IAuthenticateClient
@@ -36,7 +36,7 @@ namespace SimpleIdentityServer.Core.Authenticate
         private readonly IClientAssertionAuthentication _clientAssertionAuthentication;
         private readonly IClientTlsAuthentication _clientTlsAuthentication;
         private readonly IClientRepository _clientRepository;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
 
         public AuthenticateClient(
             IClientSecretBasicAuthentication clientSecretBasicAuthentication,
@@ -44,41 +44,46 @@ namespace SimpleIdentityServer.Core.Authenticate
             IClientAssertionAuthentication clientAssertionAuthentication,
             IClientTlsAuthentication clientTlsAuthentication,
             IClientRepository clientRepository,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oAuthEventSource)
         {
             _clientSecretBasicAuthentication = clientSecretBasicAuthentication;
             _clientSecretPostAuthentication = clientSecretPostAuthentication;
             _clientAssertionAuthentication = clientAssertionAuthentication;
             _clientTlsAuthentication = clientTlsAuthentication;
             _clientRepository = clientRepository;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oAuthEventSource;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction)
+        public async Task<AuthenticationResult> AuthenticateAsync(AuthenticateInstruction instruction, string issuerName, bool isAuthorizationCodeGrantType = false)
         {
             if (instruction == null)
             {
                 throw new ArgumentNullException(nameof(instruction));
             }
-            
-            Models.Client client = null;
+
+            Client client = null;
             // First we try to fetch the client_id
             // The different client authentication mechanisms are described here : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
             var clientId = TryGettingClientId(instruction);
             if (!string.IsNullOrWhiteSpace(clientId))
             {
-                client = await _clientRepository.GetClientByIdAsync(clientId);
+                client = await _clientRepository.GetClientByIdAsync(clientId).ConfigureAwait(false);
             }
 
             if (client == null)
             {
-                return new AuthenticationResult(null, ErrorDescriptions.TheClientCannotBeAuthenticated);
+                return new AuthenticationResult(null, ErrorDescriptions.TheClientDoesntExist);
+            }
+
+            if (isAuthorizationCodeGrantType && client.RequirePkce)
+            {
+
+                return new AuthenticationResult(client, string.Empty);
             }
 
             var tokenEndPointAuthMethod = client.TokenEndPointAuthMethod;
-            var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods),
-                tokenEndPointAuthMethod);
-            _simpleIdentityServerEventSource.StartToAuthenticateTheClient(client.ClientId,
+            var authenticationType = Enum.GetName(typeof(TokenEndPointAuthenticationMethods), tokenEndPointAuthMethod);
+            _oauthEventSource.StartToAuthenticateTheClient(client.ClientId,
                 authenticationType);
             var errorMessage = string.Empty;
             switch (tokenEndPointAuthMethod)
@@ -103,9 +108,9 @@ namespace SimpleIdentityServer.Core.Authenticate
                         errorMessage = string.Format(ErrorDescriptions.TheClientDoesntContainASharedSecret, client.ClientId);
                         break;
                     }
-                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value);
+                    return await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, client.Secrets.First(s => s.Type == ClientSecretTypes.SharedSecret).Value, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.private_key_jwt:
-                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+                   return await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, issuerName).ConfigureAwait(false);
                 case TokenEndPointAuthenticationMethods.tls_client_auth:
                     client = _clientTlsAuthentication.AuthenticateClient(instruction, client);
                     if (client == null)
@@ -117,8 +122,7 @@ namespace SimpleIdentityServer.Core.Authenticate
 
             if (client != null)
             {
-                _simpleIdentityServerEventSource.FinishToAuthenticateTheClient(client.ClientId,
-                    authenticationType);
+                _oauthEventSource.FinishToAuthenticateTheClient(client.ClientId, authenticationType);
             }
 
             return new AuthenticationResult(client, errorMessage);

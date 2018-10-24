@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 
@@ -27,11 +27,11 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
 
     internal class ValidateConfirmationCodeAction : IValidateConfirmationCodeAction
     {
-        private readonly IConfirmationCodeRepository _confirmationCodeRepository;
+        private readonly IConfirmationCodeStore _confirmationCodeStore;
 
-        public ValidateConfirmationCodeAction(IConfirmationCodeRepository confirmationCodeRepository)
+        public ValidateConfirmationCodeAction(IConfirmationCodeStore confirmationCodeStore)
         {
-            _confirmationCodeRepository = confirmationCodeRepository;
+            _confirmationCodeStore = confirmationCodeStore;
         }
 
         public async Task<bool> Execute(string code)
@@ -41,13 +41,13 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(code));
             }
 
-            var confirmationCode = await _confirmationCodeRepository.GetAsync(code);
+            var confirmationCode = await _confirmationCodeStore.Get(code);
             if (confirmationCode == null)
             {
                 return false;
             }
 
-            var expirationDateTime = confirmationCode.CreateDateTime.AddSeconds(confirmationCode.ExpiresIn);
+            var expirationDateTime = confirmationCode.IssueAt.AddSeconds(confirmationCode.ExpiresIn);
             return DateTime.UtcNow < expirationDateTime;
         }
     }

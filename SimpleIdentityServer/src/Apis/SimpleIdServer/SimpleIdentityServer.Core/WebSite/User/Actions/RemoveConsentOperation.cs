@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using System;
 using System.Threading.Tasks;
 
@@ -41,7 +41,7 @@ namespace SimpleIdentityServer.Core.WebSite.User.Actions
                 throw new ArgumentNullException(consentId);
             }
 
-            var consentToBeDeleted = new Models.Consent
+            var consentToBeDeleted = new Common.Models.Consent
             {
                 Id = consentId
             };

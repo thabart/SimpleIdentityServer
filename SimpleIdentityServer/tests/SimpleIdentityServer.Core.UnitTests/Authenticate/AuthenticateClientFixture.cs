@@ -1,9 +1,10 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,7 +18,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
         private Mock<IClientAssertionAuthentication> _clientAssertionAuthenticationFake;
         private Mock<IClientTlsAuthentication> _clientTlsAuthenticationStub;
         private Mock<IClientRepository> _clientRepositoryStub;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private IAuthenticateClient _authenticateClient;
 
         [Fact]
@@ -27,7 +28,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateClient.AuthenticateAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticateClient.AuthenticateAsync(null, null));
         }
 
         [Fact]
@@ -40,11 +41,33 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(string.Empty);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null);
 
             // ASSERTS
             Assert.Null(result.Client);
-            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientDoesntExist);
+        }
+
+        [Fact]
+        public async Task When_Use_AuthorizationCodeFlow_And_Client_Requires_Pkce_Then_Authentication_Success()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            const string clientId = "clientId";
+            var authenticationInstruction = new AuthenticateInstruction();
+            var client = new Client
+            {
+                RequirePkce = true,
+                ClientId = clientId
+            };
+            _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(client));
+
+            // ACT
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null);
+
+            // ASSERTS
+            Assert.NotNull(result.Client);
         }
 
         [Fact]
@@ -56,14 +79,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientAssertionAuthenticationFake.Setup(c => c.GetClientId(It.IsAny<AuthenticateInstruction>()))
                 .Returns("clientId");
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null);
 
             // ASSERTS
             Assert.Null(result.Client);
-            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientCannotBeAuthenticated);
+            Assert.True(result.ErrorMessage == ErrorDescriptions.TheClientDoesntExist);
         }
 
         [Fact]
@@ -73,7 +96,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -84,16 +107,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(client);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null);
 
             // ASSERTS
             Assert.NotNull(result.Client);
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(clientId, "client_secret_basic"));
         }
 
         [Fact]
@@ -103,7 +126,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
             const string clientId = "clientId";
             var authenticationInstruction = new AuthenticateInstruction();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                 ClientId = clientId
@@ -114,16 +137,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _clientSecretBasicAuthenticationFake.Setup(
-                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Models.Client>()))
+                c => c.AuthenticateClient(It.IsAny<AuthenticateInstruction>(), It.IsAny<Core.Common.Models.Client>()))
                 .Returns(() => null);
 
             // ACT
-            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction);
+            var result = await _authenticateClient.AuthenticateAsync(authenticationInstruction, null);
             
             // ASSERTS
             Assert.Null(result.Client);
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _oauthEventSource.Verify(s => s.StartToAuthenticateTheClient(clientId, "client_secret_basic"));
+            _oauthEventSource.Verify(s => s.FinishToAuthenticateTheClient(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         private void InitializeFakeObjects()
@@ -133,14 +156,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             _clientAssertionAuthenticationFake = new Mock<IClientAssertionAuthentication>();
             _clientTlsAuthenticationStub = new Mock<IClientTlsAuthentication>();
             _clientRepositoryStub = new Mock<IClientRepository>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClient = new AuthenticateClient(
                 _clientSecretBasicAuthenticationFake.Object,
                 _clientSecretPostAuthenticationFake.Object,
                 _clientAssertionAuthenticationFake.Object,
                 _clientTlsAuthenticationStub.Object,
                 _clientRepositoryStub.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _oauthEventSource.Object);
         }
     }
 }

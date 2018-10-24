@@ -66,8 +66,8 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             _parametersValidator.ValidateLocationPattern(locationPattern);
 
             // 2. Get representations & add the common attributes.
-            var representations = await _representationStore.SearchRepresentations(resourceType, searchParameter);
-            foreach(var representation in representations)
+            var paginatedResponse = await _representationStore.SearchRepresentations(resourceType, searchParameter);
+            foreach(var representation in paginatedResponse.Content)
             {
                 var location = locationPattern.Replace("{id}", representation.Id);
                 representation.Attributes = representation.Attributes.Concat(new[] 
@@ -78,7 +78,7 @@ namespace SimpleIdentityServer.Scim.Core.Apis
             }
 
             // 3. Filter the representations.
-            var result = _representationResponseParser.Filter(representations, searchParameter);
+            var result = _representationResponseParser.Filter(paginatedResponse.Content, searchParameter, paginatedResponse.Count);
 
             // 4. Construct response.
             return new ApiActionResult

@@ -14,91 +14,104 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using SimpleIdentityServer.Uma.Core;
 using SimpleIdentityServer.Uma.Core.Providers;
 using SimpleIdentityServer.Uma.Host.Configuration;
-using SimpleIdentityServer.Uma.Host.Configurations;
-using SimpleIdentityServer.Uma.Host.Services;
 using SimpleIdentityServer.Uma.Logging;
+using SimpleIdServer.Bus;
+using SimpleIdServer.Concurrency;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Uma.Host.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUmaHost(this IServiceCollection services, UmaHostConfiguration configuration)
+        private static List<Scope> DEFAULT_SCOPES = new List<Scope>
+        {
+            new Scope
+            {
+                Name = "uma_protection",
+                Description = "Access to UMA permission, resource set",
+                IsOpenIdScope = false,
+                IsDisplayedInConsent = false,
+                Type = ScopeType.ProtectedApi,
+                UpdateDateTime = DateTime.UtcNow,
+                CreateDateTime = DateTime.UtcNow
+            }
+        };
+
+        public static IServiceCollection AddUmaHost(this IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
             // 1. Add the dependencies.
-            RegisterServices(services, configuration);
-            // 2. Add authorization policies.
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("UmaProtection", policy => policy.RequireClaim("scope", "uma_protection"));
-            });
-            // 3. Add the dependencies needed to enable CORS
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()));
-            // 4. Add authentication.
-            services.AddAuthentication();
-            // 5. Add the dependencies needed to run ASP.NET API.
-            services.AddMvc();
+            RegisterServices(services, authorizationServerOptions);
             return services;
         }
 
-        private static void RegisterServices(IServiceCollection services, UmaHostConfiguration configuration)
+        public static AuthorizationOptions AddUmaSecurityPolicy(this AuthorizationOptions authorizationOptions)
         {
-            services.AddSimpleIdServerUmaCore()
-                .AddSimpleIdentityServerCore()
+            if (authorizationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationOptions));
+            }
+
+            authorizationOptions.AddPolicy("UmaProtection", policy =>
+            {				
+				policy.AddAuthenticationSchemes("UserInfoIntrospection", "OAuth2Introspection");
+                policy.RequireAssertion(p =>
+                {
+                    if (p.User == null || p.User.Identity == null || !p.User.Identity.IsAuthenticated)
+                    {
+                        return false;
+                    }
+
+                    var claimRole = p.User.Claims.FirstOrDefault(c => c.Type == "role");
+                    var claimScopes = p.User.Claims.Where(c => c.Type == "scope");
+                    if (claimRole == null && !claimScopes.Any())
+                    {
+                        return false;
+                    }
+
+                    return claimRole != null && claimRole.Value == "administrator" || claimScopes.Any(s => s.Value == "uma_protection");
+                });
+            });
+            return authorizationOptions;
+        }
+
+        private static void RegisterServices(IServiceCollection services, AuthorizationServerOptions authorizationServerOptions)
+        {
+            services.AddSimpleIdServerUmaCore(authorizationServerOptions.UmaConfigurationOptions, 
+                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Resources,
+                authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Policies)
+                .AddSimpleIdentityServerCore(authorizationServerOptions.OAuthConfigurationOptions,  
+                    clients: authorizationServerOptions.Configuration == null ? null : authorizationServerOptions.Configuration.Clients,
+                    scopes: authorizationServerOptions.Configuration == null ? DEFAULT_SCOPES : authorizationServerOptions.Configuration.Scopes,
+                    claims: new List<ClaimAggregate>())
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerClient();
-            services.AddIdServerLogging();
+                .AddDefaultTokenStore()
+                .AddDefaultSimpleBus()
+                .AddDefaultConcurrency();
+            services.AddTechnicalLogging();
+            services.AddOAuthLogging();
+            services.AddUmaLogging();
             services.AddTransient<IHostingProvider, HostingProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUmaServerEventSource, UmaServerEventSource>();
-            if (configuration.AuthenticateResourceOwner == null)
-            {
-                services.AddTransient<IAuthenticateResourceOwnerService, DefaultAuthenticateResourceOwerService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IAuthenticateResourceOwnerService), configuration.AuthenticateResourceOwner);
-            }
-
-            if (configuration.ConfigurationService == null)
-            {
-                services.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IConfigurationService), configuration.ConfigurationService);
-            }
-
-            if (configuration.PasswordService == null)
-            {
-                services.AddTransient<IPasswordService, DefaultPasswordService>();
-            }
-            else
-            {
-                services.AddTransient(typeof(IPasswordService), configuration.PasswordService);
-            }
         }
     }
 }

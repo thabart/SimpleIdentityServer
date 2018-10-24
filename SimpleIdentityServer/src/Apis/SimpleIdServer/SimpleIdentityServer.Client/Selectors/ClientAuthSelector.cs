@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Client.Builders;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using System;
 using System.Security.Cryptography.X509Certificates;
@@ -23,7 +24,9 @@ namespace SimpleIdentityServer.Client.Selectors
 {
     public interface IClientAuthSelector
     {
+        ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId);
         ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret);
+        ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId);
         ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret);
         ITokenGrantTypeSelector UseClientSecretJwtAuth(string jwt, string clientId);
         ITokenGrantTypeSelector UseClientPrivateKeyAuth(string jwt, string clientId);
@@ -61,6 +64,16 @@ namespace SimpleIdentityServer.Client.Selectors
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 
+        public ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            return UseClientSecretBasicAuth(clientId, null);
+        }
+
         public ITokenGrantTypeSelector UseClientSecretBasicAuth(string clientId, string clientSecret)
         {
             if (string.IsNullOrWhiteSpace(clientId))
@@ -68,14 +81,19 @@ namespace SimpleIdentityServer.Client.Selectors
                 throw new ArgumentNullException(nameof(clientId));
             }
 
-            if (string.IsNullOrWhiteSpace(clientSecret))
-            {
-                throw new ArgumentNullException(nameof(clientSecret));
-            }
-
             var requestBuilder = new RequestBuilder();
             requestBuilder.AuthorizationHeaderValue = GetAuthorizationValue(clientId, clientSecret);
             return GetTokenGrantTypeSelector(requestBuilder);
+        }
+
+        public ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            return UseClientSecretPostAuth(clientId, null);
         }
 
         public ITokenGrantTypeSelector UseClientSecretPostAuth(string clientId, string clientSecret)
@@ -83,11 +101,6 @@ namespace SimpleIdentityServer.Client.Selectors
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(nameof(clientId));
-            }
-
-            if (string.IsNullOrWhiteSpace(clientSecret))
-            {
-                throw new ArgumentNullException(nameof(clientSecret));
             }
 
             var requestBuilder = new RequestBuilder();
@@ -108,7 +121,7 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
+            requestBuilder.SetClientAssertion(clientId, jwt, ClientAssertionTypes.JwtBearer);
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 
@@ -125,7 +138,7 @@ namespace SimpleIdentityServer.Client.Selectors
             }
 
             var requestBuilder = new RequestBuilder();
-            requestBuilder.SetClientAssertion(clientId, jwt, Core.Common.ClientAssertionTypes.JwtBearer);
+            requestBuilder.SetClientAssertion(clientId, jwt, ClientAssertionTypes.JwtBearer);
             return GetTokenGrantTypeSelector(requestBuilder);
         }
 

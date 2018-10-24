@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
@@ -26,7 +28,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IUpdateResourceOperation
     {
-        Task<UpdateResourceSetResponse> ExecuteAsync(PutResourceSet request, string url, string token);
+        Task<UpdateResourceSetResult> ExecuteAsync(PutResourceSet request, string url, string token);
     }
 
     internal class UpdateResourceOperation : IUpdateResourceOperation
@@ -38,7 +40,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<UpdateResourceSetResponse> ExecuteAsync(PutResourceSet request, string url, string token)
+        public async Task<UpdateResourceSetResult> ExecuteAsync(PutResourceSet request, string url, string token)
         {
             if (request == null)
             {
@@ -66,9 +68,25 @@ namespace SimpleIdentityServer.Client.ResourceSet
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + token);
             var httpResult = await httpClient.SendAsync(httpRequest);
-            httpResult.EnsureSuccessStatusCode();
-            var content = await httpResult.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<UpdateResourceSetResponse>(content);
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new UpdateResourceSetResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new UpdateResourceSetResult
+            {
+                Content = JsonConvert.DeserializeObject<UpdateResourceSetResponse>(content)
+            };
         }
     }
 }

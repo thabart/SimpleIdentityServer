@@ -23,7 +23,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string ClientIsNotValid = "the client id parameter {0} doesn't exist or is not valid";
         public const string RedirectUrlIsNotValid = "the redirect url {0} doesn't exist or is not valid";
         public const string ResourceOwnerCredentialsAreNotValid = "resource owner credentials are not valid";
-        public const string ParameterIsNotCorrect = "the paramater {0} is not correct";
+        public const string ParameterIsNotCorrect = "the parameter {0} is not correct";
         public const string ScopesAreNotAllowedOrInvalid = "the scopes {0} are not allowed or invalid";
         public const string DuplicateScopeValues = "duplicate scopes {0} have been passed in parameter";
         public const string TheScopesNeedToBeSpecified = "the scope(s) {0} need(s) to be specified";
@@ -44,6 +44,7 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheClientDoesntSupportTheResponseType = "the client '{0}' doesn't support the response type: '{1}'";
         public const string TheClientDoesntSupportTheGrantType = "the client {0} doesn't support the grant type {1}";
         public const string TheIdTokenCannotBeSigned = "the id token cannot be signed";
+        public const string TheClientDoesntExist = "the client doesn't exist";
         public const string TheClientCannotBeAuthenticated = "the client cannot be authenticated";
         public const string TheClientCannotBeAuthenticatedWithSecretBasic = "the client cannot be authenticated with secret basic";
         public const string TheClientCannotBeAuthenticatedWithSecretPost = "the client cannot be authenticated with secret post";
@@ -80,13 +81,15 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheRequestDownloadedFromRequestUriIsNotValid =
             "the request downloaded from request URI is not valid";
         public const string TheRequestParameterIsNotCorrect = "the request parameter is not correct";
-        public const string TheIdTokenHintParameterCannotBeDecrypted = "the id token hint parameter cannot be decrypted";
-        public const string TheIdTokenHintParameterIsNotAValidToken = "the id_token parameter is not a valid token";
+        public const string TheIdTokenHintParameterCannotBeDecrypted = "the id_token_hint parameter cannot be decrypted";
+        public const string TheIdTokenHintParameterIsNotAValidToken = "the id_token_hint parameter is not a valid token";
         public const string TheSignatureOfIdTokenHintParameterCannotBeChecked = "the signature of id token hint parameter cannot be checked";
         public const string TheIdentityTokenDoesntContainSimpleIdentityServerAsAudience = "the identity token doesnt contain simple identity server in the audience";
         public const string TheCurrentAuthenticatedUserDoesntMatchWithTheIdentityToken = "the current authenticated user doesn't match with the identity token";
         public const string TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated =
             "the response cannot be generated because the resource owner needs to be authenticated";
+        public const string TheRedirectUrlIsNotValid = "the redirect_uri {0} is not well formed";
+        public const string TheRedirectUrlCannotContainsFragment = "the redirect_uri {0} cannot contains fragment";
         public const string TheRedirectUriParameterIsNotValid = "one or more redirect_uri values are invalid";
         public const string TheRedirectUriContainsAFragment = "one or more redirect_uri contains a fragment";
         public const string TheJwksParameterCannotBeSetBecauseJwksUrlIsUsed =
@@ -122,9 +125,20 @@ namespace SimpleIdentityServer.Core.Errors
         public const string TheExternalResourceOwnerIsNotAuthenticated = "the 'external' resource owner is not authenticated";
         public const string TheResourceOwnerIsNotALocalAccount = "the resource owner is not a local account";
         public const string TheClientIdDoesntExist = "the client id {0} doesn't exist";
-        public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't contains a shared secret";
+        public const string TheClientDoesntContainASharedSecret = "the client {0} doesn't have a shared secret";
         public const string TheClientRequiresPkce = "the client {0} requires PKCE";
         public const string TheCodeVerifierIsNotCorrect = "the code verifier is not correct";
         public const string TheBulkPublicClaimsIsNotWorking = "the bulk operation is not working ...";
+        public const string TheResourceOwnerDoesntExist = "the resource owner doesn't exist";
+        public const string TheProfileAlreadyLinked = "the profile is already linked to your account";
+        public const string NotAuthorizedToRemoveTheProfile = "not authorized to remove the profile";
+        public const string TheScimConfigurationMustBeSpecified = "the scim configuration is not correct";
+        public const string TheExternalAccountAccountCannotBeUnlinked = "the external account cannot be unlinked";
+        public const string TheAmrDoesntExist = "the amr {0} doesn't exist";
+        public const string NoActiveAmr = "no active AMR";
+        public const string TheUserIsNotAuthorized = "the user is not authorized";
+        public const string TheResourceOwnerCannotBeAdded = "An error occured while trying to insert the resource owner";
+        public const string TheRefreshTokenCanBeUsedOnlyByTheSameIssuer = "the refresh token can be used only by the same issuer";
+        public const string TheTokenIsNotAValidResourceOwnerToken = "not a valid resource owner token";
     }
 }

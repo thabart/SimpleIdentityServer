@@ -14,14 +14,14 @@
 // limitations under the License.
 #endregion
 
-using System;
 using Moq;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using Xunit;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Helpers
 {
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
 
@@ -64,7 +64,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5
@@ -85,7 +85,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Helpers
         {
             // ARRANGE
             InitializeFakeObjects();
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 IdTokenSignedResponseAlg = Jwt.Constants.JwsAlgNames.RS256,
                 IdTokenEncryptedResponseAlg = Jwt.Constants.JweAlgNames.RSA1_5,

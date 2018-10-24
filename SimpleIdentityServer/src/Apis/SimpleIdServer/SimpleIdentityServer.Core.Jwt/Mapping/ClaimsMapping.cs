@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Jwt.Extensions;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -21,34 +22,26 @@ namespace SimpleIdentityServer.Core.Jwt.Mapping
 {
     public interface IClaimsMapping
     {
-        Dictionary<string, string> MapToOpenIdClaims(IEnumerable<Claim> claims);
+        Dictionary<string, object> MapToOpenIdClaims(IEnumerable<Claim> claims);
     }
 
     public class ClaimsMapping : IClaimsMapping
     {
-        public Dictionary<string, string> MapToOpenIdClaims(IEnumerable<Claim> claims)
+        public Dictionary<string, object> MapToOpenIdClaims(IEnumerable<Claim> claims)
         {
-            var result = new Dictionary<string, string>();
-            var roles = new List<string>();
+            var result = new Dictionary<string, object>();
             foreach (var claim in claims)
             {
-                if (claim.Type == Constants.StandardResourceOwnerClaimNames.Role)
-                {
-                    roles.Add(claim.Value);
-                    continue;
-                }
-
                 if (Constants.MapWifClaimsToOpenIdClaims.ContainsKey(claim.Type))
                 {
-                    result.Add(Constants.MapWifClaimsToOpenIdClaims[claim.Type], claim.Value);
+                    result.Add(Constants.MapWifClaimsToOpenIdClaims[claim.Type], claim.GetClaimValue());
                 }
                 else
                 {
-                    result.Add(claim.Type, claim.Value);
+                    result.Add(claim.Type, claim.GetClaimValue());
                 }
             }
-
-            result.Add(Jwt.Constants.StandardResourceOwnerClaimNames.Role, string.Join(",", roles));
+            
             return result;
         }
     }

@@ -25,8 +25,8 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
 {
     public interface IConsentActions
     {
-        Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
-        Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
+        Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
+        Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 
     public class ConsentActions : IConsentActions
@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
             _confirmConsentAction = confirmConsentAction;
         }
 
-        public async Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal)
+        public async Task<DisplayContentResult> DisplayConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -55,10 +55,10 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            return await _displayConsentAction.Execute(authorizationParameter, claimsPrincipal, issuerName);
         }
 
-        public async Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal)
+        public async Task<ActionResult> ConfirmConsent(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -71,7 +71,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             }
 
-            return await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            return await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, issuerName);
         }
     }
 }

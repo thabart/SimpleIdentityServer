@@ -19,28 +19,39 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using SimpleBus.InMemory;
+using SimpleIdentityServer.AccountFilter;
+using SimpleIdentityServer.AccountFilter.Basic.Controllers;
+using SimpleIdentityServer.AccountFilter.Basic.Repositories;
 using SimpleIdentityServer.Api.Controllers.Api;
+using SimpleIdentityServer.Authenticate.SMS;
+using SimpleIdentityServer.Authenticate.SMS.Actions;
+using SimpleIdentityServer.Authenticate.SMS.Controllers;
+using SimpleIdentityServer.Authenticate.SMS.Services;
+using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core;
 using SimpleIdentityServer.Core.Api.Jwks.Actions;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.InMemory;
-using SimpleIdentityServer.EventStore.Handler;
-using SimpleIdentityServer.EventStore.InMemory;
-using SimpleIdentityServer.Host.Tests.Extensions;
+using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Host.Tests.MiddleWares;
 using SimpleIdentityServer.Host.Tests.Services;
+using SimpleIdentityServer.Host.Tests.Stores;
 using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.OpenId.Logging;
+using SimpleIdentityServer.Store;
+using SimpleIdentityServer.Twilio.Client;
+using SimpleIdentityServer.UserManagement.Controllers;
+using SimpleIdServer.Bus;
+using SimpleIdServer.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using WebApiContrib.Core.Storage;
-using WebApiContrib.Core.Storage.InMemory;
+using SimpleIdentityServer.Common.Client.Factories;
 
 namespace SimpleIdentityServer.Host.Tests
 {
@@ -56,16 +67,11 @@ namespace SimpleIdentityServer.Host.Tests
         {
             _options = new IdentityServerOptions
             {
-                Authenticate = new AuthenticateOptions
-                {
-                    CookieName = DefaultSchema
-                },
                 Scim = new ScimOptions
                 {
                     IsEnabled = true,
                     EndPoint = ScimEndPoint
-                },
-                AuthenticateResourceOwner = typeof(CustomAuthenticateResourceOwnerService)
+                }
             };
             _jsonWebKeyEnricher = new JsonWebKeyEnricher();
             _context = context;
@@ -73,34 +79,43 @@ namespace SimpleIdentityServer.Host.Tests
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // 1. Configure the caching
-            services.AddStorage(opt => opt.UseInMemory());
-            // 2. Add the dependencies needed to enable CORS
+            // 1. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-            // 3. Configure Simple identity server
+            // 2. Configure Simple identity server
             ConfigureIdServer(services);
             services.AddAuthentication(opts =>
             {
                 opts.DefaultAuthenticateScheme = DefaultSchema;
                 opts.DefaultChallengeScheme = DefaultSchema;
-            }).AddFakeCustomAuth(o => { });
-            // 4. Configure MVC
+            })
+            .AddFakeCustomAuth(o => { })
+            .AddFakeOAuth2Introspection(o =>
+            {
+                o.WellKnownConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+                o.ClientId = "stateless_client";
+                o.ClientSecret = "stateless_client";
+                o.IdentityServerClientFactory = new IdentityServerClientFactory(_context.Oauth2IntrospectionHttpClientFactory.Object);
+            })
+            .AddFakeUserInfoIntrospection(o => { });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddOpenIdSecurityPolicy(DefaultSchema);
+            });
+            // 3. Configure MVC
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
             parts.Clear();
             parts.Add(new AssemblyPart(typeof(DiscoveryController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(CodeController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(ProfilesController).GetTypeInfo().Assembly));
+            parts.Add(new AssemblyPart(typeof(FiltersController).GetTypeInfo().Assembly));
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                context.EnsureSeedData(_context);
-            }
 
             //1 . Enable CORS.
             app.UseCors("AllowAll");
@@ -138,17 +153,26 @@ namespace SimpleIdentityServer.Host.Tests
 
         private void ConfigureIdServer(IServiceCollection services)
         {
+            services.AddSingleton(new SmsAuthenticationOptions());
+            services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+            services.AddSingleton<ITwilioClient>(_context.TwilioClient.Object);
+            services.AddTransient<ISmsAuthenticationOperation, SmsAuthenticationOperation>();
+            services.AddTransient<IGenerateAndSendSmsCodeOperation, GenerateAndSendSmsCodeOperation>();
+            services.AddTransient<IAuthenticateResourceOwnerService, CustomAuthenticateResourceOwnerService>();
+            services.AddTransient<IAuthenticateResourceOwnerService, SmsAuthenticateResourceOwnerService>();
             services.AddHostIdentityServer(_options)
-                .AddSimpleIdentityServerCore(_context.HttpClientFactory)
+                .AddSimpleIdentityServerCore(null, null, DefaultStores.Clients(_context), DefaultStores.Consents(), DefaultStores.JsonWebKeys(_context), null, DefaultStores.Users())
+                .AddDefaultTokenStore()
+                .AddStorage(o => o.UseInMemoryStorage())
                 .AddSimpleIdentityServerJwt()
-                .AddIdServerLogging()
+                .AddTechnicalLogging()
+                .AddOpenidLogging()
+                .AddOAuthLogging()
                 .AddLogging()
-                .AddOAuthInMemoryEF()
-                .AddSimpleBusInMemory()
-                .AddEventStoreInMemoryEF()
-                .AddEventStoreBusHandler()
-                .AddInMemoryStorage();
-                // .AddSimpleIdentityServerSqlServer(_options.DataSource.ConnectionString);
+                .AddTransient<IAccountFilter, AccountFilter.Basic.AccountFilter>()
+                .AddSingleton<IFilterRepository>(new DefaultFilterRepository(null))
+                .AddSingleton<IHttpClientFactory>(_context.HttpClientFactory);
+            services.AddSingleton<IConfirmationCodeStore>(_context.ConfirmationCodeStore.Object);
         }
 
         private List<Dictionary<string, object>> ExtractPublicKeysForSignature(IEnumerable<JsonWebKey> jsonWebKeys)

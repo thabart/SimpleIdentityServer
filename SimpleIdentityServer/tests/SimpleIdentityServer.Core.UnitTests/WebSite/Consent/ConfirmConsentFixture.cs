@@ -1,16 +1,16 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Consent.Actions;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OpenId.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -29,7 +29,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
         private Mock<IActionResultFactory> _actionResultFactoryFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
         private Mock<IConsentHelper> _consentHelperFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IOpenIdEventSource> _openIdEventSource;
         private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
 
         private IConfirmConsentAction _confirmConsentAction;
@@ -42,8 +42,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             var authorizationParameter = new AuthorizationParameter();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _confirmConsentAction.Execute(authorizationParameter, null, null));
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 ClientId = "clientId"
             };
@@ -83,12 +83,12 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Models.Consent)null));
+                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(scopeNames);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -98,7 +98,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<ResponseType> { ResponseType.id_token, ResponseType.id_token });
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null));
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(exception.Message == ErrorDescriptions.TheAuthorizationFlowIsNotSupported);
@@ -132,7 +132,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 ClientId = clientId
             };
@@ -147,24 +147,24 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Models.Consent)null));
+                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
-            Models.Consent insertedConsent = null;
-            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Models.Consent>()))
-                .Callback<Models.Consent>(consent => insertedConsent = consent)
-                .Returns(Task.FromResult(new Models.Consent()));
+            Core.Common.Models.Consent insertedConsent = null;
+            _consentRepositoryFake.Setup(co => co.InsertAsync(It.IsAny<Core.Common.Models.Consent>()))
+                .Callback<Core.Common.Models.Consent>(consent => insertedConsent = consent)
+                .Returns(Task.FromResult(true));
 
             // ACT
-            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null);
 
             // ASSERT
             Assert.NotNull(insertedConsent);
@@ -192,7 +192,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             };
             var claimsIdentity = new ClaimsIdentity(claims, "SimpleIdentityServer");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var client = new Models.Client
+            var client = new Core.Common.Models.Client
             {
                 ClientId = "clientId"
             };
@@ -211,14 +211,14 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             ICollection<Scope> scopes = new List<Scope>();
             _consentHelperFake.Setup(c => c.GetConfirmedConsentsAsync(It.IsAny<string>(),
                 It.IsAny<AuthorizationParameter>()))
-                .Returns(Task.FromResult((Models.Consent)null));
+                .Returns(Task.FromResult((Core.Common.Models.Consent)null));
             _clientRepositoryFake.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
             _parameterParserHelperFake.Setup(p => p.ParseScopes(It.IsAny<string>()))
                 .Returns(new List<string>());
             _scopeRepositoryFake.Setup(s => s.SearchByNamesAsync(It.IsAny<IEnumerable<string>>()))
                 .Returns(Task.FromResult(scopes));
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryFake.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(resourceOwner));
             _actionResultFactoryFake.Setup(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl())
                 .Returns(actionResult);
@@ -226,10 +226,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 .Returns(new List<ResponseType> {  ResponseType.code });
 
             // ACT
-            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal);
+            var result = await _confirmConsentAction.Execute(authorizationParameter, claimsPrincipal, null);
 
             // ASSERT
-            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Models.Consent>()));
+            _consentRepositoryFake.Verify(c => c.InsertAsync(It.IsAny<Core.Common.Models.Consent>()));
             _actionResultFactoryFake.Verify(a => a.CreateAnEmptyActionResultWithRedirectionToCallBackUrl());
             Assert.True(result.RedirectInstruction.ResponseMode == ResponseMode.query);
         }
@@ -244,7 +244,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
             _actionResultFactoryFake = new Mock<IActionResultFactory>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
             _consentHelperFake = new Mock<IConsentHelper>();
-            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _openIdEventSource = new Mock<IOpenIdEventSource>();
             _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _confirmConsentAction = new ConfirmConsentAction(
                 _consentRepositoryFake.Object,
@@ -255,8 +255,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Consent
                 _actionResultFactoryFake.Object,
                 _generateAuthorizationResponseFake.Object,
                 _consentHelperFake.Object,
-                _simpleIdentityServerEventSource.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _openIdEventSource.Object);
         }
     }
 }

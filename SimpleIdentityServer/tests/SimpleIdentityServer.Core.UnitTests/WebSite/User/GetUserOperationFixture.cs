@@ -15,9 +15,9 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System;
@@ -30,7 +30,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
     public class GetUserOperationFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IGetUserOperation _getUserOperation;
 
         [Fact]
@@ -78,26 +77,6 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         }
         
         [Fact]
-        public async Task When_Ro_DoesntExist_Then_Exception_Is_Thrown()
-        {
-            // ARRANGE
-            InitializeFakeObjects();
-            var claimsIdentity = new ClaimsIdentity("test");
-            claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult((ResourceOwner)null));
-
-            // ACT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _getUserOperation.Execute(claimsPrincipal));
-
-            // ASSERT
-            Assert.NotNull(exception);
-            Assert.True(exception.Code == Errors.ErrorCodes.UnhandledExceptionCode);
-            Assert.True(exception.Message == Errors.ErrorDescriptions.TheRoDoesntExist);
-        }
-        
-        [Fact]
         public async Task When_Correct_Subject_Is_Passed_Then_ResourceOwner_Is_Returned()
         {
             // ARRANGE
@@ -105,7 +84,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
             var claimsIdentity = new ClaimsIdentity("test");
             claimsIdentity.AddClaim(new Claim(Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "subject"));
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner()));
 
             // ACT
@@ -118,10 +97,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.User
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
-            _getUserOperation = new GetUserOperation(
-                _resourceOwnerRepositoryStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+            _getUserOperation = new GetUserOperation(_resourceOwnerRepositoryStub.Object);
         }
     }
 }

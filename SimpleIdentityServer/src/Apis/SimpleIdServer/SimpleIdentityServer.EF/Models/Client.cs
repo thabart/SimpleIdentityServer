@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.EF.Models
@@ -222,5 +223,8 @@ namespace SimpleIdentityServer.EF.Models
         /// Gets or sets the clients secrets
         /// </summary>
         public virtual ICollection<ClientSecret> ClientSecrets { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
+        public DateTime UpdateDateTime { get; set; }
     }
 }

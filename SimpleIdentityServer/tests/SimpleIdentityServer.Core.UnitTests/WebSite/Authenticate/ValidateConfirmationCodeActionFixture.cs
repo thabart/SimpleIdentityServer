@@ -15,9 +15,10 @@
 #endregion
 
 using Moq;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Store;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +27,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 {
     public class ValidateConfirmationCodeActionFixture
     {
-        private Mock<IConfirmationCodeRepository> _confirmationCodeRepositoryStub;
+        private Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private IValidateConfirmationCodeAction _validateConfirmationCodeAction;
 
         [Fact]
@@ -45,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _confirmationCodeRepositoryStub.Setup(c => c.GetAsync(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult((ConfirmationCode)null));
 
             // ACT
@@ -62,10 +63,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 10,
-                CreateDateTime = DateTime.UtcNow.AddDays(-2)
+                IssueAt = DateTime.UtcNow.AddDays(-2)
             };
             InitializeFakeObjects();
-            _confirmationCodeRepositoryStub.Setup(c => c.GetAsync(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(confirmationCode));
 
             // ACT
@@ -82,10 +83,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
             var confirmationCode = new ConfirmationCode
             {
                 ExpiresIn = 200,
-                CreateDateTime = DateTime.UtcNow
+                IssueAt = DateTime.UtcNow
             };
             InitializeFakeObjects();
-            _confirmationCodeRepositoryStub.Setup(c => c.GetAsync(It.IsAny<string>()))
+            _confirmationCodeStoreStub.Setup(c => c.Get(It.IsAny<string>()))
                 .Returns(Task.FromResult(confirmationCode));
 
             // ACT
@@ -97,8 +98,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
 
         private void InitializeFakeObjects()
         {
-            _confirmationCodeRepositoryStub = new Mock<IConfirmationCodeRepository>();
-            _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeRepositoryStub.Object);
+            _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
+            _validateConfirmationCodeAction = new ValidateConfirmationCodeAction(_confirmationCodeStoreStub.Object);
         }
     }
 }

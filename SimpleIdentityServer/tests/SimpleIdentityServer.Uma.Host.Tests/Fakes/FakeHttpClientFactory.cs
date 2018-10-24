@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.TestHost;
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Common.Client.Factories;
 using System.Net.Http;
 
 namespace SimpleIdentityServer.Uma.Host.Tests.Fakes

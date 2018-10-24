@@ -17,14 +17,11 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.EF.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
-#if NET461
-using System.Data.SqlClient;
-#endif
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -53,91 +50,40 @@ namespace SimpleIdentityServer.Uma.EF.Repositories
             return policy == null ? null : policy.ToDomain();
         }
 
-#if NET461
-        public async Task<bool> BulkAdd(IEnumerable<Policy> parameter)
+        public async Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var connection = _context.Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
+            IQueryable<Models.Policy> policies = _context.Policies
+                .Include(p => p.PolicyResources)
+                .Include(p => p.Rules);
+            if (parameter.Ids != null && parameter.Ids.Any())
             {
-                await connection.OpenAsync().ConfigureAwait(false);
+                policies = policies.Where(r => parameter.Ids.Contains(r.Id));
             }
 
-            var policyDataTable = new DataTable();
-            policyDataTable.Columns.Add("Id", typeof(string));
-            var policyResourceDataTable = new DataTable();
-            policyResourceDataTable.Columns.Add("PolicyId", typeof(string));
-            policyResourceDataTable.Columns.Add("ResourceSetId", typeof(string));
-            var policyRuleDataTable = new DataTable();
-            policyRuleDataTable.Columns.Add("Id", typeof(string));
-            policyRuleDataTable.Columns.Add("Claims", typeof(string));
-            policyRuleDataTable.Columns.Add("ClientIdsAllowed", typeof(string));
-            policyRuleDataTable.Columns.Add("IsResourceOwnerConsentNeeded", typeof(bool));
-            policyRuleDataTable.Columns.Add("PolicyId", typeof(string));
-            policyRuleDataTable.Columns.Add("Scopes", typeof(string));
-            policyRuleDataTable.Columns.Add("Script", typeof(string));
-            policyRuleDataTable.Columns.Add("OpenIdProvider", typeof(string));
-            foreach(var record in parameter)
+            if (parameter.ResourceIds != null && parameter.ResourceIds.Any())
             {
-                var model = record.ToModel();
-                var policyRow = policyDataTable.NewRow();
-                policyRow["Id"] = model.Id;
-                policyDataTable.Rows.Add(policyRow);
-                if (model.PolicyResources != null)
-                {
-                    foreach(var policyResource in model.PolicyResources)
-                    {
-                        var policyResourceRow = policyResourceDataTable.NewRow();
-                        policyResourceRow["PolicyId"] = record.Id;
-                        policyResourceRow["ResourceSetId"] = policyResource.ResourceSetId;
-                        policyResourceDataTable.Rows.Add(policyResourceRow);
-                    }
-                }
-
-                if (model.Rules != null)
-                {
-                    foreach(var rule in model.Rules)
-                    {
-                        var policyRuleRow = policyRuleDataTable.NewRow();
-                        policyRuleRow["Id"] = rule.Id;
-                        policyRuleRow["Claims"] = rule.Claims;
-                        policyRuleRow["ClientIdsAllowed"] = rule.ClientIdsAllowed;
-                        policyRuleRow["IsResourceOwnerConsentNeeded"] = rule.IsResourceOwnerConsentNeeded;
-                        policyRuleRow["PolicyId"] = model.Id;
-                        policyRuleRow["Scopes"] = rule.Scopes;
-                        policyRuleRow["Script"] = rule.Script;
-                        policyRuleRow["OpenIdProvider"] = rule.OpenIdProvider;
-                        policyRuleDataTable.Rows.Add(policyRuleRow);
-                    }
-                }
+                policies = policies.Where(p => p.PolicyResources.Any(r => parameter.ResourceIds.Contains(r.ResourceSetId)));
             }
 
-            using (var bulkCopy = new SqlBulkCopy((connection) as SqlConnection, SqlBulkCopyOptions.Default, null))
+            var nbResult = await policies.CountAsync().ConfigureAwait(false);
+            policies = policies.OrderBy(c => c.Id);
+            if (parameter.IsPagingEnabled)
             {
-                bulkCopy.DestinationTableName = "[dbo].[Policies]";
-                await bulkCopy.WriteToServerAsync(policyDataTable).ConfigureAwait(false);
+                policies = policies.Skip(parameter.StartIndex).Take(parameter.Count);
             }
 
-            using (var bulkCopy = new SqlBulkCopy((connection) as SqlConnection, SqlBulkCopyOptions.Default, null))
+            return new SearchAuthPoliciesResult
             {
-                bulkCopy.DestinationTableName = "[dbo].[PolicyResource]";
-                await bulkCopy.WriteToServerAsync(policyResourceDataTable).ConfigureAwait(false);
-            }
-
-            using (var bulkCopy = new SqlBulkCopy((connection) as SqlConnection, SqlBulkCopyOptions.Default, null))
-            {
-                bulkCopy.DestinationTableName = "[dbo].[PolicyRules]";
-                await bulkCopy.WriteToServerAsync(policyRuleDataTable).ConfigureAwait(false);
-            }
-
-            connection.Close();
-            return true;
+                Content = await policies.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
         }
-#endif
 
         public async Task<bool> Add(Policy policy)
         {

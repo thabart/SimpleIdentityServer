@@ -15,7 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.EF.Repositories;
 using System;
 
@@ -36,8 +36,8 @@ namespace SimpleIdentityServer.EF
             serviceCollection.AddTransient<IClientRepository, ClientRepository>();
             serviceCollection.AddTransient<IConsentRepository, ConsentRepository>();
             serviceCollection.AddTransient<IJsonWebKeyRepository, JsonWebKeyRepository>();
-            serviceCollection.AddTransient<IConfirmationCodeRepository, ConfirmationCodeRepository>();
             serviceCollection.AddTransient<IClaimRepository, ClaimRepository>();
+            serviceCollection.AddTransient<IProfileRepository, ProfileRepository>();
             return serviceCollection;
         }
     }

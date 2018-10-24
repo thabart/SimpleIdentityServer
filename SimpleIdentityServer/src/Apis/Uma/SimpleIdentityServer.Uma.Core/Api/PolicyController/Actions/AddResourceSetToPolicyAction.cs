@@ -19,6 +19,7 @@ using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,15 +36,18 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
         private readonly IPolicyRepository _policyRepository;
         private readonly IResourceSetRepository _resourceSetRepository;
         private readonly IRepositoryExceptionHelper _repositoryExceptionHelper;
+        private readonly IUmaServerEventSource _umaServerEventSource;
 
         public AddResourceSetToPolicyAction(
             IPolicyRepository policyRepository,
             IResourceSetRepository resourceSetRepository,
-            IRepositoryExceptionHelper repositoryExceptionHelper)
+            IRepositoryExceptionHelper repositoryExceptionHelper,
+            IUmaServerEventSource umaServerEventSource)
         {
             _policyRepository = policyRepository;
             _resourceSetRepository = resourceSetRepository;
             _repositoryExceptionHelper = repositoryExceptionHelper;
+            _umaServerEventSource = umaServerEventSource;
         }
 
         public async Task<bool> Execute(AddResourceSetParameter addResourceSetParameter)
@@ -55,17 +59,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
 
             if (string.IsNullOrWhiteSpace(addResourceSetParameter.PolicyId))
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.PolicyId));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.PolicyId));
             }
 
             if (addResourceSetParameter.ResourceSets == null  ||
                 !addResourceSetParameter.ResourceSets.Any())
             {
-                throw new BaseUmaException(ErrorCodes.InvalidRequestCode,
-                    string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.ResourceSet));
+                throw new BaseUmaException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheParameterNeedsToBeSpecified, Constants.AddResourceSetParameterNames.ResourceSet));
             }
 
+            _umaServerEventSource.StartAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
             var policy = await _repositoryExceptionHelper.HandleException(
                     string.Format(ErrorDescriptions.TheAuthorizationPolicyCannotBeRetrieved, addResourceSetParameter.PolicyId),
                     () => _policyRepository.Get(addResourceSetParameter.PolicyId));
@@ -81,15 +84,16 @@ namespace SimpleIdentityServer.Uma.Core.Api.PolicyController.Actions
                     () => _resourceSetRepository.Get(resourceSetId));
                 if (resourceSet == null)
                 {
-                    throw new BaseUmaException(ErrorCodes.InvalidResourceSetId,
-                        string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
+                    throw new BaseUmaException(ErrorCodes.InvalidResourceSetId, string.Format(ErrorDescriptions.TheResourceSetDoesntExist, resourceSetId));
                 }
             }
 
             policy.ResourceSetIds.AddRange(addResourceSetParameter.ResourceSets);
-            return await _repositoryExceptionHelper.HandleException(
+            var result = await _repositoryExceptionHelper.HandleException(
                 ErrorDescriptions.ThePolicyCannotBeUpdated,
                 () => _policyRepository.Update(policy));
+            _umaServerEventSource.FinishAddResourceToAuthorizationPolicy(addResourceSetParameter.PolicyId, string.Join(",", addResourceSetParameter.ResourceSets));
+            return result;
         }
     }
 }

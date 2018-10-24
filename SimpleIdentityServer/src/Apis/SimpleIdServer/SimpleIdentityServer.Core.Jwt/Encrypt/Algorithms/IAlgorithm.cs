@@ -14,6 +14,8 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
+
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
 {
     public interface IAlgorithm

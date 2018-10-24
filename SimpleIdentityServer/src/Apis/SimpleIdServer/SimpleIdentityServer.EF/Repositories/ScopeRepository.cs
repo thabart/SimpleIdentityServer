@@ -15,26 +15,26 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domains = SimpleIdentityServer.Core.Models;
+using Domains = SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.EF.Repositories
 {
     public sealed class ScopeRepository : IScopeRepository
     {
         private readonly SimpleIdentityServerContext _context;
+        private readonly ITechnicalEventSource _managerEventSource;
 
-        private readonly IManagerEventSource _managerEventSource;
-
-        public ScopeRepository(
-            SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource) {
+        public ScopeRepository(SimpleIdentityServerContext context, ITechnicalEventSource managerEventSource)
+        {
             _context = context;
             _managerEventSource = managerEventSource;
         }
@@ -91,7 +91,9 @@ namespace SimpleIdentityServer.EF.Repositories
                         IsExposed = scope.IsExposed,
                         IsOpenIdScope = scope.IsOpenIdScope,
                         Type = (Models.ScopeType)scope.Type,
-                        ScopeClaims = new List<Models.ScopeClaim>()
+                        ScopeClaims = new List<Models.ScopeClaim>(),
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateDateTime = DateTime.UtcNow
                     };
 
                     if (scope.Claims != null &&
@@ -170,6 +172,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     connectedScope.IsDisplayedInConsent = scope.IsDisplayedInConsent;
                     connectedScope.IsExposed = scope.IsExposed;
                     connectedScope.Type = (Models.ScopeType)scope.Type;
+                    connectedScope.UpdateDateTime = DateTime.UtcNow;
                     var scopesNotToBeRemoved = new List<string>();
                     if (scope.Claims != null &&
                         scope.Claims.Any())
@@ -215,6 +218,61 @@ namespace SimpleIdentityServer.EF.Repositories
 
                 return true;
             }
+        }
+
+        public async Task<SearchScopeResult> Search(SearchScopesParameter parameter)
+        {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            IQueryable<Models.Scope> scopes = _context.Scopes;
+            if (parameter.ScopeNames != null && parameter.ScopeNames.Any())
+            {
+                scopes = scopes.Where(c => parameter.ScopeNames.Any(n => c.Name.Contains(n)));
+            }
+
+            if (parameter.Types != null && parameter.Types.Any())
+            {
+                var scopeTypes = parameter.Types.Select(t => (Models.ScopeType)t);
+                scopes = scopes.Where(s => scopeTypes.Contains(s.Type));
+            }
+
+            var nbResult = await scopes.CountAsync().ConfigureAwait(false);
+            if (parameter.Order != null)
+            {
+                switch (parameter.Order.Target)
+                {
+                    case "update_datetime":
+                        switch(parameter.Order.Type)
+                        {
+                            case OrderTypes.Asc:
+                                scopes = scopes.OrderBy(c => c.UpdateDateTime);
+                                break;
+                            case OrderTypes.Desc:
+                                scopes = scopes.OrderByDescending(c => c.UpdateDateTime);
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                scopes = scopes.OrderByDescending(c => c.UpdateDateTime);
+            }
+
+            if (parameter.IsPagingEnabled)
+            {
+                scopes = scopes.Skip(parameter.StartIndex).Take(parameter.Count);
+            }
+
+            return new SearchScopeResult
+            {
+                Content = await scopes.Select(c => c.ToDomain()).ToListAsync().ConfigureAwait(false),
+                StartIndex = parameter.StartIndex,
+                TotalResults = nbResult
+            };
         }
     }
 }

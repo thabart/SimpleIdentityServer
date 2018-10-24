@@ -14,19 +14,20 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
 {
     public interface IProcessAuthorizationRequest
     {
-        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client);
+        Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName);
     }
 
     public class ProcessAuthorizationRequest : IProcessAuthorizationRequest
@@ -49,7 +50,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
         private readonly IConsentHelper _consentHelper;
         private readonly IJwtParser _jwtParser;
         private readonly IConfigurationService _configurationService;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
 
         public ProcessAuthorizationRequest(
             IParameterParserHelper parameterParserHelper,
@@ -59,7 +60,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             IConsentHelper consentHelper,
             IJwtParser jwtParser,
             IConfigurationService configurationService,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource)
+            IOAuthEventSource oauthEventSource)
         {
             _parameterParserHelper = parameterParserHelper;
             _clientValidator = clientValidator;
@@ -68,10 +69,10 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             _consentHelper = consentHelper;
             _jwtParser = jwtParser;
             _configurationService = configurationService;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
         }
 
-        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Client client)
+        public async Task<ActionResult> ProcessAsync(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, Core.Common.Models.Client client, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -91,7 +92,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             }
 
             var serializedAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
-            _simpleIdentityServerEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
+            _oauthEventSource.StartProcessingAuthorizationRequest(serializedAuthorizationParameter);
             ActionResult result = null;
             var prompts = _parameterParserHelper.ParsePrompts(authorizationParameter.Prompt);
             if (prompts == null || !prompts.Any())
@@ -162,8 +163,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             // Check if the user connection is still valid.
             if (endUserIsAuthenticated && !authorizationParameter.MaxAge.Equals(default(double)))
             {
-                var authenticationDateTimeClaim =
-                    claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
+                var authenticationDateTimeClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationInstant);
                 if (authenticationDateTimeClaim != null)
                 {
                     var maxAge = authorizationParameter.MaxAge;
@@ -188,14 +188,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                 await ProcessIdTokenHint(result,
                     authorizationParameter,
                     prompts,
-                    claimsPrincipal);
+                    claimsPrincipal,
+                    issuerName);
             }
 
             var actionTypeName = Enum.GetName(typeof(TypeActionResult), result.Type);
             var actionName = result.RedirectInstruction == null 
                 ? string.Empty 
                 : Enum.GetName(typeof(IdentityServerEndPoints), result.RedirectInstruction.Action);
-            _simpleIdentityServerEventSource.EndProcessingAuthorizationRequest(
+            _oauthEventSource.EndProcessingAuthorizationRequest(
                 serializedAuthorizationParameter,
                 actionTypeName,
                 actionName);
@@ -207,7 +208,8 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
             ActionResult actionResult,
             AuthorizationParameter authorizationParameter,
             ICollection<PromptParameter> prompts,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            string issuerName)
         {
             if (!string.IsNullOrWhiteSpace(authorizationParameter.IdTokenHint) &&
                 prompts.Contains(PromptParameter.none) &&
@@ -249,7 +251,6 @@ namespace SimpleIdentityServer.Core.Api.Authorization.Common
                         authorizationParameter.State);
                 }
 
-                var issuerName = await _configurationService.GetIssuerNameAsync();
                 if (jwsPayload.Audiences == null ||
                     !jwsPayload.Audiences.Any() ||
                     !jwsPayload.Audiences.Contains(issuerName))

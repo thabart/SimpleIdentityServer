@@ -14,7 +14,7 @@
 // limitations under the License.
 #endregion
 
-using SimpleBus.Core;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Errors;
@@ -23,8 +23,8 @@ using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Handler.Events;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Events;
+using SimpleIdentityServer.OAuth.Logging;
 using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -33,7 +33,7 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 {
     public interface IAuthorizationActions
     {
-        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal);
+        Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName);
     }
 
     public class AuthorizationActions : IAuthorizationActions
@@ -44,10 +44,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             _getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
         private readonly IAuthorizationCodeGrantTypeParameterAuthEdpValidator _authorizationCodeGrantTypeParameterValidator;
         private readonly IParameterParserHelper _parameterParserHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthorizationFlowHelper _authorizationFlowHelper;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IAmrHelper _amrHelper;
+        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
 
         public AuthorizationActions(
             IGetAuthorizationCodeOperation getAuthorizationCodeOperation,
@@ -55,10 +57,12 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             IGetAuthorizationCodeAndTokenViaHybridWorkflowOperation getAuthorizationCodeAndTokenViaHybridWorkflowOperation,
             IAuthorizationCodeGrantTypeParameterAuthEdpValidator authorizationCodeGrantTypeParameterValidator,
             IParameterParserHelper parameterParserHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IAuthorizationFlowHelper authorizationFlowHelper,
             IEventPublisher eventPublisher,
-            IPayloadSerializer payloadSerializer)
+            IPayloadSerializer payloadSerializer, 
+            IAmrHelper amrHelper,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper)
         {
             _getAuthorizationCodeOperation = getAuthorizationCodeOperation;
             _getTokenViaImplicitWorkflowOperation = getTokenViaImplicitWorkflowOperation;
@@ -66,13 +70,15 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 getAuthorizationCodeAndTokenViaHybridWorkflowOperation;
             _authorizationCodeGrantTypeParameterValidator = authorizationCodeGrantTypeParameterValidator;
             _parameterParserHelper = parameterParserHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _authorizationFlowHelper = authorizationFlowHelper;
             _eventPublisher = eventPublisher;
             _payloadSerializer = payloadSerializer;
+            _amrHelper = amrHelper;
+            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
         }
 
-        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal)
+        public async Task<ActionResult> GetAuthorization(AuthorizationParameter parameter, IPrincipal claimsPrincipal, string issuerName)
         {
             var processId = Guid.NewGuid().ToString();
             _eventPublisher.Publish(new AuthorizationRequestReceived(Guid.NewGuid().ToString(), processId,  _payloadSerializer.GetPayload(parameter), 0));
@@ -80,13 +86,16 @@ namespace SimpleIdentityServer.Core.Api.Authorization
             {
                 var client = await _authorizationCodeGrantTypeParameterValidator.ValidateAsync(parameter);
                 ActionResult actionResult = null;
-                _simpleIdentityServerEventSource.StartAuthorization(parameter.ClientId,
+                _oauthEventSource.StartAuthorization(parameter.ClientId,
                     parameter.ResponseType,
                     parameter.Scope,
                     parameter.Claims == null ? string.Empty : parameter.Claims.ToString());
-                if (client.RequirePkce && (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null))
+                if (client.RequirePkce)
                 {
-                    throw new IdentityServerException(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId));
+                    if (string.IsNullOrWhiteSpace(parameter.CodeChallenge) || parameter.CodeChallengeMethod == null)
+                    {
+                        throw new IdentityServerExceptionWithState(ErrorCodes.InvalidRequestCode, string.Format(ErrorDescriptions.TheClientRequiresPkce, parameter.ClientId), parameter.State);
+                    }
                 }
 
                 var responseTypes = _parameterParserHelper.ParseResponseTypes(parameter.ResponseType);
@@ -94,13 +103,13 @@ namespace SimpleIdentityServer.Core.Api.Authorization
                 switch (authorizationFlow)
                 {
                     case AuthorizationFlow.AuthorizationCodeFlow:
-                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                     case AuthorizationFlow.ImplicitFlow:
-                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getTokenViaImplicitWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                     case AuthorizationFlow.HybridFlow:
-                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client);
+                        actionResult = await _getAuthorizationCodeAndTokenViaHybridWorkflowOperation.Execute(parameter, claimsPrincipal, client, issuerName);
                         break;
                 }
 
@@ -116,18 +125,19 @@ namespace SimpleIdentityServer.Core.Api.Authorization
 
                     var serializedParameters = actionResult.RedirectInstruction == null || actionResult.RedirectInstruction.Parameters == null ? String.Empty :
                         actionResult.RedirectInstruction.Parameters.SerializeWithJavascript();
-                    _simpleIdentityServerEventSource.EndAuthorization(actionTypeName,
+                    _oauthEventSource.EndAuthorization(actionTypeName,
                         actionName,
                         serializedParameters);
                 }
 
                 _eventPublisher.Publish(new AuthorizationGranted(Guid.NewGuid().ToString(), processId, _payloadSerializer.GetPayload(actionResult), 1));
                 actionResult.ProcessId = processId;
+                actionResult.Amr = _amrHelper.GetAmr(_resourceOwnerAuthenticateHelper.GetAmrs(), parameter.AmrValues);
                 return actionResult;
             }
             catch(IdentityServerException ex)
             {
-                _eventPublisher.Publish(new OpenIdErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
+                _eventPublisher.Publish(new OAuthErrorReceived(Guid.NewGuid().ToString(), processId, ex.Code, ex.Message, 1));
                 throw;
             }
         }

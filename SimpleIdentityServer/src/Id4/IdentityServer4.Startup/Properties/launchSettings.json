@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "IdentityServer4.Startup": {
-      "commandName": "Project",
-      "commandLineArgs": "https://*:5443"
-    }
-  }
-}

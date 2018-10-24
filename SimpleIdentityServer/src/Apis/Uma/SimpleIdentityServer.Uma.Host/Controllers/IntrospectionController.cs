@@ -16,12 +16,15 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Introspection;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Serializers;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -38,11 +41,19 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<Introspection> Post()
+        public async Task<IActionResult> Post()
         {
-            if (Request.Form == null)
+            try
             {
-                throw new ArgumentNullException(nameof(Request.Form));
+
+                if (Request.Form == null)
+                {
+                    return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var serializer = new ParamSerializer();
@@ -61,8 +72,22 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
                 }
             }
 
-            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue);
-            return result.ToDto();
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var result = await _introspectionActions.PostIntrospection(introspectionRequest.ToParameter(), authenticationHeaderValue, issuerName);
+            return new OkObjectResult(result.ToDto());
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Moq;
 using SimpleIdentityServer.Core.Services;
 using System;
 using Xunit;
@@ -23,26 +22,25 @@ namespace SimpleIdentityServer.Core.UnitTests.TwoFactors
 {
     public class TwoFactorAuthenticationHandlerFixture
     {
-        private Mock<ITwoFactorServiceStore> _twoFactorServiceStore;
-
         private ITwoFactorAuthenticationHandler _twoFactorAuthenticationHandler;
 
         [Fact]
-        public void When_Passing_Null_Parameter_Then_Exception_Is_Thrown()
+        public void When_Passing_Null_Parameter_To_SendCode_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
 
             // ACTS & ASSERTS
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, 0, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, 0, null));
-            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", 0, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(null, null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode(string.Empty, null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", null, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", string.Empty, null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _twoFactorAuthenticationHandler.SendCode("code", "service", null));
         }
 
         private void InitializeFakeObjects()
         {
-            _twoFactorServiceStore = new Mock<ITwoFactorServiceStore>();
-            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(_twoFactorServiceStore.Object);
+            _twoFactorAuthenticationHandler = new TwoFactorAuthenticationHandler(null);
         }
     }
 }

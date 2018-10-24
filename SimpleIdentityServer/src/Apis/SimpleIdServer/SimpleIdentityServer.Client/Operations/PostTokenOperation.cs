@@ -16,15 +16,13 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client.DTOs.Response;
-using SimpleIdentityServer.Client.Factories;
+using SimpleIdentityServer.Client.Results;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-#if NET
-using System.Net;
-#endif
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -33,16 +31,8 @@ namespace SimpleIdentityServer.Client.Operations
 {
     public interface IPostTokenOperation
     {
-        Task<GrantedToken> ExecuteAsync(
-            Dictionary<string, string> tokenRequest,
-            Uri requestUri,
-            string authorizationValue);
-
-        Task<GrantedToken> ExecuteAsync(
-            Dictionary<string, string> tokenRequest,
-            Uri requestUri,
-            string authorizationValue,
-            X509Certificate2 certificate);
+        Task<GetTokenResult> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue);
+        Task<GetTokenResult> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate);
     }
 
     internal class PostTokenOperation : IPostTokenOperation
@@ -54,15 +44,12 @@ namespace SimpleIdentityServer.Client.Operations
             _httpClientFactory = httpClientFactory;
         }
 
-        public Task<GrantedToken> ExecuteAsync(
-            Dictionary<string, string> tokenRequest,
-            Uri requestUri,
-            string authorizationValue)
+        public Task<GetTokenResult> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue)
         {
             return ExecuteAsync(tokenRequest, requestUri, authorizationValue, null);
         }
 
-        public async Task<GrantedToken> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate)
+        public async Task<GetTokenResult> ExecuteAsync(Dictionary<string, string> tokenRequest, Uri requestUri, string authorizationValue, X509Certificate2 certificate)
         {
             if (tokenRequest == null)
             {
@@ -90,41 +77,25 @@ namespace SimpleIdentityServer.Client.Operations
             }
 
             request.Headers.Add("Authorization", "Basic " + authorizationValue);
-            var result = await httpClient.SendAsync(request);
-            // result.EnsureSuccessStatusCode();
-            var content = await result.Content.ReadAsStringAsync();
-            var jObj = JObject.Parse(content);
-            JToken accessToken = jObj[Constants.GrantedTokenNames.AccessToken],
-                expiresIn = jObj[Constants.GrantedTokenNames.ExpiresIn],
-                scope = jObj[Constants.GrantedTokenNames.Scope],
-                refreshToken = jObj[Constants.GrantedTokenNames.RefreshToken],
-                tokenType = jObj[Constants.GrantedTokenNames.TokenType],
-                idToken = jObj[Constants.GrantedTokenNames.IdToken];
-            var scopes = new List<string>();
-            if(scope != null)
+            var result = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                JArray arr;
-                if ((arr = scope as JArray) != null)
+                result.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new GetTokenResult
                 {
-                    foreach (var rec in arr)
-                    {
-                        scopes.Add(rec.Value<string>());
-                    }
-                }
-                else
-                {
-                    scopes = scope.Value<string>().Split(' ').ToList();
-                }
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponseWithState>(content),
+                    Status = result.StatusCode
+                };
             }
 
-            return new GrantedToken
+            return new GetTokenResult
             {
-                AccessToken = accessToken != null ? accessToken.Value<string>() : null,
-                ExpiresIn = expiresIn != null ? expiresIn.Value<int>() : default(int),
-                IdToken = idToken != null ? idToken.Value<string>() : null,
-                RefreshToken = refreshToken != null ? refreshToken.Value<string>() : null,
-                TokenType = tokenType != null ? tokenType.Value<string>() : null,
-                Scope = scopes
+                Content = JsonConvert.DeserializeObject<GrantedTokenResponse>(content)
             };
         }
     }

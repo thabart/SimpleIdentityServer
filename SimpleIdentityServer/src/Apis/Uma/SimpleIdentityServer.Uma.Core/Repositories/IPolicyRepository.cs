@@ -15,6 +15,7 @@
 #endregion
 
 using SimpleIdentityServer.Uma.Core.Models;
+using SimpleIdentityServer.Uma.Core.Parameters;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,9 +23,7 @@ namespace SimpleIdentityServer.Uma.Core.Repositories
 {
     public interface IPolicyRepository
     {
-#if NET46
-        Task<bool> BulkAdd(IEnumerable<Policy> parameter);
-#endif
+        Task<SearchAuthPoliciesResult> Search(SearchAuthPoliciesParameter parameter);
         Task<ICollection<Policy>> GetAll();
         Task<Policy> Get(string id);
         Task<bool> Add(Policy policy);

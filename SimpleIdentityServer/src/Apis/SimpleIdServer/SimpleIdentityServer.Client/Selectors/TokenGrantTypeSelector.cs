@@ -28,8 +28,9 @@ namespace SimpleIdentityServer.Client.Selectors
         ITokenClient UseClientCredentials(params string[] scopes);
         ITokenClient UseClientCredentials(List<string> scopes);
         ITokenClient UseTicketId(string ticketId, string claimToken);
-        ITokenClient UsePassword(string userName, string password, params string[] scopes);
         ITokenClient UsePassword(string userName, string password, List<string> scopes);
+        ITokenClient UsePassword(string userName, string password, List<string> amrValues, List<string> scopes);
+        ITokenClient UsePassword(string userName, string password, params string[] scopes);
         ITokenClient UseRefreshToken(string refreshToken);
         IIntrospectClient Introspect(string token, TokenType tokenType);
         IRevokeTokenClient RevokeToken(string token, TokenType tokenType);
@@ -127,6 +128,35 @@ namespace SimpleIdentityServer.Client.Selectors
             _requestBuilder.Content.Add(RequestTokenNames.Password, password);
             _requestBuilder.Content.Add(RequestTokenNames.Scope, ConcatScopes(scopes));
             _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.Password);
+            return _tokenClient;
+        }
+
+        public ITokenClient UsePassword(string userName, string password, List<string> amrValues, List<string> scopes)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            if (scopes == null || !scopes.Any())
+            {
+                throw new ArgumentNullException(nameof(scopes));
+            }
+
+            _requestBuilder.Content.Add(RequestTokenNames.Username, userName);
+            _requestBuilder.Content.Add(RequestTokenNames.Password, password);
+            _requestBuilder.Content.Add(RequestTokenNames.Scope, ConcatScopes(scopes));
+            _requestBuilder.Content.Add(RequestTokenNames.GrantType, GrantTypes.Password);
+            if (amrValues != null && amrValues.Any())
+            {
+                _requestBuilder.Content.Add(RequestTokenNames.AmrValues, string.Join(" ", amrValues));
+            }
+
             return _tokenClient;
         }
 

@@ -15,7 +15,7 @@
 #endregion
 
 using Moq;
-using SimpleBus.Core;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Core.Api.Registration;
 using SimpleIdentityServer.Core.Api.Registration.Actions;
 using SimpleIdentityServer.Core.Parameters;

@@ -17,8 +17,9 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Core.Api.Authorization;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Core.Common.Serializers;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
@@ -30,6 +31,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Host.Extensions;
 using SimpleIdentityServer.Host.Parsers;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -44,7 +46,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
         private readonly IEncoder _encoder;
         private readonly IActionResultParser _actionResultParser;
         private readonly IJwtParser _jwtParser;
-        private readonly AuthenticateOptions _authenticateOptions;
         private readonly IAuthenticationService _authenticationService;
 
         public AuthorizationController(
@@ -53,7 +54,6 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             IEncoder encoder,
             IActionResultParser actionResultParser,
             IJwtParser jwtParser,
-            AuthenticateOptions authenticateOptions,
             IAuthenticationService authenticationService)
         {
             _authorizationActions = authorizationActions;
@@ -61,19 +61,16 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             _encoder = encoder;
             _actionResultParser = actionResultParser;
             _jwtParser = jwtParser;
-            _authenticateOptions = authenticateOptions;
             _authenticationService = authenticationService;
         }
 
         [HttpGet]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Get()
+        public async Task<IActionResult> Get()
         {
             var query = Request.Query;
             if (query == null)
             {
-                throw new IdentityServerException(
-                    ErrorCodes.InvalidRequestCode,
-                    ErrorDescriptions.RequestIsNotValid);
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var originUrl = this.GetOriginUrl();
@@ -83,9 +80,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             authorizationRequest = await ResolveAuthorizationRequest(authorizationRequest);
             authorizationRequest.OriginUrl = originUrl;
             authorizationRequest.SessionId = sessionId;
-            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, _authenticateOptions.CookieName);
+            var authenticatedUser = await _authenticationService.GetAuthenticatedUser(this, Constants.CookieNames.CookieName);
             var parameter = authorizationRequest.ToParameter();
-            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser);
+            var issuerName = Request.GetAbsoluteUriWithVirtualPath();
+            var actionResult = await _authorizationActions.GetAuthorization(parameter, authenticatedUser, issuerName);
             if (actionResult.Type == TypeActionResult.RedirectToCallBackUrl)
             {
                 var redirectUrl = new Uri(authorizationRequest.RedirectUri);
@@ -113,11 +111,10 @@ namespace SimpleIdentityServer.Api.Controllers.Api
 
                     // Add the encoded request into the query string
                     var encryptedRequest = _dataProtector.Protect(authorizationRequest);
-                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName,
-                        encryptedRequest);
+                    actionResult.RedirectInstruction.AddParameter(Core.Constants.StandardAuthorizationResponseNames.AuthorizationCodeName, encryptedRequest);
                 }
 
-                var url = GetRedirectionUrl(this.Request, actionResult.RedirectInstruction.Action);
+                var url = GetRedirectionUrl(Request, actionResult.Amr, actionResult.RedirectInstruction.Action);
                 var uri = new Uri(url);
                 var redirectionUrl = uri.AddParametersInQuery(_actionResultParser.GetRedirectionParameters(actionResult));
                 return new RedirectResult(redirectionUrl.AbsoluteUri);
@@ -148,12 +145,15 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             return jwsPayload == null ? null : jwsPayload.ToAuthorizationRequest();
         }
         
-        private static string GetRedirectionUrl(
-            Microsoft.AspNetCore.Http.HttpRequest request,
-            IdentityServerEndPoints identityServerEndPoints)
+        private static string GetRedirectionUrl(Microsoft.AspNetCore.Http.HttpRequest request, string amr, IdentityServerEndPoints identityServerEndPoints)
         {
             var uri = request.GetAbsoluteUriWithVirtualPath();
             var partialUri = Constants.MappingIdentityServerEndPointToPartialUrl[identityServerEndPoints];
+            if (!string.IsNullOrWhiteSpace(amr) && identityServerEndPoints != IdentityServerEndPoints.ConsentIndex && identityServerEndPoints != IdentityServerEndPoints.FormIndex)
+            {
+                partialUri = "/" + amr + partialUri;
+            }
+
             return uri + partialUri;
         }
 
@@ -219,6 +219,27 @@ namespace SimpleIdentityServer.Api.Controllers.Api
             }
 
             return authorizationRequest;
+        }
+
+
+        /// <summary>
+        /// Build the JSON error message.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="message"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
+            };
         }
     }
 }

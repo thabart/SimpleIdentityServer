@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Client.Factory;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,7 +26,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IDeletePolicyOperation
     {
-        Task<bool> ExecuteAsync(string id, string url, string token);
+        Task<BaseResponse> ExecuteAsync(string id, string url, string token);
     }
 
     internal class DeletePolicyOperation : IDeletePolicyOperation
@@ -36,7 +38,7 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> ExecuteAsync(string id, string url, string token)
+        public async Task<BaseResponse> ExecuteAsync(string id, string url, string token)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -67,8 +69,22 @@ namespace SimpleIdentityServer.Client.Policy
             request.Headers.Add("Authorization", "Bearer " + token);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
-            return httpResult.StatusCode == HttpStatusCode.NoContent;
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new BaseResponse
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new BaseResponse();
         }
     }
 }

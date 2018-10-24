@@ -14,9 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +24,7 @@ namespace SimpleIdentityServer.Core.Validators
 {
     public interface IScopeValidator
     {
-        ScopeValidationResult Check(string scope, Client client);
+        ScopeValidationResult Check(string scope, Core.Common.Models.Client client);
     }
 
     public class ScopeValidationResult
@@ -48,7 +48,7 @@ namespace SimpleIdentityServer.Core.Validators
             _parameterParserHelper = parameterParserHelper;
         }
 
-        public ScopeValidationResult Check(string scope, Client client)
+        public ScopeValidationResult Check(string scope, Core.Common.Models.Client client)
         {
             var emptyList = new List<string>();
             var scopes = _parameterParserHelper.ParseScopes(scope);

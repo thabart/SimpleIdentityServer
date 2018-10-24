@@ -5,7 +5,7 @@
     <Copyright>Copyrigth Thierry Habart</Copyright>
     <AssemblyTitle>Simple identity server host</AssemblyTitle>
     <Authors>Thierry Habart</Authors>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>SimpleIdentityServer.Host</AssemblyName>
     <PackageId>SimpleIdentityServer.Host</PackageId>
@@ -20,71 +20,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Authenticate\Index.cshtml" />
-    <None Remove="Views\Authenticate\OpenId.cshtml" />
-    <None Remove="Views\Authenticate\SendCode.cshtml" />
-    <None Remove="Views\CheckSession.html" />
-    <None Remove="Views\Consent\Index.cshtml" />
-    <None Remove="Views\Form\Index.cshtml" />
-    <None Remove="Views\RevokeSession.html" />
-    <None Remove="Views\RevokeSessionCallback.html" />
-    <None Remove="Views\UserNotConnected.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Authenticate\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Authenticate\OpenId.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Authenticate\SendCode.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Consent\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Views\Form\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Views\CheckSession.html" />
-    <EmbeddedResource Include="Views\UserNotConnected.html" />
-    <EmbeddedResource Include="Views\RevokeSessionCallback.html" />
-    <EmbeddedResource Include="Views\RevokeSession.html" />
-    <EmbeddedResource Include="Views\**\*.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Views\Consent\Index.cshtml" />
-    <EmbeddedResource Remove="Views\Form\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="**.user;**.vspscc;node_modules\**\*;bower_components">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
-
+  
   <ItemGroup>
+    <EmbeddedResource Include="Views\**\*.html" />
+  </ItemGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core\SimpleIdentityServer.Core.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Logging\SimpleIdentityServer.Logging.csproj" />
     <ProjectReference Include="..\SimpleIdentityServer.Core.Jwt\SimpleIdentityServer.Core.Jwt.csproj" />
-    <ProjectReference Include="..\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
@@ -100,13 +60,4 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <DefineConstants>$(DefineConstants);CORE</DefineConstants>
   </PropertyGroup>
-
-  <!--
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <PackageReference Include="Microsoft.AspNet.WebUtilities" Version="1.0.0-*" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.IO" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
-  </ItemGroup>
-	-->
 </Project>

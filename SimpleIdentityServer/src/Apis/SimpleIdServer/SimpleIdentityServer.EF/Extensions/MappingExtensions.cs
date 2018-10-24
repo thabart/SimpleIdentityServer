@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Domain = SimpleIdentityServer.Core.Models;
-using Jwt = SimpleIdentityServer.Core.Jwt;
+using Domain = SimpleIdentityServer.Core.Common.Models;
+using Jwt = SimpleIdentityServer.Core.Common;
 using Model = SimpleIdentityServer.EF.Models;
 
 namespace SimpleIdentityServer.EF.Extensions
@@ -11,6 +11,39 @@ namespace SimpleIdentityServer.EF.Extensions
     public static class MappingExtensions
     {
         #region To Domain Objects
+
+        public static Domain.ResourceOwnerProfile ToDomain(this Model.Profile profile)
+        {
+            if (profile == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
+            return new Domain.ResourceOwnerProfile
+            {
+                Issuer = profile.Issuer,
+                ResourceOwnerId = profile.ResourceOwnerId,
+                Subject = profile.Subject,
+                CreateDateTime = profile.CreateDateTime,
+                UpdateTime = profile.UpdateDateTime
+            };
+        }
+
+        public static Domain.ClaimAggregate ToDomain(this Model.Claim claim)
+        {
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            return new Domain.ClaimAggregate
+            {
+                IsIdentifier = claim.IsIdentifier,
+                CreateDateTime = claim.CreateDateTime,
+                UpdateDateTime = claim.UpdateDateTime, 
+                Code = claim.Code
+            };
+        }
 
         public static Domain.Translation ToDomain(this Model.Translation translation)
         {
@@ -32,7 +65,9 @@ namespace SimpleIdentityServer.EF.Extensions
                 IsExposed = scope.IsExposed,
                 IsOpenIdScope = scope.IsOpenIdScope,
                 Type = (Domain.ScopeType)scope.Type,
-                Claims = scope.ScopeClaims == null ? new List<string>() : scope.ScopeClaims.Select(c => c.ClaimCode).ToList()
+                Claims = scope.ScopeClaims == null ? new List<string>() : scope.ScopeClaims.Select(c => c.ClaimCode).ToList(),
+                UpdateDateTime = scope.UpdateDateTime,
+                CreateDateTime = scope.CreateDateTime
             };
         }
 
@@ -54,9 +89,11 @@ namespace SimpleIdentityServer.EF.Extensions
             {
                 Id = resourceOwner.Id,
                 IsLocalAccount = resourceOwner.IsLocalAccount,
-                TwoFactorAuthentication = (Domain.TwoFactorAuthentications)resourceOwner.TwoFactorAuthentication,
+                TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
                 Claims = claims,
-                Password = resourceOwner.Password
+                Password = resourceOwner.Password,
+                CreateDateTime = resourceOwner.CreateDateTime,
+                UpdateDateTime = resourceOwner.UpdateDateTime
             };
         }
 
@@ -95,22 +132,6 @@ namespace SimpleIdentityServer.EF.Extensions
                 X5u = x5u,
                 SerializedKey = jsonWebKey.SerializedKey,
                 KeyOps = keyOperationsEnums.ToArray()
-            };
-        }
-
-        public static Domain.ConfirmationCode ToDomain(this Model.ConfirmationCode confirmationCode)
-        {
-            if (confirmationCode == null)
-            {
-                throw new ArgumentNullException(nameof(confirmationCode));
-            }
-
-            return new Domain.ConfirmationCode
-            {
-                Code = confirmationCode.Code,
-                CreateDateTime = confirmationCode.CreateDateTime,
-                ExpiresIn = confirmationCode.ExpiresIn,
-                IsConfirmed = confirmationCode.IsConfirmed
             };
         }
 
@@ -201,7 +222,9 @@ namespace SimpleIdentityServer.EF.Extensions
                 ResponseTypes = responseTypes,
                 ScimProfile = client.ScimProfile,
                 Secrets = clientSecrets,
-                RequirePkce = client.RequirePkce
+                RequirePkce = client.RequirePkce,
+                CreateDateTime = client.CreateDateTime,
+                UpdateDateTime = client.UpdateDateTime
             };
         }
 
@@ -221,6 +244,23 @@ namespace SimpleIdentityServer.EF.Extensions
 
         #region To models
 
+        public static Model.Profile ToModel(this Domain.ResourceOwnerProfile profile)
+        {
+            if (profile == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
+            return new Model.Profile
+            {
+                Issuer = profile.Issuer,
+                ResourceOwnerId = profile.ResourceOwnerId,
+                Subject = profile.Subject,
+                UpdateDateTime = profile.UpdateTime,
+                CreateDateTime = profile.CreateDateTime
+            };
+        }
+
         public static Model.Scope ToModel(this Domain.Scope scope)
         {
             return new Model.Scope
@@ -239,22 +279,6 @@ namespace SimpleIdentityServer.EF.Extensions
                             Code = c
                         }
                     }).ToList()
-            };
-        }
-        
-        public static Model.ConfirmationCode ToModel(this Domain.ConfirmationCode confirmationCode)
-        {
-            if (confirmationCode == null)
-            {
-                throw new ArgumentNullException(nameof(confirmationCode));
-            }
-
-            return new Model.ConfirmationCode
-            {
-                Code = confirmationCode.Code,
-                CreateDateTime = confirmationCode.CreateDateTime,
-                ExpiresIn = confirmationCode.ExpiresIn,
-                IsConfirmed = confirmationCode.IsConfirmed
             };
         }
 

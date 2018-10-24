@@ -18,13 +18,13 @@ namespace SimpleIdentityServer.Core.Authenticate
 {
     public class AuthenticationResult
     {
-        public AuthenticationResult(Models.Client client, string errorMessage)
+        public AuthenticationResult(Core.Common.Models.Client client, string errorMessage)
         {
             Client = client;
             ErrorMessage = errorMessage;
         }
 
-        public Models.Client Client { get; set; }
+        public Core.Common.Models.Client Client { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

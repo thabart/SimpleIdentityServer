@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 
 namespace SimpleIdentityServer.EF.Postgre
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOAuthPostgresqlEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddOAuthPostgresqlEF(this IServiceCollection serviceCollection, string connectionString, Action<NpgsqlDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {
@@ -19,9 +20,7 @@ namespace SimpleIdentityServer.EF.Postgre
             }
 
             serviceCollection.AddOAuthRepositories();
-            serviceCollection.AddEntityFrameworkNpgsql()
-                .AddDbContext<SimpleIdentityServerContext>(options =>
-                    options.UseNpgsql(connectionString));
+            serviceCollection.AddEntityFrameworkNpgsql().AddDbContext<SimpleIdentityServerContext>(options => options.UseNpgsql(connectionString, callback));
             return serviceCollection;
         }
     }

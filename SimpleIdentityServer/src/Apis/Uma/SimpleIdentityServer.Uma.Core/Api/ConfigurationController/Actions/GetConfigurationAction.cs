@@ -44,12 +44,10 @@ namespace SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions
         private const string PolicyApi = "/policies";
         private const string RevocationApi = "/token/revoke";
         private readonly IHostingProvider _hostingProvider;
-        private readonly IConfigurationService _configurationService;
 
-        public GetConfigurationAction(IHostingProvider hostingProvider, IConfigurationService configurationService)
+        public GetConfigurationAction(IHostingProvider hostingProvider)
         {
             _hostingProvider = hostingProvider;
-            _configurationService = configurationService;
         }
         
         public Task<ConfigurationResponse> Execute()

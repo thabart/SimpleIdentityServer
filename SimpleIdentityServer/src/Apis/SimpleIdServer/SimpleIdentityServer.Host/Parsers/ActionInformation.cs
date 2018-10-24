@@ -24,16 +24,16 @@ namespace SimpleIdentityServer.Host.Parsers
         {
         }
 
-        public ActionInformation(string controllerName, string actionName)
+        public ActionInformation(string controllerName, string actionName, string area)
         {
             ControllerName = controllerName;
             ActionName = actionName;
+            Area = area;
         }
 
         public string ControllerName { get; set; }
-
         public string ActionName { get; set; }
-
+        public string Area { get; set; }
         public RouteValueDictionary RouteValueDictionary { get; set; }
     }
 }

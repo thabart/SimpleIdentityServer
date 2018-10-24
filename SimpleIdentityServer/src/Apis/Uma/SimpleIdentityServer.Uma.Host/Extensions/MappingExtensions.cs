@@ -14,8 +14,9 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
@@ -32,6 +33,39 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
     internal static class MappingExtensions
     {
         #region UMA
+
+        public static SearchResourceSetParameter ToParameter(this SearchResourceSet searchResourceSet)
+        {
+            if (searchResourceSet == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSet));
+            }
+
+            return new SearchResourceSetParameter
+            {
+                Count = searchResourceSet.TotalResults,
+                Ids = searchResourceSet.Ids,
+                Names = searchResourceSet.Names,
+                StartIndex = searchResourceSet.StartIndex,
+                Types = searchResourceSet.Types
+            };
+        }
+
+        public static SearchAuthPoliciesParameter ToParameter(this SearchAuthPolicies searchAuthPolicies)
+        {
+            if (searchAuthPolicies == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPolicies));
+            }
+
+            return new SearchAuthPoliciesParameter
+            {
+                Count = searchAuthPolicies.TotalResults,
+                Ids = searchAuthPolicies.Ids,
+                StartIndex = searchAuthPolicies.StartIndex,
+                ResourceIds = searchAuthPolicies.ResourceIds
+            };
+        }
 
         public static AddResouceSetParameter ToParameter(this PostResourceSet postResourceSet)
         {
@@ -175,6 +209,36 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
             };
         }
 
+        public static SearchResourceSetResponse ToResponse(this SearchResourceSetResult searchResourceSetResult)
+        {
+            if (searchResourceSetResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchResourceSetResult));
+            }
+
+            return new SearchResourceSetResponse
+            {
+                StartIndex = searchResourceSetResult.StartIndex,
+                TotalResults = searchResourceSetResult.TotalResults,
+                Content = searchResourceSetResult.Content == null ? new List<ResourceSetResponse>() : searchResourceSetResult.Content.Select(s => s.ToResponse())
+            };
+        }
+
+        public static SearchAuthPoliciesResponse ToResponse(this SearchAuthPoliciesResult searchAuthPoliciesResult)
+        {
+            if (searchAuthPoliciesResult == null)
+            {
+                throw new ArgumentNullException(nameof(searchAuthPoliciesResult));
+            }
+
+            return new SearchAuthPoliciesResponse
+            {
+                StartIndex = searchAuthPoliciesResult.StartIndex,
+                TotalResults = searchAuthPoliciesResult.TotalResults,
+                Content = searchAuthPoliciesResult.Content == null ? new List<PolicyResponse>() : searchAuthPoliciesResult.Content.Select(s => s.ToResponse())
+            };
+        }
+
         public static ResourceSetResponse ToResponse(this ResourceSet resourceSet)
         {
             return new ResourceSetResponse
@@ -211,7 +275,8 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 ClientIdsAllowed = policyRule.ClientIdsAllowed,
                 IsResourceOwnerConsentNeeded = policyRule.IsResourceOwnerConsentNeeded,
                 Scopes = policyRule.Scopes,
-                Script = policyRule.Script
+                Script = policyRule.Script,
+                OpenIdProvider = policyRule.OpenIdProvider
             };
         }
 
@@ -253,6 +318,24 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         #endregion
 
         #region OAUTH2.0
+        
+        public static GrantedTokenResponse ToDto(this GrantedToken grantedToken)
+        {
+            if (grantedToken == null)
+            {
+                throw new ArgumentNullException(nameof(grantedToken));
+            }
+
+            return new GrantedTokenResponse
+            {
+                AccessToken = grantedToken.AccessToken,
+                IdToken = grantedToken.IdToken,
+                ExpiresIn = grantedToken.ExpiresIn,
+                RefreshToken = grantedToken.RefreshToken,
+                TokenType = grantedToken.TokenType,
+                Scope = grantedToken.Scope.Split(' ').ToList()
+            };
+        }
 
         public static RegistrationParameter ToParameter(this ClientResponse clientResponse)
         {
@@ -336,9 +419,9 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
         }
 
 
-        public static Introspection ToDto(this IntrospectionResult introspectionResult)
+        public static SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse ToDto(this IntrospectionResult introspectionResult)
         {
-            return new Introspection
+            return new SimpleIdentityServer.Core.Common.DTOs.Responses.IntrospectionResponse
             {
                 Active = introspectionResult.Active,
                 Audience = introspectionResult.Audience,
@@ -416,24 +499,6 @@ namespace SimpleIdentityServer.Uma.Host.Extensions
                 Pct = request.Pct,
                 Rpt = request.Rpt,
                 Ticket = request.Ticket
-            };
-        }
-
-        public static TokenResponse ToDto(this GrantedToken grantedToken)
-        {
-            if (grantedToken == null)
-            {
-                throw new ArgumentNullException(nameof(grantedToken));
-            }
-
-            return new TokenResponse
-            {
-                AccessToken = grantedToken.AccessToken,
-                IdToken = grantedToken.IdToken,
-                ExpiresIn = grantedToken.ExpiresIn,
-                RefreshToken = grantedToken.RefreshToken,
-                TokenType = grantedToken.TokenType,
-                Scope = grantedToken.Scope.Split(' ').ToList()
             };
         }
         

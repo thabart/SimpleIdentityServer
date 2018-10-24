@@ -17,10 +17,10 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SimpleBus.Core;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Scim.Core.Parsers;
 using SimpleIdentityServer.Scim.Core.Results;
-using SimpleIdentityServer.Scim.Handler.Events;
+using SimpleIdentityServer.Scim.Events;
 using System;
 using System.Threading.Tasks;
 

@@ -42,7 +42,7 @@ namespace SimpleIdentityServer.Uma.Core.Errors
         public const string TheTicketIssuerIsDifferentFromTheClient = "the ticket issuer is different from the client";
         public const string TheTicketIsExpired = "the ticket is expired";
         public const string TheTicketDoesntExist = "the ticket {0} doesn't exist";
-        public const string TheTicketAlreadyExists = "the ticket  already exists";
+        public const string TheTicketCannotBeInserted = "the ticket cannot be inserted";
         public const string TheRptCannotBeInserted = "the rpt cannot be inserted";
         public const string ThePolicyCannotBeInserted = "the authorization policy cannot be inserted";
         public const string ThePolicyCannotBeUpdated = "the authorization policy cannot be updated";

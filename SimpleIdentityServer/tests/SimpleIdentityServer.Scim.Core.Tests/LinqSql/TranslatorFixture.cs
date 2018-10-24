@@ -1,5 +1,5 @@
-﻿using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using SimpleIdentityServer.Scim.Db.EF.Models;
+﻿using SimpleIdentityServer.Scim.Core.EF.Extensions;
+using SimpleIdentityServer.Scim.Core.EF.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

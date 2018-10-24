@@ -18,15 +18,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.Store;
 using System;
 using System.Buffers;
 using System.Net;
@@ -72,23 +72,20 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                 throw new AuthorizationException(valResult.MessageErrorCode, valResult.MessageErrorDescription);
             }
 
-            // TODO : TH : Check the access token is correct
-            // TH : RETRIEVE THE GRANTED_TOKEN FROM THE CACHE AND RETURNS THE PAYLOAD INFORMATION.
-
             var grantedToken = await _tokenStore.GetAccessToken(accessToken);
             var client = await _clientRepository.GetClientByIdAsync(grantedToken.ClientId);
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
-                if (client == null)
-                {
-                    throw new IdentityServerException(ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
-                }
+                throw new IdentityServerException(ErrorCodes.InvalidToken, string.Format(ErrorDescriptions.TheClientIdDoesntExist, grantedToken.ClientId));
             }
 
             var signedResponseAlg = client.GetUserInfoSignedResponseAlg();
             var userInformationPayload = grantedToken.UserInfoPayLoad;
+            if (userInformationPayload == null)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenIsNotAValidResourceOwnerToken);
+            }
+
             if (signedResponseAlg == null ||
                 signedResponseAlg.Value == JwsAlg.none)
             {
@@ -119,8 +116,7 @@ namespace SimpleIdentityServer.Core.Api.UserInfo.Actions
                     encryptedResponseAlg.Value,
                     encryptedResponseEnc.Value);
             }
-
-            // Content = new StringContent(jwt, Encoding.UTF8, "application/jwt")
+            
             return new UserInfoResult
             {
                 Content = new ContentResult

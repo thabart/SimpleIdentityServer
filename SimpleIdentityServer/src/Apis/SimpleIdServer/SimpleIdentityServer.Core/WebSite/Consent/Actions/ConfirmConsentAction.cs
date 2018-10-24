@@ -14,30 +14,30 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using SimpleIdentityServer.Core.Api.Authorization;
 using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Logging;
-using System;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.OpenId.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
 {
     public interface IConfirmConsentAction
     {
-        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal);
+        Task<ActionResult> Execute(AuthorizationParameter authorizationParameter, ClaimsPrincipal claimsPrincipal, string issuerName);
     }
 
     public class ConfirmConsentAction : IConfirmConsentAction
@@ -50,8 +50,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         private readonly IActionResultFactory _actionResultFactory;
         private readonly IGenerateAuthorizationResponse _generateAuthorizationResponse;
         private readonly IConsentHelper _consentHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
+        private readonly IOpenIdEventSource _openidEventSource;
 
         public ConfirmConsentAction(
             IConsentRepository consentRepository,
@@ -62,8 +61,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             IActionResultFactory actionResultFactory,
             IGenerateAuthorizationResponse generateAuthorizationResponse,
             IConsentHelper consentHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService)
+            IOpenIdEventSource openidEventSource)
         {
             _consentRepository = consentRepository;
             _clientRepository = clientRepository;
@@ -73,8 +71,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             _actionResultFactory = actionResultFactory;
             _generateAuthorizationResponse = generateAuthorizationResponse;
             _consentHelper = consentHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
+            _openidEventSource = openidEventSource;
         }
 
         /// <summary>
@@ -89,7 +86,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
         /// <returns>Redirects the authorization code to the callback.</returns>
         public async Task<ActionResult> Execute(
             AuthorizationParameter authorizationParameter,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal, string issuerName)
         {
             if (authorizationParameter == null)
             {
@@ -110,7 +107,7 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
             }
 
             var subject = claimsPrincipal.GetSubject();
-            Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
+            Common.Models.Consent assignedConsent = await _consentHelper.GetConfirmedConsentsAsync(subject, authorizationParameter);
             // Insert a new consent.
             if (assignedConsent == null)
             {
@@ -119,34 +116,36 @@ namespace SimpleIdentityServer.Core.WebSite.Consent.Actions
                     claimsParameter.IsAnyUserInfoClaimParameter())
                 {
                     // A consent can be given to a set of claims
-                    assignedConsent = new Models.Consent
+                    assignedConsent = new Common.Models.Consent
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Client = client,
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
                         Claims = claimsParameter.GetClaimNames()
                     };
                 }
                 else
                 {
                     // A consent can be given to a set of scopes
-                    assignedConsent = new Models.Consent
+                    assignedConsent = new Common.Models.Consent
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Client = client,
                         GrantedScopes = (await GetScopes(authorizationParameter.Scope)).ToList(),
-                        ResourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(subject),
+                        ResourceOwner = await _resourceOwnerRepository.GetAsync(subject),
                     };
                 }
 
                 // A consent can be given to a set of claims
                 await _consentRepository.InsertAsync(assignedConsent);
 
-                _simpleIdentityServerEventSource.GiveConsent(subject,
+                _openidEventSource.GiveConsent(subject,
                     authorizationParameter.ClientId,
                     assignedConsent.Id);
             }
 
             var result = _actionResultFactory.CreateAnEmptyActionResultWithRedirectionToCallBackUrl();
-            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client);
+            await _generateAuthorizationResponse.ExecuteAsync(result, authorizationParameter, claimsPrincipal, client, issuerName);
 
             // If redirect to the callback and the responde mode has not been set.
             if (result.Type == TypeActionResult.RedirectToCallBackUrl)

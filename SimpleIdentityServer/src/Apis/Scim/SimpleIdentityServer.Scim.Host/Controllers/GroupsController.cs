@@ -21,7 +21,7 @@ using SimpleIdentityServer.Scim.Core.Apis;
 using SimpleIdentityServer.Scim.Host.Extensions;
 using System;
 using System.Threading.Tasks;
-using WebApiContrib.Core.Concurrency;
+using SimpleIdServer.Concurrency;
 
 namespace SimpleIdentityServer.Scim.Host.Controllers
 {
@@ -32,9 +32,7 @@ namespace SimpleIdentityServer.Scim.Host.Controllers
         private readonly IRepresentationManager _representationManager;
         private readonly string GroupsName = "Groups_{0}";
 
-        public GroupsController(
-            IGroupsAction groupsAction,
-            IRepresentationManager representationManager)
+        public GroupsController(IGroupsAction groupsAction, IRepresentationManager representationManager)
         {
             _groupsAction = groupsAction;
             _representationManager = representationManager;

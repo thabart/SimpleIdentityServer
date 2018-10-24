@@ -14,18 +14,19 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security.Claims;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
+using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Common;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
@@ -45,28 +46,26 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code);
+            string code, string issuerName);
     }
 
     public class LocalOpenIdAuthenticationResult
     {
         public ActionResult ActionResult { get; set; }
         public ICollection<Claim> Claims { get; set; }
+        public string TwoFactor { get; set; }
     }
 
     public class LocalOpenIdUserAuthenticationAction : ILocalOpenIdUserAuthenticationAction
     {
-        private readonly IAuthenticateResourceOwnerService _authenticateResourceOwnerService;
-        private readonly IResourceOwnerRepository _resourceOwnerRepository;
+        private readonly IResourceOwnerAuthenticateHelper _resourceOwnerAuthenticateHelper;
         private readonly IAuthenticateHelper _authenticateHelper;
 
         public LocalOpenIdUserAuthenticationAction(
-            IAuthenticateResourceOwnerService authenticateResourceOwnerService,
-            IResourceOwnerRepository resourceOwnerRepository,
+            IResourceOwnerAuthenticateHelper resourceOwnerAuthenticateHelper,
             IAuthenticateHelper authenticateHelper)
         {
-            _authenticateResourceOwnerService = authenticateResourceOwnerService;
-            _resourceOwnerRepository = resourceOwnerRepository;
+            _resourceOwnerAuthenticateHelper = resourceOwnerAuthenticateHelper;
             _authenticateHelper = authenticateHelper;
         }
 
@@ -85,7 +84,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
         public async Task<LocalOpenIdAuthenticationResult> Execute(
             LocalAuthenticationParameter localAuthenticationParameter,
             AuthorizationParameter authorizationParameter,
-            string code)
+            string code, string issuerName)
         {
             if (localAuthenticationParameter == null)
             {
@@ -97,8 +96,7 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 throw new ArgumentNullException(nameof(authorizationParameter));
             }
 
-            var resourceOwner = await _authenticateResourceOwnerService.AuthenticateResourceOwnerAsync(localAuthenticationParameter.UserName,
-                localAuthenticationParameter.Password);
+            var resourceOwner = await _resourceOwnerAuthenticateHelper.Authenticate(localAuthenticationParameter.UserName, localAuthenticationParameter.Password, authorizationParameter.AmrValues);
             if (resourceOwner == null)
             {
                 throw new IdentityServerAuthenticationException("the resource owner credentials are not correct");
@@ -113,8 +111,9 @@ namespace SimpleIdentityServer.Core.WebSite.Authenticate.Actions
                 ActionResult = await _authenticateHelper.ProcessRedirection(authorizationParameter,
                                 code,
                                 resourceOwner.Id,
-                                claims),
-                Claims = claims
+                                claims, issuerName),
+                Claims = claims,
+                TwoFactor = resourceOwner.TwoFactorAuthentication
             };
         }
 

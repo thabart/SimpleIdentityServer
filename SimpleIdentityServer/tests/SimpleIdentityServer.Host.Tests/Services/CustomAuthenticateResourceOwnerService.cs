@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
@@ -31,15 +31,7 @@ namespace SimpleIdentityServer.Host.Tests.Services
             _resourceOwnerRepository = resourceOwnerRepository;
         }
 
-        public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login)
-        {
-            if (string.IsNullOrWhiteSpace(login))
-            {
-                throw new ArgumentNullException(nameof(login));
-            }
-
-            return await _resourceOwnerRepository.GetAsync(login);
-        }
+        public string Amr => "pwd";
 
         public async Task<ResourceOwner> AuthenticateResourceOwnerAsync(string login, string password)
         {

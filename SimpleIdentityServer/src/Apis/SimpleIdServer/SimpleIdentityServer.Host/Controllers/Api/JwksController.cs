@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SimpleIdentityServer.Core.Api.Jwks;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
 using SimpleIdentityServer.Host;
 using System.Threading.Tasks;
 

@@ -1,0 +1,34 @@
+{
+	"variables": [],
+	"info": {
+		"name": "SID Samples",
+		"_postman_id": "f16660a3-c36d-d6dd-c554-4473f1ca5f6c",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get API",
+			"request": {
+				"url": "http://localhost:61000/api",
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"description": "",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOlsiYXBpIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NjAwMDAiLCJleHAiOjE1Mzk1Mzc4MTIuMCwiaWF0IjoxNTM5NTM0MjEyLjAsInNjb3BlIjpbInJlZ2lzdGVyX2NsaWVudCJdfQ.IOd4FY4ELrPDQWDtqK9atQ-tFId6z49ZGrk5tusDm0vaYbN2HidJlRSYQ82XpXyTHykajAWOAKv3Vsmd9I6gj1eigCV7NvnibSTn-LErjIG6a7t_jxJ9IgBYwzPXBuIuGHY61UumDs7FrYOeOOvbyOsVghp6_v2IrTgRz8uJ-vRk4l_O1c_MPhp_9ZzH5pj7yhE4A316T1UThgAsFefvZe14i6AOLbLa4Pl4QbSA3KAL3MMlHk60iHAXiEfrBnrHvZj-i3xsN7zkrPVEALSSFqtgBGQ2gfXwne3zECLcNQwNw7TJEoqZmWISXeTxfttligRx9Ea5uP-jfov2JQLGgA",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

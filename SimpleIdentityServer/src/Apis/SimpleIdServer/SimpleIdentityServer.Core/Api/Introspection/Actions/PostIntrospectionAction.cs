@@ -15,17 +15,17 @@
 #endregion
 
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -35,23 +35,23 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 {
     public interface IPostIntrospectionAction
     {
-        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<IntrospectionResult> Execute(IntrospectionParameter introspectionParameter, AuthenticationHeaderValue authenticationHeaderValue, string issuerName);
     }
 
     public class PostIntrospectionAction : IPostIntrospectionAction
     {
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IAuthenticateClient _authenticateClient;
         private readonly IIntrospectionParameterValidator _introspectionParameterValidator;
         private readonly ITokenStore _tokenStore;
 
         public PostIntrospectionAction(
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IAuthenticateClient authenticateClient,
             IIntrospectionParameterValidator introspectionParameterValidator,
             ITokenStore tokenStore)
         {
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _authenticateClient = authenticateClient;
             _introspectionParameterValidator = introspectionParameterValidator;
             _tokenStore = tokenStore;
@@ -59,7 +59,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
         public async Task<IntrospectionResult> Execute(
             IntrospectionParameter introspectionParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue, string issuerName)
         {            
             // 1. Validate the parameters
             if (introspectionParameter == null)
@@ -76,7 +76,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
             // 2. Authenticate the client
             var instruction = CreateAuthenticateInstruction(introspectionParameter, authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             if (authResult.Client == null)
             {
                 throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
@@ -130,7 +130,7 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
             if (grantedToken.IdTokenPayLoad != null)
             {
                 var audiences = string.Empty;
-                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(Jwt.Constants.StandardClaimNames.Audiences);
+                var audiencesArr = grantedToken.IdTokenPayLoad.GetArrayClaim(StandardClaimNames.Audiences);
                 var issuedAt = grantedToken.IdTokenPayLoad.Iat;
                 var issuer = grantedToken.IdTokenPayLoad.Issuer;
                 var subject = grantedToken.IdTokenPayLoad.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
@@ -171,14 +171,14 @@ namespace SimpleIdentityServer.Core.Api.Introspection.Actions
 
             var result = new GrantedToken
             {
-                Scope = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.Scopes),
-                ClientId = jwsPayload.GetClaimValue(Jwt.Constants.StandardClaimNames.ClientId),
+                Scope = jwsPayload.GetClaimValue(StandardClaimNames.Scopes),
+                ClientId = jwsPayload.GetClaimValue(StandardClaimNames.ClientId),
                 ExpiresIn = (int)jwsPayload.ExpirationTime,
                 TokenType = Constants.StandardTokenTypes.Bearer,
                 IdTokenPayLoad = jwsPayload
             };
             
-            var issuedAt = jwsPayload.GetDoubleClaim(Jwt.Constants.StandardClaimNames.Iat);
+            var issuedAt = jwsPayload.GetDoubleClaim(StandardClaimNames.Iat);
             if (issuedAt != default(double))
             {
                 result.CreateDateTime = issuedAt.UnixTimeStampToDateTime();

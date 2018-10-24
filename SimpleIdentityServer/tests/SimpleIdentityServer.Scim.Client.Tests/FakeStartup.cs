@@ -18,31 +18,31 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleBus.InMemory;
-using SimpleIdentityServer.EventStore.EF;
-using SimpleIdentityServer.EventStore.InMemory;
-using SimpleIdentityServer.Scim.Client.Tests.Extensions;
-using SimpleIdentityServer.Scim.Core;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.InMemory;
-using SimpleIdentityServer.Scim.EventStore.Handler;
+using SimpleIdentityServer.Scim.Client.Tests.MiddleWares;
 using SimpleIdentityServer.Scim.Host.Controllers;
+using SimpleIdentityServer.Scim.Host.Extensions;
 using System.Reflection;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
 
 namespace SimpleIdentityServer.Scim.Client.Tests
 {
     public class FakeStartup
     {
+        public const string DefaultSchema = "Cookies";
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddConcurrency(opt => opt.UseInMemory());
-            services.AddScimInMemoryEF();
-            services.AddEventStoreInMemoryEF();
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
-            services.AddScim();
+            services.AddScimHost(new Host.ScimServerOptions
+            {
+                ServerConfiguration = new Host.ScimServerConfiguration
+                {
+
+                }
+            });
+            services.AddAuthentication(opts =>
+            {
+                opts.DefaultAuthenticateScheme = DefaultSchema;
+                opts.DefaultChallengeScheme = DefaultSchema;
+            }).AddFakeCustomAuth(o => { });
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("scim_manage", policy => policy.RequireAssertion((ctx) => {
@@ -51,6 +51,11 @@ namespace SimpleIdentityServer.Scim.Client.Tests
                 options.AddPolicy("scim_read", policy => policy.RequireAssertion((ctx) => {
                     return true;
                 }));
+                options.AddPolicy("authenticated", (policy) =>
+                {
+                    policy.AddAuthenticationSchemes(DefaultSchema);
+                    policy.RequireAuthenticatedUser();
+                });
             });
             var mvc = services.AddMvc();
             var parts = mvc.PartManager.ApplicationParts;
@@ -60,25 +65,12 @@ namespace SimpleIdentityServer.Scim.Client.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            InitializeDatabase(app);
-            app.UseStatusCodePages();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                // scope.ServiceProvider.GetRequiredService<ScimDbContext>().Database.Migrate();
-                var context = scope.ServiceProvider.GetRequiredService<ScimDbContext>();
-                // context.Database.Migrate();
-                context.EnsureSeedData();
-            }
         }
     }
 }

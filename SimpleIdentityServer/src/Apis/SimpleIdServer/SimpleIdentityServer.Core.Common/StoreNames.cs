@@ -18,7 +18,5 @@ namespace SimpleIdentityServer.Core.Common
 {
     public static class StoreNames
     {
-        public const string GetResourceOwners = "GetResourceOwners";
-        public const string GetResourceOwner = "GetResourceOwner_";
     }
 }

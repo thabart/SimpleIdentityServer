@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SimpleIdentityServer.Host.Integration.Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

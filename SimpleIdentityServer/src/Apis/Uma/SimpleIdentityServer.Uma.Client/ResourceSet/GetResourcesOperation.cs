@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -25,7 +27,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IGetResourcesOperation
     {
-        Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
+        Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue);
     }
 
     internal class GetResourcesOperation : IGetResourcesOperation
@@ -37,7 +39,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IEnumerable<string>> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue)
+        public async Task<GetResourcesResult> ExecuteAsync(string resourceSetUrl, string authorizationHeaderValue)
         {
             if (string.IsNullOrWhiteSpace(resourceSetUrl))
             {
@@ -57,9 +59,25 @@ namespace SimpleIdentityServer.Client.ResourceSet
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
             var json = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new GetResourcesResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(json),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new GetResourcesResult
+            {
+                Content = JsonConvert.DeserializeObject<IEnumerable<string>>(json)
+            };
         }
     }
 }

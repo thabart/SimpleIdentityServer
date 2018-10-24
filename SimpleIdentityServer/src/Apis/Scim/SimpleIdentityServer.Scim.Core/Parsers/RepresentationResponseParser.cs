@@ -16,10 +16,11 @@
 
 using Newtonsoft.Json.Linq;
 using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Common.Models;
 using SimpleIdentityServer.Scim.Core.Errors;
 using SimpleIdentityServer.Scim.Core.Factories;
-using SimpleIdentityServer.Scim.Core.Models;
 using SimpleIdentityServer.Scim.Core.Stores;
+using SimpleIdentityServer.Scim.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,12 +50,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// Filter the representations and return the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
-        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="representations">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
+        /// <param name="totalNumbers">Total numbers</param>
         /// <returns>Filtered response</returns>
-        FilterResult Filter(
-            IEnumerable<Representation> representations,
-            SearchParameter searchParameter);
+        FilterResult Filter(IEnumerable<Representation> representations, SearchParameter searchParameter, int totalNumbers);
     }
 
     public class FilterResult
@@ -81,13 +81,13 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
     {
         private readonly ISchemaStore _schemasStore;
         private readonly ICommonAttributesFactory _commonAttributesFactory;
+        private readonly IEnumerable<IAttributeMapper> _attributeMappers;
 
-        public RepresentationResponseParser(
-            ISchemaStore schemaStore,
-            ICommonAttributesFactory commonAttributeFactory)
+        public RepresentationResponseParser(ISchemaStore schemaStore, ICommonAttributesFactory commonAttributeFactory, IEnumerable<IAttributeMapper> attributeMappers)
         {
             _schemasStore = schemaStore;
             _commonAttributesFactory = commonAttributeFactory;
+            _attributeMappers = attributeMappers;
         }
 
         /// <summary>
@@ -100,11 +100,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// <param name="schemaId">Identifier of the schema.</param>
         /// <param name="operationType">Type of operation.</param>
         /// <returns>JSON representation</returns>
-        public async Task<Response> Parse(
-            Representation representation, 
-            string location,
-            string schemaId,
-            OperationTypes operationType)
+        public async Task<Response> Parse(Representation representation, string location, string schemaId, OperationTypes operationType)
         {
             if (representation == null)
             {
@@ -122,6 +118,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 throw new InvalidOperationException(string.Format(ErrorMessages.TheSchemaDoesntExist, schemaId));
             }
 
+            if (_attributeMappers != null && _attributeMappers.Any())
+            {
+                await _attributeMappers.First().Map(representation, schemaId);
+            }
+
             JObject result = new JObject();
             if (representation.Attributes != null &&
                 representation.Attributes.Any())
@@ -129,8 +130,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 foreach (var attribute in schema.Attributes)
                 {
                     // Ignore the attributes.
-                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) ||
-                        (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
+                    if ((attribute.Returned == Common.Constants.SchemaAttributeReturned.Never) || (operationType == OperationTypes.Query && attribute.Returned == Common.Constants.SchemaAttributeReturned.Request))
                     {
                         continue;
                     }
@@ -156,12 +156,11 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
         /// Filter the representations and return the result.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when representations are null.</exception>
-        /// <param name="representationAttributes">Representations to filter.</param>
+        /// <param name="representations">Representations to filter.</param>
         /// <param name="searchParameter">Search parameters.</param>
+        /// <param name="totalNumbers">Total number of records</param>
         /// <returns>Filtered response</returns>
-        public FilterResult Filter(
-            IEnumerable<Representation> representations,
-            SearchParameter searchParameter)
+        public FilterResult Filter(IEnumerable<Representation> representations, SearchParameter searchParameter, int totalNumbers)
         {
             if (representations == null)
             {
@@ -281,7 +280,7 @@ namespace SimpleIdentityServer.Scim.Core.Parsers
                 filterResult.Values = result;
             }
 
-            filterResult.TotalNumbers = result.Count();
+            filterResult.TotalNumbers = totalNumbers;
             // 3. Paginate the representations.
             return filterResult;
         }

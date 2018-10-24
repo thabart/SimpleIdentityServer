@@ -44,25 +44,10 @@ namespace SimpleIdentityServer.Uma.Host
             public const string ErrorDetails = "error_details";
         }
 
-        public static class ErrorCodes
-        {
-            public const string NotFound = "not_found";
-            public const string UnSupportedMethodType = "unsupported_method_type";
-        }
-
-        public static class ErrorDescriptions
-        {
-            public const string ResourceSetNotFound = "resource cannot be found";
-            public const string ScopeNotFound = "scope cannot be found";
-            public const string PolicyNotFound = "authorization policy cannot be found";
-        }
-
         public static class CachingStoreNames
         {
             public const string GetResourceStoreName = "GetResource_";
-            public const string GetResourcesStoreName = "GetResources";
             public const string GetPolicyStoreName = "GetPolicy_";
-            public const string GetPoliciesStoreName = "GetPolicies";
         }
     }
 }

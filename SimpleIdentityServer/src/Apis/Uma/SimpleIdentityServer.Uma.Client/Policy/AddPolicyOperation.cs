@@ -15,7 +15,9 @@
 #endregion
 
 using Newtonsoft.Json;
-using SimpleIdentityServer.Uma.Client.Factory;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System;
 using System.Net.Http;
@@ -26,7 +28,7 @@ namespace SimpleIdentityServer.Client.Policy
 {
     public interface IAddPolicyOperation
     {
-        Task<AddPolicyResponse> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue);
+        Task<AddPolicyResult> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue);
     }
 
     internal class AddPolicyOperation : IAddPolicyOperation
@@ -38,7 +40,7 @@ namespace SimpleIdentityServer.Client.Policy
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<AddPolicyResponse> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue)
+        public async Task<AddPolicyResult> ExecuteAsync(PostPolicy request, string url, string authorizationHeaderValue)
         {
             if (request == null)
             {
@@ -66,9 +68,25 @@ namespace SimpleIdentityServer.Client.Policy
             };
             httpRequest.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpResult = await httpClient.SendAsync(httpRequest).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
             var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<AddPolicyResponse>(content);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch(Exception)
+            {
+                return new AddPolicyResult
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new AddPolicyResult
+            {
+                Content = JsonConvert.DeserializeObject<AddPolicyResponse>(content)
+            };
         }
     }
 }

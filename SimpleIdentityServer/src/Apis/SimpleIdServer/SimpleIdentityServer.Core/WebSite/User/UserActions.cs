@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.WebSite.User.Actions;
 using System.Collections.Generic;
@@ -24,11 +25,13 @@ namespace SimpleIdentityServer.Core.WebSite.User
 {
     public interface IUserActions
     {
-        Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
+        Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal);
         Task<bool> DeleteConsent(string consentId);
-        Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
-        Task<bool> UpdateUser(UpdateUserParameter updateUserParameter);
-        Task ConfirmUser(ClaimsPrincipal claimsPrincipal);
+        Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal);
+        Task<bool> UpdateCredentials(string subject, string newPassword);
+        Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims);
+        Task<bool> UpdateTwoFactor(string subject, string twoFactorAuth);
+        Task<string> AddUser(AddUserParameter addUserParameter, string issuer = null);
     }
 
     internal class UserActions : IUserActions
@@ -36,46 +39,62 @@ namespace SimpleIdentityServer.Core.WebSite.User
         private readonly IGetConsentsOperation _getConsentsOperation;
         private readonly IRemoveConsentOperation _removeConsentOperation;
         private readonly IGetUserOperation _getUserOperation;
-        private readonly IUpdateUserOperation _updateUserOperation;
-        private readonly IConfirmUserOperation _confirmUserOperation;
+        private readonly IUpdateUserCredentialsOperation _updateUserCredentialsOperation;
+        private readonly IUpdateUserClaimsOperation _updateUserClaimsOperation;
+        private readonly IAddUserOperation _addUserOperation;
+        private readonly IUpdateUserTwoFactorAuthenticatorOperation _updateUserTwoFactorAuthenticatorOperation;
 
         public UserActions(
             IGetConsentsOperation getConsentsOperation,
             IRemoveConsentOperation removeConsentOperation,
             IGetUserOperation getUserOperation,
-            IUpdateUserOperation updateUserOperation,
-            IConfirmUserOperation confirmUserOperation)
+            IUpdateUserCredentialsOperation updateUserCredentialsOperation,
+            IUpdateUserClaimsOperation updateUserClaimsOperation,
+            IAddUserOperation addUserOperation,
+            IUpdateUserTwoFactorAuthenticatorOperation updateUserTwoFactorAuthenticatorOperation)
         {
             _getConsentsOperation = getConsentsOperation;
             _removeConsentOperation = removeConsentOperation;
             _getUserOperation = getUserOperation;
-            _updateUserOperation = updateUserOperation;
-            _confirmUserOperation = confirmUserOperation;
+            _updateUserCredentialsOperation = updateUserCredentialsOperation;
+            _updateUserClaimsOperation = updateUserClaimsOperation;
+            _addUserOperation = addUserOperation;
+            _updateUserTwoFactorAuthenticatorOperation = updateUserTwoFactorAuthenticatorOperation;
         }
 
-        public async Task<IEnumerable<Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
+        public Task<IEnumerable<Common.Models.Consent>> GetConsents(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getConsentsOperation.Execute(claimsPrincipal);
+            return _getConsentsOperation.Execute(claimsPrincipal);
         }
 
-        public async Task<bool> DeleteConsent(string consentId)
+        public Task<bool> DeleteConsent(string consentId)
         {
-            return await _removeConsentOperation.Execute(consentId);
+            return _removeConsentOperation.Execute(consentId);
         }
 
-        public async Task<Models.ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
+        public Task<ResourceOwner> GetUser(ClaimsPrincipal claimsPrincipal)
         {
-            return await _getUserOperation.Execute(claimsPrincipal);
+            return _getUserOperation.Execute(claimsPrincipal);
         }
 
-        public async Task<bool> UpdateUser(UpdateUserParameter updateUserParameter)
+        public Task<bool> UpdateCredentials(string subject, string newPassword)
         {
-            return await _updateUserOperation.Execute(updateUserParameter);
+            return _updateUserCredentialsOperation.Execute(subject, newPassword);
         }
 
-        public async Task ConfirmUser(ClaimsPrincipal claimsPrincipal)
+        public Task<bool> UpdateClaims(string subject, IEnumerable<ClaimAggregate> claims)
         {
-            await _confirmUserOperation.Execute(claimsPrincipal);
+            return _updateUserClaimsOperation.Execute(subject, claims);
+        }
+
+        public Task<bool> UpdateTwoFactor(string subject, string twoFactorAuth)
+        {
+            return _updateUserTwoFactorAuthenticatorOperation.Execute(subject, twoFactorAuth);
+        }
+
+        public Task<string> AddUser(AddUserParameter addUserParameter, string issuer = null)
+        {
+            return _addUserOperation.Execute(addUserParameter, issuer);
         }
     }
 }

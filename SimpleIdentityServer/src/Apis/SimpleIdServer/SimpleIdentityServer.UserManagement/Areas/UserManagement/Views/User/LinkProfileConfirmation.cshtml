@@ -1,0 +1,18 @@
+@model SimpleIdentityServer.UserManagement.ViewModels.LinkProfileConfirmationViewModel
+@{
+    ViewBag.Title = "Confirm linking";
+    ViewBag.IsEditDisplayed = false;
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = false;
+    ViewBag.IsProfileDisplayed = true;
+}
+
+<div>
+    <h4>The profile is already linked to an <i>another account</i>, do-you want to link-it anyway ?</h4>
+    <div class="alert alert-danger">
+        <strong>Warning !</strong> If you confirm, the <i>other account</i> and its profiles will be dropped.
+    </div>
+    <p>Identity provider : @Model.Issuer</p>
+    <a href="@Url.Action("ConfirmProfileLinking")" class="btn btn-success">Yes</a>
+    <a href="@Url.Action("Index", "User")" class="btn btn-danger">No</a>
+</div>

@@ -14,9 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Uma.Client.Factory;
+using Newtonsoft.Json;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,7 +26,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
 {
     public interface IDeleteResourceSetOperation
     {
-        Task<bool> ExecuteAsync(
+        Task<BaseResponse> ExecuteAsync(
             string resourceSetId,
             string resourceSetUrl,
             string authorizationHeaderValue);
@@ -39,7 +41,7 @@ namespace SimpleIdentityServer.Client.ResourceSet
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> ExecuteAsync(
+        public async Task<BaseResponse> ExecuteAsync(
             string resourceSetId,
             string resourceSetUrl,
             string authorizationHeaderValue)
@@ -73,8 +75,22 @@ namespace SimpleIdentityServer.Client.ResourceSet
             request.Headers.Add("Authorization", "Bearer " + authorizationHeaderValue);
             var httpClient = _httpClientFactory.GetHttpClient();
             var httpResult = await httpClient.SendAsync(request).ConfigureAwait(false);
-            httpResult.EnsureSuccessStatusCode();
-            return httpResult.StatusCode == HttpStatusCode.NoContent;
+            var content = await httpResult.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                httpResult.EnsureSuccessStatusCode();
+            }
+            catch (Exception)
+            {
+                return new BaseResponse
+                {
+                    ContainsError = true,
+                    Error = JsonConvert.DeserializeObject<ErrorResponse>(content),
+                    HttpStatus = httpResult.StatusCode
+                };
+            }
+
+            return new BaseResponse();
         }
     }
 }

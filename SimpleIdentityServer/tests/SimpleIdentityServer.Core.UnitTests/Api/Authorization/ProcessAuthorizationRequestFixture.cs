@@ -1,33 +1,25 @@
-﻿using System;
-using System.Linq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
-using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Factories;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.Jwt.Converter;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.UnitTests.Fake;
-using SimpleIdentityServer.Core.Validators;
-using System.Security.Claims;
-using System.Collections.Generic;
-using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Jwt.Encrypt;
 using SimpleIdentityServer.Core.Jwt.Encrypt.Encryption;
-using SimpleIdentityServer.Core.Jwt.Signature;
-using Moq;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Mapping;
-using SimpleIdentityServer.Logging;
 using SimpleIdentityServer.Core.Jwt.Serializer;
-using Xunit;
-using JwsAlg = SimpleIdentityServer.Core.Jwt.JwsAlg;
+using SimpleIdentityServer.Core.Jwt.Signature;
+using SimpleIdentityServer.Core.JwtToken;
+using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Services;
+using SimpleIdentityServer.Core.Validators;
+using SimpleIdentityServer.OAuth.Logging;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Common.Client.Factories;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -35,7 +27,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
     {
         private ProcessAuthorizationRequest _processAuthorizationRequest;
         private Mock<IConfigurationService> _simpleIdentityServerConfiguratorStub;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSource;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private JwtGenerator _jwtGenerator;
 
         #region TEST FAILURES
@@ -47,8 +39,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeMockingObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _processAuthorizationRequest.ProcessAsync(new AuthorizationParameter(), null, null, null));
         }
         
         [Fact]
@@ -69,7 +61,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 
             // ACT & ASSERTS
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Models.Client()));
+                    () => _processAuthorizationRequest.ProcessAsync(authorizationParameter, null, new Core.Common.Models.Client(), null));
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
             Assert.True(exception.Message.Equals(string.Format(ErrorDescriptions.RedirectUrlIsNotValid, redirectUrl)));
             Assert.True(exception.State.Equals(state));
@@ -632,7 +624,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         {
             var clientValidator = new ClientValidator();
             _simpleIdentityServerConfiguratorStub = new Mock<IConfigurationService>();
-            _simpleIdentityServerEventSource = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             var scopeRepository = new Mock<IScopeRepository>();
             var clientRepository = new Mock<IClientRepository>();
             var consentRepository = new Mock<IConsentRepository>();
@@ -647,11 +639,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var createJwsSignature = new CreateJwsSignature(new CngKeySerializer());
             var jwsParser = new JwsParser(createJwsSignature);
             var jsonWebKeyConverter = new JsonWebKeyConverter();
-            var httpClientFactory = new HttpClientFactory();
+            var httpClientFactory = new Mock<IHttpClientFactory>();
             var jwtParser = new JwtParser(
                 jweParser, 
-                jwsParser, 
-                httpClientFactory,
+                jwsParser,
+                httpClientFactory.Object,
                 clientRepository.Object,
                 jsonWebKeyConverter,
                 jsonWebKeyRepository.Object);
@@ -667,7 +659,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 consentHelper,
                 jwtParser,
                 _simpleIdentityServerConfiguratorStub.Object,
-                _simpleIdentityServerEventSource.Object);
+                _oauthEventSource.Object);
             _jwtGenerator = new JwtGenerator(_simpleIdentityServerConfiguratorStub.Object,
                 clientRepository.Object,
                 clientValidator,

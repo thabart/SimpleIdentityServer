@@ -55,10 +55,14 @@ namespace SimpleIdentityServer.Scim.Common.DTOs
             parents = parents.Concat(new[] { representation });
             return GetParents(representation.Parent, parents);
         }
-
-        public string Id { get; set; }
+        
         public SchemaAttributeResponse Parent { get; set; }
 
+        /// <summary>
+        /// Gets or sets the id
+        /// </summary>
+        [DataMember(Name = Constants.SchemaAttributeResponseNames.Id)]
+        public string Id { get; set; }
         /// <summary>
         /// Attribute's name
         /// </summary>

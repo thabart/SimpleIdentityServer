@@ -22,6 +22,7 @@ using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
 using SimpleIdentityServer.Uma.Core.Repositories;
+using SimpleIdentityServer.Uma.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
         private Mock<IPolicyRepository> _policyRepositoryStub;
         private Mock<IResourceSetRepository> _resourceSetRepositoryStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
+        private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
         private IAddResourceSetToPolicyAction _addResourceSetAction;
 
         [Fact]
@@ -166,10 +168,12 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PolicyController
             _policyRepositoryStub = new Mock<IPolicyRepository>();
             _resourceSetRepositoryStub = new Mock<IResourceSetRepository>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
+            _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
             _addResourceSetAction = new AddResourceSetToPolicyAction(
                 _policyRepositoryStub.Object,
                 _resourceSetRepositoryStub.Object,
-                _repositoryExceptionHelperStub.Object);
+                _repositoryExceptionHelperStub.Object,
+                _umaServerEventSourceStub.Object);
         }
     }
 }

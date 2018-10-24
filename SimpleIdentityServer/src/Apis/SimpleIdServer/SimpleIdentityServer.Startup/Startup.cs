@@ -19,16 +19,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using SimpleBus.InMemory;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.Extensions;
-using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.Handler;
+using SimpleIdentityServer.Authenticate.Basic;
+using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.Host;
-using System;
+using SimpleIdentityServer.Shell;
+using SimpleIdentityServer.UserManagement;
 
 namespace SimpleIdentityServer.Startup
 {
@@ -47,15 +42,15 @@ namespace SimpleIdentityServer.Startup
             Configuration = builder.Build();
             _options = new IdentityServerOptions
             {
-                Authenticate = new AuthenticateOptions
-                {
-                    CookieName = Constants.CookieName,
-                    ExternalCookieName = Constants.ExternalCookieName
-                },
                 Scim = new ScimOptions
                 {
                     IsEnabled = true,
                     EndPoint = "http://localhost:5555/"
+                },
+                Configuration = new OpenIdServerConfiguration
+                {
+                    Users = DefaultConfiguration.GetUsers(),
+                    Clients = DefaultConfiguration.GetClients()
                 }
             };
             _env = env;
@@ -63,90 +58,47 @@ namespace SimpleIdentityServer.Startup
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // 2. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
-
-            // 3. Configure Simple identity server
-            ConfigureEventStoreSqlServerBus(services);
-            ConfigureOauthRepositorySqlServer(services);
-            ConfigureStorageInMemory(services);
-            ConfigureLogging(services);
-            services.AddOpenIdApi(_options);
-            // 4. Enable logging
             services.AddLogging();
-            services.AddAuthentication(Constants.ExternalCookieName)
-                .AddCookie(Constants.ExternalCookieName)
+            services.AddAuthentication(Host.Constants.CookieNames.ExternalCookieName)
+                .AddCookie(Host.Constants.CookieNames.ExternalCookieName)
                 .AddFacebook(opts =>
                 {
                     opts.ClientId = "569242033233529";
                     opts.ClientSecret = "12e0f33817634c0a650c0121d05e53eb";
-                    opts.SignInScheme = Constants.ExternalCookieName;
+                    opts.SignInScheme = Host.Constants.CookieNames.ExternalCookieName;
                     opts.Scope.Add("public_profile");
                     opts.Scope.Add("email");
                 });
-            services.AddAuthentication(Host.Constants.TwoFactorCookieName)
-                .AddCookie(Host.Constants.TwoFactorCookieName);
-            services.AddAuthentication(Constants.CookieName)
-                .AddCookie(Constants.CookieName, opts =>
+            services.AddAuthentication(Host.Constants.CookieNames.CookieName)
+                .AddCookie(Host.Constants.CookieNames.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
                 });
-            // 5. Configure MVC
-            services.AddAuthenticationWebsite(_env, _options);
-        }
-
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
-        {
-            var connectionString = Configuration["Db:EvtStoreConnectionString"];
-            services.AddEventStoreSqlServerEF(connectionString);
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
-        }
-
-        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
-        {
-            var connectionString = Configuration["Db:OpenIdConnectionString"];
-            services.AddOAuthSqlServerEF(connectionString);
-        }
-
-        private void ConfigureStorageInMemory(IServiceCollection services)
-        {
-            services.AddInMemoryStorage();
-        }
-
-        private void ConfigureLogging(IServiceCollection services)
-        {
-            Func<LogEvent, bool> serilogFilter = (e) =>
+            services.AddAuthorization(opts =>
             {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
-            services.AddLogging();
-            services.AddSingleton<Serilog.ILogger>(log);
+                opts.AddOpenIdSecurityPolicy(Host.Constants.CookieNames.CookieName);
+            });
+            // 5. Configure MVC
+            var mvcBuilder = services.AddMvc();
+            services.AddOpenIdApi(_options); // API
+            services.AddBasicShell(mvcBuilder);  // SHELL
+            services.AddLoginPasswordAuthentication(mvcBuilder, new BasicAuthenticateOptions());  // LOGIN & PASSWORD
+            services.AddUserManagement(mvcBuilder);  // USER MANAGEMENT
         }
 
         public void Configure(IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+            app.UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
-            app.UseStaticFiles();
+            app.UseShellStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
             // 4. Enable SimpleIdentityServer
@@ -154,43 +106,13 @@ namespace SimpleIdentityServer.Startup
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                routes.MapRoute("Error401Route",
-                    Host.Constants.EndPoints.Get401,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get401"
-                    });
-                routes.MapRoute("Error404Route",
-                    Host.Constants.EndPoints.Get404,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get404"
-                    });
-                routes.MapRoute("Error500Route",
-                    Host.Constants.EndPoints.Get500,
-                    new
-                    {
-                        controller = "Error",
-                        action = "Get500"
-                    });
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.UseLoginPasswordAuthentication();
+                routes.MapRoute("AuthArea",
+                    "{area:exists}/Authenticate/{action}/{id?}",
+                    new { controller = "Authenticate", action = "Index" });
+                routes.UseUserManagement();
+                routes.UseShell();
             });
-            UseSerilogLogging(loggerFactory);
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
-            }
-        }
-
-        private void UseSerilogLogging(ILoggerFactory logger)
-        {
-            logger.AddSerilog();
         }
     }
 }

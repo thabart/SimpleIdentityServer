@@ -16,15 +16,15 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.PolicyController;
 using SimpleIdentityServer.Uma.Core.Parameters;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using System;
+using SimpleIdServer.Concurrency;
 using System.Net;
 using System.Threading.Tasks;
-using WebApiContrib.Core.Concurrency;
 using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
@@ -42,14 +42,28 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _policyActions = policyActions;
             _representationManager = representationManager;
         }
-        
+
+        [HttpPost(".search")]
+        [Authorize("UmaProtection")]
+        public async Task<IActionResult> SearchPolicies([FromBody] SearchAuthPolicies searchAuthPolicies)
+        {
+            if (searchAuthPolicies == null)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+            }
+
+            var parameter = searchAuthPolicies.ToParameter();
+            var result = await _policyActions.Search(parameter);
+            return new OkObjectResult(result.ToResponse());
+        }
+
         [HttpGet("{id}")]
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetPolicy(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(id);
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPolicyStoreName + id))
@@ -75,16 +89,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetPolicies()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetPoliciesStoreName))
-            {
-                return new ContentResult
-                {
-                    StatusCode = 412
-                };
-            }
-
-            var policies = await _policyActions.GetPolicies();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName);
+            var policies = await _policyActions.GetPolicies().ConfigureAwait(false);
             return new OkObjectResult(policies);
         }
 
@@ -95,7 +100,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (putPolicy == null)
             {
-                throw new ArgumentNullException(nameof(putPolicy));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _policyActions.UpdatePolicy(putPolicy.ToParameter());
@@ -114,12 +119,12 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             if (postAddResourceSet == null)
             {
-                throw new ArgumentNullException(nameof(postAddResourceSet));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _policyActions.AddResourceSet(new AddResourceSetParameter
@@ -142,12 +147,12 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(resourceId))
             {
-                throw new ArgumentNullException(nameof(resourceId));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the resource_id must be specified", HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _policyActions.DeleteResourceSet(id, resourceId);
@@ -166,7 +171,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (postPolicy == null)
             {
-                throw new ArgumentNullException(nameof(postPolicy));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var policyId = await _policyActions.AddPolicy(postPolicy.ToParameter());
@@ -174,8 +179,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 PolicyId = policyId
             };
-
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
             return new ObjectResult(content)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -188,7 +191,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             var isPolicyExists = await _policyActions.DeletePolicy(id);
@@ -198,7 +201,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             }
 
             await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPoliciesStoreName, false);
             return new StatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
@@ -206,13 +208,26 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             var errorResponse = new ErrorResponse
             {
-                Error = Constants.ErrorCodes.NotFound,
-                ErrorDescription = Constants.ErrorDescriptions.PolicyNotFound
+                Error = "not_found",
+                ErrorDescription = "policy cannot be found"
             };
 
             return new ObjectResult(errorResponse)
             {
                 StatusCode = (int)HttpStatusCode.NotFound
+            };
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
             };
         }
     }

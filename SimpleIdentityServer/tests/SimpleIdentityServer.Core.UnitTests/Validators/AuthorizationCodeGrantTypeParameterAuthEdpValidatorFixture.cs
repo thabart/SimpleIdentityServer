@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-
-using Moq;
-
+﻿using Moq;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Validators;
-using Xunit;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Validators
 {
@@ -232,7 +230,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                     PromptParameter.none
                 });
             _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT & ASSERT
             var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _authorizationCodeGrantTypeParameterAuthEdpValidator.ValidateAsync(authorizationParameter));
@@ -258,7 +256,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 ResponseType = "code",
                 Prompt = "none"
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _parameterParserHelperFake.Setup(p => p.ParsePrompts(It.IsAny<string>()))
                 .Returns(new List<PromptParameter>
                 {
@@ -266,7 +264,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Validators
                 });
             _clientRepository.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Models.Client>(), It.IsAny<string[]>()))
+            _clientValidatorFake.Setup(c => c.GetRedirectionUrls(It.IsAny<Core.Common.Models.Client>(), It.IsAny<string[]>()))
                 .Returns(() => new string[0]);
 
             // ACT & ASSERT

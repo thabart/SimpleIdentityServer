@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
-using System.Linq;
-using SimpleIdentityServer.Scim.Core.Models;
+using SimpleIdentityServer.Scim.Common.DTOs;
+using SimpleIdentityServer.Scim.Common.Models;
 using System;
 using System.Collections.Generic;
-using SimpleIdentityServer.Scim.Common.DTOs;
+using System.Linq;
 
 namespace SimpleIdentityServer.Scim.Core.Parsers
 {

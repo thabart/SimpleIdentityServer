@@ -14,63 +14,95 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Helpers;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Stores;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using System;
+using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IGetTokenByRefreshTokenGrantTypeAction
     {
-        Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter);
+        Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     public sealed class GetTokenByRefreshTokenGrantTypeAction : IGetTokenByRefreshTokenGrantTypeAction
     {
         private readonly IClientHelper _clientHelper;
-        private readonly ISimpleIdentityServerEventSource _simpleIdentityServerEventSource;
+        private readonly IOAuthEventSource _oauthEventSource;
         private readonly IGrantedTokenGeneratorHelper _grantedTokenGeneratorHelper;
         private readonly ITokenStore _tokenStore;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly IAuthenticateInstructionGenerator _authenticateInstructionGenerator;
+        private readonly IAuthenticateClient _authenticateClient;
 
         public GetTokenByRefreshTokenGrantTypeAction(
             IClientHelper clientHelper,
-            ISimpleIdentityServerEventSource simpleIdentityServerEventSource,
+            IOAuthEventSource oauthEventSource,
             IGrantedTokenGeneratorHelper grantedTokenGeneratorHelper,
             ITokenStore tokenStore,
-            IJwtGenerator jwtGenerator)
+            IJwtGenerator jwtGenerator,
+            IAuthenticateInstructionGenerator authenticateInstructionGenerator,
+            IAuthenticateClient authenticateClient)
         {
             _clientHelper = clientHelper;
-            _simpleIdentityServerEventSource = simpleIdentityServerEventSource;
+            _oauthEventSource = oauthEventSource;
             _grantedTokenGeneratorHelper = grantedTokenGeneratorHelper;
             _tokenStore = tokenStore;
             _jwtGenerator = jwtGenerator;
+            _authenticateInstructionGenerator = authenticateInstructionGenerator;
+            _authenticateClient = authenticateClient;
         }
 
-        public async Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
+        public async Task<GrantedToken> Execute(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (refreshTokenGrantTypeParameter == null)
             {
                 throw new ArgumentNullException(nameof(refreshTokenGrantTypeParameter));
             }
 
-            // 1. Validate parameters
+            // 1. Try to authenticate the client
+            var instruction = CreateAuthenticateInstruction(refreshTokenGrantTypeParameter, authenticationHeaderValue, certificate);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
+            var client = authResult.Client;
+            if (authResult.Client == null)
+            {
+                _oauthEventSource.Info(authResult.ErrorMessage);
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
+            }
+
+            // 2. Check client
+            if (client.GrantTypes == null || !client.GrantTypes.Contains(GrantType.refresh_token))
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidClient,
+                    string.Format(ErrorDescriptions.TheClientDoesntSupportTheGrantType, client.ClientId, GrantType.refresh_token));
+            }
+
+            // 3. Validate parameters
             var grantedToken = await ValidateParameter(refreshTokenGrantTypeParameter);
-            // 2. Generate a new access token & insert it
+            if (grantedToken.ClientId != client.ClientId)
+            {
+                throw new IdentityServerException(ErrorCodes.InvalidGrant, ErrorDescriptions.TheRefreshTokenCanBeUsedOnlyByTheSameIssuer);
+            }
+
+            // 4. Generate a new access token & insert it
             var generatedToken = await _grantedTokenGeneratorHelper.GenerateTokenAsync(
                 grantedToken.ClientId,
                 grantedToken.Scope,
+                issuerName,
                 grantedToken.UserInfoPayLoad,
                 grantedToken.IdTokenPayLoad);
             generatedToken.ParentTokenId = grantedToken.Id;
-            // 3. Fill-in the idtoken
+            // 5. Fill-in the idtoken
             if (generatedToken.IdTokenPayLoad != null)
             {
                 await _jwtGenerator.UpdatePayloadDate(generatedToken.IdTokenPayLoad);
@@ -78,11 +110,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             }
 
             await _tokenStore.AddToken(generatedToken);
-            _simpleIdentityServerEventSource.GrantAccessToClient(generatedToken.ClientId,
+            _oauthEventSource.GrantAccessToClient(generatedToken.ClientId,
                 generatedToken.AccessToken,
                 generatedToken.Scope);
             return generatedToken;
         }
+
+        #region Private methods
+
 
         private async Task<GrantedToken> ValidateParameter(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter)
         {
@@ -96,5 +131,18 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             return grantedToken;
         }
+
+        private AuthenticateInstruction CreateAuthenticateInstruction(RefreshTokenGrantTypeParameter refreshTokenGrantTypeParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
+        {
+            var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
+            result.ClientAssertion = refreshTokenGrantTypeParameter.ClientAssertion;
+            result.ClientAssertionType = refreshTokenGrantTypeParameter.ClientAssertionType;
+            result.ClientIdFromHttpRequestBody = refreshTokenGrantTypeParameter.ClientId;
+            result.ClientSecretFromHttpRequestBody = refreshTokenGrantTypeParameter.ClientSecret;
+            result.Certificate = certificate;
+            return result;
+        }
+
+        #endregion
     }
 }

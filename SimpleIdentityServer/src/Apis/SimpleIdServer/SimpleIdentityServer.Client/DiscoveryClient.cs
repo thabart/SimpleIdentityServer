@@ -16,7 +16,7 @@
 
 using SimpleIdentityServer.Client.Errors;
 using SimpleIdentityServer.Client.Operations;
-using SimpleIdentityServer.Core.Common.DTOs;
+using SimpleIdentityServer.Core.Common.DTOs.Responses;
 using System;
 using System.Threading.Tasks;
 
@@ -104,7 +104,7 @@ namespace SimpleIdentityServer.Client
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
         /// <exception cref="ArgumentException">Thrown when parameter is not a valid URI</exception>
         /// <returns>Open-id contract</returns>
-        public async Task<DiscoveryInformation> GetDiscoveryInformationAsync(string discoveryDocumentationUrl)
+        public Task<DiscoveryInformation> GetDiscoveryInformationAsync(string discoveryDocumentationUrl)
         {
             if (string.IsNullOrWhiteSpace(discoveryDocumentationUrl))
             {
@@ -117,7 +117,7 @@ namespace SimpleIdentityServer.Client
                 throw new ArgumentException(string.Format(ErrorDescriptions.TheUrlIsNotWellFormed, discoveryDocumentationUrl));
             }
 
-            return await GetDiscoveryInformationAsync(uri);
+            return GetDiscoveryInformationAsync(uri);
         }
 
         /// <summary>
@@ -126,14 +126,14 @@ namespace SimpleIdentityServer.Client
         /// <param name="discoveryDocumentationUri">Absolute URI of the open-id contract</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
         /// <returns>Open-id contract</returns>
-        public async Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUri)
+        public Task<DiscoveryInformation> GetDiscoveryInformationAsync(Uri discoveryDocumentationUri)
         {
             if (discoveryDocumentationUri == null)
             {
                 throw new ArgumentNullException(nameof(discoveryDocumentationUri));
             }
             
-            return await _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUri);
+            return _getDiscoveryOperation.ExecuteAsync(discoveryDocumentationUri);
         }
 
         #endregion

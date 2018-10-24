@@ -15,6 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
+using SimpleIdentityServer.Common.Dtos.Responses;
 using SimpleIdentityServer.Uma.Core.Exceptions;
 using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
@@ -30,9 +31,7 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
         private readonly RequestDelegate _next;
         private readonly ExceptionHandlerMiddlewareOptions _options;
 
-        public ExceptionHandlerMiddleware(
-            RequestDelegate next,
-            ExceptionHandlerMiddlewareOptions options)
+        public ExceptionHandlerMiddleware(RequestDelegate next, ExceptionHandlerMiddlewareOptions options)
         {
             if (next == null)
             {
@@ -63,21 +62,16 @@ namespace SimpleIdentityServer.Uma.Host.Middlewares
                 }
 
                 _options.UmaEventSource.Failure(identityServerException);
-                var code = identityServerException.Code;
-                var message = identityServerException.Message;
-                var error = new ErrorResponse();
-                PopulateError(error, identityServerException);
+                var error = new ErrorResponse
+                {
+                    Error = identityServerException.Code,
+                    ErrorDescription = identityServerException.Message
+                };
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Response.ContentType = "application/json";
                 var serializedError = error.SerializeWithDataContract();
                 await context.Response.WriteAsync(serializedError);
             }
-        }
-
-        private static void PopulateError(ErrorResponse errorResponse, BaseUmaException exception)
-        {
-            errorResponse.Error = exception.Code;
-            errorResponse.ErrorDescription = exception.Message;
         }
     }
 }

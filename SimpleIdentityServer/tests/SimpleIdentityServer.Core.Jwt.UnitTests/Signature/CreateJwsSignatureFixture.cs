@@ -15,12 +15,13 @@
 #endregion
 
 using Moq;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
 using SimpleIdentityServer.Core.Jwt.Serializer;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using System;
-using System.Security;
 using System.Security.Cryptography;
+using System.Xml;
 using Xunit;
 
 namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
@@ -67,7 +68,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             var serializedKeys = "invalid_serialized_keys";
 
             // ACT & ASSERT
-           Assert.Throws<XmlSyntaxException>(() => _createJwsSignature.SignWithRsa(JwsAlg.RS256,
+           Assert.Throws<XmlException>(() => _createJwsSignature.SignWithRsa(JwsAlg.RS256,
                 serializedKeys,
                 toBeEncrypted));
         }
@@ -134,7 +135,7 @@ namespace SimpleIdentityServer.Core.Jwt.UnitTests.Signature
             string serializedKeysXml;
             using (var rsa = new RSACryptoServiceProvider())
             {
-                serializedKeysXml = rsa.ToXmlString(true);
+                serializedKeysXml = rsa.ToXmlStringNetCore(true);
             }
 
             var signedMessage = _createJwsSignature.SignWithRsa(JwsAlg.RS256,

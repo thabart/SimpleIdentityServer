@@ -20,7 +20,6 @@ namespace SimpleIdentityServer.Core.Services
 {
     public interface IConfigurationService
     {
-        Task<string> GetIssuerNameAsync();
         Task<double> GetTokenValidityPeriodInSecondsAsync();
         Task<double> GetAuthorizationCodeValidityPeriodInSecondsAsync();
         Task<string> DefaultLanguageAsync();

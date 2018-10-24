@@ -15,8 +15,8 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.Models;
@@ -31,14 +31,13 @@ namespace SimpleIdentityServer.EF.Repositories
     public sealed class ClientRepository : IClientRepository
     {
         private readonly SimpleIdentityServerContext _context;
-
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         #region Constructor
 
         public ClientRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;
@@ -58,16 +57,43 @@ namespace SimpleIdentityServer.EF.Repositories
             IQueryable<Client> clients = _context.Clients;
             if (parameter.ClientIds != null && parameter.ClientIds.Any())
             {
-                clients = clients.Where(c => parameter.ClientIds.Contains(c.ClientId));
+                clients = clients.Where(c => parameter.ClientIds.Any(i => c.ClientId.Contains(i)));
             }
 
             if (parameter.ClientNames != null && parameter.ClientNames.Any())
             {
-                clients = clients.Where(c => parameter.ClientNames.Any(n => n.Contains(c.ClientName)));
+                clients = clients.Where(c => parameter.ClientNames.Any(n => c.ClientName.Contains(n)));
+            }
+
+            if (parameter.ClientTypes != null && parameter.ClientTypes.Any())
+            {
+                var clientTypes = parameter.ClientTypes.Select(t => (Models.ApplicationTypes)t);
+                clients = clients.Where(c => clientTypes.Contains(c.ApplicationType));
             }
 
             var nbResult = await clients.CountAsync().ConfigureAwait(false);
-            clients = clients.OrderBy(c => c.ClientId);
+            if (parameter.Order != null)
+            {
+                switch (parameter.Order.Target)
+                {
+                    case "update_datetime":
+                        switch (parameter.Order.Type)
+                        {
+                            case OrderTypes.Asc:
+                                clients = clients.OrderBy(c => c.UpdateDateTime);
+                                break;
+                            case OrderTypes.Desc:
+                                clients = clients.OrderByDescending(c => c.UpdateDateTime);
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                clients = clients.OrderByDescending(c => c.UpdateDateTime);
+            }
+
             if (parameter.IsPagingEnabled)
             {
                 clients = clients.Skip(parameter.StartIndex).Take(parameter.Count);
@@ -81,7 +107,7 @@ namespace SimpleIdentityServer.EF.Repositories
             };
         }
 
-        public async Task<Core.Models.Client> GetClientByIdAsync(string clientId)
+        public async Task<Core.Common.Models.Client> GetClientByIdAsync(string clientId)
         {
             if (string.IsNullOrWhiteSpace(clientId))
             {
@@ -102,7 +128,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return client.ToDomain();
         }
 
-        public async Task<IEnumerable<Core.Models.Client>> GetAllAsync()
+        public async Task<IEnumerable<Core.Common.Models.Client>> GetAllAsync()
         {
             return await _context.Clients
                 .Include(c => c.JsonWebKeys)
@@ -113,7 +139,7 @@ namespace SimpleIdentityServer.EF.Repositories
                 .ConfigureAwait(false);
         }
 
-        public async Task<bool> UpdateAsync(Core.Models.Client client)
+        public async Task<bool> UpdateAsync(Core.Common.Models.Client client)
         {
             using (var translation = _context.Database.BeginTransaction())
             {
@@ -159,6 +185,7 @@ namespace SimpleIdentityServer.EF.Repositories
                     connectedClient.UserInfoEncryptedResponseEnc = client.UserInfoEncryptedResponseEnc;
                     connectedClient.UserInfoSignedResponseAlg = client.UserInfoSignedResponseAlg;
                     connectedClient.ScimProfile = client.ScimProfile;
+                    connectedClient.UpdateDateTime = DateTime.UtcNow;
                     var scopesNotToBeDeleted = new List<string>();
                     if (client.AllowedScopes != null)
                     {
@@ -219,7 +246,7 @@ namespace SimpleIdentityServer.EF.Repositories
             }
         }
 
-        public async Task<bool> InsertAsync(Core.Models.Client client)
+        public async Task<bool> InsertAsync(Core.Common.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -313,7 +340,9 @@ namespace SimpleIdentityServer.EF.Repositories
                         GrantTypes = grantTypes,
                         ResponseTypes = responseTypes,
                         ScimProfile = client.ScimProfile,
-                        ClientSecrets = clientSecrets
+                        ClientSecrets = clientSecrets,
+                        CreateDateTime = DateTime.UtcNow,
+                        UpdateDateTime = DateTime.UtcNow
                     };
 
                     _context.Clients.Add(newClient);
@@ -331,7 +360,7 @@ namespace SimpleIdentityServer.EF.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Core.Models.Client client)
+        public async Task<bool> DeleteAsync(Core.Common.Models.Client client)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {

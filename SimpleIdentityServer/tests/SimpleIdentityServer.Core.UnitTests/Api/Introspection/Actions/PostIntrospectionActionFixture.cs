@@ -17,15 +17,15 @@
 using Moq;
 using SimpleIdentityServer.Core.Api.Introspection.Actions;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Helpers;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Stores;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
+using SimpleIdentityServer.OAuth.Logging;
+using SimpleIdentityServer.Store;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 {
     public class PostIntrospectionActionFixture
     {
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceStub;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private Mock<IAuthenticateClient> _authenticateClientStub;
         private Mock<IIntrospectionParameterValidator> _introspectionParameterValidatorStub;
         private Mock<ITokenStore> _tokenStoreStub;
@@ -50,7 +50,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _postIntrospectionAction.Execute(null, null, null));
         }
 
         [Fact]
@@ -62,11 +62,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
             {
                 Token = "token"
             };
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                .Returns(Task.FromResult(new AuthenticationResult(null, null)));
 
             // ACT & ASSERT
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null));
             Assert.True(exception.Code == ErrorCodes.InvalidClient);
         }
         
@@ -80,8 +80,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.AccessToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client(), null);
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            var client = new AuthenticationResult(new Core.Common.Models.Client(), null);
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(client));
             _tokenStoreStub.Setup(a => a.GetAccessToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult((GrantedToken)null));
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null));
+            var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _postIntrospectionAction.Execute(parameter, null, null));
             Assert.True(exception.Code == ErrorCodes.InvalidToken);
             Assert.True(exception.Message == ErrorDescriptions.TheTokenIsNotValid);
         }
@@ -116,28 +116,28 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client
+            var client = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new Jwt.JwsPayload
+                IdTokenPayLoad = new JwsPayload
                 {
                     {
                         Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                         subject
                     },
                     {
-                        Jwt.Constants.StandardClaimNames.Audiences,
+                        StandardClaimNames.Audiences,
                         audiences
                     }
                 },
                 CreateDateTime = DateTime.UtcNow.AddDays(-2),
                 ExpiresIn = 2
             };
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(() => Task.FromResult(client));
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -145,7 +145,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -172,28 +172,28 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 TokenTypeHint = Constants.StandardTokenTypeHintNames.RefreshToken,
                 Token = "token"
             };
-            var client = new AuthenticationResult(new Models.Client
+            var client = new AuthenticationResult(new Core.Common.Models.Client
             {
                 ClientId = clientId
             }, null);
             var grantedToken = new GrantedToken
             {
                 ClientId = clientId,
-                IdTokenPayLoad = new Jwt.JwsPayload
+                IdTokenPayLoad = new JwsPayload
                 {
                     {
                         Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
                         subject
                     },
                     {
-                        Jwt.Constants.StandardClaimNames.Audiences,
+                        StandardClaimNames.Audiences,
                         audiences
                     }
                 },
                 CreateDateTime = DateTime.UtcNow,
                 ExpiresIn = 20000
             };
-            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>()))
+            _authenticateClientStub.Setup(a => a.AuthenticateAsync(It.IsAny<AuthenticateInstruction>(), null))
                 .Returns(Task.FromResult(client));
             _tokenStoreStub.Setup(a => a.GetRefreshToken(It.IsAny<string>()))
                 .Returns(() => Task.FromResult((GrantedToken)null));
@@ -201,7 +201,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
                 .Returns(() => Task.FromResult(grantedToken));
 
             // ACT
-            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue);
+            var result = await _postIntrospectionAction.Execute(parameter, authenticationHeaderValue, null);
 
             // ASSERTS
             Assert.NotNull(result);
@@ -214,12 +214,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Introspection.Actions
 
         private void InitializeFakeObjects()
         {
-            _simpleIdentityServerEventSourceStub = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _authenticateClientStub = new Mock<IAuthenticateClient>();
             _introspectionParameterValidatorStub = new Mock<IIntrospectionParameterValidator>();
             _tokenStoreStub = new Mock<ITokenStore>();
             _postIntrospectionAction = new PostIntrospectionAction(
-                _simpleIdentityServerEventSourceStub.Object,
+                _oauthEventSource.Object,
                 _authenticateClientStub.Object,
                 _introspectionParameterValidatorStub.Object,
                 _tokenStoreStub.Object);

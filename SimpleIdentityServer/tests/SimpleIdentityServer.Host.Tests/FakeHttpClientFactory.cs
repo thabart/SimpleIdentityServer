@@ -17,10 +17,11 @@
 using Microsoft.AspNetCore.TestHost;
 using System;
 using System.Net.Http;
+using SimpleIdentityServer.Common.Client.Factories;
 
 namespace SimpleIdentityServer.Host.Tests
 {
-    public class FakeHttpClientFactory : Core.Factories.IHttpClientFactory
+    public class FakeHttpClientFactory : IHttpClientFactory
     {
         private TestServer _server;
 

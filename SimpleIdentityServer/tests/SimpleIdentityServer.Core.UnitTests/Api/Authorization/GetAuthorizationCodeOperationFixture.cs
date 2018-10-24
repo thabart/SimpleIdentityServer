@@ -1,19 +1,19 @@
-﻿using System;
-using System.Security.Claims;
-using Moq;
+﻿using Moq;
 using SimpleIdentityServer.Core.Api.Authorization.Actions;
 using SimpleIdentityServer.Core.Api.Authorization.Common;
 using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
 using SimpleIdentityServer.Core.Results;
 using SimpleIdentityServer.Core.Validators;
-using SimpleIdentityServer.Logging;
-using Xunit;
+using SimpleIdentityServer.OAuth.Logging;
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
 {
@@ -22,7 +22,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
         private Mock<IProcessAuthorizationRequest> _processAuthorizationRequestFake;
         private Mock<IClientValidator> _clientValidatorFake;
         private Mock<IGenerateAuthorizationResponse> _generateAuthorizationResponseFake;
-        private Mock<ISimpleIdentityServerEventSource> _simpleIdentityServerEventSourceFake;
+        private Mock<IOAuthEventSource> _oauthEventSource;
         private IGetAuthorizationCodeOperation _getAuthorizationCodeOperation;
 
         [Fact]
@@ -32,8 +32,8 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null));
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _getAuthorizationCodeOperation.Execute(new AuthorizationParameter(), null, null, null));
         }
 
         [Fact]
@@ -49,11 +49,11 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                 Scope = scope,
                 Claims = null
             };
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(false);
 
             // ACT & ASSERTS
-            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client()));
+            var exception = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(() => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client(), null));
 
             Assert.NotNull(exception);
             Assert.True(exception.Code.Equals(ErrorCodes.InvalidRequestCode));
@@ -76,14 +76,14 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             };
 
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>()))
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null))
                 .Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT & ASSERT
             var ex = await Assert.ThrowsAsync<IdentityServerExceptionWithState>(
-                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Client()));
+                () => _getAuthorizationCodeOperation.Execute(authorizationParameter, null, new Core.Common.Models.Client(), null));
             Assert.True(ex.Code == ErrorCodes.InvalidRequestCode);
             Assert.True(ex.Message ==
                           ErrorDescriptions.TheResponseCannotBeGeneratedBecauseResourceOwnerNeedsToBeAuthenticated);
@@ -105,7 +105,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
                     Action = IdentityServerEndPoints.FormIndex
                 }
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             var authorizationParameter = new AuthorizationParameter
             {
                 ClientId = clientId,
@@ -115,16 +115,16 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             var jsonAuthorizationParameter = authorizationParameter.SerializeWithJavascript();
             _processAuthorizationRequestFake.Setup(p => p.ProcessAsync(
                 It.IsAny<AuthorizationParameter>(),
-                It.IsAny<ClaimsPrincipal>(), It.IsAny<Client>())).Returns(Task.FromResult(actionResult));
-            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Models.Client>(), It.IsAny<GrantType[]>()))
+                It.IsAny<ClaimsPrincipal>(), It.IsAny<Core.Common.Models.Client>(), null)).Returns(Task.FromResult(actionResult));
+            _clientValidatorFake.Setup(c => c.CheckGrantTypes(It.IsAny<Core.Common.Models.Client>(), It.IsAny<GrantType[]>()))
                 .Returns(true);
 
             // ACT
-            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client);
+            await _getAuthorizationCodeOperation.Execute(authorizationParameter, null, client, null);
 
             // ASSERTS
-            _simpleIdentityServerEventSourceFake.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
-            _simpleIdentityServerEventSourceFake.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
+            _oauthEventSource.Verify(s => s.StartAuthorizationCodeFlow(clientId, scope, string.Empty));
+            _oauthEventSource.Verify(s => s.EndAuthorizationCodeFlow(clientId, "RedirectToAction", "FormIndex"));
         }
 
         public void InitializeFakeObjects()
@@ -132,12 +132,12 @@ namespace SimpleIdentityServer.Core.UnitTests.Api.Authorization
             _processAuthorizationRequestFake = new Mock<IProcessAuthorizationRequest>();
             _clientValidatorFake = new Mock<IClientValidator>();
             _generateAuthorizationResponseFake = new Mock<IGenerateAuthorizationResponse>();
-            _simpleIdentityServerEventSourceFake = new Mock<ISimpleIdentityServerEventSource>();
+            _oauthEventSource = new Mock<IOAuthEventSource>();
             _getAuthorizationCodeOperation = new GetAuthorizationCodeOperation(
                 _processAuthorizationRequestFake.Object,
                 _clientValidatorFake.Object,
                 _generateAuthorizationResponseFake.Object,
-                _simpleIdentityServerEventSourceFake.Object);
+                _oauthEventSource.Object);
         }
     }
 }

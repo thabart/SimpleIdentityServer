@@ -14,11 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleBus.Core;
+using SimpleIdServer.Bus;
 using SimpleIdentityServer.Core.Api.UserInfo.Actions;
 using SimpleIdentityServer.Core.Exceptions;
 using SimpleIdentityServer.Core.Results;
-using SimpleIdentityServer.Handler.Events;
+using SimpleIdentityServer.OpenId.Events;
 using System;
 using System.Threading.Tasks;
 

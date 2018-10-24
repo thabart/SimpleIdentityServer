@@ -16,6 +16,7 @@
 
 using SimpleIdentityServer.Client.Configuration;
 using SimpleIdentityServer.Client.Extensions;
+using SimpleIdentityServer.Uma.Client.Results;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,10 +25,10 @@ namespace SimpleIdentityServer.Client.Permission
 {
     public interface IPermissionClient
     {
-        Task<AddPermissionResponse> Add(PostPermission request, string url, string token);
-        Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token);
-        Task<AddPermissionResponse> Add(IEnumerable<PostPermission> request, string url, string token);
-        Task<AddPermissionResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResult> Add(PostPermission request, string url, string token);
+        Task<AddPermissionResult> AddByResolution(PostPermission request, string url, string token);
+        Task<AddPermissionResult> Add(IEnumerable<PostPermission> request, string url, string token);
+        Task<AddPermissionResult> AddByResolution(IEnumerable<PostPermission> request, string url, string token);
     }
 
     internal class PermissionClient : IPermissionClient
@@ -43,25 +44,25 @@ namespace SimpleIdentityServer.Client.Permission
             _getConfigurationOperation = getConfigurationOperation;
         }
 
-        public Task<AddPermissionResponse> Add(PostPermission request, string url, string token)
+        public Task<AddPermissionResult> Add(PostPermission request, string url, string token)
         {
             return _addPermissionsOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddPermissionResponse> AddByResolution(PostPermission request, string url, string token)
+        public async Task<AddPermissionResult> AddByResolution(PostPermission request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
             return await Add(request, configuration.PermissionEndpoint, token);
         }
 
-        public Task<AddPermissionResponse> Add(IEnumerable<PostPermission> request, string url, string token)
+        public Task<AddPermissionResult> Add(IEnumerable<PostPermission> request, string url, string token)
         {
             return _addPermissionsOperation.ExecuteAsync(request, url, token);
         }
 
-        public async Task<AddPermissionResponse> AddByResolution(IEnumerable<PostPermission> request, string url, string token)
+        public async Task<AddPermissionResult> AddByResolution(IEnumerable<PostPermission> request, string url, string token)
         {
-            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url));
+            var configuration = await _getConfigurationOperation.ExecuteAsync(UriHelpers.GetUri(url)).ConfigureAwait(false);
             return await Add(request, configuration.PermissionEndpoint, token);
         }
     }

@@ -14,7 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Common.Extensions;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
@@ -32,42 +34,43 @@ namespace SimpleIdentityServer.Core.Jwt.Encrypt.Algorithms
             byte[] toBeEncrypted,
             JsonWebKey jsonWebKey)
         {
-#if UAP
-            // TODO : Implement
-            return null;
-#elif NET461
-            using (var rsa = new RSACryptoServiceProvider())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                rsa.FromXmlString(jsonWebKey.SerializedKey);
-                return rsa.Encrypt(toBeEncrypted, _oaep);
+                using (var rsa = new RSACryptoServiceProvider())
+                {
+                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    return rsa.Encrypt(toBeEncrypted, _oaep);
+                }
             }
-#elif NETSTANDARD
-            using (var rsa = new RSAOpenSsl())
+            else
             {
-                rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
-                return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
+                using (var rsa = new RSAOpenSsl())
+                {
+                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    return rsa.Encrypt(toBeEncrypted, RSAEncryptionPadding.Pkcs1);
+                }
             }
-#endif
         }
         public byte[] Decrypt(
             byte[] toBeDecrypted, 
             JsonWebKey jsonWebKey)
         {
-#if UAP
-            return null;
-#elif NET461
-            using (var rsa = new RSACryptoServiceProvider())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                rsa.FromXmlString(jsonWebKey.SerializedKey);
-                return rsa.Decrypt(toBeDecrypted, _oaep);
+                using (var rsa = new RSACryptoServiceProvider())
+                {
+                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    return rsa.Decrypt(toBeDecrypted, _oaep);
+                }
             }
-#elif NETSTANDARD
-            using (var rsa = new RSAOpenSsl())
+            else
             {
-                rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
-                return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
+                using (var rsa = new RSAOpenSsl())
+                {
+                    rsa.FromXmlStringNetCore(jsonWebKey.SerializedKey);
+                    return rsa.Decrypt(toBeDecrypted, RSAEncryptionPadding.Pkcs1);
+                }
             }
-#endif
         }
     }
 }

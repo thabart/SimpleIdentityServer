@@ -14,15 +14,9 @@
 // limitations under the License.   
 #endregion
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
+using SimpleIdentityServer.Scim.Core.EF;
+using SimpleIdentityServer.Scim.Core.EF.Stores;
 using SimpleIdentityServer.Scim.Core.Stores;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.Extensions;
-using SimpleIdentityServer.Scim.Db.EF.Helpers;
-using SimpleIdentityServer.Scim.Db.EF.Stores;
 using System;
 
 namespace SimpleIdentityServer.Scim.Core.Tests.Fixture
@@ -31,16 +25,11 @@ namespace SimpleIdentityServer.Scim.Core.Tests.Fixture
     {
         public StoresFixture()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
-            var builder = new DbContextOptionsBuilder<ScimDbContext>();
-            builder.UseInMemoryDatabase()
-                .UseInternalServiceProvider(serviceProvider)
-                .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
-            var ctx = new ScimDbContext(builder.Options);
-            ctx.EnsureSeedData();
-            SchemaStore = new SchemaStore(ctx, new Transformers());
+            SchemaStore = new DefaultSchemaStore(new System.Collections.Generic.List<EF.Models.Schema>
+            {
+                DefaultSchemas.GroupSchema,
+                DefaultSchemas.UserSchema
+            });
         }
 
         public ISchemaStore SchemaStore { get; private set; }

@@ -15,11 +15,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
-using System.Text.Encodings.Web;
 
 namespace SimpleIdentityServer.Host.Tests.MiddleWares
 {
@@ -28,6 +24,16 @@ namespace SimpleIdentityServer.Host.Tests.MiddleWares
         public static AuthenticationBuilder AddFakeCustomAuth(this AuthenticationBuilder builder, Action<TestAuthenticationOptions> configureOptions)
         {
             return builder.AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>(FakeStartup.DefaultSchema, FakeStartup.DefaultSchema, configureOptions);
+        }
+
+        public static AuthenticationBuilder AddFakeOAuth2Introspection(this AuthenticationBuilder builder, Action<FakeOAuth2IntrospectionOptions> configureOptions)
+        {
+            return builder.AddScheme<FakeOAuth2IntrospectionOptions, FakeOauth2IntrospectionHandler>(FakeOAuth2IntrospectionOptions.AuthenticationScheme, configureOptions);
+        }
+
+        public static AuthenticationBuilder AddFakeUserInfoIntrospection(this AuthenticationBuilder builder, Action<FakeUserInfoIntrospectionOptions> configureOptions)
+        {
+            return builder.AddScheme<FakeUserInfoIntrospectionOptions, FakeUserInfoIntrospectionHandler>(FakeUserInfoIntrospectionOptions.AuthenticationScheme, configureOptions);
         }
     }
 }

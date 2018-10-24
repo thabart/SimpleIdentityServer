@@ -1,0 +1,61 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Security.Claims
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Simple identity server - @ViewBag.Title</title>
+        <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/bootstrap.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/bootstrap-theme.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/css/home.index.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/css/tile.theme.css")" />
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="@Url.Content("~/Home")">
+                        <span class="navbar-brand">Simple Identity Server</span>
+                    </a>
+                </div>
+                @if (ViewBag.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Welcome @ViewBag.Name</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="@Url.Content("~/User")">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Content("~/Authenticate/Logout")">Disconnect</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+
+        <div class="container">
+            <div>
+                @RenderSection("PageTitle", false)
+            </div>
+            <div>
+                @RenderBody()
+            </div>
+        </div>
+        <script type="text/javascript" src="@Url.Content("~/lib/jquery/jquery.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/lib/bootstrap/bootstrap.js")"></script>
+        @RenderSection("Scripts", required:false)
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(function() {
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            });
+        </script>
+    </body>
+</html>

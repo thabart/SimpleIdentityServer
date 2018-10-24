@@ -16,14 +16,15 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Common.Dtos.Responses;
+using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.Uma.Core.Api.ResourceSetController;
-using SimpleIdentityServer.Uma.Host.DTOs.Responses;
 using SimpleIdentityServer.Uma.Host.Extensions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WebApiContrib.Core.Concurrency;
+using SimpleIdServer.Concurrency;
 using static SimpleIdentityServer.Uma.Host.Constants;
 
 namespace SimpleIdentityServer.Uma.Host.Controllers
@@ -42,20 +43,25 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             _representationManager = representationManager;
         }
 
+        [HttpPost(".search")]
+        [Authorize("UmaProtection")]
+        public async Task<IActionResult> SearchResourceSets([FromBody] SearchResourceSet searchResourceSet)
+        {
+            if (searchResourceSet == null)
+            {
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
+            }
+
+            var parameter = searchResourceSet.ToParameter();
+            var result = await _resourceSetActions.Search(parameter);
+            return new OkObjectResult(result.ToResponse());
+        }
+
         [HttpGet]
         [Authorize("UmaProtection")]
         public async Task<ActionResult> GetResourceSets()
         {
-            if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourcesStoreName))
-            {
-                return new ContentResult
-                {
-                    StatusCode = 412
-                };
-            }
-
-            var resourceSetIds = await _resourceSetActions.GetAllResourceSet();
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName);
+            var resourceSetIds = await _resourceSetActions.GetAllResourceSet().ConfigureAwait(false);
             return new OkObjectResult(resourceSetIds);
         }
 
@@ -65,7 +71,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             if (!await _representationManager.CheckRepresentationExistsAsync(this, CachingStoreNames.GetResourceStoreName + id))
@@ -93,7 +99,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (postResourceSet == null)
             {
-                throw new ArgumentNullException(nameof(postResourceSet));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var parameter = postResourceSet.ToParameter();
@@ -102,7 +108,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
             {
                 Id = result
             };
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
             return new ObjectResult(response)
             {
                 StatusCode = (int)HttpStatusCode.Created
@@ -115,7 +120,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (putResourceSet == null)
             {
-                throw new ArgumentNullException(nameof(putResourceSet));
+                return BuildError(ErrorCodes.InvalidRequestCode, "no parameter in body request", HttpStatusCode.BadRequest);
             }
 
             var parameter = putResourceSet.ToParameter();
@@ -143,7 +148,7 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException(nameof(id));
+                return BuildError(ErrorCodes.InvalidRequestCode, "the identifier must be specified", HttpStatusCode.BadRequest);
             }
 
             var policyIds = await _resourceSetActions.GetPolicies(id);
@@ -155,7 +160,6 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
 
             // Update all the representations include the authorization policies
             await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourceStoreName + id, false);
-            await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetResourcesStoreName, false);
             foreach (var policyId in policyIds)
             {
                 await _representationManager.AddOrUpdateRepresentationAsync(this, CachingStoreNames.GetPolicyStoreName + policyId, false);
@@ -168,13 +172,26 @@ namespace SimpleIdentityServer.Uma.Host.Controllers
         {
             var errorResponse = new ErrorResponse
             {
-                Error = Constants.ErrorCodes.NotFound,
-                ErrorDescription = Constants.ErrorDescriptions.ResourceSetNotFound
+                Error = "not_found",
+                ErrorDescription = "resource cannot be found"
             };
 
             return new ObjectResult(errorResponse)
             {
                 StatusCode = (int)HttpStatusCode.NotFound
+            };
+        }
+
+        private static JsonResult BuildError(string code, string message, HttpStatusCode statusCode)
+        {
+            var error = new ErrorResponse
+            {
+                Error = code,
+                ErrorDescription = message
+            };
+            return new JsonResult(error)
+            {
+                StatusCode = (int)statusCode
             };
         }
     }

@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 
 namespace SimpleIdentityServer.Scim.Db.EF.Postgre
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScimPostgresqlEF(this IServiceCollection serviceCollection, string connectionString)
+        public static IServiceCollection AddScimPostgresqlEF(this IServiceCollection serviceCollection, string connectionString, Action<NpgsqlDbContextOptionsBuilder> callback = null)
         {
             if (serviceCollection == null)
             {
@@ -18,10 +19,10 @@ namespace SimpleIdentityServer.Scim.Db.EF.Postgre
                 throw new ArgumentNullException(nameof(connectionString));
             }
 
-            serviceCollection.AddScimRepositories();
+			serviceCollection.AddScimRepository();
             serviceCollection.AddEntityFrameworkNpgsql()
                 .AddDbContext<ScimDbContext>(options =>
-                    options.UseNpgsql(connectionString));
+                    options.UseNpgsql(connectionString, callback));
             return serviceCollection;
         }
     }

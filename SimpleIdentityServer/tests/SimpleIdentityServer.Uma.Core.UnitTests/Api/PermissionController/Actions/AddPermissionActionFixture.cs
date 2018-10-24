@@ -38,7 +38,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
         private Mock<ITicketStore> _ticketStoreStub;
         private Mock<IRepositoryExceptionHelper> _repositoryExceptionHelperStub;
         private Mock<IUmaServerEventSource> _umaServerEventSourceStub;
-        private Mock<IConfigurationService> _configurationServiceStub;
+        private Mock<IUmaConfigurationService> _configurationServiceStub;
         private IAddPermissionAction _addPermissionAction;
 
         [Fact]
@@ -191,7 +191,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Api.PermissionController.Actio
             _ticketStoreStub = new Mock<ITicketStore>();
             _repositoryExceptionHelperStub = new Mock<IRepositoryExceptionHelper>();
             _umaServerEventSourceStub = new Mock<IUmaServerEventSource>();
-            _configurationServiceStub = new Mock<IConfigurationService>();
+            _configurationServiceStub = new Mock<IUmaConfigurationService>();
             _addPermissionAction = new AddPermissionAction(
                 _resourceSetRepositoryStub.Object,
                 _ticketStoreStub.Object,

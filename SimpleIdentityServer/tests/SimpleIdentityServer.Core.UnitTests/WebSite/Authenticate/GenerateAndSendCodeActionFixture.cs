@@ -16,13 +16,17 @@
 
 
 using Moq;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using SimpleIdentityServer.Core.WebSite.Authenticate.Actions;
+using SimpleIdentityServer.Store;
+using SimpleIdentityServer.TwoFactorAuthentication;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,9 +35,8 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
     public class GenerateAndSendCodeActionFixture
     {
         private Mock<IResourceOwnerRepository> _resourceOwnerRepositoryStub;
-        private Mock<IConfirmationCodeRepository> _confirmationCodeRepositoryStub;
+        private Mock<IConfirmationCodeStore> _confirmationCodeStoreStub;
         private Mock<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlerStub;
-        private Mock<IAuthenticateResourceOwnerService> _authenticateResourceOwnerServiceStub;
         private IGenerateAndSendCodeAction _generateAndSendCodeAction;
 
         [Fact]
@@ -51,7 +54,7 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult((ResourceOwner)null));
 
             // ACT & ASSERTS
@@ -66,10 +69,10 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.NONE
+                    TwoFactorAuthentication = string.Empty
                 }));
 
             // ACT & ASSERTS
@@ -80,21 +83,57 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         }
 
         [Fact]
+        public async Task When_ResourceOwner_Doesnt_Have_The_Required_Claim_Then_Exception_Is_Thrown()
+        {
+            // ARRANGE
+            InitializeFakeObjects();
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new ResourceOwner
+                {
+                    TwoFactorAuthentication = "email",
+                    Claims = new List<Claim>
+                    {
+                        new Claim("key", "value")
+                    },
+                    Id = "subject"
+                }));
+            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("claim");
+            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+
+            // ACT
+            var exception = await Assert.ThrowsAsync<ClaimRequiredException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+
+            // ASSERT
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
         public async Task When_Code_Cannot_Be_Inserted_Then_Exception_Is_Thrown()
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.Email
+                    TwoFactorAuthentication = "email",
+                    Claims = new List<Claim>
+                    {
+                        new Claim("key", "value")
+                    },
+                    Id = "subject"
                 }));
-            _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
-            _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
+            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
+            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
+            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>()))
                 .Returns(Task.FromResult(false));
 
-            // ACT & ASSERTS
+            // ACT
             var exception = await Assert.ThrowsAsync<IdentityServerException>(() => _generateAndSendCodeAction.ExecuteAsync("subject"));
+
+            // ASSERTS
             Assert.NotNull(exception);
             Assert.True(exception.Code == ErrorCodes.UnhandledExceptionCode);
             Assert.True(exception.Message == ErrorDescriptions.TheConfirmationCodeCannotBeSaved);
@@ -105,33 +144,39 @@ namespace SimpleIdentityServer.Core.UnitTests.WebSite.Authenticate
         {
             // ARRANGE
             InitializeFakeObjects();
-            _authenticateResourceOwnerServiceStub.Setup(r => r.AuthenticateResourceOwnerAsync(It.IsAny<string>()))
+            _resourceOwnerRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new ResourceOwner
                 {
-                    TwoFactorAuthentication = TwoFactorAuthentications.Email
+                    TwoFactorAuthentication = "email",
+                    Claims = new List<Claim>
+                    {
+                        new Claim("key", "value")
+                    },
+                    Id = "subject"
                 }));
-            _confirmationCodeRepositoryStub.Setup(r => r.GetAsync(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
-            _confirmationCodeRepositoryStub.Setup(r => r.AddAsync(It.IsAny<ConfirmationCode>()))
+            var fakeAuthService = new Mock<ITwoFactorAuthenticationService>();
+            fakeAuthService.SetupGet(f => f.RequiredClaim).Returns("key");
+            _twoFactorAuthenticationHandlerStub.Setup(t => t.Get(It.IsAny<string>())).Returns(fakeAuthService.Object);
+            _confirmationCodeStoreStub.Setup(r => r.Get(It.IsAny<string>())).Returns(Task.FromResult((ConfirmationCode)null));
+            _confirmationCodeStoreStub.Setup(r => r.Add(It.IsAny<ConfirmationCode>()))
                 .Returns(Task.FromResult(true));
 
             // ACT
             await _generateAndSendCodeAction.ExecuteAsync("subject");
 
             // ASSERTS
-            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<ResourceOwner>()));
+            _twoFactorAuthenticationHandlerStub.Verify(t => t.SendCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ResourceOwner>()));
         }
 
         private void InitializeFakeObjects()
         {
             _resourceOwnerRepositoryStub = new Mock<IResourceOwnerRepository>();
-            _confirmationCodeRepositoryStub = new Mock<IConfirmationCodeRepository>();
+            _confirmationCodeStoreStub = new Mock<IConfirmationCodeStore>();
             _twoFactorAuthenticationHandlerStub = new Mock<ITwoFactorAuthenticationHandler>();
-            _authenticateResourceOwnerServiceStub = new Mock<IAuthenticateResourceOwnerService>();
             _generateAndSendCodeAction = new GenerateAndSendCodeAction(
                 _resourceOwnerRepositoryStub.Object,
-                _confirmationCodeRepositoryStub.Object,
-                _twoFactorAuthenticationHandlerStub.Object,
-                _authenticateResourceOwnerServiceStub.Object);
+                _confirmationCodeStoreStub.Object,
+                _twoFactorAuthenticationHandlerStub.Object);
         }
     }
 }

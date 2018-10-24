@@ -18,27 +18,20 @@
   </PropertyGroup>  
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Apis\EventStore\SimpleIdentityServer.EventStore.InMemory\SimpleIdentityServer.EventStore.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Common\SimpleIdServer.Concurrency\SimpleIdServer.Concurrency.csproj" />
     <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Client\SimpleIdentityServer.Client.csproj" />
-    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EF.InMemory\SimpleIdentityServer.EF.InMemory.csproj" />
-    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EF\SimpleIdentityServer.EF.csproj" />
-    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.EventStore.Handler\SimpleIdentityServer.EventStore.Handler.csproj" />
-    <ProjectReference Include="..\..\src\Apis\SimpleIdServer\SimpleIdentityServer.Handler\SimpleIdentityServer.Handler.csproj" />
-    <ProjectReference Include="..\..\src\Apis\Uma\SimpleIdentityServer.Uma.EF.InMemory\SimpleIdentityServer.Uma.EF.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Apis\Uma\SimpleIdentityServer.Uma.Host\SimpleIdentityServer.Uma.Host.csproj" />
     <ProjectReference Include="..\..\src\Apis\Uma\SimpleIdentityServer.Uma.Client\SimpleIdentityServer.Uma.Client.csproj" />
-    <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.Core\SimpleBus.Core.csproj" />
-    <ProjectReference Include="..\..\src\Lib\Bus\SimpleBus.InMemory\SimpleBus.InMemory.csproj" />
-    <ProjectReference Include="..\..\src\Lib\WebApiContrib\WebApiContrib.Core.Storage.InMemory\WebApiContrib.Core.Storage.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Apis\Uma\SimpleIdentityServer.Uma.Logging\SimpleIdentityServer.Uma.Logging.csproj" />
   </ItemGroup>  
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

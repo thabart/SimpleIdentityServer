@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SimpleIdentityServer.Core.Common.Extensions;
+using SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.Core.Parameters
 {
@@ -44,12 +45,6 @@ namespace SimpleIdentityServer.Core.Parameters
         login,
         consent,
         select_account
-    }
-
-    public enum CodeChallengeMethods
-    {
-        Plain,
-        RS256
     }
 
     public class ClaimParameter
@@ -149,7 +144,6 @@ namespace SimpleIdentityServer.Core.Parameters
     public class ClaimsParameter
     {
         public List<ClaimParameter> UserInfo { get; set; }
-
         public List<ClaimParameter> IdToken { get; set; }
 
         public override string ToString()
@@ -162,6 +156,7 @@ namespace SimpleIdentityServer.Core.Parameters
     {
         public string ClientId { get; set; }
         public string Scope { get; set; }
+        public IEnumerable<string> AmrValues { get; set; }
         public string ResponseType { get; set; }
         public string RedirectUrl { get; set; }
         public string State { get; set; }

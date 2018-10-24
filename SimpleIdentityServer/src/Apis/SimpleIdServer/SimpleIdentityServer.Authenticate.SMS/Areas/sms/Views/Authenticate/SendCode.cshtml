@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Send code";
+}
+
+@model  SimpleIdentityServer.Authenticate.Basic.ViewModels.CodeViewModel
+
+@section PageTitle
+{
+    <h1>
+        @ViewBag.Translations["send_code"]
+    </h1>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">@ViewBag.Translations["confirmation_code"]</div>
+            <div class="panel-body">
+                @using (Html.BeginForm("SendCode", "Authenticate", null, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationMessage("message_error")
+                    <!-- Authorization request code -->
+                    @Html.TextBoxFor(i => i.AuthRequestCode, new { @type = "hidden" })
+                    <!-- Claim -->
+                    @Html.TextBoxFor(i => i.ClaimName, new { @type = "hidden" })
+                    <fieldset class="form-group">
+                        <label class="control-label">@Model.ClaimName</label>
+                        @Html.TextBoxFor(i => i.ClaimValue, new { @type = "text", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ClaimValue, "", new { @class = "text-danger" })
+                    </fieldset>
+                    <!-- Confirmation code -->
+                    <fieldset class="form-group">
+                        <label class="control-label">@ViewBag.Translations["code"]</label>
+                        @Html.TextBoxFor(i => i.Code, new { @type = "number", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    </fieldset>
+                    <!-- Submit buttons code -->
+                    <fieldset class="form-group">
+                        <button type="submit" class="btn btn-primary" name="Action" value="submit">@ViewBag.Translations["validate_confirmation_code"]</button>
+                        <button type="submit" class="btn btn-primary" name="Action" value="resend">@ViewBag.Translations["resend_confirmation_code"]</button>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>

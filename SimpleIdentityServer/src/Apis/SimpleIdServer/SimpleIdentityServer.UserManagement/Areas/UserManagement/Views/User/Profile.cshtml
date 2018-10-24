@@ -1,0 +1,48 @@
+@model SimpleIdentityServer.UserManagement.ViewModels.ProfileViewModel
+
+@{
+    ViewBag.Title = "Link / Unlink profiles";
+    ViewBag.IsEditDisplayed = false;
+    ViewBag.IsConsentDisplayed = false;
+    ViewBag.IsIndexDisplayed = false;
+    ViewBag.IsProfileDisplayed = true;
+}
+<!-- Display the information -->
+<div class="tab-pane active" id="information">
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <strong>Error : </strong>@ViewBag.ErrorMessage
+        </div>
+    }
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Link to an external identity provider</h4>
+            @using (Html.BeginForm("Link", "User"))
+            {
+                foreach (var loginProvider in Model.UnlinkedIdentityProviders)
+                {
+                    <button type="submit" class="btn btn-default" id="@loginProvider.DisplayName" name="provider" value="@loginProvider.DisplayName" title="Log in using your @loginProvider.DisplayName account">@loginProvider.DisplayName</button>
+                }
+            }
+        </div>
+        <div class="col-md-6">
+            <h4>The following profiles are linked to your account</h4>
+            @if (Model.LinkedIdentityProviders == null || !Model.LinkedIdentityProviders.Any())
+            {
+                <i>No identity providers linked to your profile</i>
+            }
+            else
+            {
+                <ul class="list-group">
+                    @foreach (var linkedIdProvider in Model.LinkedIdentityProviders)
+                    {
+                        <form method="post" action="@Url.Action("Unlink", new { @id = linkedIdProvider.ExternalSubject })">
+                            <li class="list-group-item">@linkedIdProvider.DisplayName <input type="submit" class="btn btn-danger" value="unlink" /></li>
+                        </form>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

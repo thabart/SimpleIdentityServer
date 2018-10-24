@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>  
+    <ProjectReference Include="..\..\Common\SimpleIdentityServer.Module\SimpleIdentityServer.Module.csproj" />  
+    <ProjectReference Include="..\SimpleIdentityServer.Host\SimpleIdentityServer.Host.csproj" />  
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>  
+    <EmbeddedResource Include="Areas\**\*.cshtml" />  
+    <EmbeddedResource Include="wwwroot\favicon.ico" />
+    <EmbeddedResource Include="wwwroot\img\*.png" />
+    <EmbeddedResource Include="wwwroot\css\*.css" />
+    <EmbeddedResource Include="wwwroot\fonts\*.ttf" />
+    <EmbeddedResource Include="wwwroot\fonts\*.woff" />
+    <EmbeddedResource Include="wwwroot\fonts\*.svg" />
+    <EmbeddedResource Include="wwwroot\fonts\*.eot" />
+    <EmbeddedResource Include="wwwroot\lib\**\*.css" />
+    <EmbeddedResource Include="wwwroot\lib\**\*.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Areas\Shell\Views\Error\Index.cshtml" />
+  </ItemGroup>
+</Project>

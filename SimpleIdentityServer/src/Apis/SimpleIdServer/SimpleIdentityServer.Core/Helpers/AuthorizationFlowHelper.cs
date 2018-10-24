@@ -14,12 +14,12 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
 using SimpleIdentityServer.Core.Api.Authorization;
+using SimpleIdentityServer.Core.Common.Models;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleIdentityServer.Core.Helpers
 {

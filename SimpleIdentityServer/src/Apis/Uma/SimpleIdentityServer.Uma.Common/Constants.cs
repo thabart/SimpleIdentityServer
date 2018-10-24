@@ -16,6 +16,26 @@
 
 namespace SimpleIdentityServer.Uma.Common
 {
+    public static class SearchAuthPolicyNames
+    {
+        public const string Ids = "ids";
+        public const string ResourceIds = "resource_ids";
+    }
+
+    public static class SearchResourceSetNames
+    {
+        public const string Ids = "ids";
+        public const string Names = "names";
+        public const string Types = "types";
+    }
+
+    public static class SearchResponseNames
+    {
+        public const string Content = "content";
+        public const string StartIndex = "start_index";
+        public const string TotalResults = "count";
+    }
+
     public static class ResourceSetResponseNames
     {
         public const string Id = "_id";

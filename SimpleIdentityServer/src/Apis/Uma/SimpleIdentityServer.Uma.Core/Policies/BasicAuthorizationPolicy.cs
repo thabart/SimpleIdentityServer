@@ -15,7 +15,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Parameters;
@@ -33,12 +32,10 @@ namespace SimpleIdentityServer.Uma.Core.Policies
 
     internal class BasicAuthorizationPolicy : IBasicAuthorizationPolicy
     {
-        private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJwtTokenParser _jwtTokenParser;
         
-        public BasicAuthorizationPolicy(IIdentityServerClientFactory identityServerClientFactory, IJwtTokenParser jwtTokenParser)
+        public BasicAuthorizationPolicy(IJwtTokenParser jwtTokenParser)
         {
-            _identityServerClientFactory = identityServerClientFactory;
             _jwtTokenParser = jwtTokenParser;
         }
 
@@ -102,9 +99,8 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             // 3. Check claims are correct
-            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter);
-            if (claimAuthorizationResult != null
-                && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
+            var claimAuthorizationResult = await CheckClaims(authorizationPolicy, claimTokenParameter).ConfigureAwait(false);
+            if (claimAuthorizationResult != null && claimAuthorizationResult.Type != AuthorizationPolicyResultEnum.Authorized)
             {
                 return claimAuthorizationResult;
             }
@@ -173,7 +169,7 @@ namespace SimpleIdentityServer.Uma.Core.Policies
             }
 
             var idToken = claimTokenParameter.Token;
-            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy.OpenIdProvider);
+            var jwsPayload = await _jwtTokenParser.UnSign(idToken, authorizationPolicy).ConfigureAwait(false);
             if (jwsPayload == null)
             {
                 return new AuthorizationPolicyResult

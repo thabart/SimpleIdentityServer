@@ -19,16 +19,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleBus.InMemory;
-using SimpleIdentityServer.EF.SqlServer;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.Scim.Db.EF;
-using SimpleIdentityServer.Scim.Db.EF.InMemory;
-using SimpleIdentityServer.Scim.EventStore.Handler;
 using SimpleIdentityServer.Scim.Host.Extensions;
-using SimpleIdentityServer.Scim.Startup.Extensions;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
+using SimpleIdentityServer.UserInfoIntrospection;
 
 namespace SimpleIdentityServer.Scim.Startup
 {
@@ -55,28 +48,20 @@ namespace SimpleIdentityServer.Scim.Startup
                     opts.ClientId = "Scim";
                     opts.ClientSecret = "~V*nH{q4;qL/=8+Z";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
+                })
+		        .AddUserInfoIntrospection(opts =>
+                {
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
-            ConfigureEventStoreSqlServerBus(services);
-            ConfigureScimRepository(services);
-            ConfigureCachingInMemory(services);
-            services.AddScim();
-        }
-
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
-        {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;");
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
-        }
-
-        private void ConfigureScimRepository(IServiceCollection services)
-        {
-            services.AddScimInMemoryEF();
-        }
-
-        private void ConfigureCachingInMemory(IServiceCollection services)
-        {
-            services.AddConcurrency(opt => opt.UseInMemory());
+            services.AddAuthorization(opts =>
+            {
+                opts.AddScimAuthPolicy();
+            });
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+            services.AddMvc();
+            services.AddScimHost(new Host.ScimServerOptions());
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -84,13 +69,13 @@ namespace SimpleIdentityServer.Scim.Startup
             loggerFactory.AddConsole();
             app.UseAuthentication();
             app.UseStatusCodePages();
-            app.UseScimHost();
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            app.UseCors("AllowAll");
+            app.UseMvc(routes =>
             {
-                var scimDbContext = serviceScope.ServiceProvider.GetService<ScimDbContext>();
-                scimDbContext.Database.EnsureCreated();
-                scimDbContext.EnsureSeedData();
-            }
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

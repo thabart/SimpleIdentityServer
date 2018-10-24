@@ -14,10 +14,9 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using System;
 using System.Linq;
-using SimpleIdentityServer.Core.Jwt;
-using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Extensions
 {

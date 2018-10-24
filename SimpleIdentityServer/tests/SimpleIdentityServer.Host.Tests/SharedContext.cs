@@ -14,7 +14,11 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Jwt;
+using Moq;
+using SimpleIdentityServer.Common.Client.Factories;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Store;
+using SimpleIdentityServer.Twilio.Client;
 using System.Security.Cryptography;
 
 namespace SimpleIdentityServer.Host.Tests
@@ -37,18 +41,22 @@ namespace SimpleIdentityServer.Host.Tests
                     KeyOperations.Sign,
                     KeyOperations.Verify
                 },
-                Kid = "11",
+                Kid = "1",
                 Kty = KeyType.RSA,
                 Use = Use.Sig,
                 SerializedKey = serializedRsa,
             };
-            ModelSignatureKey = new EF.Models.JsonWebKey
+            ModelSignatureKey = new JsonWebKey
             {
-                Alg = EF.Models.AllAlg.RS256,
-                KeyOps = "2,3",
-                Kid = "11",
-                Kty = EF.Models.KeyType.RSA,
-                Use = EF.Models.Use.Sig,
+                Alg = AllAlg.RS256,
+                KeyOps = new KeyOperations[]
+                {
+                    KeyOperations.Encrypt,
+                    KeyOperations.Decrypt
+                },
+                Kid = "2",
+                Kty = KeyType.RSA,
+                Use = Use.Sig,
                 SerializedKey = serializedRsa,
             };
             EncryptionKey = new JsonWebKey
@@ -59,27 +67,37 @@ namespace SimpleIdentityServer.Host.Tests
                     KeyOperations.Decrypt,
                     KeyOperations.Encrypt
                 },
-                Kid = "10",
+                Kid = "3",
                 Kty = KeyType.RSA,
                 Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
-            ModelEncryptionKey = new EF.Models.JsonWebKey
+            ModelEncryptionKey = new JsonWebKey
             {
-                Alg = EF.Models.AllAlg.RSA1_5,
-                KeyOps = "2,3",
-                Kid = "10",
-                Kty = EF.Models.KeyType.RSA,
-                Use = EF.Models.Use.Enc,
+                Alg = AllAlg.RSA1_5,
+                KeyOps = new KeyOperations[]
+                {
+                    KeyOperations.Encrypt,
+                    KeyOperations.Decrypt
+                },
+                Kid = "4",
+                Kty = KeyType.RSA,
+                Use = Use.Enc,
                 SerializedKey = serializedRsa,
             };
             HttpClientFactory = new FakeHttpClientFactory();
+            ConfirmationCodeStore = new Mock<IConfirmationCodeStore>();
+            TwilioClient = new Mock<ITwilioClient>();
+            Oauth2IntrospectionHttpClientFactory = new Mock<IHttpClientFactory>();
         }
 
         public JsonWebKey EncryptionKey { get; }
-        public EF.Models.JsonWebKey ModelEncryptionKey { get; }
+        public JsonWebKey ModelEncryptionKey { get; }
         public JsonWebKey SignatureKey { get; }
-        public EF.Models.JsonWebKey ModelSignatureKey { get; }
+        public JsonWebKey ModelSignatureKey { get; }
         public FakeHttpClientFactory HttpClientFactory { get; }
+        public Mock<IConfirmationCodeStore> ConfirmationCodeStore { get; }
+        public Mock<ITwilioClient> TwilioClient { get; }
+        public Mock<IHttpClientFactory> Oauth2IntrospectionHttpClientFactory { get; }
     }
 }

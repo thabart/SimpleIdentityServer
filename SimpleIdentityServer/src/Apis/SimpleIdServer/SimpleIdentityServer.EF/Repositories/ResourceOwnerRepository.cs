@@ -15,7 +15,9 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using SimpleIdentityServer.Core.Repositories;
+using SimpleIdentityServer.Core.Common.Parameters;
+using SimpleIdentityServer.Core.Common.Repositories;
+using SimpleIdentityServer.Core.Common.Results;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.EF.Models;
 using SimpleIdentityServer.Logging;
@@ -23,23 +25,52 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domains = SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Results;
+using Domains = SimpleIdentityServer.Core.Common.Models;
 
 namespace SimpleIdentityServer.EF.Repositories
 {
     public sealed class ResourceOwnerRepository : IResourceOwnerRepository
     {
         private readonly SimpleIdentityServerContext _context;
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         public ResourceOwnerRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;
+        }
+
+        public async Task<Domains.ResourceOwner> GetResourceOwnerByClaim(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            try
+            {
+                var result = await _context.ResourceOwners.Include(r => r.Claims)
+                    .FirstOrDefaultAsync(r => r.Claims.Any(c => c.ClaimCode == key && c.Value == value))
+                    .ConfigureAwait(false);
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return result.ToDomain();
+            }
+            catch(Exception ex)
+            {
+                _managerEventSource.Failure(ex);
+                return null;
+            }
         }
         
         public async Task<Domains.ResourceOwner> GetAsync(string id)
@@ -150,8 +181,10 @@ namespace SimpleIdentityServer.EF.Repositories
                     Id = resourceOwner.Id,
                     Password = resourceOwner.Password,
                     IsLocalAccount = resourceOwner.IsLocalAccount,
-                    TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication,
-                    Claims = new List<ResourceOwnerClaim>()
+                    TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication,
+                    Claims = new List<ResourceOwnerClaim>(),
+                    CreateDateTime = DateTime.UtcNow,
+                    UpdateDateTime = DateTime.UtcNow
                 };
 
                 if (resourceOwner.Claims != null)
@@ -196,7 +229,9 @@ namespace SimpleIdentityServer.EF.Repositories
 
                     record.Password = resourceOwner.Password;
                     record.IsLocalAccount = resourceOwner.IsLocalAccount;
-                    record.TwoFactorAuthentication = (int)resourceOwner.TwoFactorAuthentication;
+                    record.TwoFactorAuthentication = resourceOwner.TwoFactorAuthentication;
+                    record.UpdateDateTime = DateTime.UtcNow;
+                    record.Claims = new List<ResourceOwnerClaim>();
                     _context.ResourceOwnerClaims.RemoveRange(record.Claims);
                     if (resourceOwner.Claims != null)
                     {
@@ -245,7 +280,8 @@ namespace SimpleIdentityServer.EF.Repositories
 
                 if (parameter.Subjects != null)
                 {                    
-                    result = result.Where(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code && parameter.Subjects.Contains(c.Value)));
+                    result = result.Where(r => r.Claims.Any(c => c.ClaimCode == claimIdentifier.Code 
+                        && parameter.Subjects.Any(s => c.Value.Contains(s))));
                 }
 
                 if (result == null)
@@ -254,6 +290,28 @@ namespace SimpleIdentityServer.EF.Repositories
                 }
 
                 var nbResult = await result.CountAsync().ConfigureAwait(false);
+                if (parameter.Order != null)
+                {
+                    switch (parameter.Order.Target)
+                    {
+                        case "update_datetime":
+                            switch (parameter.Order.Type)
+                            {
+                                case OrderTypes.Asc:
+                                    result = result.OrderBy(c => c.UpdateDateTime);
+                                    break;
+                                case OrderTypes.Desc:
+                                    result = result.OrderByDescending(c => c.UpdateDateTime);
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    result = result.OrderByDescending(c => c.UpdateDateTime);
+                }
+
                 if (parameter.IsPagingEnabled)
                 {
                     result = result.Skip(parameter.StartIndex).Take(parameter.Count);

@@ -14,6 +14,7 @@
 // limitations under the License.
 #endregion
 
+using SimpleIdentityServer.Core.Common;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -21,33 +22,6 @@ namespace SimpleIdentityServer.Core.Jwt
 {
     public class Constants
     {
-        public static class StandardClaimNames
-        {
-            public static string Issuer = "iss";
-            public static string Audiences = "aud";
-            public static string ExpirationTime = "exp";
-            public static string Iat = "iat";
-            public static string AuthenticationTime = "auth_time";
-            public static string Nonce = "nonce";
-            public static string Acr = "acr";
-            public static string Amr = "amr";
-            public static string Azp = "azp";
-            /// <summary>
-            /// Unique identifier of the JWT.
-            /// </summary>
-            public static string Jti = "jti";
-            /// <summary>
-            /// Access token hash value
-            /// </summary>
-            public static string AtHash = "at_hash";
-            /// <summary>
-            /// Authorization code hash value
-            /// </summary>
-            public static string CHash = "c_hash";
-            public static string ClientId = "client_id";
-            public static string Scopes = "scope";
-        }
-
         public static class StandardResourceOwnerClaimNames
         {
             public static string Subject = "sub";
@@ -74,6 +48,16 @@ namespace SimpleIdentityServer.Core.Jwt
             public static string ScimId = "scim_id";
             public static string ScimLocation = "scim_location";
         }
+
+        public static IEnumerable<string> NotEditableResourceOwnerClaimNames = new List<string>
+        {
+            StandardResourceOwnerClaimNames.Subject,
+            StandardResourceOwnerClaimNames.EmailVerified,
+            StandardResourceOwnerClaimNames.PhoneNumberVerified,
+            StandardResourceOwnerClaimNames.UpdatedAt,
+            StandardResourceOwnerClaimNames.ScimId,
+            StandardResourceOwnerClaimNames.ScimLocation
+        };
 
         public static class StandardAddressClaimNames
         {
@@ -361,109 +345,68 @@ namespace SimpleIdentityServer.Core.Jwt
         public static class JweEncNames 
         {
             public static string A128CBC_HS256 = "A128CBC-HS256";
-
             public static string A192CBC_HS384 = "A192CBC-HS384";
-
             public static string A256CBC_HS512 = "A256CBC-HS512";
         }
 
         public static class JweAlgNames
         {
             public static string RSA1_5 = "RSA1_5";
-
             public static string RSA_OAEP = "RSA-OAEP";
-
             public static string RSA_OAEP_256 = "RSA-OAEP-256";
-
             public static string A128KW = "A128KW";
-
             public static string A192KW = "A192KW";
-
             public static string A256KW = "A256KW";
-
             public static string DIR = "dir";
-
             public static string ECDH_ES = "ECDH-ES";
-
             public static string ECDH_ESA_128KW = "ECDH-ES+A128KW";
-
             public static string ECDH_ESA_192KW = "ECDH-ES+A192KW";
-
             public static string ECDH_ESA_256_KW = "ECDH-ES+A256KW";
-
             public static string A128GCMKW = "A128GCMKW";
-
             public static string A192GCMKW = "A192GCMKW";
-
             public static string A256GCMKW = "A256GCMKW";
-
             public static string PBES2_HS256_A128KW = "PBES2-HS256+A128KW";
-
             public static string PBES2_HS384_A192KW = "PBES2-HS384+A192KW";
-
             public static string PBES2_HS512_A256KW = "PBES2-HS512+A256KW";
         }
 
         public static class JwsAlgNames
         {
             public static string HS256 = "HS256";
-
             public static string HS384 = "HS384";
-
             public static string HS512 = "HS512";
-
             public static string RS256 = "RS256";
-
             public static string RS384 = "RS384";
-
             public static string RS512 = "RS512";
-
             public static string ES256 = "ES256";
-
             public static string ES384 = "ES384";
-
             public static string ES512 = "ES512";
-
             public static string PS256 = "PS256";
-
             public static string PS384 = "PS384";
-
             public static string PS512 = "PS512";
-
             public static string NONE = "none";
         }
 
         public static class JsonWebKeyParameterNames
         {
             public static string KeyTypeName = "kty";
-
             public static string UseName = "use";
-
             public static string KeyOperationsName = "key_ops";
-
             public static string AlgorithmName = "alg";
-
             public static string KeyIdentifierName = "kid";
-
             public static string X5Url = "x5u";
-
             public static string X5CertificateChain = "x5c";
-
             public static string X5ThumbPrint = "x5t";
-
             public static string X5Sha256ThumbPrint = "x5t#S256";
-
             public static class RsaKey
             {
                 public static string ModulusName = "n";
-
                 public static string ExponentName = "e";
             }
 
             public static class EcKey
             {
                 public static string XCoordinateName = "x";
-
                 public static string YCoordinateName = "y";
             }
         }
@@ -471,16 +414,13 @@ namespace SimpleIdentityServer.Core.Jwt
         public static class KeyTypeValues
         {
             public const string RsaName = "RSA";
-
             public const string EcName = "EC";
-
             public const string OctName = "oct";
         }
 
         public static class UseValues
         {
             public static string Signature = "sig";
-
             public static string Encryption = "enc";
         }
 

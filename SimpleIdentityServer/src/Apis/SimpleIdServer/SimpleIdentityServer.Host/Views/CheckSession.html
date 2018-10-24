@@ -121,7 +121,7 @@
                 var cookieValue = null;
                 cookies.forEach(function (cookie) {
                     var splittedCookie = cookie.split('=');
-                    if (splittedCookie[0] === cookieName) {
+                    if (splittedCookie[0].replace(/ /g, '') === cookieName) {
                         cookieValue = splittedCookie[1];
                     }
                 });
@@ -133,7 +133,7 @@
                 if (!message || !originUrl) {
                     return "error";
                 }
-                
+
                 var splittedMessage = message.split(' ');
                 if (splittedMessage.length !== 2) {
                     return "error";

@@ -14,8 +14,8 @@
 // limitations under the License.
 #endregion
 
-using SimpleIdentityServer.Core.Common.DTOs;
-using SimpleIdentityServer.Core.Models;
+using SimpleIdentityServer.Core.Common.DTOs.Requests;
+using SimpleIdentityServer.Core.Common.Models;
 using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Core.Parameters
@@ -23,6 +23,7 @@ namespace SimpleIdentityServer.Core.Parameters
     public class RegistrationParameter
     {
         public List<string> RedirectUris { get; set; }
+        public List<string> PostLogoutRedirectUris { get; set; }
         public List<ResponseType> ResponseTypes { get; set; }
         public List<GrantType> GrantTypes { get; set; }
         public ApplicationTypes? ApplicationType { get; set; }

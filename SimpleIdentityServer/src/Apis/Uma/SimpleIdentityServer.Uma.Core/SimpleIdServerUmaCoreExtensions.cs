@@ -15,7 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController;
 using SimpleIdentityServer.Uma.Core.Api.ConfigurationController.Actions;
 using SimpleIdentityServer.Uma.Core.Api.PermissionController;
@@ -28,58 +27,25 @@ using SimpleIdentityServer.Uma.Core.Api.Token;
 using SimpleIdentityServer.Uma.Core.Api.Token.Actions;
 using SimpleIdentityServer.Uma.Core.Helpers;
 using SimpleIdentityServer.Uma.Core.JwtToken;
+using SimpleIdentityServer.Uma.Core.Models;
 using SimpleIdentityServer.Uma.Core.Policies;
+using SimpleIdentityServer.Uma.Core.Repositories;
 using SimpleIdentityServer.Uma.Core.Services;
 using SimpleIdentityServer.Uma.Core.Stores;
 using SimpleIdentityServer.Uma.Core.Validators;
-using System;
+using System.Collections.Generic;
 
 namespace SimpleIdentityServer.Uma.Core
 {
     public static class SimpleIdServerUmaCoreExtensions
     {
-        public static IServiceCollection AddUmaInMemoryStore(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddSimpleIdServerUmaCore(this IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
         {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
-
-            serviceCollection.AddSingleton<ITicketStore>(new InMemoryTicketStore());
+            RegisterDependencies(serviceCollection, umaConfigurationOptions, resources, policies);
             return serviceCollection;
         }
 
-        public static IServiceCollection AddSimpleIdServerUmaCore(
-            this IServiceCollection serviceCollection,
-            UmaServerOptions options = null)
-        {
-            if (options == null)
-            {
-                options = new UmaServerOptions();
-            }
-
-            RegisterDependencies(serviceCollection, options);
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddSimpleIdServerUmaCore(
-            this IServiceCollection serviceCollection,
-            Action<UmaServerOptions> callback)
-        {
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            var umaServerOptions = new UmaServerOptions();
-            callback(umaServerOptions);
-            RegisterDependencies(serviceCollection, umaServerOptions);
-            return serviceCollection;
-        }
-
-        private static void RegisterDependencies(
-            IServiceCollection serviceCollection,
-            UmaServerOptions umaServerOptions)
+        private static void RegisterDependencies(IServiceCollection serviceCollection, UmaConfigurationOptions umaConfigurationOptions = null, ICollection<ResourceSet> resources = null, ICollection<Policy> policies = null)
         {
             serviceCollection.AddTransient<IResourceSetActions, ResourceSetActions>();
             serviceCollection.AddTransient<IAddResourceSetAction, AddResourceSetAction>();
@@ -106,17 +72,14 @@ namespace SimpleIdentityServer.Uma.Core
             serviceCollection.AddTransient<IAddResourceSetToPolicyAction, AddResourceSetToPolicyAction>();
             serviceCollection.AddTransient<IDeleteResourcePolicyAction, DeleteResourcePolicyAction>();
             serviceCollection.AddTransient<IGetPoliciesAction, GetPoliciesAction>();
-            if (umaServerOptions.ConfigurationService == null)
-            {
-                serviceCollection.AddTransient<IConfigurationService, DefaultConfigurationService>();
-            }
-            else
-            {
-                serviceCollection.AddSingleton<IConfigurationService>(umaServerOptions.ConfigurationService);
-            }
-
+            serviceCollection.AddTransient<ISearchAuthPoliciesAction, SearchAuthPoliciesAction>();
+            serviceCollection.AddTransient<ISearchResourceSetOperation, SearchResourceSetOperation>();
             serviceCollection.AddTransient<IUmaTokenActions, UmaTokenActions>();
             serviceCollection.AddTransient<IGetTokenByTicketIdAction, GetTokenByTicketIdAction>();
+            serviceCollection.AddSingleton<IUmaConfigurationService>(new DefaultUmaConfigurationService(umaConfigurationOptions));
+            serviceCollection.AddSingleton<IPolicyRepository>(new DefaultPolicyRepository(policies));
+            serviceCollection.AddSingleton<IResourceSetRepository>(new DefaultResourceSetRepository(resources));
+            serviceCollection.AddSingleton<ITicketStore, DefaultTicketStore>();
         }
     }
 }

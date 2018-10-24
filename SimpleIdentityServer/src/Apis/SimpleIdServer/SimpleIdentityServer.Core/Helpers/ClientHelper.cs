@@ -14,22 +14,21 @@
 // limitations under the License.
 #endregion
 
-using System;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Models;
+using System;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Helpers
 {
     public interface IClientHelper
     {
         Task<string> GenerateIdTokenAsync(string clientId, JwsPayload jwsPayload);
-        Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload);
+        Task<string> GenerateIdTokenAsync(Core.Common.Models.Client client, JwsPayload jwsPayload);
         Task<JwsPayload> GetPayload(string clientId, string jwsToken);
-        Task<JwsPayload> GetPayload(Client client, string jwsToken);
+        Task<JwsPayload> GetPayload(Core.Common.Models.Client client, string jwsToken);
     }
 
     public sealed class ClientHelper : IClientHelper
@@ -66,7 +65,7 @@ namespace SimpleIdentityServer.Core.Helpers
             return await GenerateIdTokenAsync(client, jwsPayload);
         }
 
-        public async Task<string> GenerateIdTokenAsync(Client client, JwsPayload jwsPayload)
+        public async Task<string> GenerateIdTokenAsync(Core.Common.Models.Client client, JwsPayload jwsPayload)
         {
             if (client == null)
             {
@@ -121,7 +120,7 @@ namespace SimpleIdentityServer.Core.Helpers
             return await GetPayload(client, jwsToken);
         }
 
-        public async Task<JwsPayload> GetPayload(Client client, string jwsToken)
+        public async Task<JwsPayload> GetPayload(Core.Common.Models.Client client, string jwsToken)
         {
             if (client == null)
             {

@@ -14,35 +14,21 @@
 // limitations under the License.
 #endregion
 
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using SimpleBus.InMemory;
-using SimpleIdentityServer.Core;
-using SimpleIdentityServer.EF;
-using SimpleIdentityServer.EF.SqlServer;
-using SimpleIdentityServer.EventStore.Handler;
 using SimpleIdentityServer.OAuth2Introspection;
-using SimpleIdentityServer.Uma.EF;
-using SimpleIdentityServer.Uma.EF.SqlServer;
-using SimpleIdentityServer.Uma.Host.Configurations;
 using SimpleIdentityServer.Uma.Host.Extensions;
-using SimpleIdentityServer.Uma.Startup.Extensions;
-using System;
-using WebApiContrib.Core.Concurrency;
-using WebApiContrib.Core.Storage.InMemory;
+using SimpleIdentityServer.Uma.Host.Middlewares;
+using SimpleIdentityServer.Uma.Logging;
+using SimpleIdentityServer.UserInfoIntrospection;
 
 namespace SimpleIdentityServer.Uma.Startup
 {
     public class Startup
     {
-        private UmaHostConfiguration _umaHostConfiguration;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -51,105 +37,50 @@ namespace SimpleIdentityServer.Uma.Startup
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            _umaHostConfiguration = new UmaHostConfiguration();
         }
 
         public IConfigurationRoot Configuration { get; set; }
         
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureEventStoreSqlServerBus(services);
-            ConfigureOauthRepositorySqlServer(services);
-            ConfigureUmaSqlServer(services);
-            ConfigureStorageInMemory(services);
-            ConfigureLogging(services);
-            ConfigureCaching(services);
+            // OPENID
             services.AddAuthentication(OAuth2IntrospectionOptions.AuthenticationScheme)
                 .AddOAuth2Introspection(opts =>
                 {
                     opts.ClientId = "uma";
                     opts.ClientSecret = "uma";
                     opts.WellKnownConfigurationUrl = "http://localhost:60004/.well-known/uma2-configuration";
+                })
+		        .AddUserInfoIntrospection(opts =>
+                {
+                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
                 });
-            services.AddUmaHost(_umaHostConfiguration);
-        }
-
-        private void ConfigureEventStoreSqlServerBus(IServiceCollection services)
-        {
-            services.AddEventStoreSqlServerEF("Data Source=.;Initial Catalog=EventStore;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            services.AddSimpleBusInMemory();
-            services.AddEventStoreBusHandler();
-        }
-
-        private void ConfigureOauthRepositorySqlServer(IServiceCollection services)
-        {
-            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerOauthUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddOAuthSqlServerEF(connectionString);
-        }
-
-        private void ConfigureUmaSqlServer(IServiceCollection services)
-        {
-            var connectionString = "Data Source=.;Initial Catalog=SimpleIdServerUma;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            services.AddUmaSqlServerEF(connectionString);
-        }
-
-        private void ConfigureStorageInMemory(IServiceCollection services)
-        {
-            services.AddInMemoryStorage();
-        }
-
-        private void ConfigureCaching(IServiceCollection services)
-        {
-            services.AddConcurrency(opt => opt.UseInMemory());
-        }
-
-        private void ConfigureLogging(IServiceCollection services)
-        {
-            Func<LogEvent, bool> serilogFilter = (e) =>
+            services.AddAuthorization(opts =>
             {
-                var ctx = e.Properties["SourceContext"];
-                var contextValue = ctx.ToString()
-                    .TrimStart('"')
-                    .TrimEnd('"');
-                return contextValue.StartsWith("SimpleIdentityServer") ||
-                    e.Level == LogEventLevel.Error ||
-                    e.Level == LogEventLevel.Fatal;
-            };
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole();
-            var log = logger.Filter.ByIncludingOnly(serilogFilter)
-                .CreateLogger();
-            Log.Logger = log;
+                opts.AddUmaSecurityPolicy();
+            });
             services.AddLogging();
-            services.AddSingleton<Serilog.ILogger>(log);
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+            services.AddUmaHost(new Host.AuthorizationServerOptions());
+	        services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAuthentication();
-            app.UseUmaHost(loggerFactory, _umaHostConfiguration);
-            UseSerilogLogging(loggerFactory);
-            // Insert the data.
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            app.UseCors("AllowAll");
+            app.UseUmaExceptionHandler(new ExceptionHandlerMiddlewareOptions
             {
-                var simpleIdServerUmaContext = serviceScope.ServiceProvider.GetService<SimpleIdServerUmaContext>();
-                simpleIdServerUmaContext.Database.EnsureCreated();
-                simpleIdServerUmaContext.EnsureSeedData();
-            }
-
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                UmaEventSource = app.ApplicationServices.GetService<IUmaServerEventSource>()
+            });
+            app.UseMvc(routes =>
             {
-                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
-                simpleIdentityServerContext.Database.EnsureCreated();
-                simpleIdentityServerContext.EnsureSeedData();
-            }
-        }
-
-        private void UseSerilogLogging(ILoggerFactory logger)
-        {
-            logger.AddSerilog();
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action}/{id?}");
+            });
         }
     }
 }

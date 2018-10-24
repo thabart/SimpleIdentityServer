@@ -15,12 +15,21 @@
 #endregion
 
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SimpleIdentityServer.Core.Results;
 
 namespace SimpleIdentityServer.Host
 {
     public static class Constants
     {
+        public static class CookieNames
+        {
+            public const string CookieName = CookieAuthenticationDefaults.AuthenticationScheme;
+            public const string ExternalCookieName = "SimpleIdServer-OpenId-External";
+            public const string PasswordLessCookieName = "SimpleIdServer-PasswordLess";
+            public const string TwoFactorCookieName = "SimpleIdentityServer-TwoFactorAuth";
+        }
+
         public static Dictionary<IdentityServerEndPoints, string> MappingIdentityServerEndPointToPartialUrl = new Dictionary<IdentityServerEndPoints, string>
         {
             {
@@ -36,8 +45,6 @@ namespace SimpleIdentityServer.Host
                 "/Form"
             }
         };
-
-        public const string TwoFactorCookieName = "SimpleIdentityServer-TwoFactorAuth";
 
         public static class EndPoints
         {

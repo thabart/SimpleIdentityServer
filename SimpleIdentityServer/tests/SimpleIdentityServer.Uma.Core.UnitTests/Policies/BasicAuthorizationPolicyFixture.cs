@@ -16,7 +16,7 @@
 
 using Moq;
 using Newtonsoft.Json.Linq;
-using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common;
 using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Uma.Core.JwtToken;
 using SimpleIdentityServer.Uma.Core.Models;
@@ -32,7 +32,6 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 {
     public class BasicAuthorizationPolicyFixture
     {
-        private Mock<IIdentityServerClientFactory> _identityServerClientFactoryStub;
         private Mock<IJwtTokenParser> _jwtTokenParserStub;
         private IBasicAuthorizationPolicy _basicAuthorizationPolicy;
 
@@ -251,7 +250,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult((JwsPayload)null));
 
             // ACT
@@ -315,7 +314,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {
@@ -384,7 +383,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult(new JwsPayload()));
 
             // ACT
@@ -450,7 +449,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             var payload = new JwsPayload();
             payload.Add("role", new JArray("role3"));
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -516,7 +515,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
             };
             var payload = new JwsPayload();
             payload.Add("role", new string[] { "role3" });
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult(payload));
 
             // ACT
@@ -580,7 +579,7 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
                 Format = "http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken",
                 Token = "token"
             };
-            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<string>()))
+            _jwtTokenParserStub.Setup(j => j.UnSign(It.IsAny<string>(), It.IsAny<PolicyRule>()))
                 .Returns(Task.FromResult(new JwsPayload
                 {
                     {
@@ -681,10 +680,8 @@ namespace SimpleIdentityServer.Uma.Core.UnitTests.Policies
 
         private void InitializeFakeObjects()
         {
-            _identityServerClientFactoryStub = new Mock<IIdentityServerClientFactory>();
             _jwtTokenParserStub = new Mock<IJwtTokenParser>();
-            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(_identityServerClientFactoryStub.Object,
-                _jwtTokenParserStub.Object);
+            _basicAuthorizationPolicy = new BasicAuthorizationPolicy(_jwtTokenParserStub.Object);
         }
     }
 }

@@ -14,26 +14,25 @@
 // limitations under the License.
 #endregion
 
-using System.Collections.Generic;
-using System.Linq;
-using SimpleIdentityServer.Core.Models;
-using SimpleIdentityServer.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.EF.Extensions;
 using SimpleIdentityServer.Logging;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace SimpleIdentityServer.EF.Repositories
 {
     public sealed class TranslationRepository : ITranslationRepository
     {         
         private readonly SimpleIdentityServerContext _context;
-
-        private readonly IManagerEventSource _managerEventSource;
+        private readonly ITechnicalEventSource _managerEventSource;
 
         public TranslationRepository(
             SimpleIdentityServerContext context,
-            IManagerEventSource managerEventSource)
+            ITechnicalEventSource managerEventSource)
         {
             _context = context;
             _managerEventSource = managerEventSource;

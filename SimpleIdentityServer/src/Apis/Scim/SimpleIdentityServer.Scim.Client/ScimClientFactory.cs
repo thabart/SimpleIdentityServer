@@ -15,7 +15,8 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
-using SimpleIdentityServer.Scim.Client.Factories;
+using SimpleIdentityServer.Common.Client;
+using SimpleIdentityServer.Common.Client.Factories;
 using System;
 
 namespace SimpleIdentityServer.Scim.Client
@@ -24,9 +25,10 @@ namespace SimpleIdentityServer.Scim.Client
     {
         IGroupsClient GetGroupClient();
         IUsersClient GetUserClient();
+        IConfigurationClient GetConfigurationClient();
     }
 
-    internal class ScimClientFactory : IScimClientFactory
+    public class ScimClientFactory : IScimClientFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -34,6 +36,13 @@ namespace SimpleIdentityServer.Scim.Client
         {
             var services = new ServiceCollection();
             RegisterDependencies(services);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
+        public ScimClientFactory(IHttpClientFactory httpClientFactory)
+        {
+            var services = new ServiceCollection();
+            RegisterDependencies(services, httpClientFactory);
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -49,11 +58,26 @@ namespace SimpleIdentityServer.Scim.Client
             return userClient;
         }
 
-        private static void RegisterDependencies(IServiceCollection services)
+        public IConfigurationClient GetConfigurationClient()
         {
+            var configurationClient = (IConfigurationClient)_serviceProvider.GetService(typeof(IConfigurationClient));
+            return configurationClient;
+        }
+
+        private static void RegisterDependencies(IServiceCollection services, IHttpClientFactory httpClientFactory = null)
+        {
+            if (httpClientFactory != null)
+            {
+                services.AddSingleton(httpClientFactory);
+            }
+            else
+            {
+                services.AddCommonClient();
+            }
+
             services.AddTransient<IGroupsClient, GroupsClient>();
             services.AddTransient<IUsersClient, UsersClient>();
-            services.AddTransient<IHttpClientFactory, HttpClientFactory>();
+            services.AddTransient<IConfigurationClient, ConfigurationClient>();
         }
     }
 }

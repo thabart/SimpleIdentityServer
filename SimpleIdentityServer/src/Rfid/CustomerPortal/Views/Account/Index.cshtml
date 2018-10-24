@@ -1,9 +1,0 @@
-﻿<div class="row">
-    <h1>Account</h1>
-    <ul class="list-group">
-        @foreach(var claim in User.Claims)
-        {
-            <li class="list-group-item">@claim.Type : @claim.Value</li>
-        }
-    </ul>
-</div>

@@ -15,22 +15,22 @@
 #endregion
 
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common.Models;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Exceptions;
-using SimpleIdentityServer.Core.Models;
 using SimpleIdentityServer.Core.Parameters;
-using SimpleIdentityServer.Core.Repositories;
-using SimpleIdentityServer.Core.Stores;
+using SimpleIdentityServer.Store;
 using System;
-using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SimpleIdentityServer.Core.Api.Token.Actions
 {
     public interface IRevokeTokenAction
     {
-        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue);
+        Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName);
     }
 
     internal class RevokeTokenAction : IRevokeTokenAction
@@ -58,7 +58,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         #region Public methods
 
-        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue)
+        public async Task<bool> Execute(RevokeTokenParameter revokeTokenParameter, AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate, string issuerName)
         {
             if (revokeTokenParameter == null)
             {
@@ -72,18 +72,12 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
             
             // 1. Check the client credentials
             var errorMessage = string.Empty;
-            var instruction = CreateAuthenticateInstruction(revokeTokenParameter,
-                authenticationHeaderValue);
-            var authResult = await _authenticateClient.AuthenticateAsync(instruction);
+            var instruction = CreateAuthenticateInstruction(revokeTokenParameter, authenticationHeaderValue, certificate);
+            var authResult = await _authenticateClient.AuthenticateAsync(instruction, issuerName);
             var client = authResult.Client;
             if (client == null)
             {
-                client = await _clientRepository.GetClientByIdAsync(Constants.AnonymousClientId);
-                if (client == null)
-                {
-                    throw new IdentityServerException(ErrorCodes.InternalError,
-                        string.Format(ErrorDescriptions.ClientIsNotValid, Constants.AnonymousClientId));
-                }
+                throw new IdentityServerException(ErrorCodes.InvalidClient, authResult.ErrorMessage);
             }
 
             // 2. Retrieve the granted token & check if it exists
@@ -97,7 +91,7 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
             if (grantedToken == null)
             {
-                return false;
+                throw new IdentityServerException(ErrorCodes.InvalidToken, ErrorDescriptions.TheTokenDoesntExist);
             }
 
             // 3. Verifies whether the token was issued to the client making the revocation request
@@ -121,13 +115,14 @@ namespace SimpleIdentityServer.Core.Api.Token.Actions
 
         private AuthenticateInstruction CreateAuthenticateInstruction(
             RevokeTokenParameter revokeTokenParameter,
-            AuthenticationHeaderValue authenticationHeaderValue)
+            AuthenticationHeaderValue authenticationHeaderValue, X509Certificate2 certificate)
         {
             var result = _authenticateInstructionGenerator.GetAuthenticateInstruction(authenticationHeaderValue);
             result.ClientAssertion = revokeTokenParameter.ClientAssertion;
             result.ClientAssertionType = revokeTokenParameter.ClientAssertionType;
             result.ClientIdFromHttpRequestBody = revokeTokenParameter.ClientId;
             result.ClientSecretFromHttpRequestBody = revokeTokenParameter.ClientSecret;
+            result.Certificate = certificate;
             return result;
         }
         

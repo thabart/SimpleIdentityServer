@@ -246,6 +246,7 @@ namespace SimpleIdentityServer.Scim.Common
 
         public static class SchemaAttributeResponseNames
         {
+            public const string Id = "id";
             public const string Name = "name";
             public const string Type = "type";
             public const string MultiValued = "multiValued";
@@ -356,8 +357,8 @@ namespace SimpleIdentityServer.Scim.Common
 
         public static class SortOrderNames
         {
-            public static string Ascending = "ascending";
-            public static string Descending = "descending";
+            public const string Ascending = "ascending";
+            public const string Descending = "descending";
         }
     }
 }

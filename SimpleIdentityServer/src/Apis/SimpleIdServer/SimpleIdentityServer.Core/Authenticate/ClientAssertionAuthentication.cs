@@ -14,24 +14,24 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Linq;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
 using SimpleIdentityServer.Core.Services;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using SimpleIdentityServer.Core.Repositories;
 
 namespace SimpleIdentityServer.Core.Authenticate
 {
     public interface IClientAssertionAuthentication
     {
         string GetClientId(AuthenticateInstruction instruction);
-        Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction);
-        Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret);
+        Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction, string issuer);
+        Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string issuer);
     }
 
     public class ClientAssertionAuthentication : IClientAssertionAuthentication
@@ -89,7 +89,7 @@ namespace SimpleIdentityServer.Core.Authenticate
             return payload.Issuer;
         }
 
-        public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction)
+        public async Task<AuthenticationResult> AuthenticateClientWithPrivateKeyJwtAsync(AuthenticateInstruction instruction, string expectedIssuer)
         {
             if (instruction == null)
             {
@@ -117,10 +117,10 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return new AuthenticationResult(null, ErrorDescriptions.TheSignatureIsNotCorrect);
             }
 
-            return await ValidateJwsPayLoad(payload);
+            return await ValidateJwsPayLoad(payload, expectedIssuer);
         }
         
-        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret)
+        public async Task<AuthenticationResult> AuthenticateClientWithClientSecretJwtAsync(AuthenticateInstruction instruction, string clientSecret, string expectedIssuer)
         {
             if (instruction == null)
             {
@@ -154,18 +154,17 @@ namespace SimpleIdentityServer.Core.Authenticate
                 return new AuthenticationResult(null, ErrorDescriptions.TheJwsPayloadCannotBeExtracted);
             }
 
-            return await ValidateJwsPayLoad(jwsPayload);
+            return await ValidateJwsPayLoad(jwsPayload, expectedIssuer);
         }
         
-        private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload)
+        private async Task<AuthenticationResult> ValidateJwsPayLoad(JwsPayload jwsPayload, string expectedIssuer)
         {
             // The checks are coming from this url : http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
-            var expectedIssuer = await _configurationService.GetIssuerNameAsync();
             var jwsIssuer = jwsPayload.Issuer;
             var jwsSubject = jwsPayload.GetClaimValue(Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
             var jwsAudiences = jwsPayload.Audiences;
             var expirationDateTime = jwsPayload.ExpirationTime.ConvertFromUnixTimestamp();
-            Models.Client client = null;
+            Common.Models.Client client = null;
             // 1. Check the issuer is correct.
             if (!string.IsNullOrWhiteSpace(jwsIssuer))
             {

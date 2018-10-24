@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SimpleIdentityServer.Client;
+using SimpleIdentityServer.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -42,37 +44,37 @@ namespace SimpleIdentityServer.OAuth2Introspection
                     .UseClientSecretPostAuth(Options.ClientId, Options.ClientSecret)
                     .Introspect(token, TokenType.AccessToken)
                     .ResolveAsync(Options.WellKnownConfigurationUrl);
-                if (!introspectionResult.Active)
+                if (introspectionResult.ContainsError || !introspectionResult.Content.Active)
                 {
                     return AuthenticateResult.NoResult();
                 }
 
                 var claims = new List<Claim>
                 {
-                    new Claim(Core.Jwt.Constants.StandardClaimNames.ExpirationTime, introspectionResult.Expiration.ToString()),
-                    new Claim(Core.Jwt.Constants.StandardClaimNames.Iat, introspectionResult.IssuedAt.ToString())
+                    new Claim(StandardClaimNames.ExpirationTime, introspectionResult.Content.Expiration.ToString()),
+                    new Claim(StandardClaimNames.Iat, introspectionResult.Content.IssuedAt.ToString())
                 };
 
-                if (!string.IsNullOrWhiteSpace(introspectionResult.Subject))
+                if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Subject))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Subject));
+                    claims.Add(new Claim(Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject, introspectionResult.Content.Subject));
                 }
 
-                if (!string.IsNullOrWhiteSpace(introspectionResult.ClientId))
+                if (!string.IsNullOrWhiteSpace(introspectionResult.Content.ClientId))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.ClientId, introspectionResult.ClientId));
+                    claims.Add(new Claim(StandardClaimNames.ClientId, introspectionResult.Content.ClientId));
                 }
 
-                if (!string.IsNullOrWhiteSpace(introspectionResult.Issuer))
+                if (!string.IsNullOrWhiteSpace(introspectionResult.Content.Issuer))
                 {
-                    claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Issuer, introspectionResult.Issuer));
+                    claims.Add(new Claim(StandardClaimNames.Issuer, introspectionResult.Content.Issuer));
                 }
 
-                if (introspectionResult.Scope != null)
+                if (introspectionResult.Content.Scope != null)
                 {
-                    foreach (var scope in introspectionResult.Scope)
+                    foreach (var scope in introspectionResult.Content.Scope)
                     {
-                        claims.Add(new Claim(Core.Jwt.Constants.StandardClaimNames.Scopes, scope));
+                        claims.Add(new Claim(StandardClaimNames.Scopes, scope));
                     }
                 }
 

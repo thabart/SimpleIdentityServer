@@ -1,11 +1,11 @@
 ﻿using Moq;
 using SimpleIdentityServer.Core.Authenticate;
+using SimpleIdentityServer.Core.Common;
+using SimpleIdentityServer.Core.Common.Repositories;
 using SimpleIdentityServer.Core.Errors;
 using SimpleIdentityServer.Core.Extensions;
-using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Core.JwtToken;
-using SimpleIdentityServer.Core.Repositories;
 using SimpleIdentityServer.Core.Services;
 using System;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(null, null));
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -68,7 +68,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => null);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -94,7 +94,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -113,7 +113,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var jwsPayload = new JwsPayload
             {
                 {
-                    Jwt.Constants.StandardClaimNames.Issuer, "issuer"
+                    StandardClaimNames.Issuer, "issuer"
                 }
             };
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
@@ -124,10 +124,10 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 It.IsAny<string>()))
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
-                .Returns(() => Task.FromResult((Models.Client)null));
+                .Returns(() => Task.FromResult((Core.Common.Models.Client)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -146,19 +146,19 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var jwsPayload = new JwsPayload
             {
                 {
-                    Jwt.Constants.StandardClaimNames.Issuer, "issuer"
+                    StandardClaimNames.Issuer, "issuer"
                 },
                 {
                     Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "audience"   
                     }
                 }
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -168,11 +168,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("invalid_issuer"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "invalid_issuer");
 
             // ASSERT
             Assert.Null(result.Client);
@@ -191,22 +189,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var jwsPayload = new JwsPayload
             {
                 {
-                    Jwt.Constants.StandardClaimNames.Issuer, "issuer"
+                    StandardClaimNames.Issuer, "issuer"
                 },
                 {
                     Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "audience"   
                     }
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(-2)
+                    StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(-2)
                 }
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -216,11 +214,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience");
 
             // ASSERT
             Assert.Null(result.Client);
@@ -239,22 +235,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var jwsPayload = new JwsPayload
             {
                 {
-                    Jwt.Constants.StandardClaimNames.Issuer, "issuer"
+                    StandardClaimNames.Issuer, "issuer"
                 },
                 {
                     Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "audience"   
                     }
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()
+                    StandardClaimNames.ExpirationTime, DateTime.UtcNow.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _jwtParserFake.Setup(j => j.IsJwsToken(It.IsAny<string>()))
                 .Returns(true);
             _jwsParserFake.Setup(j => j.GetPayload(It.IsAny<string>()))
@@ -264,11 +260,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithPrivateKeyJwtAsync(instruction, "audience");
 
             // ASSERT
             Assert.NotNull(result.Client);
@@ -285,7 +279,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             InitializeFakeObjects();
 
             // ACT & ASSERT
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(null, string.Empty, null));
         }
 
         [Fact]
@@ -301,7 +295,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
             
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -325,7 +319,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(string.Empty));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -351,7 +345,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(false);
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -379,7 +373,7 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(() => Task.FromResult((JwsPayload)null));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, null);
 
             // ASSERT
             Assert.Null(result.Client);
@@ -398,22 +392,22 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
             var jwsPayload = new JwsPayload
             {
                 {
-                    Jwt.Constants.StandardClaimNames.Issuer, "issuer"
+                    StandardClaimNames.Issuer, "issuer"
                 },
                 {
                     Jwt.Constants.StandardResourceOwnerClaimNames.Subject, "issuer"
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.Audiences, new []
+                    StandardClaimNames.Audiences, new []
                     {
                         "audience"   
                     }
                 },
                 {
-                    Jwt.Constants.StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()
+                    StandardClaimNames.ExpirationTime, DateTime.Now.AddDays(2).ConvertToUnixTimestamp()
                 }
             };
-            var client = new Models.Client();
+            var client = new Core.Common.Models.Client();
             _jwtParserFake.Setup(j => j.IsJweToken(It.IsAny<string>()))
                 .Returns(true);
             _jwtParserFake.Setup(j => j.DecryptWithPasswordAsync(It.IsAny<string>(),
@@ -426,11 +420,9 @@ namespace SimpleIdentityServer.Core.UnitTests.Authenticate
                 .Returns(Task.FromResult(jwsPayload));
             _clientRepositoryStub.Setup(c => c.GetClientByIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(client));
-            _simpleIdentityServerConfiguratorFake.Setup(s => s.GetIssuerNameAsync())
-                .Returns(Task.FromResult("audience"));
 
             // ACT
-            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty);
+            var result = await _clientAssertionAuthentication.AuthenticateClientWithClientSecretJwtAsync(instruction, string.Empty, "audience");
 
             // ASSERT
             Assert.NotNull(result);
