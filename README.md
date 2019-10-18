@@ -1,4 +1,4 @@
-# SimpleIdentityServer.Core
+# SimpleIdentityServer.Core (DEPRECATED - no longer actively maintained. Please visit the project https://github.com/simpleidserver/SimpleIdServer)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u1ksy7m4pdl7y49m?svg=true)](https://ci.appveyor.com/project/thabart/simpleidentityserver)
 
